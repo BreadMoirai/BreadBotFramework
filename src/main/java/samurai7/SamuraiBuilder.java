@@ -42,7 +42,6 @@ public class SamuraiBuilder {
 
     public SamuraiBuilder() {
         modules = new LinkedList<>();
-
     }
 
     public SamuraiBuilder setToken(String token) {
@@ -57,7 +56,7 @@ public class SamuraiBuilder {
 
     /**
      * Allow guilds to have specific prefixes
-     *
+     * <p>By default this is set to {@code true}
      * @param allow true if yes, false if all guilds must use same prefix.
      */
     public SamuraiBuilder allowModifiablePrefix(boolean allow) {
@@ -90,6 +89,30 @@ public class SamuraiBuilder {
         return this;
     }
 
+    /**
+     * This enables the @Admin annotation that is marked on Command classes.
+     * This ensures that Commands marked with @Admin are only usable by Administrators.
+     *
+     * <p>By default a Member is defined as an Administrator if he/she satisfies the following conditions
+     * <ul>
+     *     <li>Has Kick Members Permission</li>
+     *     <li>Is higher than the bot on the role hierarchy</li>
+     * </ul>
+     *
+     * This behavior can be changed by extending the {@link samurai7.modules.admin.AdminModule} like the following:
+     * <pre><code>
+     * {@link samurai7.SamuraiBuilder}.addModule(new MyAdminModule());
+     * ...
+     * public class MyAdminModule extends {@link samurai7.modules.admin.AdminModule} {
+     *    {@literal @}Override
+     *     boolean isAdmin({@link net.dv8tion.jda.core.entities.Member} member) {
+     *         //new criteria
+     *         //can check roles or maybe have a whitelist in the Database
+     *     }
+     * }
+     *     </code>
+     * </pre>
+     */
     public SamuraiBuilder addDefaultAdminModule() {
         modules.add(new AdminModule());
         return this;

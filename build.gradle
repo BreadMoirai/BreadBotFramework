@@ -2,8 +2,10 @@ plugins {
     id 'java'
     id 'idea'
     id 'com.sedmelluq.jdaction' version '1.0.1'
+    id 'application'
 }
 
+mainClassName = "samurai7.SamuraiRunner"
 
 group 'com.github.breadmoirai'
 version 'master-SNAPSHOT'
@@ -26,8 +28,15 @@ dependencies {
     compile 'org.jdbi:jdbi3-parent:3.0.0-beta1'
     compile 'org.jdbi:jdbi3-sqlobject:3.0.0-beta1'
 
+    //slf4j
+    compile 'org.slf4j:slf4j-api:1.8.0-alpha2'
+
     //Utility
     compile 'org.reflections:reflections:0.9.10'
     compile 'com.jagrosh:JDA-Utilities:1.2'
     compile 'org.jetbrains:annotations:13.0'
+
+    //test
+    testCompile 'junit:junit:4.11'
+    compile 'org.slf4j:slf4j-simple:1.8.0-alpha2'
 }

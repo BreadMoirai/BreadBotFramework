@@ -22,6 +22,6 @@ import samurai7.core.command.ICommand;
 
 public class DuplicateCommandKeyError extends Error {
     public DuplicateCommandKeyError(String key, Class<? extends ICommand> existing, Class<? extends ICommand> duplicate) {
-        super("Key \"" + key + "\" for Command " + duplicate.getSimpleName() + " in Module " + TypeUtils.getTypeArguments(duplicate, Command.class).get(Command.class.getTypeParameters()[0]).getTypeName() + " is already mapped to Command " + existing.getSimpleName() + " in Module " + TypeUtils.getTypeArguments(existing, Command.class).get(Command.class.getTypeParameters()[0]).getTypeName());
+        super();
     }
 }

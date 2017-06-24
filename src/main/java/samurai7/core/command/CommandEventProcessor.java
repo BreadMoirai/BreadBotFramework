@@ -59,8 +59,10 @@ public class CommandEventProcessor {
     public CommandEventProcessor(CommandProcessorConfiguration configuration, List<IModule> modules, PrefixModule prefixModule) {
         this.modules = modules;
         this.commandMap = configuration.getCommandMap();
-        this.preProcessPredicate = configuration.getPreProcessPredicate();
-        this.postProcessPredicate = configuration.getPostProcessPredicate();
+        final Predicate<Message> prePredicate = configuration.getPreProcessPredicate();
+        this.preProcessPredicate = prePredicate == null ? message -> true : prePredicate;
+        final Predicate<ICommand> postPredicate = configuration.getPostProcessPredicate();
+        this.postProcessPredicate = postPredicate == null ? command -> true : postPredicate;
         this.eventWaiter = new EventWaiter();
         this.prefixModule = prefixModule;
         final HashMap<Type, IModule> typeMap = new HashMap<>(modules.size());
@@ -99,7 +101,7 @@ public class CommandEventProcessor {
         command.setModules(moduleTypeMap);
 
         if (postProcessPredicate.test(command)) {
-            CompletableFuture.supplyAsync(command::call).thenAcceptAsync(responseOptional -> responseOptional.ifPresent(this::submit));
+            CompletableFuture.supplyAsync(command::call).thenAcceptAsync(response -> response.ifPresent(this::submit));
             CompletableFuture.runAsync(() -> fireCommandEvent(event));
         }
     }
@@ -114,6 +116,7 @@ public class CommandEventProcessor {
     }
 
     private void fireCommandEvent(CommandEvent event) {
+        eventWaiter.onEvent(event);
         for (Pair<IModule, Method> pair : methods) {
             final Method method = pair.getValue();
             try {
@@ -134,13 +137,13 @@ public class CommandEventProcessor {
             contentRaw = contentRaw.substring(matcher.end(1)).trim();
             final String[] split = DiscordPatterns.WHITE_SPACE.split(contentRaw, 2);
             key = split[0];
-            content = split[1].trim();
+            content = split.length > 1 ? split[1].trim() : null;
             return new MessageReceivedCommandEvent(event, message, prefix, key, content);
         } else {
             if (contentRaw.startsWith(prefix)) {
                 final String[] split = DiscordPatterns.WHITE_SPACE.split(contentRaw.substring(prefix.length()), 2);
                 key = split[0];
-                content = split[1].trim();
+                content = split.length > 1 ? split[1].trim() : null;
                 return new MessageReceivedCommandEvent(event, message, prefix, key, content);
             }
             return null;
@@ -156,7 +159,7 @@ public class CommandEventProcessor {
     @SubscribeEvent
     public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
         if (preProcessPredicate.test(event.getMessage()))
-            createEvent(event, event.getMessage());
+            processEvent(createEvent(event, event.getMessage()));
     }
 
     @SubscribeEvent

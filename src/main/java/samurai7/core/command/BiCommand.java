@@ -30,7 +30,7 @@ public abstract class BiCommand<M1 extends IModule, M2 extends IModule> implemen
 
     private M1 module1;
     private M2 module2;
-    private ICommandEvent event;
+    private CommandEvent event;
 
     @Override
     public final Optional<Response> call() {
@@ -44,10 +44,10 @@ public abstract class BiCommand<M1 extends IModule, M2 extends IModule> implemen
         return Optional.ofNullable(r);
     }
 
-    protected abstract Response execute(ICommandEvent event, M1 module1, M2 module2);
+    protected abstract Response execute(CommandEvent event, M1 module1, M2 module2);
 
     @Override
-    final public ICommandEvent getEvent() {
+    final public CommandEvent getEvent() {
         return event;
     }
 
@@ -62,7 +62,7 @@ public abstract class BiCommand<M1 extends IModule, M2 extends IModule> implemen
     }
 
     @Override
-    final public void setEvent(ICommandEvent event) {
+    final public void setEvent(CommandEvent event) {
         this.event = event;
     }
 }

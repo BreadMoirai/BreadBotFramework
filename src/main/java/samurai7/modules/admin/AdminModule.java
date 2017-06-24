@@ -23,6 +23,7 @@ public class AdminModule implements IModule {
     @Override
     public void init(CommandProcessorConfiguration config) {
         config.addPostProcessPredicate(command -> !command.getClass().isAnnotationPresent(Admin.class) || isAdmin(command.getEvent().getMember()));
+        config.registerCommand("samurai7.modules.admin");
     }
 
     boolean isAdmin(Member member) {

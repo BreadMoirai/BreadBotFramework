@@ -185,11 +185,11 @@ public abstract class CommandEvent extends Event {
     }
 
     /**
-     * Checks for whether {@link CommandEvent#getContent() getContent()} will return an empty {@link java.lang.String String} or not
+     * Checks for whether {@link CommandEvent#getContent() getContent()} will return an empty or null {@link java.lang.String String}
      * @return {@code true} if {@link CommandEvent#getContent() getContent()} is not empty. False otherwise.
      */
-    public  boolean hasContent() {
-        return getContent().trim().isEmpty();
+    public boolean hasContent() {
+        return getContent() != null && !getContent().trim().isEmpty();
     }
 
     /**

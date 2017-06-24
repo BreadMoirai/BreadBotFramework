@@ -22,6 +22,7 @@ import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageEmbed;
 import org.jetbrains.annotations.Contract;
+import samurai7.response.BasicResponse;
 
 import java.io.Serializable;
 
@@ -91,8 +92,9 @@ public abstract class Response implements Serializable {
         return new BasicResponse(message);
     }
 
-
     public final void setEventWaiter(EventWaiter eventWaiter) {
         this.eventWaiter = eventWaiter;
     }
+
+    protected final EventWaiter getEventWaiter() {return eventWaiter;}
 }

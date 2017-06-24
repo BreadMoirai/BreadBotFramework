@@ -39,8 +39,10 @@ public class MessageReceivedCommandEvent extends CommandEvent {
         super(event.getJDA(), event.getResponseNumber());
         this.event = event;
         this.message = message;
+        this.prefix = prefix;
+        this.key = key;
+        this.content = content;
     }
-
 
     @Override
     public String getPrefix() {

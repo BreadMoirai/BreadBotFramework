@@ -27,6 +27,9 @@ import java.util.Optional;
  */
 public interface ICommand {
 
+
+
+
     Optional<Response> call();
 
     void setEvent(CommandEvent event);

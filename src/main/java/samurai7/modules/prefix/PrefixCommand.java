@@ -23,7 +23,6 @@ import samurai7.core.response.Response;
 import samurai7.modules.admin.Admin;
 import samurai7.util.DiscordPatterns;
 
-@Admin
 @Key("prefix")
 public class PrefixCommand extends Command<PrefixModule> {
     @Override

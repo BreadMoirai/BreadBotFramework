@@ -1,5 +1,5 @@
 /*
- *       Copyright 2017 Ton Ly (BreadMoirai)
+ *      Copyright 2017 Ton Ly (BreadMoirai)
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -14,21 +14,25 @@
  *   limitations under the License.
  *
  */
-package samurai7;
+package samurai7;import net.dv8tion.jda.core.exceptions.RateLimitedException;
+import samurai7.SamuraiBuilder;
 
-import com.typesafe.config.Config;
-import com.typesafe.config.ConfigFactory;
+import javax.security.auth.login.LoginException;
 
 public class SamuraiRunner {
 
     public static void main(String[] args) {
-        new SamuraiBuilder()
-                .setToken("MjcwMDQ0MjE4MTY3MTMyMTcw.C_KT3Q.Jg7oAe3MoHdlredsDdVyKCQacTk")
-                .setDefaultPrefix("!")
-                .setSourceGuild(config.getLong("bot.source_guild"))
-                .setOwnerId(config.getLong("owner.id"))
-                .setAllowMentionPrefix(true)
-                .buildAsync();
+        try {
+            new SamuraiBuilder()
+                    .setToken("MzI4Mjc0OTk1NzE1MjQ0MDM0.DDBhcg.XQifO1six5fwe1KcSTnwBmq_Pbo")
+                    .setDefaultPrefix("-")
+                    .addDefaultAdminModule()
+                    .allowModifiablePrefix(true)
+                    .build()
+                    .buildAsync();
+        } catch (LoginException | RateLimitedException e) {
+            e.printStackTrace();
+        }
 
     }
 }

@@ -19,17 +19,30 @@ package samurai7.core.command;
 import net.dv8tion.jda.core.entities.Message;
 import org.apache.commons.lang3.reflect.TypeUtils;
 import org.reflections.Reflections;
+import org.reflections.scanners.SubTypesScanner;
+import org.reflections.scanners.TypeAnnotationsScanner;
+import org.reflections.util.ClasspathHelper;
+import org.reflections.util.ConfigurationBuilder;
+import org.reflections.util.FilterBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.simple.SimpleLoggerConfiguration;
 import samurai7.util.DuplicateCommandKeyError;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
 
+@SuppressWarnings({"UnusedReturnValue", "SameParameterValue", "unused", "WeakerAccess"})
 public class CommandProcessorConfiguration {
-    Predicate<Message> preProcessPredicate;
-    Predicate<ICommand> postProcessPredicate;
 
-    Map<String, Class<? extends ICommand>> commandMap;
+    private static Logger logger = LoggerFactory.getLogger("Command");
+
+    private Predicate<Message> preProcessPredicate;
+    private Predicate<ICommand> postProcessPredicate;
+
+    private Map<String, Class<? extends ICommand>> commandMap = new HashMap<>();
 
 
     public CommandProcessorConfiguration addPreProcessPredicate(Predicate<Message> predicate) {
@@ -49,35 +62,43 @@ public class CommandProcessorConfiguration {
     public CommandProcessorConfiguration registerCommand(Class<? extends ICommand> commandClass, String... keys) {
         for (String key : keys) {
             if (key == null || keys.length == 0) {
-                System.err.println("No key found for " + commandClass.getSimpleName());
+                logger.error("No key found for " + commandClass.getSimpleName());
                 continue;
             }
             final String key1 = key.toLowerCase();
-            if (commandMap.containsKey(key1))
-                throw new DuplicateCommandKeyError(key1, commandMap.get(key1), commandClass);
-            else {
+            if (commandMap.containsKey(key1)) {
+                final Class<? extends ICommand> existing = commandMap.get(key1);
+                logger.error("Key \"" + key + "\" for Command " + commandClass.getSimpleName() + " in Module " + TypeUtils.getTypeArguments(commandClass, Command.class).get(Command.class.getTypeParameters()[0]).getTypeName() + " is already mapped to Command " + existing.getSimpleName() + " in Module " + TypeUtils.getTypeArguments(existing, Command.class).get(Command.class.getTypeParameters()[0]).getTypeName());
+            } else {
                 commandMap.put(key, commandClass);
-                System.out.println(("\"" + key + "\" mapped to " + commandClass.getSimpleName() + " in Module " + TypeUtils.getTypeArguments(commandClass, Command.class).get(Command.class.getTypeParameters()[0]).getTypeName()));
+                final String typeName = TypeUtils.getTypeArguments(commandClass, Command.class).get(Command.class.getTypeParameters()[0]).getTypeName();
+                logger.debug("\"" + key + "\" mapped to " + commandClass.getSimpleName() + " in Module " + typeName.substring(typeName.lastIndexOf('.') + 1));
             }
         }
         return this;
     }
 
-    public CommandProcessorConfiguration registerCommand(Class<? extends Command> commandClass) {
+    public CommandProcessorConfiguration registerCommand(Class<? extends ICommand> commandClass) {
         if (commandClass.isAnnotationPresent(Key.class)) {
             final String[] keyArray = commandClass.getAnnotation(Key.class).value();
             registerCommand(commandClass, keyArray);
         } else {
-            System.err.println("No key found for " + commandClass.getSimpleName());
+            logger.error("No key found for " + commandClass.getSimpleName());
         }
         return this;
     }
 
-    public CommandProcessorConfiguration registerCommand(String commandPackage) {
-        Reflections reflections = new Reflections(commandPackage);
-        Set<Class<? extends ICommand>> classes = reflections.getSubTypesOf(ICommand.class);
-        for (Class<? extends ICommand> commandClass : classes) {
-            registerCommand(commandClass);
+    public CommandProcessorConfiguration registerCommand(String commandPackagePrefix) {
+        Reflections reflections = new Reflections(new ConfigurationBuilder()
+                .filterInputsBy(new FilterBuilder().include(FilterBuilder.prefix(commandPackagePrefix)))
+                .setUrls(ClasspathHelper.forPackage(commandPackagePrefix))
+                .setScanners(new SubTypesScanner(), new TypeAnnotationsScanner()));
+        final Set<Class<?>> classes = reflections.getTypesAnnotatedWith(Key.class);
+        for (Class<?> commandClass : classes) {
+            if (ICommand.class.isAssignableFrom(commandClass)) {
+                //noinspection unchecked
+                registerCommand((Class<? extends ICommand>) commandClass);
+            }
         }
         return this;
     }
