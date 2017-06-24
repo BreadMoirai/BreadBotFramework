@@ -20,6 +20,7 @@ import com.jagrosh.jdautilities.waiter.EventWaiter;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.events.ReadyEvent;
 import net.dv8tion.jda.core.events.message.guild.GenericGuildMessageEvent;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageUpdateEvent;
@@ -42,7 +43,7 @@ import java.util.regex.Matcher;
 
 public class CommandEventProcessor {
 
-    private final JDA jda;
+    private JDA jda;
 
     private final List<Pair<IModule, Method>> methods;
     private final Map<Type, IModule> moduleTypeMap;
@@ -55,8 +56,7 @@ public class CommandEventProcessor {
     private PrefixModule prefixModule;
 
 
-    public CommandEventProcessor(JDA jda, CommandProcessorConfiguration configuration, List<IModule> modules, PrefixModule prefixModule) {
-        this.jda = jda;
+    public CommandEventProcessor(CommandProcessorConfiguration configuration, List<IModule> modules, PrefixModule prefixModule) {
         this.modules = modules;
         this.commandMap = configuration.getCommandMap();
         this.preProcessPredicate = configuration.getPreProcessPredicate();
@@ -146,6 +146,12 @@ public class CommandEventProcessor {
             return null;
         }
     }
+
+    @SubscribeEvent
+    public void onReadyEvent(ReadyEvent event) {
+        this.jda = event.getJDA();
+    }
+
 
     @SubscribeEvent
     public void onGuildMessageReceived(GuildMessageReceivedEvent event) {

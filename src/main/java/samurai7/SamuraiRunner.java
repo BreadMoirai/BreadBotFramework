@@ -22,10 +22,9 @@ import com.typesafe.config.ConfigFactory;
 public class SamuraiRunner {
 
     public static void main(String[] args) {
-        final Config config = ConfigFactory.load();
         new SamuraiBuilder()
-                .setToken(config.getString("bot.token"))
-                .setDefaultPrefix(config.getString("bot.prefix"))
+                .setToken("MjcwMDQ0MjE4MTY3MTMyMTcw.C_KT3Q.Jg7oAe3MoHdlredsDdVyKCQacTk")
+                .setDefaultPrefix("!")
                 .setSourceGuild(config.getLong("bot.source_guild"))
                 .setOwnerId(config.getLong("owner.id"))
                 .setAllowMentionPrefix(true)

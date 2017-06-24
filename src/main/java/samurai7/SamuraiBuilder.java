@@ -19,13 +19,13 @@ package samurai7;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDABuilder;
 import net.dv8tion.jda.core.entities.Game;
-import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.hooks.AnnotatedEventManager;
 import samurai7.core.IModule;
 import samurai7.core.command.CommandEventProcessor;
+import samurai7.core.command.CommandProcessorConfiguration;
+import samurai7.modules.admin.AdminModule;
 import samurai7.modules.prefix.PrefixModule;
 
-import javax.security.auth.login.LoginException;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -36,7 +36,7 @@ public class SamuraiBuilder {
     private String prefix = "!";
     private long sourceGuild;
     private long ownerId;
-    private boolean allowMentionPrefix;
+    private boolean allowModifiablePrefix = true;
     private String game;
     private List<IModule> modules;
 
@@ -55,6 +55,16 @@ public class SamuraiBuilder {
         return this;
     }
 
+    /**
+     * Allow guilds to have specific prefixes
+     *
+     * @param allow true if yes, false if all guilds must use same prefix.
+     */
+    public SamuraiBuilder allowModifiablePrefix(boolean allow) {
+        this.allowModifiablePrefix = allow;
+        return this;
+    }
+
     public SamuraiBuilder setSourceGuild(long sourceGuild) {
         this.sourceGuild = sourceGuild;
         return this;
@@ -62,11 +72,6 @@ public class SamuraiBuilder {
 
     public SamuraiBuilder setOwnerId(long ownerId) {
         this.ownerId = ownerId;
-        return this;
-    }
-
-    public SamuraiBuilder setAllowMentionPrefix(boolean allowMentionPrefix) {
-        this.allowMentionPrefix = allowMentionPrefix;
         return this;
     }
 
@@ -80,24 +85,28 @@ public class SamuraiBuilder {
         return this;
     }
 
-    public SamuraiBuilder installModules(List<IModule> moduleList) {
+    public SamuraiBuilder installModule(List<IModule> moduleList) {
         modules.addAll(moduleList);
         return this;
     }
 
-    public void buildAsync() {
-        modules.add(0, new PrefixModule(prefix));
-        try {
-            new JDABuilder(AccountType.BOT)
-                    .setToken(token)
-                    .setAudioEnabled(true)
-                    .setEventManager(new AnnotatedEventManager())
-                    .setGame(game != null ? Game.of(game): null)
-                    .addEventListener(new CommandEventProcessor(modules))
-                    .addEventListener(modules.toArray())
-                    .buildAsync();
-        } catch (LoginException | RateLimitedException e) {
-            e.printStackTrace();
-        }
+    public SamuraiBuilder addDefaultAdminModule() {
+        modules.add(new AdminModule());
+        return this;
     }
+
+    public JDABuilder build() {
+        final PrefixModule prefixModule = new PrefixModule(prefix, allowModifiablePrefix);
+        modules.add(0, prefixModule);
+        final CommandProcessorConfiguration configuration = new CommandProcessorConfiguration();
+        modules.forEach(iModule -> iModule.init(configuration));
+
+        return new JDABuilder(AccountType.BOT)
+                .setToken(token)
+                .setEventManager(new AnnotatedEventManager())
+                .setGame(game != null ? Game.of(game) : null)
+                .addEventListener(new CommandEventProcessor(configuration, modules, prefixModule))
+                .addEventListener(modules.toArray());
+    }
+
 }
