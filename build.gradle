@@ -1,0 +1,33 @@
+plugins {
+    id 'java'
+    id 'idea'
+    id 'com.sedmelluq.jdaction' version '1.0.1'
+}
+
+
+group 'com.github.breadmoirai'
+version 'master-SNAPSHOT'
+
+sourceCompatibility = 1.8
+
+repositories {
+    jcenter()
+    mavenCentral()
+    maven { url 'https://jitpack.io' }
+}
+
+dependencies {
+    //Discord Java Library
+    compile 'com.github.DV8FromTheWorld:JDA:experimental~message-rw-SNAPSHOT'
+
+    //Database
+    compile 'org.apache.derby:derby:10.13.1.1'
+    compile 'org.jdbi:jdbi3:3.0.0-beta1'
+    compile 'org.jdbi:jdbi3-parent:3.0.0-beta1'
+    compile 'org.jdbi:jdbi3-sqlobject:3.0.0-beta1'
+
+    //Utility
+    compile 'org.reflections:reflections:0.9.10'
+    compile 'com.jagrosh:JDA-Utilities:1.2'
+    compile 'org.jetbrains:annotations:13.0'
+}
