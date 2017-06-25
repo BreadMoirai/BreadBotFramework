@@ -14,8 +14,7 @@
  *   limitations under the License.
  *
  */
-
-package samurai7.core.command;
+package samurai7.core.engine;
 
 import org.apache.commons.lang3.reflect.TypeUtils;
 import samurai7.core.IModule;
@@ -27,6 +26,8 @@ import java.util.Map;
 import java.util.Optional;
 
 public abstract class BiCommand<M1 extends IModule, M2 extends IModule> implements ICommand {
+
+    private static Type moduleType1, moduleType2;
 
     private M1 module1;
     private M2 module2;
@@ -53,12 +54,16 @@ public abstract class BiCommand<M1 extends IModule, M2 extends IModule> implemen
 
     @Override
     final public void setModules(Map<Type, IModule> moduleTypeMap) {
-        final Map<TypeVariable<?>, Type> typeArguments = TypeUtils.getTypeArguments(this.getClass(), Command.class);
-        final TypeVariable<Class<Command>>[] typeParameters = Command.class.getTypeParameters();
+        if (moduleType1 == null) {
+            final Map<TypeVariable<?>, Type> typeArguments = TypeUtils.getTypeArguments(this.getClass(), Command.class);
+            final TypeVariable<Class<Command>>[] typeParameters = Command.class.getTypeParameters();
+            moduleType1 = typeArguments.get(typeParameters[0]);
+            moduleType2 = typeArguments.get(typeParameters[1]);
+        }
         //noinspection unchecked
-        this.module1 = (M1) moduleTypeMap.get(typeArguments.get(typeParameters[0]));
+        this.module1 = (M1) moduleTypeMap.get(moduleType1);
         //noinspection unchecked
-        this.module2 = (M2) moduleTypeMap.get(typeArguments.get(typeParameters[1]));
+        this.module2 = (M2) moduleTypeMap.get(moduleType2);
     }
 
     @Override

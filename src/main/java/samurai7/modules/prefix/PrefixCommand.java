@@ -16,11 +16,11 @@
  */
 package samurai7.modules.prefix;
 
-import samurai7.core.command.Command;
-import samurai7.core.command.CommandEvent;
-import samurai7.core.command.Key;
+import samurai7.core.engine.Command;
+import samurai7.core.engine.CommandEvent;
+import samurai7.core.engine.Key;
 import samurai7.core.response.Response;
-import samurai7.modules.admin.Admin;
+import samurai7.core.response.Responses;
 import samurai7.util.DiscordPatterns;
 
 @Key("prefix")
@@ -30,14 +30,14 @@ public class PrefixCommand extends Command<PrefixModule> {
         if (event.hasContent()) {
             final String content = event.getContent();
             if (DiscordPatterns.WHITE_SPACE.matcher(content).find())
-                return Response.of("New prefix must not contain spaces");
+                return Responses.of("New prefix must not contain spaces");
             else if (content.length() > 16)
-                return Response.of("New prefix must not be greater than 16 characters");
+                return Responses.of("New prefix must not be greater than 16 characters");
             else {
                 module.changePrefix(event.getGuildId(), content);
-                return Response.ofFormat("Prefix has been set to `%s`", content);
+                return Responses.ofFormat("Prefix has been set to `%s`", content);
             }
         }
-        return Response.ofFormat("The current prefix is `%s`", module.getPrefix(event.getGuildId()));
+        return Responses.ofFormat("The current prefix is `%s`", module.getPrefix(event.getGuildId()));
     }
 }

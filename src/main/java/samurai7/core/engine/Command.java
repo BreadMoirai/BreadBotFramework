@@ -14,7 +14,7 @@
  *   limitations under the License.
  *
  */
-package samurai7.core.command;
+package samurai7.core.engine;
 
 import org.apache.commons.lang3.reflect.TypeUtils;
 import samurai7.core.IModule;
@@ -25,21 +25,22 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Commands should be derived from either this or {@link samurai7.core.command.BiCommand}.
- *
+ * Commands should be derived from either this or {@link samurai7.core.engine.BiCommand}.
+ * <p>
  * <p><b>See example:</b>
  * <pre><code>
- * public class NowPlaying extends {@link samurai7.core.command.Command Command}{@literal <MusicModule>} {
+ * public class NowPlaying extends {@link samurai7.core.engine.Command Command}{@literal <MusicModule>} {
  *   {@literal @}Override
  *    public {@link samurai7.core.response.Response} execute(CommandEvent event, MusicModule module) {
- *        return {@link samurai7.core.response.Response#of}(module.getNowPlaying());
+ *        return {@link samurai7.core.response.Responses#of Responses.of}(module.getNowPlaying());
  *    }
  * }</code></pre>
  *
- *
  * @param <M>
  */
-public abstract class Command<M extends IModule> implements ICommand{
+public abstract class Command<M extends IModule> implements ICommand {
+
+    private static Type moduleType;
 
     private M module;
     private CommandEvent event;
@@ -65,8 +66,11 @@ public abstract class Command<M extends IModule> implements ICommand{
 
     @Override
     final public void setModules(Map<Type, IModule> moduleTypeMap) {
+        if (moduleType == null)
+            moduleType = TypeUtils.getTypeArguments(this.getClass(), Command.class).get(Command.class.getTypeParameters()[0]);
+
         //noinspection unchecked
-        this.module = (M) moduleTypeMap.get(TypeUtils.getTypeArguments(this.getClass(), Command.class).get(Command.class.getTypeParameters()[0]));
+        this.module = (M) moduleTypeMap.get(moduleType);
     }
 
     @Override

@@ -12,21 +12,21 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 */
-package samurai7.modules.admin;
+package samurai7.modules.source;
 
-import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.Member;
 import samurai7.core.IModule;
 import samurai7.core.engine.CommandProcessorConfiguration;
 
-public class AdminModule implements IModule {
-    @Override
-    public void init(CommandProcessorConfiguration config) {
-        config.addPostProcessPredicate(command -> !command.getClass().isAnnotationPresent(Admin.class) || isAdmin(command.getEvent().getMember()));
-        config.registerCommand("samurai7.modules.admin");
+public class SourceModule implements IModule {
+
+    private final long sourceGuildId;
+
+    public SourceModule(long sourceGuildId) {
+        this.sourceGuildId = sourceGuildId;
     }
 
-    boolean isAdmin(Member member) {
-        return member.canInteract(member.getGuild().getSelfMember()) && member.hasPermission(Permission.KICK_MEMBERS);
+    @Override
+    public void init(CommandProcessorConfiguration config) {
+        config.addPostProcessPredicate(command -> !command.getClass().isAnnotationPresent(Source.class) || command.getEvent().getGuildId() == sourceGuildId);
     }
 }

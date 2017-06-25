@@ -14,7 +14,7 @@
  *   limitations under the License.
  *
  */
-package samurai7.core.command;
+package samurai7.core.engine;
 
 import com.jagrosh.jdautilities.waiter.EventWaiter;
 import net.dv8tion.jda.core.JDA;

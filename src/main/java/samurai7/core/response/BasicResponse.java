@@ -15,10 +15,9 @@
  *
  */
 
-package samurai7.response;
+package samurai7.core.response;
 
 import net.dv8tion.jda.core.entities.Message;
-import samurai7.core.response.Response;
 
 import java.util.function.Consumer;
 

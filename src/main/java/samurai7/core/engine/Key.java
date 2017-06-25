@@ -14,7 +14,7 @@
  *   limitations under the License.
  *
  */
-package samurai7.core.command;
+package samurai7.core.engine;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -23,7 +23,7 @@ import java.lang.annotation.Target;
 
 /**
  * This annotation marks what classes should be available as a command and defines what key is used to trigger the class.
- * <p> should only be used on classes that are derived from {@link samurai7.core.command.ICommand}</p>
+ * <p> should only be used on classes that are derived from {@link samurai7.core.engine.ICommand}</p>
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)

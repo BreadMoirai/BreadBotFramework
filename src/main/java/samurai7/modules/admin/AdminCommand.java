@@ -15,10 +15,11 @@
 package samurai7.modules.admin;
 
 import net.dv8tion.jda.core.entities.Member;
-import samurai7.core.command.Key;
-import samurai7.core.command.CommandEvent;
-import samurai7.core.command.Command;
+import samurai7.core.engine.Command;
+import samurai7.core.engine.CommandEvent;
+import samurai7.core.engine.Key;
 import samurai7.core.response.Response;
+import samurai7.core.response.Responses;
 
 import java.util.stream.Collectors;
 
@@ -27,6 +28,6 @@ import java.util.stream.Collectors;
 public class AdminCommand extends Command<AdminModule> {
     @Override
     public Response execute(CommandEvent event, AdminModule module) {
-        return Response.of("**Administrative Members:** " + event.getGuild().getMembers().stream().filter(module::isAdmin).map(Member::getEffectiveName).collect(Collectors.joining(", ")));
+        return Responses.of("**Administrative Members:** " + event.getGuild().getMembers().stream().filter(module::isAdmin).map(Member::getEffectiveName).collect(Collectors.joining(", ")));
     }
 }

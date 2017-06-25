@@ -18,11 +18,7 @@
 package samurai7.core.response;
 
 import com.jagrosh.jdautilities.waiter.EventWaiter;
-import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.MessageEmbed;
-import org.jetbrains.annotations.Contract;
-import samurai7.response.BasicResponse;
 
 import java.io.Serializable;
 
@@ -65,31 +61,6 @@ public abstract class Response implements Serializable {
 
     public final void setGuildId(long guildId) {
         this.guildId = guildId;
-    }
-
-    @Contract("null -> null")
-    public static BasicResponse of(String message) {
-        if (message == null || message.isEmpty()) return null;
-        return new BasicResponse(new MessageBuilder().append(message).build());
-    }
-
- 
-    @Contract("null, _ -> null")
-    public static BasicResponse ofFormat(String format, Object... args) {
-        if (format == null || format.isEmpty()) return null;
-        return new BasicResponse(new MessageBuilder().appendFormat(format, args).build());
-    }
-
-    @Contract("null -> null; !null -> !null")
-    public static BasicResponse of(MessageEmbed embed) {
-        if (embed == null) return null;
-        return new BasicResponse(new MessageBuilder().setEmbed(embed).build());
-    }
-
-    @Contract("null -> null; !null -> !null")
-    public static BasicResponse of(Message message) {
-        if (message == null) return null;
-        return new BasicResponse(message);
     }
 
     public final void setEventWaiter(EventWaiter eventWaiter) {

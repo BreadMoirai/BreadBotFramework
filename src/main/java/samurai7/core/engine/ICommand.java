@@ -12,7 +12,7 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 */
-package samurai7.core.command;
+package samurai7.core.engine;
 
 import samurai7.core.IModule;
 import samurai7.core.response.Response;
@@ -22,13 +22,10 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * @see samurai7.core.command.Command
- * @see samurai7.core.command.BiCommand
+ * @see samurai7.core.engine.Command
+ * @see samurai7.core.engine.BiCommand
  */
 public interface ICommand {
-
-
-
 
     Optional<Response> call();
 

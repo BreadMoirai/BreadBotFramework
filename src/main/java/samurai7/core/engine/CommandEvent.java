@@ -14,8 +14,7 @@
  *   limitations under the License.
  *
  */
-
-package samurai7.core.command;
+package samurai7.core.engine;
 
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.*;

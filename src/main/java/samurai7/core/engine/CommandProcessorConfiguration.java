@@ -14,7 +14,7 @@
  *   limitations under the License.
  *
  */
-package samurai7.core.command;
+package samurai7.core.engine;
 
 import net.dv8tion.jda.core.entities.Message;
 import org.apache.commons.lang3.reflect.TypeUtils;
@@ -26,8 +26,6 @@ import org.reflections.util.ConfigurationBuilder;
 import org.reflections.util.FilterBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.simple.SimpleLoggerConfiguration;
-import samurai7.util.DuplicateCommandKeyError;
 
 import java.util.HashMap;
 import java.util.Map;

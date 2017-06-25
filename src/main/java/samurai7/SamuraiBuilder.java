@@ -21,10 +21,11 @@ import net.dv8tion.jda.core.JDABuilder;
 import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.hooks.AnnotatedEventManager;
 import samurai7.core.IModule;
-import samurai7.core.command.CommandEventProcessor;
-import samurai7.core.command.CommandProcessorConfiguration;
+import samurai7.core.engine.CommandEventProcessor;
+import samurai7.core.engine.CommandProcessorConfiguration;
 import samurai7.modules.admin.AdminModule;
 import samurai7.modules.prefix.PrefixModule;
+import samurai7.modules.source.SourceModule;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -32,21 +33,16 @@ import java.util.List;
 
 public class SamuraiBuilder {
 
-    private String token;
     private String prefix = "!";
     private long sourceGuild;
     private long ownerId;
     private boolean allowModifiablePrefix = true;
-    private String game;
+    private Game game;
     private List<IModule> modules;
+    private boolean admin = false;
 
     public SamuraiBuilder() {
         modules = new LinkedList<>();
-    }
-
-    public SamuraiBuilder setToken(String token) {
-        this.token = token;
-        return this;
     }
 
     public SamuraiBuilder setDefaultPrefix(String prefix) {
@@ -64,18 +60,17 @@ public class SamuraiBuilder {
         return this;
     }
 
-    public SamuraiBuilder setSourceGuild(long sourceGuild) {
-        this.sourceGuild = sourceGuild;
+    /**
+     * If this is set, the {@link samurai7.modules.source.Source @Source} annotation is enabled. Command classes marked with this annotation is restricted to usage within the set guild.
+     * @param guildId the guildId to restrict commands to.
+     */
+    public SamuraiBuilder setSourceGuild(long guildId) {
+        this.sourceGuild = guildId;
         return this;
     }
 
     public SamuraiBuilder setOwnerId(long ownerId) {
         this.ownerId = ownerId;
-        return this;
-    }
-
-    public SamuraiBuilder setGame(String game) {
-        this.game = game;
         return this;
     }
 
@@ -101,7 +96,7 @@ public class SamuraiBuilder {
      *
      * This behavior can be changed by extending the {@link samurai7.modules.admin.AdminModule} like the following:
      * <pre><code>
-     * {@link samurai7.SamuraiBuilder}.addModule(new MyAdminModule());
+     * {@link samurai7.SamuraiBuilder samuraiBuilder}.addModule(new MyAdminModule());
      * ...
      * public class MyAdminModule extends {@link samurai7.modules.admin.AdminModule} {
      *    {@literal @}Override
@@ -114,20 +109,22 @@ public class SamuraiBuilder {
      * </pre>
      */
     public SamuraiBuilder addDefaultAdminModule() {
-        modules.add(new AdminModule());
+        this.admin = true;
         return this;
     }
 
-    public JDABuilder build() {
+    public JDABuilder buildJDA() {
+        if (admin) modules.add(new AdminModule());
+        if (sourceGuild != 0) modules.add(new SourceModule(sourceGuild));
         final PrefixModule prefixModule = new PrefixModule(prefix, allowModifiablePrefix);
-        modules.add(0, prefixModule);
+        modules.add(prefixModule);
+
         final CommandProcessorConfiguration configuration = new CommandProcessorConfiguration();
         modules.forEach(iModule -> iModule.init(configuration));
 
         return new JDABuilder(AccountType.BOT)
-                .setToken(token)
                 .setEventManager(new AnnotatedEventManager())
-                .setGame(game != null ? Game.of(game) : null)
+                .setGame(game)
                 .addEventListener(new CommandEventProcessor(configuration, modules, prefixModule))
                 .addEventListener(modules.toArray());
     }

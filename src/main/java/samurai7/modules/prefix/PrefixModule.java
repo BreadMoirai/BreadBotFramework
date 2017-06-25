@@ -18,7 +18,7 @@ package samurai7.modules.prefix;
 
 import samurai7.core.Database;
 import samurai7.core.IModule;
-import samurai7.core.command.CommandProcessorConfiguration;
+import samurai7.core.engine.CommandProcessorConfiguration;
 
 public class PrefixModule implements IModule {
 

@@ -16,9 +16,7 @@
  */
 package samurai7.util;
 
-import org.apache.commons.lang3.reflect.TypeUtils;
-import samurai7.core.command.Command;
-import samurai7.core.command.ICommand;
+import samurai7.core.engine.ICommand;
 
 public class DuplicateCommandKeyError extends Error {
     public DuplicateCommandKeyError(String key, Class<? extends ICommand> existing, Class<? extends ICommand> duplicate) {

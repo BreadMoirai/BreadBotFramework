@@ -24,11 +24,11 @@ public class SamuraiRunner {
     public static void main(String[] args) {
         try {
             new SamuraiBuilder()
-                    .setToken("MzI4Mjc0OTk1NzE1MjQ0MDM0.DDBhcg.XQifO1six5fwe1KcSTnwBmq_Pbo")
                     .setDefaultPrefix("-")
                     .addDefaultAdminModule()
                     .allowModifiablePrefix(true)
-                    .build()
+                    .buildJDA()
+                    .setToken("MzI4Mjc0OTk1NzE1MjQ0MDM0.DDDX_w.t5I3fhaYnJQtzYN3cImK_3XZ-Q4")
                     .buildAsync();
         } catch (LoginException | RateLimitedException e) {
             e.printStackTrace();

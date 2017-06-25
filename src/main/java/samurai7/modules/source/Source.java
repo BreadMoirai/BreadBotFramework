@@ -1,5 +1,5 @@
 /*
- *       Copyright 2017 Ton Ly (BreadMoirai)
+ *      Copyright 2017 Ton Ly (BreadMoirai)
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -14,15 +14,14 @@
  *   limitations under the License.
  *
  */
+package samurai7.modules.source;
 
-package samurai7.core;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-import samurai7.core.engine.Command;
-import samurai7.core.engine.CommandProcessorConfiguration;
-
-public interface IModule{
-
-   void init(CommandProcessorConfiguration config);
-
-   default Command getCommand(String key) {return null;}
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
+public @interface Source {
 }
