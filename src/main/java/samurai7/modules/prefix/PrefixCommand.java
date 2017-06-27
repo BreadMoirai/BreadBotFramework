@@ -19,7 +19,7 @@ package samurai7.modules.prefix;
 import samurai7.core.engine.Command;
 import samurai7.core.engine.CommandEvent;
 import samurai7.core.engine.Key;
-import samurai7.core.response.Response;
+import samurai7.core.engine.Response;
 import samurai7.core.response.Responses;
 import samurai7.util.DiscordPatterns;
 

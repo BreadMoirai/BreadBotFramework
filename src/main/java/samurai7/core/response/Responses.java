@@ -18,6 +18,7 @@ import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageEmbed;
 import org.jetbrains.annotations.Contract;
+import samurai7.core.response.menu.MenuBuilder;
 
 public class Responses {
 
@@ -44,6 +45,10 @@ public class Responses {
     public static BasicResponse of(Message message) {
         if (message == null) return null;
         return new BasicResponse(message);
+    }
+
+    public static MenuBuilder newMenu() {
+        return new MenuBuilder();
     }
 
 }

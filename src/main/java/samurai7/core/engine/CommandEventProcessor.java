@@ -17,21 +17,25 @@
 package samurai7.core.engine;
 
 import com.jagrosh.jdautilities.waiter.EventWaiter;
+import gnu.trove.TCollections;
+import gnu.trove.map.TLongObjectMap;
+import gnu.trove.map.hash.TLongObjectHashMap;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.events.ReadyEvent;
 import net.dv8tion.jda.core.events.message.guild.GenericGuildMessageEvent;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageDeleteEvent;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageUpdateEvent;
 import net.dv8tion.jda.core.hooks.SubscribeEvent;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import samurai7.core.IModule;
-import samurai7.core.response.Response;
 import samurai7.modules.prefix.PrefixModule;
 import samurai7.util.DiscordPatterns;
 
+import java.lang.ref.SoftReference;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -49,6 +53,8 @@ public class CommandEventProcessor {
     private final Map<Type, IModule> moduleTypeMap;
     private final List<IModule> modules;
     private final Map<String, Class<? extends ICommand>> commandMap;
+
+    private final TLongObjectMap<SoftReference<Response>> responseMap = TCollections.synchronizedMap(new TLongObjectHashMap<>());
 
     private final Predicate<Message> preProcessPredicate;
     private final Predicate<ICommand> postProcessPredicate;
@@ -112,7 +118,13 @@ public class CommandEventProcessor {
         if (textChannel == null) return;
         final Message message = response.getMessage();
         if (message == null) return;
-        textChannel.sendMessage(message).queue(response::onSend);
+        response.setUpdateFunction(this::updateResponseKey);
+        textChannel.sendMessage(message).queue(response::onSuccess);
+    }
+
+    private void updateResponseKey(long previous, long next) {
+        final SoftReference<Response> response = responseMap.remove(previous);
+        if (response != null) responseMap.put(next, response);
     }
 
     private void fireCommandEvent(CommandEvent event) {
@@ -166,5 +178,9 @@ public class CommandEventProcessor {
     public void onGuildMessageUpdate(GuildMessageUpdateEvent event) {
         if (preProcessPredicate.test(event.getMessage()))
             processEvent(createEvent(event, event.getMessage()));
+    }
+
+    public void onGuildMessageDelete(GuildMessageDeleteEvent event) {
+
     }
 }

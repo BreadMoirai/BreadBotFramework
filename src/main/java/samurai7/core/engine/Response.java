@@ -1,5 +1,5 @@
 /*
- *       Copyright 2017 Ton Ly (BreadMoirai)
+ *      Copyright 2017 Ton Ly (BreadMoirai)
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -15,17 +15,20 @@
  *
  */
 
-package samurai7.core.response;
+package samurai7.core.engine;
 
 import com.jagrosh.jdautilities.waiter.EventWaiter;
 import net.dv8tion.jda.core.entities.Message;
 
 import java.io.Serializable;
+import java.util.function.BiConsumer;
+import java.util.function.LongConsumer;
 
 public abstract class Response implements Serializable {
 
     private long authorId, messageId, channelId, guildId;
-    private EventWaiter eventWaiter;
+    private transient EventWaiter eventWaiter;
+    private transient LongConsumer updateFunction;
 
     abstract public Message getMessage();
 
@@ -63,9 +66,18 @@ public abstract class Response implements Serializable {
         this.guildId = guildId;
     }
 
-    public final void setEventWaiter(EventWaiter eventWaiter) {
+    final void setEventWaiter(EventWaiter eventWaiter) {
         this.eventWaiter = eventWaiter;
     }
 
     protected final EventWaiter getEventWaiter() {return eventWaiter;}
+
+    final void onSuccess(Message message) {
+        setMessageId(message.getIdLong());
+        this.onSend(message);
+    }
+
+    final void setUpdateFunction(LongConsumer updateFunction) {
+        this.updateFunction = updateFunction;
+    }
 }

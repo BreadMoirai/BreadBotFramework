@@ -14,6 +14,8 @@
 */
 package samurai7.core.response;
 
+import samurai7.core.engine.Response;
+
 import java.io.Serializable;
 
 public abstract class DynamicResponse extends Response implements Serializable {

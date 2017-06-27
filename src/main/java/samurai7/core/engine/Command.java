@@ -18,7 +18,6 @@ package samurai7.core.engine;
 
 import org.apache.commons.lang3.reflect.TypeUtils;
 import samurai7.core.IModule;
-import samurai7.core.response.Response;
 
 import java.lang.reflect.Type;
 import java.util.Map;
@@ -31,7 +30,7 @@ import java.util.Optional;
  * <pre><code>
  * public class NowPlaying extends {@link samurai7.core.engine.Command Command}{@literal <MusicModule>} {
  *   {@literal @}Override
- *    public {@link samurai7.core.response.Response} execute(CommandEvent event, MusicModule module) {
+ *    public {@link Response} execute(CommandEvent event, MusicModule module) {
  *        return {@link samurai7.core.response.Responses#of Responses.of}(module.getNowPlaying());
  *    }
  * }</code></pre>
@@ -71,6 +70,7 @@ public abstract class Command<M extends IModule> implements ICommand {
 
         //noinspection unchecked
         this.module = (M) moduleTypeMap.get(moduleType);
+
     }
 
     @Override
