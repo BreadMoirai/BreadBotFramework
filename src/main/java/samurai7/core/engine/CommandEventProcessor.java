@@ -32,10 +32,12 @@ import net.dv8tion.jda.core.hooks.SubscribeEvent;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import samurai7.core.IModule;
+import samurai7.core.response.Response;
 import samurai7.modules.prefix.PrefixModule;
 import samurai7.util.DiscordPatterns;
 
 import java.lang.ref.SoftReference;
+import java.lang.ref.WeakReference;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -54,7 +56,7 @@ public class CommandEventProcessor {
     private final List<IModule> modules;
     private final Map<String, Class<? extends ICommand>> commandMap;
 
-    private final TLongObjectMap<SoftReference<Response>> responseMap = TCollections.synchronizedMap(new TLongObjectHashMap<>());
+    private final TLongObjectMap<WeakReference<Response>> responseMap = TCollections.synchronizedMap(new TLongObjectHashMap<>());
 
     private final Predicate<Message> preProcessPredicate;
     private final Predicate<ICommand> postProcessPredicate;
@@ -113,18 +115,17 @@ public class CommandEventProcessor {
     }
 
     private void submit(Response response) {
-        response.setEventWaiter(this.eventWaiter);
         final TextChannel textChannel = jda.getTextChannelById(response.getChannelId());
         if (textChannel == null) return;
+        Response.setFields(response, this::submit, eventWaiter);
         final Message message = response.getMessage();
         if (message == null) return;
-        response.setUpdateFunction(this::updateResponseKey);
-        textChannel.sendMessage(message).queue(response::onSuccess);
-    }
-
-    private void updateResponseKey(long previous, long next) {
-        final SoftReference<Response> response = responseMap.remove(previous);
-        if (response != null) responseMap.put(next, response);
+        textChannel.sendMessage(message).queue(sent -> {
+            final long id = sent.getIdLong();
+            response.setMessageId(id);
+            response.onSend(sent);
+            responseMap.put(id, new WeakReference<>(response));
+        });
     }
 
     private void fireCommandEvent(CommandEvent event) {

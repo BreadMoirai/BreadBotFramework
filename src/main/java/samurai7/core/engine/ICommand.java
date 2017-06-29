@@ -15,6 +15,7 @@
 package samurai7.core.engine;
 
 import samurai7.core.IModule;
+import samurai7.core.response.Response;
 
 import java.lang.reflect.Type;
 import java.util.Map;

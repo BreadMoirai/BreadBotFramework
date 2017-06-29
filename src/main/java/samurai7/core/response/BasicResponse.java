@@ -18,7 +18,6 @@
 package samurai7.core.response;
 
 import net.dv8tion.jda.core.entities.Message;
-import samurai7.core.engine.Response;
 
 import java.util.function.Consumer;
 

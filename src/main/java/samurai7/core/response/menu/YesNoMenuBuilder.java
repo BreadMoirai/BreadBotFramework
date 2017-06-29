@@ -16,23 +16,5 @@
  */
 package samurai7.core.response.menu;
 
-import org.apache.commons.lang3.tuple.Pair;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Consumer;
-
-public class MenuBuilder {
-
-    public NumberedMenuBuilder numbered() {
-        return new NumberedMenuBuilder();
-    }
-
-    public CustomMenuBuilder custom() {
-        return new CustomMenuBuilder();
-    }
-
-    public YesNoMenuBuilder prompt() {
-        return new YesNoMenuBuilder();
-    }
+public class YesNoMenuBuilder {
 }

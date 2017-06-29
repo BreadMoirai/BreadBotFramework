@@ -15,24 +15,23 @@
  *
  */
 
-package samurai7.core.engine;
+package samurai7.core.response;
 
 import com.jagrosh.jdautilities.waiter.EventWaiter;
 import net.dv8tion.jda.core.entities.Message;
 
 import java.io.Serializable;
-import java.util.function.BiConsumer;
-import java.util.function.LongConsumer;
+import java.util.function.Consumer;
 
 public abstract class Response implements Serializable {
 
     private long authorId, messageId, channelId, guildId;
     private transient EventWaiter eventWaiter;
-    private transient LongConsumer updateFunction;
+    private transient Consumer<Response> submit;
 
-    abstract public Message getMessage();
+    public abstract Message getMessage();
 
-    abstract public void onSend(Message message);
+    public abstract void onSend(Message message);
 
     public final long getAuthorId() {
         return authorId;
@@ -66,18 +65,28 @@ public abstract class Response implements Serializable {
         this.guildId = guildId;
     }
 
-    final void setEventWaiter(EventWaiter eventWaiter) {
+
+    protected final EventWaiter getEventWaiter() {
+        return eventWaiter;
+    }
+
+    protected final void submitResponse(Response response) {
+        if (response.getChannelId() == 0) response.setChannelId(getChannelId());
+        if (response.getGuildId() == 0) response.setGuildId(getGuildId());
+        if (response.getAuthorId() == 0) response.setAuthorId(getAuthorId());
+        submit.accept(response);
+    }
+
+    private void setEventWaiter(EventWaiter eventWaiter) {
         this.eventWaiter = eventWaiter;
     }
 
-    protected final EventWaiter getEventWaiter() {return eventWaiter;}
-
-    final void onSuccess(Message message) {
-        setMessageId(message.getIdLong());
-        this.onSend(message);
+    private void setSubmitConsumer(Consumer<Response> submitConsumer) {
+        this.submit = submitConsumer;
     }
 
-    final void setUpdateFunction(LongConsumer updateFunction) {
-        this.updateFunction = updateFunction;
+    public static void setFields(Response response, Consumer<Response>submit, EventWaiter waiter) {
+        response.setSubmitConsumer(submit);
+        response.setEventWaiter(waiter);
     }
 }

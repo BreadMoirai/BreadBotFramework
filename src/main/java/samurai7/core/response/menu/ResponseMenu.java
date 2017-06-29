@@ -17,7 +17,7 @@
 package samurai7.core.response.menu;
 
 import net.dv8tion.jda.core.entities.Message;
-import samurai7.core.engine.Response;
+import samurai7.core.response.Response;
 
 public abstract class ResponseMenu extends Response {
 
@@ -26,6 +26,7 @@ public abstract class ResponseMenu extends Response {
     @Override
     public final void onSend(Message message) {
         this.message = message;
+
     }
 
 
