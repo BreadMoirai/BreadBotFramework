@@ -26,19 +26,11 @@ public abstract class ResponseMenu extends Response {
     @Override
     public final void onSend(Message message) {
         this.message = message;
+        addMenuReactions(message);
 
     }
 
-
-
-
-
-
-
-
-
-
-
+    protected abstract void addMenuReactions(Message message);
 
 
     /**
@@ -47,7 +39,10 @@ public abstract class ResponseMenu extends Response {
      * @param newResponse the response to be used to replace
      */
     public void replaceWith(Response newResponse) {
-        message.editMessage(newResponse.getMessage()).queue(newResponse::onSuccess);
+        message.editMessage(newResponse.getMessage()).queue(m -> {
+            newResponse.setMessageId(m.getIdLong());
+            newResponse.onSend(m);
+        });
     }
 
     /**
@@ -58,19 +53,21 @@ public abstract class ResponseMenu extends Response {
     }
 
     /**
-     * calls {@link samurai7.core.response.menu.ResponseMenu#cancel(String) this#cancel} with param {@code "Action Canceled"}.
+     * calls {@link samurai7.core.response.menu.ResponseMenu#cancel(String, boolean) this#cancel} with param {@code "Action Canceled", true}.
      */
     public void cancel() {
-        cancel("Action cancelled");
+        cancel("Action cancelled", true);
     }
 
     /**
      * convenience method to clear reactions and replace message with specified String.
      *
      * @param cancelMessage A String to replace the menu with.
+     * @param clearReactions this boolean indicates whether
      */
-    public void cancel(String cancelMessage) {
-        message.clearReactions().queue();
+    public void cancel(String cancelMessage, boolean clearReactions) {
+        if (clearReactions)
+            message.clearReactions().queue();
         message.editMessage(cancelMessage).queue();
     }
 
