@@ -33,7 +33,7 @@ dependencies {
 
     //Utility
     compile 'org.reflections:reflections:0.9.10'
-    compile 'com.jagrosh:JDA-Utilities:1.2'
+    //compile 'com.jagrosh:JDA-Utilities:1.2'
     compile 'org.jetbrains:annotations:13.0'
 
     //test
