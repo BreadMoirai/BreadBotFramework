@@ -17,11 +17,11 @@ package samurai7.modules.admin;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Member;
 import samurai7.core.IModule;
-import samurai7.core.engine.CommandProcessorConfiguration;
+import samurai7.core.engine.CommandEngineConfiguration;
 
 public class AdminModule implements IModule {
     @Override
-    public void init(CommandProcessorConfiguration config) {
+    public void init(CommandEngineConfiguration config) {
         config.addPostProcessPredicate(command -> !command.getClass().isAnnotationPresent(Admin.class) || isAdmin(command.getEvent().getMember()));
         config.registerCommand("samurai7.modules.admin");
     }

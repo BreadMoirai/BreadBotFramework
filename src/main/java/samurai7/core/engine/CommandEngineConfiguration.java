@@ -32,10 +32,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
 
-@SuppressWarnings({"UnusedReturnValue", "SameParameterValue", "unused", "WeakerAccess"})
-public class CommandProcessorConfiguration {
+public class CommandEngineConfiguration {
 
-    private static Logger logger = LoggerFactory.getLogger("Command");
+    private static Logger logger = LoggerFactory.getLogger(CommandEngine.class);
 
     private Predicate<Message> preProcessPredicate;
     private Predicate<ICommand> postProcessPredicate;
@@ -43,21 +42,21 @@ public class CommandProcessorConfiguration {
     private Map<String, Class<? extends ICommand>> commandMap = new HashMap<>();
 
 
-    public CommandProcessorConfiguration addPreProcessPredicate(Predicate<Message> predicate) {
+    public CommandEngineConfiguration addPreProcessPredicate(Predicate<Message> predicate) {
         if (preProcessPredicate == null) {
             preProcessPredicate = predicate;
         } else preProcessPredicate = preProcessPredicate.and(predicate);
         return this;
     }
 
-    public CommandProcessorConfiguration addPostProcessPredicate(Predicate<ICommand> predicate) {
+    public CommandEngineConfiguration addPostProcessPredicate(Predicate<ICommand> predicate) {
         if (postProcessPredicate == null) {
             postProcessPredicate = predicate;
         } else postProcessPredicate = postProcessPredicate.and(predicate);
         return this;
     }
 
-    public CommandProcessorConfiguration registerCommand(Class<? extends ICommand> commandClass, String... keys) {
+    public CommandEngineConfiguration registerCommand(Class<? extends ICommand> commandClass, String... keys) {
         for (String key : keys) {
             if (key == null || keys.length == 0) {
                 logger.error("No key found for " + commandClass.getSimpleName());
@@ -76,7 +75,7 @@ public class CommandProcessorConfiguration {
         return this;
     }
 
-    public CommandProcessorConfiguration registerCommand(Class<? extends ICommand> commandClass) {
+    public CommandEngineConfiguration registerCommand(Class<? extends ICommand> commandClass) {
         if (commandClass.isAnnotationPresent(Key.class)) {
             final String[] keyArray = commandClass.getAnnotation(Key.class).value();
             registerCommand(commandClass, keyArray);
@@ -86,7 +85,7 @@ public class CommandProcessorConfiguration {
         return this;
     }
 
-    public CommandProcessorConfiguration registerCommand(String commandPackagePrefix) {
+    public CommandEngineConfiguration registerCommand(String commandPackagePrefix) {
         Reflections reflections = new Reflections(new ConfigurationBuilder()
                 .filterInputsBy(new FilterBuilder().include(FilterBuilder.prefix(commandPackagePrefix)))
                 .setUrls(ClasspathHelper.forPackage(commandPackagePrefix))

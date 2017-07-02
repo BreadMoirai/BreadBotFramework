@@ -18,11 +18,11 @@
 package samurai7.core;
 
 import samurai7.core.engine.Command;
-import samurai7.core.engine.CommandProcessorConfiguration;
+import samurai7.core.engine.CommandEngineConfiguration;
 
 public interface IModule{
 
-   void init(CommandProcessorConfiguration config);
+   void init(CommandEngineConfiguration config);
 
    default Command getCommand(String key) {return null;}
 }

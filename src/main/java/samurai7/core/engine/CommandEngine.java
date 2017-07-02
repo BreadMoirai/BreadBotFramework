@@ -16,7 +16,6 @@
  */
 package samurai7.core.engine;
 
-import com.jagrosh.jdautilities.waiter.EventWaiter;
 import gnu.trove.TCollections;
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
@@ -24,8 +23,8 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.events.ReadyEvent;
+import net.dv8tion.jda.core.events.message.MessageDeleteEvent;
 import net.dv8tion.jda.core.events.message.guild.GenericGuildMessageEvent;
-import net.dv8tion.jda.core.events.message.guild.GuildMessageDeleteEvent;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageUpdateEvent;
 import net.dv8tion.jda.core.hooks.SubscribeEvent;
@@ -35,8 +34,8 @@ import samurai7.core.IModule;
 import samurai7.core.response.Response;
 import samurai7.modules.prefix.PrefixModule;
 import samurai7.util.DiscordPatterns;
+import samurai7.waiter.EventWaiter;
 
-import java.lang.ref.SoftReference;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -47,7 +46,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
 
-public class CommandEventProcessor {
+public class CommandEngine {
 
     private JDA jda;
 
@@ -64,7 +63,7 @@ public class CommandEventProcessor {
     private PrefixModule prefixModule;
 
 
-    public CommandEventProcessor(CommandProcessorConfiguration configuration, List<IModule> modules, PrefixModule prefixModule) {
+    public CommandEngine(CommandEngineConfiguration configuration, List<IModule> modules, PrefixModule prefixModule) {
         this.modules = modules;
         this.commandMap = configuration.getCommandMap();
         final Predicate<Message> prePredicate = configuration.getPreProcessPredicate();
@@ -181,7 +180,14 @@ public class CommandEventProcessor {
             processEvent(createEvent(event, event.getMessage()));
     }
 
-    public void onGuildMessageDelete(GuildMessageDeleteEvent event) {
-
+    @SubscribeEvent
+    public void onMessageDelete(MessageDeleteEvent event) {
+        final WeakReference<Response> responseWeakRef = responseMap.get(event.getMessageIdLong());
+        if (responseWeakRef != null) {
+            final Response response = responseWeakRef.get();
+            if (response != null) {
+                response.onDeletion(event);
+            }
+        }
     }
 }

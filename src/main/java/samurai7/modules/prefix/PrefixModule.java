@@ -18,7 +18,7 @@ package samurai7.modules.prefix;
 
 import samurai7.core.Database;
 import samurai7.core.IModule;
-import samurai7.core.engine.CommandProcessorConfiguration;
+import samurai7.core.engine.CommandEngineConfiguration;
 
 public class PrefixModule implements IModule {
 
@@ -31,7 +31,7 @@ public class PrefixModule implements IModule {
     }
 
     @Override
-    public void init(CommandProcessorConfiguration config) {
+    public void init(CommandEngineConfiguration config) {
         if (modifiable) {
             if (!Database.get().tableExists("GuildPrefix")) {
                 Database.get().useHandle(handle -> handle.execute("CREATE TABLE GuildPrefix ( " +

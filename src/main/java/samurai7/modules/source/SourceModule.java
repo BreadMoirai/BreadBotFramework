@@ -15,7 +15,7 @@
 package samurai7.modules.source;
 
 import samurai7.core.IModule;
-import samurai7.core.engine.CommandProcessorConfiguration;
+import samurai7.core.engine.CommandEngineConfiguration;
 
 public class SourceModule implements IModule {
 
@@ -26,7 +26,7 @@ public class SourceModule implements IModule {
     }
 
     @Override
-    public void init(CommandProcessorConfiguration config) {
+    public void init(CommandEngineConfiguration config) {
         config.addPostProcessPredicate(command -> !command.getClass().isAnnotationPresent(Source.class) || command.getEvent().getGuildId() == sourceGuildId);
     }
 }
