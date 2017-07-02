@@ -21,8 +21,8 @@ import net.dv8tion.jda.core.JDABuilder;
 import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.hooks.AnnotatedEventManager;
 import samurai7.core.IModule;
-import samurai7.core.engine.CommandEventProcessor;
-import samurai7.core.engine.CommandProcessorConfiguration;
+import samurai7.core.engine.CommandEngine;
+import samurai7.core.engine.CommandEngineConfiguration;
 import samurai7.modules.admin.AdminModule;
 import samurai7.modules.prefix.PrefixModule;
 import samurai7.modules.source.SourceModule;
@@ -119,13 +119,13 @@ public class SamuraiBuilder {
         final PrefixModule prefixModule = new PrefixModule(prefix, allowModifiablePrefix);
         modules.add(prefixModule);
 
-        final CommandProcessorConfiguration configuration = new CommandProcessorConfiguration();
+        final CommandEngineConfiguration configuration = new CommandEngineConfiguration();
         modules.forEach(iModule -> iModule.init(configuration));
 
         return new JDABuilder(AccountType.BOT)
                 .setEventManager(new AnnotatedEventManager())
                 .setGame(game)
-                .addEventListener(new CommandEventProcessor(configuration, modules, prefixModule))
+                .addEventListener(new CommandEngine(configuration, modules, prefixModule))
                 .addEventListener(modules.toArray());
     }
 

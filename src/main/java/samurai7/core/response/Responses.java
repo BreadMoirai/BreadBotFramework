@@ -47,7 +47,7 @@ public class Responses {
         return new BasicResponse(message);
     }
 
-    public static MenuBuilder menu() {
+    public static MenuBuilder menus() {
         return new MenuBuilder();
     }
 

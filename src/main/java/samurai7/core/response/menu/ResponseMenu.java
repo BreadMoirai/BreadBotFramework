@@ -17,20 +17,34 @@
 package samurai7.core.response.menu;
 
 import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.core.events.message.MessageDeleteEvent;
 import samurai7.core.response.Response;
 
-public abstract class ResponseMenu extends Response {
+public class ResponseMenu extends Response {
 
     private transient Message message;
+    private transient final IMenu menu;
+
+    protected ResponseMenu(IMenu menu) {
+        this.menu = menu;
+    }
+
+    @Override
+    public Message getMessage() {
+        return null;
+    }
 
     @Override
     public final void onSend(Message message) {
         this.message = message;
-        addMenuReactions(message);
-
+        menu.addReactions(message);
+        menu.waitForEvent(this, getEventWaiter());
     }
 
-    protected abstract void addMenuReactions(Message message);
+    @Override
+    public void onDeletion(MessageDeleteEvent event) {
+        menu.onDelete(this);
+    }
 
 
     /**

@@ -16,5 +16,18 @@
  */
 package samurai7.core.response.menu;
 
+import net.dv8tion.jda.core.EmbedBuilder;
+import net.dv8tion.jda.core.entities.Message;
+import samurai7.waiter.EventWaiter;
+
 public interface IMenu {
+
+    void attachOptions(EmbedBuilder embedBuilder);
+
+    void waitForEvent(ResponseMenu responseMenu, EventWaiter waiter);
+
+    void addReactions(Message message);
+
+    void onDelete(ResponseMenu menu);
+
 }
