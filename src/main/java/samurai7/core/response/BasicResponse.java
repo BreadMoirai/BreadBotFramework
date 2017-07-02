@@ -18,6 +18,7 @@
 package samurai7.core.response;
 
 import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.core.events.message.MessageDeleteEvent;
 
 import java.util.function.Consumer;
 
@@ -44,5 +45,10 @@ public class BasicResponse extends Response {
         if (consumer == null) consumer = onSend;
         else consumer = consumer.andThen(onSend);
         return this;
+    }
+
+    @Override
+    public void onDeletion(MessageDeleteEvent event) {
+        //do nothing
     }
 }

@@ -14,11 +14,11 @@
  *   limitations under the License.
  *
  */
-
 package samurai7.core.response;
 
-import com.jagrosh.jdautilities.waiter.EventWaiter;
 import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.core.events.message.MessageDeleteEvent;
+import samurai7.waiter.EventWaiter;
 
 import java.io.Serializable;
 import java.util.function.Consumer;
@@ -89,4 +89,6 @@ public abstract class Response implements Serializable {
         response.setSubmitConsumer(submit);
         response.setEventWaiter(waiter);
     }
+
+    public abstract void onDeletion(MessageDeleteEvent event);
 }
