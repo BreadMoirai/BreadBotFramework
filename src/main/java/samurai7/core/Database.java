@@ -30,24 +30,22 @@ public class Database {
     private static final String PROTOCOL = "jdbc:derby:";
     private static final String DB_NAME = "SamuraiDatabase";
 
-    private static Database self;
-    private final Jdbi jdbi;
+    private static final Database INSTANCE;
+
+    static {
+        try {
+            INSTANCE = new Database();
+        } catch (SQLException e) {
+            printSQLException(e);
+            throw new ExceptionInInitializerError("Connection could not be opened");
+        }
+    }
 
     public static Database get() {
-        if (self == null) {
-            try {
-                self = new Database();
-            } catch (SQLException e) {
-                printSQLException(e);
-                throw new ExceptionInInitializerError("Connection could not be opened");
-            }
-        }
-        return self;
+        return INSTANCE;
     }
 
-    public static void close() {
-        self = null;
-    }
+    private final Jdbi jdbi;
 
     private Database() throws SQLException {
         connectElseCreate();
