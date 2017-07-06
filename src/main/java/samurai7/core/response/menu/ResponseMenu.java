@@ -22,16 +22,16 @@ import samurai7.core.response.Response;
 
 public class ResponseMenu extends Response {
 
+    private transient final Menu menu;
     private transient Message message;
-    private transient final IMenu menu;
 
-    protected ResponseMenu(IMenu menu) {
+    protected ResponseMenu(Menu menu) {
         this.menu = menu;
     }
 
     @Override
-    public Message getMessage() {
-        return null;
+    public Message buildMessage() {
+        return menu.getMessage();
     }
 
     @Override
@@ -53,7 +53,7 @@ public class ResponseMenu extends Response {
      * @param newResponse the response to be used to replace
      */
     public void replaceWith(Response newResponse) {
-        message.editMessage(newResponse.getMessage()).queue(m -> {
+        message.editMessage(newResponse.buildMessage()).queue(m -> {
             newResponse.setMessageId(m.getIdLong());
             newResponse.onSend(m);
         });
@@ -76,7 +76,7 @@ public class ResponseMenu extends Response {
     /**
      * convenience method to clear reactions and replace message with specified String.
      *
-     * @param cancelMessage A String to replace the menu with.
+     * @param cancelMessage  A String to replace the menu with.
      * @param clearReactions this boolean indicates whether
      */
     public void cancel(String cancelMessage, boolean clearReactions) {

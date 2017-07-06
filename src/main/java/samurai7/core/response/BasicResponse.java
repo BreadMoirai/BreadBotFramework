@@ -18,9 +18,13 @@
 package samurai7.core.response;
 
 import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.core.events.Event;
 import net.dv8tion.jda.core.events.message.MessageDeleteEvent;
 
+import java.util.concurrent.TimeUnit;
+import java.util.function.BiPredicate;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 public class BasicResponse extends Response {
 
@@ -32,12 +36,17 @@ public class BasicResponse extends Response {
     }
 
     @Override
+    public Message buildMessage() {
+        return message;
+    }
+
     public Message getMessage() {
         return message;
     }
 
     @Override
     public void onSend(Message message) {
+        this.message = message;
         if (consumer != null) consumer.accept(message);
     }
 

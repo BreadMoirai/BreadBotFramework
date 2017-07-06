@@ -29,7 +29,7 @@ public abstract class Response implements Serializable {
     private transient EventWaiter eventWaiter;
     private transient Consumer<Response> submit;
 
-    public abstract Message getMessage();
+    public abstract Message buildMessage();
 
     public abstract void onSend(Message message);
 
@@ -70,7 +70,7 @@ public abstract class Response implements Serializable {
         return eventWaiter;
     }
 
-    protected final void submitResponse(Response response) {
+    protected final void submitNewResponse(Response response) {
         if (response.getChannelId() == 0) response.setChannelId(getChannelId());
         if (response.getGuildId() == 0) response.setGuildId(getGuildId());
         if (response.getAuthorId() == 0) response.setAuthorId(getAuthorId());

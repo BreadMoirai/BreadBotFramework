@@ -14,20 +14,23 @@
  *   limitations under the License.
  *
  */
-package samurai7.core.response.menu;
+package samurai7.core.response.menu.reactions;
 
-import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Message;
-import samurai7.waiter.EventWaiter;
+import net.dv8tion.jda.core.events.message.guild.react.GenericGuildMessageReactionEvent;
+import samurai7.core.response.menu.ResponseMenu;
 
-public interface IMenu {
+public interface IMenuReaction {
 
-    void attachOptions(EmbedBuilder embedBuilder);
+    boolean matches(GenericGuildMessageReactionEvent event);
 
-    void waitForEvent(ResponseMenu responseMenu, EventWaiter waiter);
+    boolean hasOption();
 
-    void addReactions(Message message);
+    void addReactionTo(Message message);
 
-    void onDelete(ResponseMenu menu);
+    boolean hasPredicate();
 
+    boolean apply(GenericGuildMessageReactionEvent event, ResponseMenu menu);
+
+    String getDisplay();
 }
