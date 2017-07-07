@@ -59,7 +59,7 @@ public class CommandEngine {
 
     private final Predicate<Message> preProcessPredicate;
     private final Predicate<ICommand> postProcessPredicate;
-    private EventWaiter eventWaiter;
+
     private PrefixModule prefixModule;
 
 
@@ -70,7 +70,6 @@ public class CommandEngine {
         this.preProcessPredicate = prePredicate == null ? message -> true : prePredicate;
         final Predicate<ICommand> postPredicate = configuration.getPostProcessPredicate();
         this.postProcessPredicate = postPredicate == null ? command -> true : postPredicate;
-        this.eventWaiter = new EventWaiter();
         this.prefixModule = prefixModule;
         final HashMap<Type, IModule> typeMap = new HashMap<>(modules.size());
         final ArrayList<Pair<IModule, Method>> methodList = new ArrayList<>();
@@ -116,8 +115,8 @@ public class CommandEngine {
     private void submit(Response response) {
         final TextChannel textChannel = jda.getTextChannelById(response.getChannelId());
         if (textChannel == null) return;
-        Response.setFields(response, this::submit, eventWaiter);
-        final Message message = response.getMessage();
+        Response.setSubmitConsumer(response, this::submit);
+        final Message message = response.buildMessage();
         if (message == null) return;
         textChannel.sendMessage(message).queue(sent -> {
             final long id = sent.getIdLong();
@@ -128,7 +127,7 @@ public class CommandEngine {
     }
 
     private void fireCommandEvent(CommandEvent event) {
-        eventWaiter.onEvent(event);
+        EventWaiter.get().onEvent(event);
         for (Pair<IModule, Method> pair : methods) {
             final Method method = pair.getValue();
             try {

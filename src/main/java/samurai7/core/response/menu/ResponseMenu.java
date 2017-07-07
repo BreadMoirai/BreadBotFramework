@@ -19,6 +19,7 @@ package samurai7.core.response.menu;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.events.message.MessageDeleteEvent;
 import samurai7.core.response.Response;
+import samurai7.waiter.EventWaiter;
 
 public class ResponseMenu extends Response {
 
@@ -38,7 +39,7 @@ public class ResponseMenu extends Response {
     public final void onSend(Message message) {
         this.message = message;
         menu.addReactions(message);
-        menu.waitForEvent(this, getEventWaiter());
+        menu.waitForEvent(this, EventWaiter.get());
     }
 
     @Override

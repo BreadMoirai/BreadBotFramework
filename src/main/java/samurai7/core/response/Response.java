@@ -26,7 +26,6 @@ import java.util.function.Consumer;
 public abstract class Response implements Serializable {
 
     private long authorId, messageId, channelId, guildId;
-    private transient EventWaiter eventWaiter;
     private transient Consumer<Response> submit;
 
     public abstract Message buildMessage();
@@ -66,10 +65,6 @@ public abstract class Response implements Serializable {
     }
 
 
-    protected final EventWaiter getEventWaiter() {
-        return eventWaiter;
-    }
-
     protected final void submitNewResponse(Response response) {
         if (response.getChannelId() == 0) response.setChannelId(getChannelId());
         if (response.getGuildId() == 0) response.setGuildId(getGuildId());
@@ -77,17 +72,12 @@ public abstract class Response implements Serializable {
         submit.accept(response);
     }
 
-    private void setEventWaiter(EventWaiter eventWaiter) {
-        this.eventWaiter = eventWaiter;
-    }
-
     private void setSubmitConsumer(Consumer<Response> submitConsumer) {
         this.submit = submitConsumer;
     }
 
-    public static void setFields(Response response, Consumer<Response>submit, EventWaiter waiter) {
+    public static void setSubmitConsumer(Response response, Consumer<Response>submit) {
         response.setSubmitConsumer(submit);
-        response.setEventWaiter(waiter);
     }
 
     public abstract void onDeletion(MessageDeleteEvent event);
