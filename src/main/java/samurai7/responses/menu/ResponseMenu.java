@@ -14,7 +14,7 @@
  *   limitations under the License.
  *
  */
-package samurai7.core.response.menu;
+package samurai7.responses.menu;
 
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.events.message.MessageDeleteEvent;
@@ -68,7 +68,7 @@ public class ResponseMenu extends Response {
     }
 
     /**
-     * calls {@link samurai7.core.response.menu.ResponseMenu#cancel(String, boolean) this#cancel} with param {@code "Action Canceled", true}.
+     * calls {@link samurai7.responses.menu.ResponseMenu#cancel(String, boolean) this#cancel} with param {@code "Action Canceled", true}.
      */
     public void cancel() {
         cancel("Action cancelled", true);

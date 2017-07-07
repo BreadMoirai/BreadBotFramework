@@ -14,23 +14,21 @@
  *   limitations under the License.
  *
  */
-package samurai7.core.response.menu.reactions;
+package samurai7.responses.menu.reactions;
 
-import net.dv8tion.jda.core.entities.Emote;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.events.message.guild.react.GenericGuildMessageReactionEvent;
-import samurai7.core.response.menu.ResponseMenu;
-import samurai7.core.response.menu.reactions.IMenuReaction;
+import samurai7.responses.menu.ResponseMenu;
 
 import java.util.function.BiPredicate;
 
-public class MenuEmote implements IMenuReaction {
+public class MenuEmoji implements IMenuReaction {
 
-    private final Emote e;
+    private final String e;
     private final String s;
     private final BiPredicate<GenericGuildMessageReactionEvent, ResponseMenu> a;
 
-    public MenuEmote(Emote e, String s, BiPredicate<GenericGuildMessageReactionEvent, ResponseMenu> a) {
+    public MenuEmoji(String e, String s, BiPredicate<GenericGuildMessageReactionEvent, ResponseMenu> a) {
         this.e = e;
         this.s = s;
         this.a = a;
@@ -39,7 +37,7 @@ public class MenuEmote implements IMenuReaction {
 
     @Override
     public boolean matches(GenericGuildMessageReactionEvent event) {
-        return e.equals(event.getReaction().getEmote().getEmote());
+        return event.getReactionEmote().getEmote() == null && e.equals(event.getReaction().getEmote().getName());
     }
 
     @Override
@@ -51,6 +49,7 @@ public class MenuEmote implements IMenuReaction {
     public void addReactionTo(Message message) {
         message.addReaction(e).queue();
     }
+
     @Override
     public boolean hasPredicate() {
         return a != null;
@@ -63,6 +62,6 @@ public class MenuEmote implements IMenuReaction {
 
     @Override
     public String getDisplay() {
-        return e.getAsMention() + " " + s;
+        return e + " " + s;
     }
 }

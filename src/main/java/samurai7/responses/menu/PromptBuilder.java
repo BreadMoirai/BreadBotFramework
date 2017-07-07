@@ -14,7 +14,7 @@
  *   limitations under the License.
  *
  */
-package samurai7.core.response.menu;
+package samurai7.responses.menu;
 
 import net.dv8tion.jda.core.entities.Emote;
 import net.dv8tion.jda.core.events.message.guild.react.GenericGuildMessageReactionEvent;

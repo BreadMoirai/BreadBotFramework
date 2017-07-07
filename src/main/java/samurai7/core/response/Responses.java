@@ -18,9 +18,8 @@ import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageEmbed;
 import org.jetbrains.annotations.Contract;
-import samurai7.core.response.menu.MenuBuilder;
-import samurai7.core.response.menu.PromptBuilder;
-import samurai7.core.response.menu.ReactionMenuBuilder;
+import samurai7.responses.menu.PromptBuilder;
+import samurai7.responses.menu.ReactionMenuBuilder;
 
 public class Responses {
 

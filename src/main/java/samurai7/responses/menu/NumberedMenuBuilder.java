@@ -14,23 +14,7 @@
  *   limitations under the License.
  *
  */
-package samurai7.core.response.menu.reactions;
+package samurai7.responses.menu;
 
-import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.events.message.guild.react.GenericGuildMessageReactionEvent;
-import samurai7.core.response.menu.ResponseMenu;
-
-public interface IMenuReaction {
-
-    boolean matches(GenericGuildMessageReactionEvent event);
-
-    boolean hasOption();
-
-    void addReactionTo(Message message);
-
-    boolean hasPredicate();
-
-    boolean apply(GenericGuildMessageReactionEvent event, ResponseMenu menu);
-
-    String getDisplay();
+public class NumberedMenuBuilder {
 }

@@ -14,17 +14,13 @@
  *   limitations under the License.
  *
  */
-package samurai7.core.response.menu;
+package samurai7.responses.menu;
 
 import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.entities.Emote;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.events.message.guild.react.GenericGuildMessageReactionEvent;
 import net.dv8tion.jda.core.events.message.guild.react.GuildMessageReactionAddEvent;
-import org.apache.http.util.Args;
-import samurai7.core.response.menu.reactions.IMenuReaction;
-import samurai7.core.response.menu.reactions.MenuEmoji;
-import samurai7.core.response.menu.reactions.MenuEmote;
+import samurai7.responses.menu.reactions.IMenuReaction;
 import samurai7.waiter.EventWaiter;
 
 import java.util.ArrayList;

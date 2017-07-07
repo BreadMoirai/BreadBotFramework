@@ -14,21 +14,18 @@
  *   limitations under the License.
  *
  */
-package samurai7.core.response.menu;
+package samurai7.responses.menu;
 
 import gnu.trove.list.TLongList;
 import gnu.trove.list.array.TLongArrayList;
 import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.entities.User;
-import net.dv8tion.jda.core.events.message.guild.react.GenericGuildMessageReactionEvent;
 import samurai7.waiter.EventWaiter;
 
 import java.util.Arrays;
-import java.util.function.Consumer;
 
 public abstract class Menu {
 
