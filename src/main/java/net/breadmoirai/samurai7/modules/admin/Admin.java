@@ -14,7 +14,7 @@
  *   limitations under the License.
  *
  */
-package samurai7.modules.admin;
+package net.breadmoirai.samurai7.modules.admin;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
