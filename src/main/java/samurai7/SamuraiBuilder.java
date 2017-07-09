@@ -100,7 +100,7 @@ public class SamuraiBuilder {
      * <pre><code>
      * {@link samurai7.SamuraiBuilder samuraiBuilder}.addModule(new MyAdminModule());
      * ...
-     * public class MyAdminModule extends {@link samurai7.modules.admin.AdminModule} {
+     * public class MyAdminModule implements {@link samurai7.modules.admin.IAdminModule} {
      *    {@literal @}Override
      *     boolean isAdmin({@link net.dv8tion.jda.core.entities.Member} member) {
      *         //new criteria
