@@ -53,7 +53,7 @@ public abstract class BiCommand<M1 extends IModule, M2 extends IModule> implemen
     }
 
     @Override
-    final public void setModules(Map<Type, IModule> moduleTypeMap) {
+    final public boolean setModules(Map<Type, IModule> moduleTypeMap) {
         if (moduleType1 == null) {
             final Map<TypeVariable<?>, Type> typeArguments = TypeUtils.getTypeArguments(this.getClass(), Command.class);
             final TypeVariable<Class<Command>>[] typeParameters = Command.class.getTypeParameters();
@@ -64,6 +64,8 @@ public abstract class BiCommand<M1 extends IModule, M2 extends IModule> implemen
         this.module1 = (M1) moduleTypeMap.get(moduleType1);
         //noinspection unchecked
         this.module2 = (M2) moduleTypeMap.get(moduleType2);
+
+        return module1 != null && module2 != null;
     }
 
     @Override

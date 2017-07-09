@@ -69,12 +69,9 @@ public abstract class Command<M extends IModule> implements ICommand {
     final public boolean setModules(Map<Type, IModule> moduleTypeMap) {
         if (moduleType == null)
             moduleType = TypeUtils.getTypeArguments(this.getClass(), Command.class).get(Command.class.getTypeParameters()[0]);
-
-        final IModule module = moduleTypeMap.get(moduleType);
-        if (module == null) return false;
         //noinspection unchecked
-        this.module = (M) module;
-        return true;
+        this.module = (M) moduleTypeMap.get(moduleType);
+        return module != null;
     }
 
     @Override
