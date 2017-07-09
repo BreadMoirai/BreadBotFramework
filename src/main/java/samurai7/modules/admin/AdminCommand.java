@@ -25,9 +25,9 @@ import java.util.stream.Collectors;
 
 @Admin
 @Key("admin")
-public class AdminCommand extends Command<AdminModule> {
+public class AdminCommand extends Command<IAdminModule> {
     @Override
-    public Response execute(CommandEvent event, AdminModule module) {
+    public Response execute(CommandEvent event, IAdminModule module) {
         return Responses.of("**Administrative Members:** " + event.getGuild().getMembers().stream().filter(module::isAdmin).map(Member::getEffectiveName).collect(Collectors.joining(", ")));
     }
 }

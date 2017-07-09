@@ -17,6 +17,7 @@ package samurai7.core.engine;
 import samurai7.core.IModule;
 import samurai7.core.response.Response;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Map;
 import java.util.Optional;
@@ -33,5 +34,7 @@ public interface ICommand {
 
     CommandEvent getEvent();
 
-    void setModules(Map<Type, IModule> moduleTypeMap);
+    boolean setModules(Map<Type, IModule> moduleTypeMap);
+
+    boolean isMarkedWith(Class<? extends Annotation> annotation);
 }

@@ -26,7 +26,7 @@ import java.lang.annotation.Target;
  * <p> should only be used on classes that are derived from {@link samurai7.core.engine.ICommand}</p>
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
+@Target({ElementType.TYPE, ElementType.METHOD})
 public @interface Key {
 
     String[] value() default {};

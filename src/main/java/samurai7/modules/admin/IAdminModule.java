@@ -14,19 +14,17 @@
 */
 package samurai7.modules.admin;
 
-import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Member;
+import samurai7.core.IModule;
 import samurai7.core.engine.CommandEngineConfiguration;
 
-public class AdminModule implements IAdminModule {
+public interface IAdminModule extends IModule {
+
     @Override
-    public void init(CommandEngineConfiguration config) {
+    default void init(CommandEngineConfiguration config) {
         config.addPostProcessPredicate(command -> !command.isMarkedWith(Admin.class) || isAdmin(command.getEvent().getMember()));
         config.registerCommand(AdminCommand.class);
     }
 
-    @Override
-    public boolean isAdmin(Member member) {
-        return member.canInteract(member.getGuild().getSelfMember()) && member.hasPermission(Permission.KICK_MEMBERS);
-    }
+    boolean isAdmin(Member member);
 }

@@ -30,6 +30,7 @@ import samurai7.modules.source.SourceModule;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class SamuraiBuilder {
 
@@ -40,6 +41,7 @@ public class SamuraiBuilder {
     private Game game;
     private List<IModule> modules;
     private boolean admin = false;
+    private Consumer<CommandEngineConfiguration> config;
 
     public SamuraiBuilder() {
         modules = new LinkedList<>();
@@ -113,6 +115,11 @@ public class SamuraiBuilder {
         return this;
     }
 
+    public SamuraiBuilder configure(Consumer<CommandEngineConfiguration> config) {
+        this.config = config;
+        return this;
+    }
+
     public JDABuilder buildJDA() {
         if (admin) modules.add(new AdminModule());
         if (sourceGuild != 0) modules.add(new SourceModule(sourceGuild));
@@ -120,6 +127,7 @@ public class SamuraiBuilder {
         modules.add(prefixModule);
 
         final CommandEngineConfiguration configuration = new CommandEngineConfiguration();
+        if (config != null) config.accept(configuration);
         modules.forEach(iModule -> iModule.init(configuration));
 
         return new JDABuilder(AccountType.BOT)

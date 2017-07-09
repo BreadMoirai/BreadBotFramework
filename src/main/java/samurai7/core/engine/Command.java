@@ -20,6 +20,7 @@ import org.apache.commons.lang3.reflect.TypeUtils;
 import samurai7.core.IModule;
 import samurai7.core.response.Response;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Map;
 import java.util.Optional;
@@ -65,17 +66,23 @@ public abstract class Command<M extends IModule> implements ICommand {
     }
 
     @Override
-    final public void setModules(Map<Type, IModule> moduleTypeMap) {
+    final public boolean setModules(Map<Type, IModule> moduleTypeMap) {
         if (moduleType == null)
             moduleType = TypeUtils.getTypeArguments(this.getClass(), Command.class).get(Command.class.getTypeParameters()[0]);
 
+        final IModule module = moduleTypeMap.get(moduleType);
+        if (module == null) return false;
         //noinspection unchecked
-        this.module = (M) moduleTypeMap.get(moduleType);
-
+        this.module = (M) module;
+        return true;
     }
 
     @Override
     final public void setEvent(CommandEvent event) {
         this.event = event;
+    }
+
+    public final boolean isMarkedWith(Class<? extends Annotation> annotation) {
+        return this.getClass().isAnnotationPresent(annotation);
     }
 }

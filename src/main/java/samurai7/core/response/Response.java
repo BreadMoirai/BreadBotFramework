@@ -17,8 +17,8 @@
 package samurai7.core.response;
 
 import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.core.entities.impl.message.DataMessage;
 import net.dv8tion.jda.core.events.message.MessageDeleteEvent;
-import samurai7.waiter.EventWaiter;
 
 import java.io.Serializable;
 import java.util.function.Consumer;
@@ -81,4 +81,16 @@ public abstract class Response implements Serializable {
     }
 
     public abstract void onDeletion(MessageDeleteEvent event);
+
+    /**
+     * This can only be used on messages sent by the bot.
+     * @param message This must be a message that comes from the api. Messages built with a message builder are not supported.
+     */
+    public void replace(Message message) {
+        if (message instanceof DataMessage) throw new UnsupportedOperationException("Responses can not replace messages created with the MessageBuilder");
+        this.setChannelId(message.getChannel().getIdLong());
+        this.setGuildId(message.getGuild().getIdLong());
+        this.setMessageId(message.getIdLong());
+
+    }
 }

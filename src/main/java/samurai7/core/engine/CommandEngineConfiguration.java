@@ -56,6 +56,10 @@ public class CommandEngineConfiguration {
         return this;
     }
 
+    /**
+     * @param commandClass The class provided here must extend either {@link samurai7.core.engine.Command} or {@link samurai7.core.engine.BiCommand}
+     * @param keys         The string(s) that will trigger this command
+     */
     public CommandEngineConfiguration registerCommand(Class<? extends ICommand> commandClass, String... keys) {
         for (String key : keys) {
             if (key == null || keys.length == 0) {
@@ -79,7 +83,10 @@ public class CommandEngineConfiguration {
         if (commandClass.isAnnotationPresent(Key.class)) {
             final String[] keyArray = commandClass.getAnnotation(Key.class).value();
             registerCommand(commandClass, keyArray);
-        } else {
+        } else if (MultiCommand.class.isAssignableFrom(commandClass)) {
+            //noinspection unchecked
+            registerCommand(commandClass, MultiCommand.register((Class<? extends MultiCommand>) commandClass));
+        } else{
             logger.error("No key found for " + commandClass.getSimpleName());
         }
         return this;
@@ -97,6 +104,8 @@ public class CommandEngineConfiguration {
                 registerCommand((Class<? extends ICommand>) commandClass);
             }
         }
+        final Set<Class<? extends MultiCommand>> multiCommands = reflections.getSubTypesOf(MultiCommand.class);
+        for (Class<? extends MultiCommand> commandClass : multiCommands) registerCommand(commandClass);
         return this;
     }
 

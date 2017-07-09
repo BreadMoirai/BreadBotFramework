@@ -36,6 +36,7 @@ import samurai7.modules.prefix.PrefixModule;
 import samurai7.util.DiscordPatterns;
 import samurai7.waiter.EventWaiter;
 
+import java.lang.ref.Reference;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -55,7 +56,7 @@ public class CommandEngine {
     private final List<IModule> modules;
     private final Map<String, Class<? extends ICommand>> commandMap;
 
-    private final TLongObjectMap<WeakReference<Response>> responseMap = TCollections.synchronizedMap(new TLongObjectHashMap<>());
+    private final TLongObjectMap<Reference<Response>> responseMap = TCollections.synchronizedMap(new TLongObjectHashMap<>());
 
     private final Predicate<Message> preProcessPredicate;
     private final Predicate<ICommand> postProcessPredicate;
@@ -74,16 +75,47 @@ public class CommandEngine {
         final HashMap<Type, IModule> typeMap = new HashMap<>(modules.size());
         final ArrayList<Pair<IModule, Method>> methodList = new ArrayList<>();
         for (IModule module : modules) {
-            typeMap.put(module.getClass(), module);
-            for (Method m : module.getClass().getDeclaredMethods())
-                if (m.isAnnotationPresent(SubscribeEvent.class)
-                        && m.getParameterCount() == 1
-                        && !Modifier.isStatic(m.getModifiers())
-                        && m.getParameterTypes()[0] == CommandEvent.class)
-                    methodList.add(new ImmutablePair<>(module, m));
+            Class<?> klass = module.getClass();
+            do {
+                //noinspection unchecked
+                registerModuleClass((Class<? extends IModule>) klass, module, typeMap, methodList);
+                for (Class<?> inter : klass.getInterfaces()) {
+                    final List<Class<?>> classList = getInterfaceHeirarchy(inter, IModule.class);
+                    if (classList != null) {
+                        for (Class<?> aClass : classList)
+                            //noinspection unchecked
+                            registerModuleClass((Class<? extends IModule>) klass, module, typeMap, methodList);
+                    }
+                }
+
+            } while (IModule.class.isAssignableFrom(klass = klass.getSuperclass()));
         }
         this.moduleTypeMap = Collections.unmodifiableMap(typeMap);
         methods = Collections.unmodifiableList(methodList);
+    }
+
+    private void registerModuleClass(Class<? extends IModule> klass, IModule module, Map<Type, IModule> typeMap, List<Pair<IModule, Method>> methodList) {
+        typeMap.put(klass, module);
+        for (Method m : klass.getDeclaredMethods())
+            if (m.isAnnotationPresent(SubscribeEvent.class)
+                    && m.getParameterCount() == 1
+                    && !Modifier.isStatic(m.getModifiers())
+                    && m.getParameterTypes()[0] == CommandEvent.class)
+                methodList.add(new ImmutablePair<>(module, m));
+    }
+
+    private List<Class<?>> getInterfaceHeirarchy(Class<?> from, Class<?> toSuper) {
+        if (!from.isInterface())
+            return null;
+        if (from == toSuper)
+            return new ArrayList<>();
+        final Class<?>[] interfaces = from.getInterfaces();
+        if (interfaces.length == 0)
+            return null;
+        final List<Class<?>> interfaceList = getInterfaceHeirarchy(interfaces[0], toSuper);
+        if (interfaceList != null)
+            interfaceList.add(0, from);
+        return interfaceList;
     }
 
     private void processEvent(CommandEvent event) {
@@ -104,7 +136,7 @@ public class CommandEngine {
         }
         if (command == null) return;
         command.setEvent(event);
-        command.setModules(moduleTypeMap);
+        if (!command.setModules(moduleTypeMap)) return;
 
         if (postProcessPredicate.test(command)) {
             CompletableFuture.supplyAsync(command::call).thenAcceptAsync(response -> response.ifPresent(this::submit));
@@ -118,7 +150,11 @@ public class CommandEngine {
         Response.setSubmitConsumer(response, this::submit);
         final Message message = response.buildMessage();
         if (message == null) return;
-        textChannel.sendMessage(message).queue(sent -> {
+        if (response.getMessageId() != 0) textChannel.editMessageById(response.getMessageId(), message).queue(sent -> {
+            response.onSend(sent);
+            responseMap.put(sent.getIdLong(), new WeakReference<>(response));
+        });
+        else textChannel.sendMessage(message).queue(sent -> {
             final long id = sent.getIdLong();
             response.setMessageId(id);
             response.onSend(sent);
@@ -181,7 +217,7 @@ public class CommandEngine {
 
     @SubscribeEvent
     public void onMessageDelete(MessageDeleteEvent event) {
-        final WeakReference<Response> responseWeakRef = responseMap.get(event.getMessageIdLong());
+        final Reference<Response> responseWeakRef = responseMap.get(event.getMessageIdLong());
         if (responseWeakRef != null) {
             final Response response = responseWeakRef.get();
             if (response != null) {

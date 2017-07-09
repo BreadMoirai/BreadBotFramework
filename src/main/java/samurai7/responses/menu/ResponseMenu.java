@@ -19,9 +19,10 @@ package samurai7.responses.menu;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.events.message.MessageDeleteEvent;
 import samurai7.core.response.Response;
+import samurai7.responses.CloseableResponse;
 import samurai7.waiter.EventWaiter;
 
-public class ResponseMenu extends Response {
+public class ResponseMenu extends Response implements CloseableResponse {
 
     private transient final Menu menu;
     private transient Message message;
@@ -54,10 +55,7 @@ public class ResponseMenu extends Response {
      * @param newResponse the response to be used to replace
      */
     public void replaceWith(Response newResponse) {
-        message.editMessage(newResponse.buildMessage()).queue(m -> {
-            newResponse.setMessageId(m.getIdLong());
-            newResponse.onSend(m);
-        });
+        newResponse.replace(message);
     }
 
     /**
@@ -67,23 +65,11 @@ public class ResponseMenu extends Response {
         message.delete().queue();
     }
 
-    /**
-     * calls {@link samurai7.responses.menu.ResponseMenu#cancel(String, boolean) this#cancel} with param {@code "Action Canceled", true}.
-     */
-    public void cancel() {
-        cancel("Action cancelled", true);
-    }
-
-    /**
-     * convenience method to clear reactions and replace message with specified String.
-     *
-     * @param cancelMessage  A String to replace the menu with.
-     * @param clearReactions this boolean indicates whether
-     */
-    public void cancel(String cancelMessage, boolean clearReactions) {
+    @Override
+    public void cancel(Response cancelMessage, boolean clearReactions) {
         if (clearReactions)
             message.clearReactions().queue();
-        message.editMessage(cancelMessage).queue();
+        cancelMessage.replace(message);
     }
 
 }

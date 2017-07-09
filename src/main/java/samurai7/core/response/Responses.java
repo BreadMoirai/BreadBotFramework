@@ -18,6 +18,7 @@ import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageEmbed;
 import org.jetbrains.annotations.Contract;
+import samurai7.responses.list.ListBuilder;
 import samurai7.responses.menu.PromptBuilder;
 import samurai7.responses.menu.ReactionMenuBuilder;
 
@@ -56,4 +57,7 @@ public class Responses {
         return new PromptBuilder();
     }
 
+    public static <T> ListBuilder<T> newList() {
+        return new ListBuilder<>();
+    }
 }
