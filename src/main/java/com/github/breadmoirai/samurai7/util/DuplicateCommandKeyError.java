@@ -15,7 +15,7 @@
  */
 package com.github.breadmoirai.samurai7.util;
 
-import com.github.breadmoirai.samurai7.core.engine.ICommand;
+import com.github.breadmoirai.samurai7.core.command.ICommand;
 
 public class DuplicateCommandKeyError extends Error {
     public DuplicateCommandKeyError(String key, Class<? extends ICommand> existing, Class<? extends ICommand> duplicate) {

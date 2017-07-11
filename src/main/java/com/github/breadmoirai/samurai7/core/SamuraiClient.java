@@ -15,15 +15,21 @@
  */
 package com.github.breadmoirai.samurai7.core;
 
-import com.github.breadmoirai.samurai7.core.impl.CommandEngineBuilder;
+import com.github.breadmoirai.samurai7.core.response.Response;
 
-public interface IModule {
+import java.util.Optional;
 
-    default String getName() {
-        return this.getClass().getSimpleName();
-    }
+public interface SamuraiClient {
 
-    void init(CommandEngineBuilder engineBuilder, SamuraiClient client);
-//
-//    Stream<CommandInfo> getCommandInfo();
+    boolean hasModule(String moduleName);
+
+    boolean hasModule(Class<? extends IModule> moduleClass);
+
+    <T extends IModule> T getModule(Class<T> moduleClass);
+
+    Optional<IModule> getModule(String moduleName);
+
+    CommandEngine getCommandEngine();
+
+    void submit(Response response);
 }

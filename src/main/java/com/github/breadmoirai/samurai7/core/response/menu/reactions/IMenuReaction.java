@@ -13,17 +13,23 @@
  *   See the License for the specific language governing permissions and
  *   limitations under the License.
  */
-package com.github.breadmoirai.samurai7.core;
+package com.github.breadmoirai.samurai7.core.response.menu.reactions;
 
-import com.github.breadmoirai.samurai7.core.impl.CommandEngineBuilder;
+import com.github.breadmoirai.samurai7.core.response.menu.ResponseMenu;
+import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.core.events.message.guild.react.GenericGuildMessageReactionEvent;
 
-public interface IModule {
+public interface IMenuReaction {
 
-    default String getName() {
-        return this.getClass().getSimpleName();
-    }
+    boolean matches(GenericGuildMessageReactionEvent event);
 
-    void init(CommandEngineBuilder engineBuilder, SamuraiClient client);
-//
-//    Stream<CommandInfo> getCommandInfo();
+    boolean hasOption();
+
+    void addReactionTo(Message message);
+
+    boolean hasPredicate();
+
+    boolean apply(GenericGuildMessageReactionEvent event, ResponseMenu menu);
+
+    String getDisplay();
 }

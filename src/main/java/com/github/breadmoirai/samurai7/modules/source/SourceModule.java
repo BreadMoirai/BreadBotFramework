@@ -15,8 +15,9 @@
  */
 package com.github.breadmoirai.samurai7.modules.source;
 
+import com.github.breadmoirai.samurai7.core.SamuraiClient;
+import com.github.breadmoirai.samurai7.core.impl.CommandEngineBuilder;
 import com.github.breadmoirai.samurai7.core.IModule;
-import com.github.breadmoirai.samurai7.core.engine.CommandEngineConfiguration;
 
 public class SourceModule implements IModule {
 
@@ -27,7 +28,14 @@ public class SourceModule implements IModule {
     }
 
     @Override
-    public void init(CommandEngineConfiguration config) {
-        config.addPostProcessPredicate(command -> !command.getClass().isAnnotationPresent(Source.class) || command.getEvent().getGuildId() == sourceGuildId);
+    public void init(CommandEngineBuilder config, SamuraiClient client) {
+        config.addPostProcessPredicate(command -> {
+            if (command.isMarkedWith(SourceGuild.class)) {
+                long value = command.getClass().getAnnotation(SourceGuild.class).value();
+                if (value == 0) value = sourceGuildId;
+                return value == command.getEvent().getGuildId();
+            }
+            return true;
+        });
     }
 }

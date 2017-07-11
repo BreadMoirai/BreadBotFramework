@@ -13,24 +13,19 @@
  *   See the License for the specific language governing permissions and
  *   limitations under the License.
  */
-package com.github.breadmoirai.samurai7.modules.admin;
+package com.github.breadmoirai.samurai7.modules.prefix;
 
 import com.github.breadmoirai.samurai7.core.IModule;
-import com.github.breadmoirai.samurai7.core.SamuraiClient;
-import com.github.breadmoirai.samurai7.core.impl.CommandEngineBuilder;
-import net.dv8tion.jda.core.entities.Member;
 
-public interface IAdminModule extends IModule {
+public interface IPrefixModule extends IModule {
+
     @Override
     default String getName() {
-        return "AdminModule";
+        return "PrefixModule";
     }
 
-    @Override
-    default void init(CommandEngineBuilder config, SamuraiClient client) {
-        config.addPostProcessPredicate(command -> !command.isMarkedWith(Admin.class) || isAdmin(command.getEvent().getMember()));
-        config.registerCommand(AdminCommand.class);
-    }
+    String getPrefix(long guildId);
 
-    boolean isAdmin(Member member);
+    void changePrefix(long guildId, String newPrefix);
+
 }

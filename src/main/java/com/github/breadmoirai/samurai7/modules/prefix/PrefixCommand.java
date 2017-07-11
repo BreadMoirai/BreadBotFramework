@@ -15,17 +15,17 @@
  */
 package com.github.breadmoirai.samurai7.modules.prefix;
 
-import com.github.breadmoirai.samurai7.core.engine.Command;
-import com.github.breadmoirai.samurai7.core.engine.CommandEvent;
-import com.github.breadmoirai.samurai7.core.engine.Key;
+import com.github.breadmoirai.samurai7.core.command.ModuleCommand;
+import com.github.breadmoirai.samurai7.core.CommandEvent;
+import com.github.breadmoirai.samurai7.core.command.Key;
 import com.github.breadmoirai.samurai7.core.response.Response;
-import com.github.breadmoirai.samurai7.responses.Responses;
+import com.github.breadmoirai.samurai7.core.response.Responses;
 import com.github.breadmoirai.samurai7.util.DiscordPatterns;
 
 @Key("prefix")
-public class PrefixCommand extends Command<PrefixModule> {
+public class PrefixCommand extends ModuleCommand<IPrefixModule> {
     @Override
-    public Response execute(CommandEvent event, PrefixModule module) {
+    public Response execute(CommandEvent event, IPrefixModule module) {
         if (event.hasContent()) {
             final String content = event.getContent();
             if (DiscordPatterns.WHITE_SPACE.matcher(content).find())

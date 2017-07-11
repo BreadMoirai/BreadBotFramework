@@ -13,17 +13,14 @@
  *   See the License for the specific language governing permissions and
  *   limitations under the License.
  */
-package com.github.breadmoirai.samurai7.core;
+package com.github.breadmoirai.samurai7.core.info;
 
-import com.github.breadmoirai.samurai7.core.impl.CommandEngineBuilder;
+import com.github.breadmoirai.samurai7.core.command.ICommand;
 
-public interface IModule {
+public class CommandInfo {
 
-    default String getName() {
-        return this.getClass().getSimpleName();
+    public static CommandInfo of(Class<? extends ICommand> commandClass) {
+
+        return null;
     }
-
-    void init(CommandEngineBuilder engineBuilder, SamuraiClient client);
-//
-//    Stream<CommandInfo> getCommandInfo();
 }

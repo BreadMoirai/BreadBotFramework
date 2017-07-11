@@ -13,27 +13,35 @@
  *   See the License for the specific language governing permissions and
  *   limitations under the License.
  */
-package com.github.breadmoirai.samurai7.modules.admin;
+package com.github.breadmoirai.samurai7.core.info;
 
 import com.github.breadmoirai.samurai7.core.CommandEvent;
-import com.github.breadmoirai.samurai7.core.command.Key;
-import com.github.breadmoirai.samurai7.core.response.Responses;
-import com.github.breadmoirai.samurai7.core.command.ModuleCommand;
-import net.dv8tion.jda.core.entities.Member;
+import com.github.breadmoirai.samurai7.core.IModule;
+import com.github.breadmoirai.samurai7.core.command.Command;
+import com.github.breadmoirai.samurai7.core.command.ICommand;
 import com.github.breadmoirai.samurai7.core.response.Response;
+import com.github.breadmoirai.samurai7.core.response.Responses;
 
-import java.util.stream.Collectors;
+import java.util.List;
+import java.util.Map;
 
-@Admin
-@Key("admin")
-public class AdminCommand extends ModuleCommand<IAdminModule> {
+public abstract class HelpCommand extends Command {
+
+    public static HelpCommand newInstance() {
+        return null;
+    }
+
+    public static void initialize(List<IModule> modules, Map<String, Class<? extends ICommand>> commandMap) {
+
+    }
+
     @Override
-    public Response execute(CommandEvent event, IAdminModule module) {
-        return Responses.of("**Administrative Members:** " + event.getGuild().getMembers().stream().filter(module::isAdmin).map(Member::getEffectiveName).collect(Collectors.joining(", ")));
+    public Response execute(CommandEvent event) {
+        return null;
     }
 
     @Override
     public Response getHelp(CommandEvent event) {
-        return Responses.of("This command shows which users have the authority to use Administrative commands");
+        return Responses.of("There's no more help for you.");
     }
 }

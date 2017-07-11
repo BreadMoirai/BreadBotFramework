@@ -15,22 +15,25 @@
  */
 package com.github.breadmoirai.samurai7.modules.admin;
 
-import com.github.breadmoirai.samurai7.core.IModule;
-import com.github.breadmoirai.samurai7.core.SamuraiClient;
-import com.github.breadmoirai.samurai7.core.impl.CommandEngineBuilder;
+import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Member;
 
-public interface IAdminModule extends IModule {
-    @Override
-    default String getName() {
-        return "AdminModule";
+import java.util.function.Predicate;
+
+public class DefaultAdminModule implements IAdminModule {
+
+    private Predicate<Member> adminPredicate;
+
+    public DefaultAdminModule(Predicate<Member> adminPredicate) {
+        this.adminPredicate = adminPredicate;
+    }
+
+    public DefaultAdminModule() {
+        this(member -> member.canInteract(member.getGuild().getSelfMember()) && member.hasPermission(Permission.KICK_MEMBERS));
     }
 
     @Override
-    default void init(CommandEngineBuilder config, SamuraiClient client) {
-        config.addPostProcessPredicate(command -> !command.isMarkedWith(Admin.class) || isAdmin(command.getEvent().getMember()));
-        config.registerCommand(AdminCommand.class);
+    public boolean isAdmin(Member member) {
+        return adminPredicate.test(member);
     }
-
-    boolean isAdmin(Member member);
 }

@@ -15,15 +15,28 @@
  */
 package com.github.breadmoirai.samurai7.core;
 
-import com.github.breadmoirai.samurai7.core.impl.CommandEngineBuilder;
+import com.github.breadmoirai.samurai7.core.command.ICommand;
+import com.github.breadmoirai.samurai7.core.response.Response;
 
-public interface IModule {
+import java.util.Optional;
+import java.util.stream.Stream;
 
-    default String getName() {
-        return this.getClass().getSimpleName();
+public interface CommandEngine {
+
+    Optional<Response> execute(CommandEvent event);
+
+    Class<? extends ICommand> getCommandClass(String key);
+
+    default ICommand getCommand(String key) {
+        try {
+            return getCommandClass(key).newInstance();
+        } catch (InstantiationException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
-    void init(CommandEngineBuilder engineBuilder, SamuraiClient client);
-//
-//    Stream<CommandInfo> getCommandInfo();
+    Stream<Class<? extends ICommand>> getCommands();
+
+    boolean hasCommand(String key);
 }

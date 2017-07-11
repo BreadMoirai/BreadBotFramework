@@ -15,7 +15,9 @@
  */
 package com.github.breadmoirai.samurai7.core.response;
 
+import com.github.breadmoirai.samurai7.core.SamuraiClient;
 import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.impl.message.DataMessage;
 import net.dv8tion.jda.core.events.message.MessageDeleteEvent;
 
@@ -24,8 +26,24 @@ import java.util.function.Consumer;
 
 public abstract class Response implements Serializable {
 
+    private SamuraiClient client;
+
     private long authorId, messageId, channelId, guildId;
-    private transient Consumer<Response> submit;
+
+    public void send(MessageChannel channel, Consumer<Message> register) {
+        final Message message = buildMessage();
+        if (message == null) return;
+        register = ((Consumer<Message>) sent -> this.setMessageId(sent.getIdLong())).andThen(register);
+        channel.sendMessage(message).queue(register.andThen(this::onSend));
+    }
+
+    public final SamuraiClient getClient() {
+        return client;
+    }
+
+    public final void setClient(SamuraiClient client) {
+        this.client = client;
+    }
 
     public abstract Message buildMessage();
 
@@ -68,15 +86,7 @@ public abstract class Response implements Serializable {
         if (response.getChannelId() == 0) response.setChannelId(getChannelId());
         if (response.getGuildId() == 0) response.setGuildId(getGuildId());
         if (response.getAuthorId() == 0) response.setAuthorId(getAuthorId());
-        submit.accept(response);
-    }
-
-    private void setSubmitConsumer(Consumer<Response> submitConsumer) {
-        this.submit = submitConsumer;
-    }
-
-    public static void setSubmitConsumer(Response response, Consumer<Response>submit) {
-        response.setSubmitConsumer(submit);
+        client.submit(response);
     }
 
     public abstract void onDeletion(MessageDeleteEvent event);
@@ -90,6 +100,6 @@ public abstract class Response implements Serializable {
         this.setChannelId(message.getChannel().getIdLong());
         this.setGuildId(message.getGuild().getIdLong());
         this.setMessageId(message.getIdLong());
-
+        client.submit(this);
     }
 }

@@ -7,11 +7,11 @@ plugins {
 }
 
 group 'com.github.breadmoirai'
-version '0.1'
+version '0.2_ALPHA'
 
 sourceCompatibility = 1.8
 
-sourceSets.main.java.exclude('net/breadmoirai/samurai7/responses/list')
+sourceSets.main.java.exclude('com/github/breadmoirai/samurai7/responses/list')
 
 repositories {
     jcenter()
@@ -50,4 +50,14 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
 task sourcesJar(type: Jar, dependsOn: classes) {
     classifier = 'sources'
     from "${buildDir}/filteredSrc"
+}
+
+task jarMake{
+    doLast {
+        print ':jarMake Creating Jars..'
+        jar
+        sourcesJar
+        javadocJar
+        shadowJar
+    }
 }

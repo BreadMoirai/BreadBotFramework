@@ -15,15 +15,13 @@
  */
 package com.github.breadmoirai.samurai7.core;
 
-import com.github.breadmoirai.samurai7.core.impl.CommandEngineBuilder;
+import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.core.events.message.guild.GenericGuildMessageEvent;
 
-public interface IModule {
+/**
+ * This creates Events from GuildMessageEvents and handles how Prefixes and Keys are parsed.
+ */
+public interface ICommandEventFactory {
 
-    default String getName() {
-        return this.getClass().getSimpleName();
-    }
-
-    void init(CommandEngineBuilder engineBuilder, SamuraiClient client);
-//
-//    Stream<CommandInfo> getCommandInfo();
+    CommandEvent createEvent(GenericGuildMessageEvent event, Message message, SamuraiClient client);
 }

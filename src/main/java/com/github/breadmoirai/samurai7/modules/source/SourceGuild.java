@@ -13,17 +13,16 @@
  *   See the License for the specific language governing permissions and
  *   limitations under the License.
  */
-package com.github.breadmoirai.samurai7.core;
+package com.github.breadmoirai.samurai7.modules.source;
 
-import com.github.breadmoirai.samurai7.core.impl.CommandEngineBuilder;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-public interface IModule {
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
+public @interface SourceGuild {
 
-    default String getName() {
-        return this.getClass().getSimpleName();
-    }
-
-    void init(CommandEngineBuilder engineBuilder, SamuraiClient client);
-//
-//    Stream<CommandInfo> getCommandInfo();
+    long value() default 0;
 }
