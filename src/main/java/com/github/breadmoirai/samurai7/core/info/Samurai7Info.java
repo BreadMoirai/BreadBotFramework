@@ -17,6 +17,6 @@ package com.github.breadmoirai.samurai7.core.info;
 public class Samurai7Info {
 
     public static final String GITHUB = "https://github.com/BreadMoirai/Samurai7";
-    public static final String VERSION = "0.2-alpha";
+    public static final String VERSION = "0.2_ALPHA";
     public static final String AUTHOR = "BreadMoirai";
 }
