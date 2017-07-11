@@ -32,6 +32,7 @@ import net.dv8tion.jda.core.hooks.IEventManager;
 import net.dv8tion.jda.core.hooks.InterfacedEventManager;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 import net.dv8tion.jda.core.hooks.SubscribeEvent;
+import org.apache.http.util.Args;
 
 import java.lang.ref.Reference;
 import java.lang.ref.WeakReference;
@@ -99,9 +100,21 @@ public class SamuraiClientImpl implements SamuraiClient {
 
     @Override
     public void submit(Response response) {
-        final TextChannel textChannel = jda.getTextChannelById(response.getChannelId());
-        if (textChannel == null) return;
+        submit(response.getChannelId(), response);
+    }
 
+    @Override
+    public void submit(long channeId, Response response) {
+        TextChannel textChannel = jda.getTextChannelById(channeId);
+        if (textChannel == null) return;
+        submit(textChannel, response);
+    }
+
+    @Override
+    public void submit(TextChannel textChannel, Response response) {
+        Args.notNull(textChannel, "TextChannel");
+        response.setGuildId(textChannel.getGuild().getIdLong());
+        response.setChannelId(textChannel.getIdLong());
         response.send(textChannel, message -> responseMap.put(message.getIdLong(), new WeakReference<Response>(response)));
     }
 

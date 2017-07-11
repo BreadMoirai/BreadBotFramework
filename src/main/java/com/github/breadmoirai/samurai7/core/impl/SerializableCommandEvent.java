@@ -51,11 +51,11 @@ public class SerializableCommandEvent extends CommandEvent implements Serializab
      * public no-args constructor for serialization purposes only
      */
     public SerializableCommandEvent() {
-        super(null, 0);
+        super(null, 0, null);
     }
 
     SerializableCommandEvent(MessageReceivedCommandEvent commandEvent) {
-        super(null, 0);
+        super(commandEvent.getJDA(), 0, commandEvent.getClient());
         prefix = commandEvent.getPrefix();
         key = commandEvent.getKey();
         authorId = commandEvent.getAuthorId();

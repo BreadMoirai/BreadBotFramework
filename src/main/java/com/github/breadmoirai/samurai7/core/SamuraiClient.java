@@ -16,6 +16,7 @@
 package com.github.breadmoirai.samurai7.core;
 
 import com.github.breadmoirai.samurai7.core.response.Response;
+import net.dv8tion.jda.core.entities.TextChannel;
 
 import java.util.Optional;
 
@@ -32,4 +33,8 @@ public interface SamuraiClient {
     CommandEngine getCommandEngine();
 
     void submit(Response response);
+
+    void submit(long channeId, Response response);
+
+    void submit(TextChannel channel, Response response);
 }
