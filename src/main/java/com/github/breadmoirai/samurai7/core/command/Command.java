@@ -35,12 +35,6 @@ public abstract class Command implements ICommand {
     @Override
     public final Optional<Response> call() {
         final Response r = execute(getEvent());
-        //noinspection Duplicates
-        if (r != null) {
-            if (r.getAuthorId() == 0) r.setAuthorId(getEvent().getAuthorId());
-            if (r.getChannelId() == 0) r.setChannelId(getEvent().getChannelId());
-            if (r.getGuildId() == 0) r.setGuildId(getEvent().getGuildId());
-        }
         return Optional.ofNullable(r);
     }
 

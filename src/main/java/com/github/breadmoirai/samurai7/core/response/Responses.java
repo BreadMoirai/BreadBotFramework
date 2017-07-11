@@ -18,10 +18,14 @@ package com.github.breadmoirai.samurai7.core.response;
 import com.github.breadmoirai.samurai7.core.response.menu.PromptBuilder;
 import com.github.breadmoirai.samurai7.core.response.menu.ReactionMenuBuilder;
 import com.github.breadmoirai.samurai7.core.response.simple.BasicResponse;
+import com.github.breadmoirai.samurai7.core.response.simple.EditResponse;
+import com.github.breadmoirai.samurai7.core.response.simple.ReactionResponse;
 import net.dv8tion.jda.core.MessageBuilder;
+import net.dv8tion.jda.core.entities.Emote;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageEmbed;
 import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
 public class Responses {
 
@@ -48,6 +52,23 @@ public class Responses {
     public static BasicResponse of(Message message) {
         if (message == null) return null;
         return new BasicResponse(message);
+    }
+
+    @Contract("_, null -> null; _, !null -> !null")
+    public static EditResponse edit(long targetMessageId, Response edit) {
+        if (edit == null) return null;
+        return new EditResponse(edit, targetMessageId);
+    }
+
+
+    @NotNull
+    public static ReactionResponse react(long targetMessageId, String unicode) {
+        return new ReactionResponse(targetMessageId, unicode);
+    }
+
+    @NotNull
+    public static ReactionResponse react(long targetMessageId, Emote emote) {
+        return new ReactionResponse(targetMessageId, emote);
     }
 
     public static ReactionMenuBuilder newReactionMenu() {

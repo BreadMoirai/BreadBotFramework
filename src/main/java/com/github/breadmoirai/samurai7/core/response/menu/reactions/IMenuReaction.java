@@ -17,6 +17,7 @@ package com.github.breadmoirai.samurai7.core.response.menu.reactions;
 
 import com.github.breadmoirai.samurai7.core.response.menu.ResponseMenu;
 import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.events.message.guild.react.GenericGuildMessageReactionEvent;
 
 public interface IMenuReaction {
@@ -26,6 +27,8 @@ public interface IMenuReaction {
     boolean hasOption();
 
     void addReactionTo(Message message);
+
+    void addReactionTo(MessageChannel channel, long messageId);
 
     boolean hasPredicate();
 

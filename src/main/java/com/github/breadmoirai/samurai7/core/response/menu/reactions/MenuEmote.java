@@ -18,6 +18,7 @@ package com.github.breadmoirai.samurai7.core.response.menu.reactions;
 import com.github.breadmoirai.samurai7.core.response.menu.ResponseMenu;
 import net.dv8tion.jda.core.entities.Emote;
 import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.events.message.guild.react.GenericGuildMessageReactionEvent;
 
 import java.util.function.BiPredicate;
@@ -49,6 +50,12 @@ public class MenuEmote implements IMenuReaction {
     public void addReactionTo(Message message) {
         message.addReaction(e).queue();
     }
+
+    @Override
+    public void addReactionTo(MessageChannel channel, long messageId) {
+        channel.addReactionById(messageId, e).queue();
+    }
+
     @Override
     public boolean hasPredicate() {
         return a != null;

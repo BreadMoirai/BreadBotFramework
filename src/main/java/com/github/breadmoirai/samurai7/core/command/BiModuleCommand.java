@@ -37,12 +37,6 @@ public abstract class BiModuleCommand<M1 extends IModule, M2 extends IModule> im
     @Override
     public final Optional<Response> call() {
         final Response r = execute(getEvent(), module1, module2);
-        //noinspection Duplicates
-        if (r != null) {
-            if (r.getAuthorId() == 0) r.setAuthorId(getEvent().getAuthorId());
-            if (r.getChannelId() == 0) r.setChannelId(getEvent().getChannelId());
-            if (r.getGuildId() == 0) r.setGuildId(getEvent().getGuildId());
-        }
         return Optional.ofNullable(r);
     }
 

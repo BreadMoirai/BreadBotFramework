@@ -1,5 +1,5 @@
 /*
- *       Copyright 2017 Ton Ly (BreadMoirai)
+ *      Copyright 2017 Ton Ly (BreadMoirai)
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -12,53 +12,56 @@
  *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *   See the License for the specific language governing permissions and
  *   limitations under the License.
+ *
  */
 package com.github.breadmoirai.samurai7.core.response.simple;
 
 import com.github.breadmoirai.samurai7.core.response.Response;
+import com.github.breadmoirai.samurai7.core.response.menu.reactions.IMenuReaction;
+import com.github.breadmoirai.samurai7.core.response.menu.reactions.MenuEmoji;
+import com.github.breadmoirai.samurai7.core.response.menu.reactions.MenuEmote;
+import net.dv8tion.jda.core.entities.Emote;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.events.message.MessageDeleteEvent;
 
 import java.util.function.Consumer;
 
-public class EditResponse extends Response {
-    private final Response response;
+public class ReactionResponse extends Response {
+    private final IMenuReaction reaction;
 
-    public EditResponse(Response response, long messageId) {
-        this.response = response;
-        this.setAuthorId(response.getAuthorId());
-        this.setGuildId(response.getGuildId());
-        this.setChannelId(response.getChannelId());
+    public ReactionResponse(long messageId, String unicode) {
         this.setMessageId(messageId);
+        this.reaction = new MenuEmoji(unicode, null, null);
+    }
+
+    public ReactionResponse(long messageId, Emote emote) {
+        this.setMessageId(messageId);
+        this.reaction = new MenuEmote(emote, null, null);
     }
 
     @Override
     public void send(MessageChannel channel, Consumer<Long> registerMessageId) {
-        final Message message = buildMessage();
-        if (message == null) return;
-
-        channel.editMessageById(getMessageId(), message).queue(this::onSend);
+        reaction.addReactionTo(channel, getMessageId());
     }
 
     @Override
     public Message buildMessage() {
-        return response.buildMessage();
+        return null;
     }
 
     @Override
     public void onSend(Message message) {
-        response.onSend(message);
+
     }
 
     @Override
     public void onDeletion(MessageDeleteEvent event) {
-        response.onDeletion(event);
+
     }
 
     @Override
     public EditResponse replace(long messageId) {
-        setMessageId(messageId);
-        return this;
+        throw new UnsupportedOperationException("You can't replace a reaction");
     }
 }

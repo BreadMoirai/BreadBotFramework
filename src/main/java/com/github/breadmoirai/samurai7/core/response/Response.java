@@ -99,6 +99,7 @@ public abstract class Response implements Serializable {
         if (response.getChannelId() == 0) response.setChannelId(getChannelId());
         if (response.getGuildId() == 0) response.setGuildId(getGuildId());
         if (response.getAuthorId() == 0) response.setAuthorId(getAuthorId());
+        if (response.getMessageId() == 0) response.setMessageId(getMessageId());
         response.setClient(client);
         client.submit(response);
     }

@@ -21,6 +21,7 @@ import com.github.breadmoirai.samurai7.core.IModule;
 import com.github.breadmoirai.samurai7.core.command.ICommand;
 import com.github.breadmoirai.samurai7.core.info.HelpCommand;
 import com.github.breadmoirai.samurai7.core.response.Response;
+import com.github.breadmoirai.samurai7.core.response.simple.EditResponse;
 
 import java.lang.reflect.Type;
 import java.util.*;
@@ -82,8 +83,20 @@ public class CommandEngineImpl implements CommandEngine {
         if (command != null) {
             command.setEvent(event);
             if (command.setModules(moduleTypeMap)
-                    && postProcessPredicate.test(command))
-                return command.call();
+                    && postProcessPredicate.test(command)) {
+                final Optional<Response> call = command.call();
+                call.ifPresent(r -> {
+                    final CommandEvent evt = command.getEvent();
+                    if (r.getAuthorId() == 0)
+                        r.setAuthorId(evt.getAuthorId());
+                    if (r.getChannelId() == 0)
+                        r.setChannelId(evt.getChannelId());
+                    if (r.getGuildId() == 0)
+                        r.setGuildId(evt.getGuildId());
+                    if (r.getMessageId() == 0)
+                        r.setMessageId(evt.getMessageId());
+                });
+            }
         }
         return Optional.empty();
     }
