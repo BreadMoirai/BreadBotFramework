@@ -113,9 +113,10 @@ public class SamuraiClientImpl implements SamuraiClient {
     @Override
     public void submit(TextChannel textChannel, Response response) {
         Args.notNull(textChannel, "TextChannel");
+        response.setClient(this);
         response.setGuildId(textChannel.getGuild().getIdLong());
         response.setChannelId(textChannel.getIdLong());
-        response.send(textChannel, message -> responseMap.put(message.getIdLong(), new WeakReference<Response>(response)));
+        response.send(textChannel, id -> responseMap.put(id, new WeakReference<Response>(response)));
     }
 
     private class SamuraiEventListener extends ListenerAdapter {

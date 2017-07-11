@@ -16,6 +16,7 @@
 package com.github.breadmoirai.samurai7.core.response.menu;
 
 import com.github.breadmoirai.samurai7.core.response.CloseableResponse;
+import com.github.breadmoirai.samurai7.core.response.simple.EditResponse;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.events.message.MessageDeleteEvent;
 import com.github.breadmoirai.samurai7.core.response.Response;
@@ -54,7 +55,8 @@ public class ResponseMenu extends Response implements CloseableResponse {
      * @param newResponse the response to be used to replace
      */
     public void replaceWith(Response newResponse) {
-        newResponse.replace(message);
+        EditResponse replace = replace(this.getMessageId());
+        getClient().submit(message.getTextChannel(), replace);
     }
 
     /**
@@ -68,7 +70,7 @@ public class ResponseMenu extends Response implements CloseableResponse {
     public void cancel(Response cancelMessage, boolean clearReactions) {
         if (clearReactions)
             message.clearReactions().queue();
-        cancelMessage.replace(message);
+         replaceWith(cancelMessage);
     }
 
 }

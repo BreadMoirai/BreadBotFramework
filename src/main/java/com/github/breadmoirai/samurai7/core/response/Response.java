@@ -16,9 +16,9 @@
 package com.github.breadmoirai.samurai7.core.response;
 
 import com.github.breadmoirai.samurai7.core.SamuraiClient;
+import com.github.breadmoirai.samurai7.core.response.simple.EditResponse;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageChannel;
-import net.dv8tion.jda.core.entities.impl.message.DataMessage;
 import net.dv8tion.jda.core.events.message.MessageDeleteEvent;
 
 import java.io.Serializable;
@@ -26,15 +26,28 @@ import java.util.function.Consumer;
 
 public abstract class Response implements Serializable {
 
-    private SamuraiClient client;
+    private transient SamuraiClient client;
 
     private long authorId, messageId, channelId, guildId;
 
-    public void send(MessageChannel channel, Consumer<Message> register) {
+    public void send(MessageChannel channel, Consumer<Long> registerMessageId) {
         final Message message = buildMessage();
         if (message == null) return;
-        register = ((Consumer<Message>) sent -> this.setMessageId(sent.getIdLong())).andThen(register);
-        channel.sendMessage(message).queue(register.andThen(this::onSend));
+
+        Consumer<Message> onSend;
+        if (registerMessageId != null)
+            onSend = sent -> {
+                long messageId = sent.getIdLong();
+                this.setMessageId(messageId);
+                registerMessageId.accept(messageId);
+                this.onSend(sent);
+            };
+        else
+            onSend = sent -> {
+                this.setMessageId(sent.getIdLong());
+                this.onSend(sent);
+            };
+        channel.sendMessage(message).queue(onSend);
     }
 
     public final SamuraiClient getClient() {
@@ -86,6 +99,7 @@ public abstract class Response implements Serializable {
         if (response.getChannelId() == 0) response.setChannelId(getChannelId());
         if (response.getGuildId() == 0) response.setGuildId(getGuildId());
         if (response.getAuthorId() == 0) response.setAuthorId(getAuthorId());
+        response.setClient(client);
         client.submit(response);
     }
 
@@ -93,13 +107,12 @@ public abstract class Response implements Serializable {
 
     /**
      * This can only be used on messages sent by the bot.
-     * @param message This must be a message that comes from the api. Messages built with a message builder are not supported.
+     * If you want to edit a response in a different channel
+     * first use {@link com.github.breadmoirai.samurai7.core.response.Response#setChannelId(long)   Response#setChannelId(long)}
      */
-    public void replace(Message message) {
-        if (message instanceof DataMessage) throw new UnsupportedOperationException("Responses can not replace messages created with the MessageBuilder");
-        this.setChannelId(message.getChannel().getIdLong());
-        this.setGuildId(message.getGuild().getIdLong());
-        this.setMessageId(message.getIdLong());
-        client.submit(this);
+    public EditResponse replace(long messageId) {
+        EditResponse editResponse = new EditResponse(this, messageId);
+        editResponse.setClient(getClient());
+        return editResponse;
     }
 }
