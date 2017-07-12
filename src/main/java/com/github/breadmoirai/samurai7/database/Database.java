@@ -15,15 +15,21 @@
  */
 package com.github.breadmoirai.samurai7.database;
 
+import jdk.management.resource.ResourceId;
 import org.jdbi.v3.core.ConnectionFactory;
 import org.jdbi.v3.core.Handle;
 import org.jdbi.v3.core.Jdbi;
 
+import javax.sql.DataSource;
 import java.sql.*;
 import java.util.Arrays;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+/**
+ * Provides a Singleton instance of a JDBC compatible database.
+ * In order to use the Database, a connection must be provided to {@link com.github.breadmoirai.samurai7.database.Database#create(ConnectionFactory)}.
+ */
 public class Database {
 
     private static final String PROTOCOL = "jdbc:derby:";
@@ -38,11 +44,23 @@ public class Database {
 
     private final Jdbi jdbi;
 
-    public static void create(ConnectionFactory connectionFactory) throws SQLException {
+    /**
+     * Supply a connection to a database.
+     * <p>
+     * This can be used with a lambda expression as such:
+     * <code>
+     * <pre>
+     * {@link com.github.breadmoirai.samurai7.database.Database}.create(() -> {@link java.sql.DriverManager}.{@link java.sql.DriverManager#getConnection(String) getConnection}("jdbc:derby:myDB;create=true"))
+     * </pre>
+     * </code>
+     *
+     * @param connectionFactory This is equivalent to a {@link java.util.function.Supplier Supplier}{@literal <Connection>}
+     */
+    public static void create(ConnectionFactory connectionFactory) {
         INSTANCE = new Database(Jdbi.create(connectionFactory));
     }
 
-    private Database(Jdbi jdbi) throws SQLException {
+    private Database(Jdbi jdbi) {
         this.jdbi = jdbi;
     }
 
