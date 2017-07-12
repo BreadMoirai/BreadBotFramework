@@ -15,6 +15,7 @@
  */
 package com.github.breadmoirai.samurai7.database;
 
+import org.jdbi.v3.core.ConnectionFactory;
 import org.jdbi.v3.core.Handle;
 import org.jdbi.v3.core.Jdbi;
 
@@ -28,32 +29,22 @@ public class Database {
     private static final String PROTOCOL = "jdbc:derby:";
     private static final String DB_NAME = "SamuraiDatabase";
 
-    private static final Database INSTANCE;
+    private static Database INSTANCE;
 
-    static {
-        try {
-            INSTANCE = new Database();
-        } catch (SQLException e) {
-            printSQLException(e);
-            throw new ExceptionInInitializerError("Connection could not be opened");
-        }
-    }
-
-    /**
-     * returns the global instance of a Derby Database
-     * @return
-     */
     public static Database get() {
+        if (INSTANCE == null) throw new NullPointerException("Database has not been created.");
         return INSTANCE;
     }
 
     private final Jdbi jdbi;
 
-    private Database() throws SQLException {
-        connectElseCreate();
-        jdbi = Jdbi.create(PROTOCOL + DB_NAME + ";");
+    public static void create(ConnectionFactory connectionFactory) throws SQLException {
+        INSTANCE = new Database(Jdbi.create(connectionFactory));
     }
 
+    private Database(Jdbi jdbi) throws SQLException {
+        this.jdbi = jdbi;
+    }
 
     public <T, R> R withExtension(Class<T> extensionType, Function<T, R> function) {
         return jdbi.withExtension(extensionType, function::apply);
@@ -89,42 +80,6 @@ public class Database {
             }
             return false;
         });
-    }
-
-    private void connectElseCreate() throws SQLException {
-        boolean created = false;
-        Connection initialConnection = null;
-        try {
-            DriverManager.registerDriver(new org.apache.derby.jdbc.EmbeddedDriver());
-            final String url = PROTOCOL + DB_NAME + ";";
-            initialConnection = DriverManager.getConnection(url);
-        } catch (SQLException e) {
-            if (e.getErrorCode() == 40000
-                    && e.getSQLState().equalsIgnoreCase("XJ004")) {
-                initialConnection = DriverManager.getConnection(PROTOCOL + DB_NAME + ";create=true");
-                System.out.println("New Database created at ./" + DB_NAME);
-            } else {
-                printSQLException(e);
-            }
-        } finally {
-            if (initialConnection == null) {
-                throw new SQLException("Could not connect nor create SamuraiDerbyDatabase");
-            } else {
-                initialConnection.close();
-            }
-        }
-    }
-
-    private static void printSQLException(SQLException e) {
-
-        while (e != null) {
-            System.err.println("\n----- SQLException -----");
-            System.err.println("  SQL State:  " + e.getSQLState());
-            System.err.println("  Error Code: " + e.getErrorCode());
-            System.err.println("  Message:    " + e.getMessage());
-            Arrays.stream(e.getStackTrace()).map(StackTraceElement::toString).filter(s -> s.contains("samurai")).forEach(System.err::println);
-            e = e.getNextException();
-        }
     }
 
 }

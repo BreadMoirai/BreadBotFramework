@@ -1,0 +1,5 @@
+[![JDA Dependency](https://img.shields.io/badge/JDA-message--rw-green.svg)](https://github.com/DV8FromTheWorld/jda/tree/experimental/message-rw)
+[![Samurai7 Dependency](https://img.shields.io/badge/Samurai7-v0.2----alpha-green.svg)](https://github.com/BreadMoirai/Samurai7/releases/tag/v0.2-alpha)
+[![GitHub contributors](https://img.shields.io/github/contributors/BreadMoirai/Samurai7.svg)](https://github.com/BreadMoirai/Samurai7/graphs/contributors)
+[![](https://img.shields.io/github/issues-raw/BreadMoirai/Samurai7.svg)](https://github.com/BreadMoirai/Samurai7/issues)
+[![Discord](https://img.shields.io/discord/284822192821108736.svg)](https://discord.gg/yAMdGU9)
