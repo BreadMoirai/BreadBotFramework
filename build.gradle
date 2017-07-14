@@ -7,7 +7,7 @@ plugins {
 }
 
 group 'com.github.breadmoirai'
-version '0.2_ALPHA'
+version '0.2.1_ALPHA'
 
 sourceCompatibility = 1.8
 
@@ -53,11 +53,11 @@ task sourcesJar(type: Jar, dependsOn: classes) {
 }
 
 task jarMake{
-    doLast {
-        print ':jarMake Creating Jars..'
-        jar
-        sourcesJar
-        javadocJar
-        shadowJar
+    doFirst {
+        println ':jarMake Creating Jars..'
     }
+    dependsOn jar
+    dependsOn sourcesJar
+    dependsOn javadocJar
+    dependsOn shadowJar
 }

@@ -15,14 +15,13 @@
  */
 package com.github.breadmoirai.samurai7.database;
 
-import jdk.management.resource.ResourceId;
 import org.jdbi.v3.core.ConnectionFactory;
 import org.jdbi.v3.core.Handle;
 import org.jdbi.v3.core.Jdbi;
 
-import javax.sql.DataSource;
-import java.sql.*;
-import java.util.Arrays;
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -32,14 +31,11 @@ import java.util.function.Function;
  */
 public class Database {
 
-    private static final String PROTOCOL = "jdbc:derby:";
-    private static final String DB_NAME = "SamuraiDatabase";
-
-    private static Database INSTANCE;
+    private static Database instance;
 
     public static Database get() {
-        if (INSTANCE == null) throw new NullPointerException("Database has not been created.");
-        return INSTANCE;
+        if (instance == null) throw new NullPointerException("Database has not been created.");
+        return instance;
     }
 
     private final Jdbi jdbi;
@@ -48,16 +44,16 @@ public class Database {
      * Supply a connection to a database.
      * <p>
      * This can be used with a lambda expression as such:
-     * <code>
      * <pre>
+     * <code>
      * {@link com.github.breadmoirai.samurai7.database.Database}.create(() -> {@link java.sql.DriverManager}.{@link java.sql.DriverManager#getConnection(String) getConnection}("jdbc:derby:myDB;create=true"))
-     * </pre>
      * </code>
+     * </pre>
      *
      * @param connectionFactory This is equivalent to a {@link java.util.function.Supplier Supplier}{@literal <Connection>}
      */
     public static void create(ConnectionFactory connectionFactory) {
-        INSTANCE = new Database(Jdbi.create(connectionFactory));
+        instance = new Database(Jdbi.create(connectionFactory));
     }
 
     private Database(Jdbi jdbi) {
