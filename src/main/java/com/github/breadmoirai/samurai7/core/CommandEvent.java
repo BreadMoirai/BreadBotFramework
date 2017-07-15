@@ -243,6 +243,7 @@ public abstract class CommandEvent extends Event {
     }
 
     public boolean isNumber(String s) {
+        if (s == null) return false;
         if (s.isEmpty()) return false;
         for (int i = 0; i < s.length(); i++) {
             if (i == 0 && s.charAt(i) == '-') {

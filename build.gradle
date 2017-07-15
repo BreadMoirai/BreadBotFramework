@@ -7,7 +7,7 @@ plugins {
 }
 
 group 'com.github.breadmoirai'
-version '0.2.1_ALPHA'
+version '0.3.0'
 
 sourceCompatibility = 1.8
 
@@ -24,7 +24,6 @@ dependencies {
     compile 'com.github.DV8FromTheWorld:JDA:experimental~message-rw-SNAPSHOT'
 
     //Database
-    compile 'org.apache.derby:derby:10.13.1.1'
     compile 'org.jdbi:jdbi3:3.0.0-beta1'
     compile 'org.jdbi:jdbi3-parent:3.0.0-beta1'
     compile 'org.jdbi:jdbi3-sqlobject:3.0.0-beta1'
@@ -36,6 +35,14 @@ dependencies {
     compile 'org.reflections:reflections:0.9.10'
     //compile 'com.jagrosh:JDA-Utilities:1.2'
     compile 'org.jetbrains:annotations:13.0'
+
+
+    //testing
+//    compile 'com.sedmelluq:lavaplayer:1.2.42'
+//    compile 'org.slf4j:slf4j-simple:1.8.0-alpha2'
+//    compile 'org.apache.derby:derby:10.13.1.1'
+//    compile 'com.google.api-client:google-api-client:1.22.0'
+//    compile 'com.google.apis:google-api-services-youtube:v3-rev183-1.22.0'
 }
 
 shadowJar.classifier = "withDependencies"

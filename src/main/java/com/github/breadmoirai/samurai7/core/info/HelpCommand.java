@@ -25,23 +25,23 @@ import com.github.breadmoirai.samurai7.core.response.Responses;
 import java.util.List;
 import java.util.Map;
 
-public abstract class HelpCommand extends Command {
+public abstract class HelpCommand {
 
-    public static HelpCommand newInstance() {
+    private static Class<? extends ICommand> help;
+
+    public static ICommand newInstance() {
+        if (help != null) {
+            try {
+                return help.newInstance();
+            } catch (InstantiationException | IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
         return null;
     }
 
-    public static void initialize(List<IModule> modules, Map<String, Class<? extends ICommand>> commandMap) {
-
+    public static void setHelp(Class<? extends ICommand> help) {
+        HelpCommand.help = help;
     }
 
-    @Override
-    public Response execute(CommandEvent event) {
-        return null;
-    }
-
-    @Override
-    public Response getHelp(CommandEvent event) {
-        return Responses.of("There's no more help for you.");
-    }
 }

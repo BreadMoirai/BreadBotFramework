@@ -23,6 +23,7 @@ import com.github.breadmoirai.samurai7.core.response.Response;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -42,7 +43,7 @@ import java.util.Optional;
  */
 public abstract class ModuleCommand<M extends IModule> implements ICommand {
 
-    private static Type moduleType;
+    private static Map<Class<? extends ModuleCommand>, Type> commandTypeMap = new HashMap<>();
 
     private M module;
     private CommandEvent event;
@@ -62,10 +63,10 @@ public abstract class ModuleCommand<M extends IModule> implements ICommand {
 
     @Override
     final public boolean setModules(Map<Type, IModule> moduleTypeMap) {
-        if (moduleType == null)
-            moduleType = TypeUtils.getTypeArguments(this.getClass(), ModuleCommand.class).get(ModuleCommand.class.getTypeParameters()[0]);
+        Type moduleType = commandTypeMap.computeIfAbsent(this.getClass(), k -> TypeUtils.getTypeArguments(this.getClass(), ModuleCommand.class).get(ModuleCommand.class.getTypeParameters()[0]));
         //noinspection unchecked
         this.module = (M) moduleTypeMap.get(moduleType);
+
         return module != null;
     }
 

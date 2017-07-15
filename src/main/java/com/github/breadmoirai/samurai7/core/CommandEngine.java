@@ -29,7 +29,8 @@ public interface CommandEngine {
 
     default ICommand getCommand(String key) {
         try {
-            return getCommandClass(key).newInstance();
+            final Class<? extends ICommand> commandClass = getCommandClass(key);
+            if (commandClass != null) return commandClass.newInstance();
         } catch (InstantiationException | IllegalAccessException e) {
             e.printStackTrace();
         }

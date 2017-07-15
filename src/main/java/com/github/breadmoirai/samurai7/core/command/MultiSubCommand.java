@@ -44,7 +44,8 @@ public abstract class MultiSubCommand extends Command {
 
     @Override
     public boolean isMarkedWith(Class<? extends Annotation> annotation) {
-        return super.isMarkedWith(annotation) || METHOD_MAP.get(this.getClass()).get(getEvent().getKey().toLowerCase()).isAnnotationPresent(annotation);
+        final Method method = METHOD_MAP.get(this.getClass()).get(getEvent().getKey().toLowerCase());
+        return super.isMarkedWith(annotation) || (method != null && method.isAnnotationPresent(annotation));
     }
 
     public static String[] register(Class<? extends MultiSubCommand> commandClass) {

@@ -21,11 +21,6 @@ import com.github.breadmoirai.samurai7.core.command.*;
 import net.dv8tion.jda.core.entities.Message;
 import org.apache.commons.lang3.reflect.TypeUtils;
 import org.reflections.Reflections;
-import org.reflections.scanners.SubTypesScanner;
-import org.reflections.scanners.TypeAnnotationsScanner;
-import org.reflections.util.ClasspathHelper;
-import org.reflections.util.ConfigurationBuilder;
-import org.reflections.util.FilterBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,8 +68,7 @@ public class CommandEngineBuilder {
                 logger.error("Key \"" + key + "\" for Command " + commandClass.getSimpleName() + " in Module " + TypeUtils.getTypeArguments(commandClass, ModuleCommand.class).get(ModuleCommand.class.getTypeParameters()[0]).getTypeName() + " is already mapped to Command " + existing.getSimpleName() + " in Module " + TypeUtils.getTypeArguments(existing, ModuleCommand.class).get(ModuleCommand.class.getTypeParameters()[0]).getTypeName());
             } else {
                 commandMap.put(key, commandClass);
-                final String typeName = TypeUtils.getTypeArguments(commandClass, ModuleCommand.class).get(ModuleCommand.class.getTypeParameters()[0]).getTypeName();
-                logger.debug("\"" + key + "\" mapped to " + commandClass.getSimpleName() + " in Module " + typeName.substring(typeName.lastIndexOf('.') + 1));
+                logger.info("\"" + key + "\" mapped to " + commandClass.getSimpleName());
             }
         }
         return this;
@@ -85,14 +79,14 @@ public class CommandEngineBuilder {
         final String[] keys;
         if (MultiCommand.class.isAssignableFrom(commandClass)) {
             keys = MultiCommand.register((Class<? extends MultiCommand>) commandClass);
-        } else if (ModuleMultiCommand.class.isAssignableFrom(commandClass)) {
-            keys = ModuleMultiCommand.register((Class<? extends ModuleMultiCommand>) commandClass);
-        } else if (BiModuleMultiCommand.class.isAssignableFrom(commandClass)) {
-            keys = BiModuleMultiCommand.register((Class<? extends BiModuleMultiCommand>) commandClass);
         } else if (MultiSubCommand.class.isAssignableFrom(commandClass)) {
             keys = MultiSubCommand.register((Class<? extends MultiSubCommand>) commandClass);
+        } else if (ModuleMultiCommand.class.isAssignableFrom(commandClass)) {
+            keys = ModuleMultiCommand.register((Class<? extends ModuleMultiCommand>) commandClass);
         } else if (ModuleMultiSubCommand.class.isAssignableFrom(commandClass)) {
             keys = ModuleMultiSubCommand.register((Class<? extends ModuleMultiSubCommand>) commandClass);
+        } else if (BiModuleMultiCommand.class.isAssignableFrom(commandClass)) {
+            keys = BiModuleMultiCommand.register((Class<? extends BiModuleMultiCommand>) commandClass);
         } else if (BiModuleMultiSubCommand.class.isAssignableFrom(commandClass)) {
             keys = BiModuleMultiSubCommand.register((Class<? extends BiModuleMultiSubCommand>) commandClass);
         } else if (commandClass.isAnnotationPresent(Key.class)) {
@@ -108,10 +102,11 @@ public class CommandEngineBuilder {
     }
 
     public CommandEngineBuilder registerCommand(String commandPackagePrefix) {
-        Reflections reflections = new Reflections(new ConfigurationBuilder()
-                .filterInputsBy(new FilterBuilder().include(FilterBuilder.prefix(commandPackagePrefix)))
-                .setUrls(ClasspathHelper.forPackage(commandPackagePrefix))
-                .setScanners(new SubTypesScanner(), new TypeAnnotationsScanner()));
+//        Reflections reflections = new Reflections(new ConfigurationBuilder()
+//                .filterInputsBy(new FilterBuilder().include(FilterBuilder.prefix(commandPackagePrefix)))
+//                .setUrls(ClasspathHelper.forPackage(commandPackagePrefix))
+//                .setScanners(new SubTypesScanner(), new TypeAnnotationsScanner()));
+        final Reflections reflections = new Reflections(commandPackagePrefix);
         final Set<Class<?>> classes = reflections.getTypesAnnotatedWith(Key.class);
         for (Class<?> commandClass : classes) {
             if (ICommand.class.isAssignableFrom(commandClass)) {
@@ -138,7 +133,7 @@ public class CommandEngineBuilder {
 
 
     public boolean hasModule(Class<? extends IModule> moduleClass) {
-        return moduleClass != null && modules.stream().map(Object::getClass).anyMatch(moduleClass::equals);
+        return moduleClass != null && modules.stream().map(Object::getClass).anyMatch(moduleClass::isAssignableFrom);
     }
 
     /**

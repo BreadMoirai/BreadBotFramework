@@ -17,18 +17,19 @@ package com.github.breadmoirai.samurai7.core.command;
 
 import com.github.breadmoirai.samurai7.core.CommandEvent;
 import com.github.breadmoirai.samurai7.core.IModule;
-import org.apache.commons.lang3.reflect.TypeUtils;
 import com.github.breadmoirai.samurai7.core.response.Response;
+import org.apache.commons.lang3.reflect.TypeUtils;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
 public abstract class BiModuleCommand<M1 extends IModule, M2 extends IModule> implements ICommand {
 
-    private static Type moduleType1, moduleType2;
+    private static Map<Class<? extends BiModuleCommand>, Type[]> commandTypeMap = new HashMap<>();
 
     private M1 module1;
     private M2 module2;
@@ -54,16 +55,15 @@ public abstract class BiModuleCommand<M1 extends IModule, M2 extends IModule> im
 
     @Override
     final public boolean setModules(Map<Type, IModule> moduleTypeMap) {
-        if (moduleType1 == null) {
-            final Map<TypeVariable<?>, Type> typeArguments = TypeUtils.getTypeArguments(this.getClass(), ModuleCommand.class);
+        Type[] moduleType = commandTypeMap.computeIfAbsent(this.getClass(), k -> {
+            final Map<TypeVariable<?>, Type> typeArguments = TypeUtils.getTypeArguments(this.getClass(), BiModuleCommand.class);
             final TypeVariable<Class<ModuleCommand>>[] typeParameters = ModuleCommand.class.getTypeParameters();
-            moduleType1 = typeArguments.get(typeParameters[0]);
-            moduleType2 = typeArguments.get(typeParameters[1]);
-        }
+            return new Type[]{typeArguments.get(typeParameters[0]), typeArguments.get(typeParameters[1])};
+        });
         //noinspection unchecked
-        this.module1 = (M1) moduleTypeMap.get(moduleType1);
+        this.module1 = (M1) moduleType[0];
         //noinspection unchecked
-        this.module2 = (M2) moduleTypeMap.get(moduleType2);
+        this.module2 = (M2) moduleType[1];
 
         return module1 != null && module2 != null;
     }

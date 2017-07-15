@@ -15,6 +15,7 @@
  */
 package com.github.breadmoirai.samurai7.core.impl;
 
+import com.github.breadmoirai.samurai7.core.CommandEngine;
 import com.github.breadmoirai.samurai7.core.ICommandEventFactory;
 import com.github.breadmoirai.samurai7.core.IModule;
 import com.github.breadmoirai.samurai7.core.SamuraiClient;
@@ -31,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 public class SamuraiClientBuilder {
@@ -38,6 +40,7 @@ public class SamuraiClientBuilder {
     private List<IModule> modules;
     private ICommandEventFactory commandEventFactory;
     private SamuraiClientImpl samuraiClient;
+    private Consumer<CommandEngineBuilder> commandEngineModifier;
 
     public SamuraiClientBuilder() {
         modules = new ArrayList<>();
@@ -103,13 +106,24 @@ public class SamuraiClientBuilder {
     /**
      * Adding this module will enable {@link com.github.breadmoirai.samurai7.modules.source.SourceGuild @SourceGuild} annotations on Commands.
      *
-     * @param sourceGuildId
+     * @param sourceGuildId The guild id
      */
     public SamuraiClientBuilder addSourceModule(long sourceGuildId) {
         addModule(new SourceModule(sourceGuildId));
         return this;
     }
 
+    /**
+     * Can configure the CommandEngineBuilder independently from a module.
+     */
+    public SamuraiClientBuilder configure(Consumer<CommandEngineBuilder> consumer) {
+        if (commandEngineModifier == null) {
+            commandEngineModifier = consumer;
+        } else {
+            commandEngineModifier = commandEngineModifier.andThen(consumer);
+        }
+        return this;
+    }
 
     /**
      * Not much use for this at the moment.
@@ -141,6 +155,7 @@ public class SamuraiClientBuilder {
         final CommandEngineBuilder commandEngineBuilder = new CommandEngineBuilder(modules);
         if (!commandEngineBuilder.hasModule(IPrefixModule.class)) modules.add(new DefaultPrefixModule("!"));
         if (commandEventFactory == null) commandEventFactory = new CommandEventFactoryImpl(commandEngineBuilder);
+        commandEngineModifier.accept(commandEngineBuilder);
         samuraiClient = new SamuraiClientImpl(modules, eventManager, commandEventFactory, commandEngineBuilder);
         return eventManager;
     }

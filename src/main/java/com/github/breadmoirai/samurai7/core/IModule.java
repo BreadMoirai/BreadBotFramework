@@ -16,6 +16,8 @@
 package com.github.breadmoirai.samurai7.core;
 
 import com.github.breadmoirai.samurai7.core.impl.CommandEngineBuilder;
+import com.github.breadmoirai.samurai7.core.response.Response;
+import com.github.breadmoirai.samurai7.core.response.Responses;
 
 public interface IModule {
 
@@ -24,6 +26,8 @@ public interface IModule {
     }
 
     void init(CommandEngineBuilder engineBuilder, SamuraiClient client);
+
+    default Response getHelp() {return Responses.of("This is not the help you are looking for");}
 //
 //    Stream<CommandInfo> getCommandInfo();
 }

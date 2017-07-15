@@ -17,15 +17,17 @@ package com.github.breadmoirai.samurai7.core.command;
 
 import com.github.breadmoirai.samurai7.core.CommandEvent;
 import com.github.breadmoirai.samurai7.core.IModule;
-import org.apache.commons.lang3.reflect.TypeUtils;
 import com.github.breadmoirai.samurai7.core.response.Response;
+import org.apache.commons.lang3.reflect.TypeUtils;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Map;
 
 public abstract class ModuleMultiCommand<M extends IModule> extends ModuleCommand<M> {
 
@@ -35,6 +37,7 @@ public abstract class ModuleMultiCommand<M extends IModule> extends ModuleComman
     public Response execute(CommandEvent event, M module) {
         final Method method = METHOD_MAP.get(this.getClass()).get(event.getKey().toLowerCase());
         try {
+            if (method != null)
             return (Response) method.invoke(this, event, module);
         } catch (IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();
@@ -44,11 +47,13 @@ public abstract class ModuleMultiCommand<M extends IModule> extends ModuleComman
 
     @Override
     public boolean isMarkedWith(Class<? extends Annotation> annotation) {
-        return super.isMarkedWith(annotation) || METHOD_MAP.get(this.getClass()).get(getEvent().getKey().toLowerCase()).isAnnotationPresent(annotation);
+        final Method method = METHOD_MAP.get(this.getClass()).get(getEvent().getKey().toLowerCase());
+        return super.isMarkedWith(annotation) || (method != null && method.isAnnotationPresent(annotation));
     }
 
     public static String[] register(Class<? extends ModuleMultiCommand> commandClass) {
-        final Type moduleType = TypeUtils.getTypeArguments(commandClass.getClass(), ModuleCommand.class).get(ModuleCommand.class.getTypeParameters()[0]);
+        final Map<TypeVariable<?>, Type> typeArguments = TypeUtils.getTypeArguments(commandClass, ModuleCommand.class);
+        final Type moduleType = typeArguments.get(ModuleCommand.class.getTypeParameters()[0]);
         final HashMap<String, Method> map = new HashMap<>();
         METHOD_MAP.put(commandClass, map);
         return Arrays.stream(commandClass.getDeclaredMethods())

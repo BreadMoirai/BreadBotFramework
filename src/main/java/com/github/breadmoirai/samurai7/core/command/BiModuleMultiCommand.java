@@ -46,11 +46,12 @@ public abstract class BiModuleMultiCommand<M1 extends IModule, M2 extends IModul
 
     @Override
     public boolean isMarkedWith(Class<? extends Annotation> annotation) {
-        return super.isMarkedWith(annotation) || METHOD_MAP.get(this.getClass()).get(getEvent().getKey().toLowerCase()).isAnnotationPresent(annotation);
+        final Method method = METHOD_MAP.get(this.getClass()).get(getEvent().getKey().toLowerCase());
+        return super.isMarkedWith(annotation) || (method != null && method.isAnnotationPresent(annotation));
     }
 
     public static String[] register(Class<? extends BiModuleMultiCommand> commandClass) {
-        final Map<TypeVariable<?>, Type> typeArguments = TypeUtils.getTypeArguments(commandClass.getClass(), BiModuleCommand.class);
+        final Map<TypeVariable<?>, Type> typeArguments = TypeUtils.getTypeArguments(commandClass, BiModuleCommand.class);
         final TypeVariable<Class<BiModuleCommand>>[] typeParameters = BiModuleCommand.class.getTypeParameters();
         final Type moduleType1 = typeArguments.get(typeParameters[0]);
         final Type moduleType2 = typeArguments.get(typeParameters[1]);

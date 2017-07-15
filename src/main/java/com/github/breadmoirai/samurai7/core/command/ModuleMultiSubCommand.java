@@ -24,9 +24,11 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public abstract class ModuleMultiSubCommand<M extends IModule> extends ModuleCommand<M> {
 
@@ -47,12 +49,13 @@ public abstract class ModuleMultiSubCommand<M extends IModule> extends ModuleCom
 
     @Override
     public boolean isMarkedWith(Class<? extends Annotation> annotation) {
-        return super.isMarkedWith(annotation) || METHOD_MAP.get(this.getClass()).get(getEvent().getKey().toLowerCase()).isAnnotationPresent(annotation);
+        final Method method = METHOD_MAP.get(this.getClass()).get(getEvent().getKey().toLowerCase());
+        return super.isMarkedWith(annotation) || (method != null && method.isAnnotationPresent(annotation));
     }
 
     public static String[] register(Class<? extends ModuleMultiSubCommand> commandClass) {
         if (!commandClass.isAnnotationPresent(Key.class)) return null;
-        final Type moduleType = TypeUtils.getTypeArguments(commandClass.getClass(), ModuleCommand.class).get(ModuleCommand.class.getTypeParameters()[0]);
+        final Type moduleType = TypeUtils.getTypeArguments(commandClass, ModuleCommand.class).get(ModuleCommand.class.getTypeParameters()[0]);
         final HashMap<String, Method> map = new HashMap<>();
         METHOD_MAP.put(commandClass, map);
         Arrays.stream(commandClass.getDeclaredMethods())

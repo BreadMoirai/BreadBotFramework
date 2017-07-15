@@ -24,7 +24,6 @@ import com.github.breadmoirai.samurai7.core.response.Response;
 
 import java.util.stream.Collectors;
 
-@Admin
 @Key("admin")
 public class AdminCommand extends ModuleCommand<IAdminModule> {
     @Override

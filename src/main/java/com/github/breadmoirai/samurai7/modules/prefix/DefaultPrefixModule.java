@@ -51,7 +51,7 @@ public class DefaultPrefixModule implements IPrefixModule {
 
     @Override
     public void changePrefix(long guildId, String newPrefix) {
-        Database.get().useHandle(handle -> handle.update("UPDATE Guild SET Prefix = ? WHERE GuildId = ?", newPrefix, guildId));
+        Database.get().useHandle(handle -> handle.update("UPDATE GuildPrefix SET prefix = ? WHERE guild = ?", newPrefix, guildId));
     }
 
 }

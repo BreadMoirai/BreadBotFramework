@@ -54,7 +54,6 @@ public class CommandEngineImpl implements CommandEngine {
             } while (IModule.class.isAssignableFrom(moduleClass = moduleClass.getSuperclass()));
         }
         this.moduleTypeMap = Collections.unmodifiableMap(typeMap);
-        HelpCommand.initialize(modules, commandMap);
     }
 
     private List<Class<?>> getInterfaceHeirarchy(Class<?> from, Class<?> toSuper) {
@@ -76,10 +75,7 @@ public class CommandEngineImpl implements CommandEngine {
     public Optional<Response> execute(CommandEvent event) {
         ICommand command;
         final String key = event.getKey().toLowerCase();
-        if (key.equals("help")) {
-            command = HelpCommand.newInstance();
-        } else
-            command = getCommand(key);
+        command = getCommand(key);
         if (command != null) {
             command.setEvent(event);
             if (command.setModules(moduleTypeMap)
@@ -96,6 +92,7 @@ public class CommandEngineImpl implements CommandEngine {
                     if (r.getMessageId() == 0)
                         r.setMessageId(evt.getMessageId());
                 });
+                return call;
             }
         }
         return Optional.empty();
@@ -103,7 +100,7 @@ public class CommandEngineImpl implements CommandEngine {
 
     @Override
     public Class<? extends ICommand> getCommandClass(String key) {
-        return null;
+        return commandMap.get(key);
     }
 
     @Override
@@ -113,6 +110,6 @@ public class CommandEngineImpl implements CommandEngine {
 
     @Override
     public boolean hasCommand(String key) {
-        return false;
+        return commandMap.containsKey(key);
     }
 }
