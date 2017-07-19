@@ -15,6 +15,19 @@
 This is a simple framework for bots that uses modules and reflection to make it easy.
 
 This framework is built ontop of [JDA](https://github.com/DV8FromTheWorld/JDA)
+## Download
+You can check the releases tab. This is also distributed via [bintray][bintrayLink].
+
+```groovy
+repositories {
+    maven { url 'https://dl.bintray.com/breadmoirai/maven'}
+}
+
+dependencies {
+    compile 'net.breadmoirai:SamuraiBotFramework:0.3.3'
+}
+```
+
 
 ## Example
 **Main**

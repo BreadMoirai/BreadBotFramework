@@ -63,6 +63,7 @@ public abstract class ModuleMultiCommand<M extends IModule> extends ModuleComman
                 .filter(method -> method.getParameterTypes()[0] == CommandEvent.class)
                 .filter(method -> method.getParameterTypes()[1] == moduleType)
                 .flatMap(method -> Arrays.stream(method.getAnnotation(Key.class).value())
+                        .map(String::toLowerCase)
                         .peek(s -> map.put(s, method)))
                 .toArray(String[]::new);
     }
