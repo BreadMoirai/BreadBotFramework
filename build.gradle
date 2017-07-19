@@ -3,25 +3,25 @@ plugins {
     id 'idea'
     id 'com.github.johnrengelman.shadow' version '1.2.4'
     id 'com.sedmelluq.jdaction' version '1.0.1'
-    id 'maven'
+    id 'com.jfrog.bintray' version '1.7.2'
+    id 'maven-publish'
+    id 'signing'
 }
 
-group 'com.github.breadmoirai'
-version '0.3.0'
+group 'net.breadmoirai'
+version '0.3.3'
 
 sourceCompatibility = 1.8
-
-sourceSets.main.java.exclude('com/github/breadmoirai/samurai7/responses/list')
+targetCompatibility = 1.8
 
 repositories {
     jcenter()
     mavenCentral()
-    maven { url 'https://jitpack.io' }
 }
 
 dependencies {
     //Discord Java Library
-    compile 'com.github.DV8FromTheWorld:JDA:experimental~message-rw-SNAPSHOT'
+    compile 'net.dv8tion:JDA:3.2.0_227'
 
     //Database
     compile 'org.jdbi:jdbi3:3.0.0-beta1'
@@ -45,6 +45,42 @@ dependencies {
 //    compile 'com.google.apis:google-api-services-youtube:v3-rev183-1.22.0'
 }
 
+bintray {
+    user = 'breadmoirai'
+    key = new File('bintray.key').getText()
+    publications = ["BintrayRelease"]
+    pkg {
+        repo = 'maven'
+        name = 'SBF'
+        licenses = ['Apache-2.0']
+        vcsUrl = 'https://github.com/breadmoirai/SamuraiBotFramework.git'
+        publish = true
+        version {
+            name = project.version
+            released = new Date()
+        }
+    }
+}
+
+publishing {
+    publications {
+        BintrayRelease(MavenPublication) {
+            from components.java
+            groupId group
+            artifactId archivesBaseName
+            version version
+            artifact javadocJar
+            artifact sourcesJar
+        }
+    }
+}
+
+
+
+compileJava.options.encoding = 'UTF-8'
+
+jar.baseName = 'SBF'
+
 shadowJar.classifier = "withDependencies"
 javadoc.source = sourceSets.main.allJava
 javadoc.failOnError = false
@@ -60,9 +96,6 @@ task sourcesJar(type: Jar, dependsOn: classes) {
 }
 
 task jarMake{
-    doFirst {
-        println ':jarMake Creating Jars..'
-    }
     dependsOn jar
     dependsOn sourcesJar
     dependsOn javadocJar
