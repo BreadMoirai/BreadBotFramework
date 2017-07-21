@@ -99,3 +99,8 @@ task jarMake{
     dependsOn javadocJar
     dependsOn shadowJar
 }
+
+task javadocDocsDir(type: Copy) {
+    from javadoc.destinationDir
+    into 'docs'
+}
