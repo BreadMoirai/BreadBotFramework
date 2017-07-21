@@ -219,8 +219,14 @@ public abstract class CommandEvent extends Event {
         return DiscordPatterns.LINES.split(getContent());
     }
 
+    /**
+     * Retrieves the contents of the message as Ints. A message of {@code "hello 1 3 9-6 4-5 what 30 20} will return an IntStream with the elements of {@code [1,3,9,8,7,6,4,5,30,20]}.
+     * If a number or range of numbers fall above the maximum size of an Integer, it will not be included in the returned IntStream.
+     * @return {@link java.util.stream.IntStream} of ints in the order declared by user.
+     * <p> if such is the case that there are no integers within the message, an Empty IntStream is returned.</p>
+     */
     public IntStream getIntArgs() {
-        return Arrays.stream(getContent().split(" ")).flatMapToInt(this::parseIntArg);
+        return getContent() == null ? IntStream.empty() : Arrays.stream(getContent().split(" ")).flatMapToInt(this::parseIntArg);
     }
 
     public IntStream parseIntArg(String s) {

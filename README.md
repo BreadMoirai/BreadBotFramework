@@ -25,7 +25,7 @@ repositories {
 }
 
 dependencies {
-    compile 'net.breadmoirai:SamuraiBotFramework:0.3.8'
+    compile 'net.breadmoirai:SamuraiBotFramework:0.3.9'
 }
 ```
 
