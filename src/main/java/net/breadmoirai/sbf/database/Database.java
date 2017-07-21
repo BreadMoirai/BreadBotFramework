@@ -61,7 +61,12 @@ public class Database {
         this.jdbi = jdbi;
     }
 
-    public boolean tableExists(String tableName) {
+    public static boolean hasTable(String tableName) {
+        if (instance == null) throw new NullPointerException("Database has not been created.");
+        return instance.tableExists(tableName);
+    }
+
+    private boolean tableExists(String tableName) {
         final String s = tableName.toUpperCase();
         return jdbi.withHandle(handle -> {
             try {

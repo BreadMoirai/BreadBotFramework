@@ -29,7 +29,7 @@ public class DefaultPrefixModule implements IPrefixModule {
 
     @Override
     public void init(CommandEngineBuilder engineBuilder, SamuraiClient client) {
-        if (!Database.get().tableExists("GuildPrefix")) {
+        if (!Database.hasTable("GuildPrefix")) {
             Database.get().useHandle(handle -> handle.execute("CREATE TABLE GuildPrefix ( " +
                     "guild BIGINT PRIMARY KEY, " +
                     "prefix VARCHAR(20))"));

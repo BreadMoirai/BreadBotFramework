@@ -36,6 +36,8 @@ import net.breadmoirai.sbf.core.impl.SamuraiClientBuilder;
 
 public class Main {
     public static void main(String[] args) {
+        ...
+        long myId = 123456789L;
         SamuraiClientBuilder scb = new SamuraiClientBuilder()
                 .addDefaultPrefixModule("!")
                 .addAdminModule(member -> {
@@ -63,6 +65,27 @@ public class Main {
     }
 }
 ```
+Please note, many of the default modules provided by me rely on a Database such as the PrefixModule which stores strings in a Database.
+The database is a thread-safe singleton instance of [JDBI](http://jdbi.github.io/) which will work with any JDBC connection.
+
+The database should be initialized first before the SamuraiClient as in the following example where a connection to an embedded apache derby database is provided.
+The Database#create method will take a [Supplier\<Connection\>](https://docs.oracle.com/javase/8/docs/api/java/util/function/Supplier.html).
+```java
+public class Main {
+    public static void main(String[] args) {
+        try {
+            DriverManager.registerDriver(new org.apache.derby.jdbc.EmbeddedDriver());
+            Database.create(() -> DriverManager.getConnection("jdbc:derby:MyDatabase;create=true"));
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return;
+        }
+        ...
+    }
+}
+```
+
+
 **Shutdown Command**
 ```java
 @Key("shutdown")
