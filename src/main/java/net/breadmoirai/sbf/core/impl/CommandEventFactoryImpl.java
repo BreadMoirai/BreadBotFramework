@@ -40,7 +40,7 @@ public class CommandEventFactoryImpl implements ICommandEventFactory {
         String contentRaw = message.getRawContent();
         String key, content;
         final Matcher matcher = DiscordPatterns.USER_MENTION_PREFIX.matcher(contentRaw);
-        if (matcher.matches()) {
+        if (matcher.find() && matcher.start() == 0 && matcher.group(1).equals(event.getJDA().getSelfUser().getId())) {
             contentRaw = contentRaw.substring(matcher.end(1)).trim();
             final String[] split = DiscordPatterns.WHITE_SPACE.split(contentRaw, 2);
             key = split[0];
