@@ -41,11 +41,11 @@ public class CommandEventFactoryImpl implements ICommandEventFactory {
         String key, content;
         final Matcher matcher = DiscordPatterns.USER_MENTION_PREFIX.matcher(contentRaw);
         if (matcher.find() && matcher.start() == 0 && matcher.group(1).equals(event.getJDA().getSelfUser().getId())) {
-            contentRaw = contentRaw.substring(matcher.end(1)).trim();
+            contentRaw = contentRaw.substring(matcher.end()).trim();
             final String[] split = DiscordPatterns.WHITE_SPACE.split(contentRaw, 2);
             key = split[0];
             content = split.length > 1 ? split[1].trim() : null;
-            return new MessageReceivedCommandEvent(client ,event, message, prefix, key, content);
+            return new MessageReceivedCommandEvent(client, event, message, prefix, key, content);
         } else {
             if (contentRaw.startsWith(prefix)) {
                 final String[] split = DiscordPatterns.WHITE_SPACE.split(contentRaw.substring(prefix.length()), 2);

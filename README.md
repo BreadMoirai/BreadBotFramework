@@ -25,7 +25,7 @@ repositories {
 }
 
 dependencies {
-    compile 'net.breadmoirai:SamuraiBotFramework:0.3.3'
+    compile 'net.breadmoirai:SamuraiBotFramework:0.3.8'
 }
 ```
 
@@ -49,6 +49,7 @@ public class Main {
                     if (member.getUser().getIdLong() == myId) return true;
                     else return member.canInteract(member.getGuild().getSelfMember()) && member.hasPermission(Permission.KICK_MEMBERS);
                 })
+                .addModule(new OwnerModule(myId))
                 .registerCommand(ShutdownCommand.class)
                 .addModule(new CatDogModule());
         
@@ -90,16 +91,12 @@ public class Main {
 #### Shutdown Command
 This is an command independent of any module.
 ```java
+@Owner //the @Owner annotation comes with the OwnerModule.
 @Key("shutdown")
 public class ShutdownCommand extends Command {
     public Response execute(CommandEvent event) {
-        long myId = 123456789L;
-        if (event.getAuthorId() != myId) {
-            return Responses.of("What you do! Go away.");
-        } else {
-            event.getJDA().shutdown();
-            return null;
-        }
+        event.getJDA().shutdown();
+        return null;
     }
 }
 ```

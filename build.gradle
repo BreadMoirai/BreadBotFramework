@@ -9,7 +9,7 @@ plugins {
 }
 
 group 'net.breadmoirai'
-version '0.3.6'
+version '0.3.8'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
