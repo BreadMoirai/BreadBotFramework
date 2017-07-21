@@ -18,6 +18,7 @@ package net.breadmoirai.sbf.database;
 import org.jdbi.v3.core.ConnectionFactory;
 import org.jdbi.v3.core.Handle;
 import org.jdbi.v3.core.Jdbi;
+import org.jdbi.v3.sqlobject.SqlObjectPlugin;
 
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -33,9 +34,9 @@ public class Database {
 
     private static Database instance;
 
-    public static Database get() {
+    public static Jdbi get() {
         if (instance == null) throw new NullPointerException("Database has not been created.");
-        return instance;
+        return instance.jdbi;
     }
 
     private final Jdbi jdbi;
@@ -58,22 +59,6 @@ public class Database {
 
     private Database(Jdbi jdbi) {
         this.jdbi = jdbi;
-    }
-
-    public <T, R> R withExtension(Class<T> extensionType, Function<T, R> function) {
-        return jdbi.withExtension(extensionType, function::apply);
-    }
-
-    public <T> void useExtension(Class<T> extensionType, Consumer<T> consumer) {
-        jdbi.useExtension(extensionType, consumer::accept);
-    }
-
-    public <R> R withHandle(Function<Handle, R> callback) {
-        return jdbi.withHandle(callback::apply);
-    }
-
-    public void useHandle(Consumer<Handle> callback) {
-        jdbi.useHandle(callback::accept);
     }
 
     public boolean tableExists(String tableName) {

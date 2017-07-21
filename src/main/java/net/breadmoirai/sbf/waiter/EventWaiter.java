@@ -1,5 +1,5 @@
 /*
- *       Copyright 2017 Ton Ly (BreadMoirai)
+ *       Copyright 2016 John Grosh (jagrosh).
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -12,6 +12,8 @@
  *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *   See the License for the specific language governing permissions and
  *   limitations under the License.
+ *
+ *   Modified by Ton Ly (BreadMoirai)
  */
 package net.breadmoirai.sbf.waiter;
 
@@ -29,7 +31,8 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
- * <p>Original class from <a href="https://github.com/JDA-Applications/JDA-Utilities/blob/master/src/main/java/com/jagrosh/jdautilities/waiter/EventWaiter.java">EventWaiter.java</a> in Github Project <a href="https://github.com/JDA-Applications/JDA-Utilities">JDA -Utilities</a> created by John Grosh (jagrosh)
+ * <p>Original class from <a href="https://github.com/JDA-Applications/JDA-Utilities/blob/master/src/main/java/com/jagrosh/jdautilities/waiter/EventWaiter.java">EventWaiter.java</a> in Github Project <a href="https://github.com/JDA-Applications/JDA-Utilities">JDA -Utilities</a> created by John Grosh (jagrosh).
+ * Modified by Ton Ly (BreadMoirai)
  *
  * <p>The EventWaiter is capable of handling specialized forms of {@link net.dv8tion.jda.core.events.Event Event}
  * that must meet criteria not normally specifiable without implementation of an {@link net.dv8tion.jda.core.hooks.EventListener EventListener}.
