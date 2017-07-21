@@ -6,6 +6,7 @@
 [issuesLink]: https://github.com/BreadMoirai/Samurai7/issues
 [discordWidget]: https://discordapp.com/api/guilds/284822192821108736/widget.png
 [discordInvite]: https://discord.gg/yAMdGU9
+
 [ ![bintrayImage][] ][bintrayLink] 
 [ ![contributorsImage][] ][contributorsLink]
 [ ![issuesImage][] ][issuesLink]
@@ -28,6 +29,8 @@ dependencies {
 }
 ```
 
+### Javadoc
+Web access to the javadocs is provided [here](https://breadmoirai.github.io/SamuraiBotFramework/). Please note that this is a work in progress and it is likely something you would like documented is not documented. Please open an issue via Github [Issues](https://github.com/BreadMoirai/SamuraiBotFramework/issues) or contact me directly through my [Discord][discordInvite].
 
 ## Example
 **Main**
