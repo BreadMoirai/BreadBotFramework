@@ -89,6 +89,11 @@ public class SerializableCommandEvent extends CommandEvent implements Serializab
     }
 
     @Override
+    public Message getMessage() {
+        return null;
+    }
+
+    @Override
     public User getAuthor() {
         return getJDA().getUserById(getAuthorId());
     }
@@ -174,7 +179,48 @@ public class SerializableCommandEvent extends CommandEvent implements Serializab
     }
 
     @Override
+    public void reply(String message) {
+
+    }
+
+    @Override
+    public void reply(MessageEmbed message) {
+
+    }
+
+    @Override
+    public void reply(Message message) {
+
+    }
+
+    @Override
+    public void replyPrivate(String message) {
+
+    }
+
+    @Override
+    public void replyPrivate(MessageEmbed message) {
+
+    }
+
+    @Override
+    public void replyPrivate(Message message) {
+
+    }
+
+    @Override
+    public void replyReaction(Emote emote) {
+
+    }
+
+    @Override
+    public void replyReaction(String emoji) {
+
+    }
+
+    @Override
     public CommandEvent serialize() {
         return this;
     }
+
 }

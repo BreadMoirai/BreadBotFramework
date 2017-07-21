@@ -15,6 +15,8 @@
  */
 package net.breadmoirai.sbf.core;
 
+import net.breadmoirai.sbf.core.response.Responses;
+import net.breadmoirai.sbf.core.response.simple.BasicResponse;
 import net.breadmoirai.sbf.util.DiscordPatterns;
 import net.breadmoirai.sbf.util.UnknownEmote;
 import net.dv8tion.jda.core.JDA;
@@ -35,7 +37,6 @@ import java.util.stream.IntStream;
  * This holds the context of a command including arguments.
  */
 public abstract class CommandEvent extends Event {
-
 
     private final SamuraiClient client;
 
@@ -66,6 +67,8 @@ public abstract class CommandEvent extends Event {
      * @see CommandEvent#getArgs()
      */
     public abstract  String getContent();
+
+    public abstract Message getMessage();
 
     /**
      * The {@link net.dv8tion.jda.core.entities.User User} who invoked the command.
@@ -197,16 +200,20 @@ public abstract class CommandEvent extends Event {
         return getContent() != null && !getContent().trim().isEmpty();
     }
 
-    /**
-     * @return only plain text and default emojis
-     */
-    public String getStrippedContent() {
-        return getArgs().stream().filter(s -> !DiscordPatterns.FORMATTED.matcher(s).matches()).collect(Collectors.joining(" "));
-    }
+
+    public abstract void reply(String message);
+    public abstract void reply(MessageEmbed message);
+    public abstract void reply(Message message);
+    public abstract void replyPrivate(String message);
+    public abstract void replyPrivate(MessageEmbed message);
+    public abstract void replyPrivate(Message message);
+    public abstract void replyReaction(Emote emote);
+    public abstract void replyReaction(String emoji);
+
 
     /**
-     *
-     * @return
+     * This splits the message into lines separated via "\n"
+     * @return an array of Strings
      */
     public String[] lines() {
         return DiscordPatterns.LINES.split(getContent());
@@ -277,7 +284,8 @@ public abstract class CommandEvent extends Event {
     }
 
     /**
-     * @return a serializable implementation of ICommandContext.
+     * Do not use. This is a work in progress
+     * @return shit.
      */
     public abstract CommandEvent serialize();
 }

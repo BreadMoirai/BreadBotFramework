@@ -17,6 +17,7 @@ package net.breadmoirai.sbf.core;
 
 import net.breadmoirai.sbf.core.response.Response;
 import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.entities.User;
 
 import java.util.Optional;
 
@@ -26,7 +27,7 @@ public interface SamuraiClient {
 
     boolean hasModule(Class<? extends IModule> moduleClass);
 
-    <T extends IModule> T getModule(Class<T> moduleClass);
+    <T extends IModule> Optional<T> getModule(Class<T> moduleClass);
 
     Optional<IModule> getModule(String moduleName);
 
@@ -37,4 +38,6 @@ public interface SamuraiClient {
     void submit(long channeId, Response response);
 
     void submit(TextChannel channel, Response response);
+
+    void submit(User user, Response response);
 }

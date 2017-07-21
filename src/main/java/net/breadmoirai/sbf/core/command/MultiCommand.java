@@ -49,7 +49,8 @@ public abstract class MultiCommand extends Command {
         METHOD_MAP.put(commandClass, map);
         return Arrays.stream(commandClass.getDeclaredMethods())
                 .filter(method -> method.isAnnotationPresent(Key.class))
-                .filter(method -> Response.class.isAssignableFrom(method.getReturnType()))
+                .filter(method -> Response.class.isAssignableFrom(method.getReturnType())
+                        || method.getReturnType()==Void.TYPE)
                 .filter(method -> method.getParameterCount() == 1)
                 .filter(method -> method.getParameterTypes()[0] == CommandEvent.class)
                 .flatMap(method -> Arrays.stream(method.getAnnotation(Key.class).value())

@@ -23,6 +23,7 @@ import net.breadmoirai.sbf.core.response.Response;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.ReadyEvent;
 import net.dv8tion.jda.core.events.message.MessageDeleteEvent;
 import net.dv8tion.jda.core.events.message.guild.GenericGuildMessageEvent;
@@ -32,6 +33,7 @@ import net.dv8tion.jda.core.hooks.IEventManager;
 import net.dv8tion.jda.core.hooks.InterfacedEventManager;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 import net.dv8tion.jda.core.hooks.SubscribeEvent;
+import org.jetbrains.annotations.Contract;
 
 import java.lang.ref.Reference;
 import java.lang.ref.WeakReference;
@@ -80,17 +82,25 @@ public class SamuraiClientImpl implements SamuraiClient {
      * Finds and returns the first Module that is assignable to the provided {@code moduleClass}
      *
      * @param moduleClass The class of the Module to find
-     * @return The module if found. Else {@code null}.
+     * @return Optional containing the module if found.
      */
+    @Contract("_->!null")
     @Override
-    public <T extends IModule> T getModule(Class<T> moduleClass) {
+    public <T extends IModule> Optional<T> getModule(Class<T> moduleClass) {
         //noinspection unchecked
-        return moduleClass == null ? null : modules.stream().filter(module -> moduleClass.isAssignableFrom(module.getClass())).map(iModule -> (T) iModule).findAny().orElse(null);
+        return moduleClass == null ? Optional.empty() : modules.stream().filter(module -> moduleClass.isAssignableFrom(module.getClass())).map(iModule -> (T) iModule).findAny();
     }
 
+    /**
+     * Finds and returns the first Module that is assignable to the provided {@code moduleClass}
+     *
+     * @param moduleName the name of the module to find. If the module does not override {@link net.breadmoirai.sbf.core.IModule#getName IModule#getName} the name of the class is used.
+     * @return Optional containing the module if foundd.
+     */
+    @Contract("_->!null")
     @Override
     public Optional<IModule> getModule(String moduleName) {
-        return moduleName == null ? null : modules.stream().filter(module -> module.getName().equalsIgnoreCase(moduleName)).findAny();
+        return moduleName == null ? Optional.empty() : modules.stream().filter(module -> module.getName().equalsIgnoreCase(moduleName)).findAny();
     }
 
     @Override
@@ -113,11 +123,21 @@ public class SamuraiClientImpl implements SamuraiClient {
     @Override
     public void submit(TextChannel textChannel, Response response) {
         Objects.requireNonNull(textChannel, "TextChannel");
+        Objects.requireNonNull(response, "Response");
         response.setClient(this);
         response.setGuildId(textChannel.getGuild().getIdLong());
         response.setChannelId(textChannel.getIdLong());
         response.send(textChannel, id -> responseMap.put(id, new WeakReference<Response>(response)));
     }
+
+    @Override
+    public void submit(User user, Response response) {
+        Objects.requireNonNull(user, "User");
+        Objects.requireNonNull(user, "Response");
+        response.setClient(this);
+        user.openPrivateChannel().queue(privateChannel -> response.send(privateChannel, id -> responseMap.put(id, new WeakReference<Response>(response))));
+    }
+
 
     private class SamuraiEventListener extends ListenerAdapter {
 

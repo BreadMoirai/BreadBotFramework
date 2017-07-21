@@ -17,6 +17,7 @@ package net.breadmoirai.sbf.core.impl;
 
 import net.breadmoirai.sbf.core.CommandEvent;
 import net.breadmoirai.sbf.core.SamuraiClient;
+import net.breadmoirai.sbf.core.response.Responses;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.message.guild.GenericGuildMessageEvent;
@@ -57,6 +58,11 @@ public class MessageReceivedCommandEvent extends CommandEvent {
     @Override
     public String getContent() {
         return content;
+    }
+
+    @Override
+    public Message getMessage() {
+        return message;
     }
 
     @Override
@@ -142,6 +148,46 @@ public class MessageReceivedCommandEvent extends CommandEvent {
     @Override
     public List<Member> getMentionedMembers() {
         return message.getMentionedUsers().stream().map(getGuild()::getMember).filter(Objects::nonNull).collect(Collectors.toList());
+    }
+
+    @Override
+    public void reply(String message) {
+        getClient().submit(getChannel(), Responses.of(message));
+    }
+
+    @Override
+    public void reply(MessageEmbed message) {
+        getClient().submit(getChannel(), Responses.of(message));
+    }
+
+    @Override
+    public void reply(Message message) {
+        getClient().submit(getChannel(), Responses.of(message));
+    }
+
+    @Override
+    public void replyPrivate(String message) {
+        getClient().submit(getAuthor(), Responses.of(message));
+    }
+
+    @Override
+    public void replyPrivate(MessageEmbed message) {
+        getClient().submit(getAuthor(), Responses.of(message));
+    }
+
+    @Override
+    public void replyPrivate(Message message) {
+        getClient().submit(getAuthor(), Responses.of(message));
+    }
+
+    @Override
+    public void replyReaction(Emote emote) {
+        getClient().submit(getChannel(), Responses.react(getMessageId(), emote));
+    }
+
+    @Override
+    public void replyReaction(String emoji) {
+        getClient().submit(getChannel(), Responses.react(getMessageId(), emoji));
     }
 
     @Override

@@ -87,9 +87,8 @@ public class Main {
     }
 }
 ```
-
-
-**Shutdown Command**
+#### Shutdown Command
+This is an command independent of any module.
 ```java
 @Key("shutdown")
 public class ShutdownCommand extends Command {
@@ -104,7 +103,8 @@ public class ShutdownCommand extends Command {
     }
 }
 ```
-**CatDog Module**
+## CatDog Module
+Here is an example module.
 ```java
 public class CatDogModule implements IModule {
     @Override
@@ -131,7 +131,7 @@ public class CatDogModule implements IModule {
     }
 }
 ```
-**CatDog Commands**
+## CatDog Commands
 There are multiple different types of commands you can extend.
 
 The command below is triggered by `!catdog ...` like `!catdog meow` or `!catdog`
@@ -199,6 +199,8 @@ public class CatDogCommand extends ModuleMultiCommand<CatDogModule> {
     }
 }
 ```
+Note that with any of the *Multi* Commands, The return type should be either void or castable to Response.
+
 This is a MultiSubCommand where there is a primary key affixed to the class and secondary keys affixed to the methods. As such, this command is triggered by `!whatgoes meow` or `!whatgoes woof`
 ```java
 @Key("whatgoes")

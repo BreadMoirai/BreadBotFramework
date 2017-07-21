@@ -59,7 +59,8 @@ public abstract class BiModuleMultiCommand<M1 extends IModule, M2 extends IModul
         METHOD_MAP.put(commandClass, map);
         return Arrays.stream(commandClass.getDeclaredMethods())
                 .filter(method -> method.isAnnotationPresent(Key.class))
-                .filter(method -> Response.class.isAssignableFrom(method.getReturnType()))
+                .filter(method -> Response.class.isAssignableFrom(method.getReturnType())
+                        || method.getReturnType()==Void.TYPE)
                 .filter(method -> method.getParameterCount() == 2)
                 .filter(method -> method.getParameterTypes()[0] == CommandEvent.class)
                 .filter(method -> method.getParameterTypes()[1] == moduleType1)
