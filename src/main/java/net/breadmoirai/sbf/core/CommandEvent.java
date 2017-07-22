@@ -15,14 +15,13 @@
  */
 package net.breadmoirai.sbf.core;
 
-import net.breadmoirai.sbf.core.response.Responses;
-import net.breadmoirai.sbf.core.response.simple.BasicResponse;
 import net.breadmoirai.sbf.util.DiscordPatterns;
 import net.breadmoirai.sbf.util.UnknownEmote;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.Event;
 import org.assertj.core.util.Lists;
+import org.jetbrains.annotations.NotNull;
 
 import java.time.Instant;
 import java.time.OffsetDateTime;
@@ -154,7 +153,7 @@ public abstract class CommandEvent extends Event {
     public abstract List<TextChannel> getMentionedChannels();
 
     /**
-     * This method is equivalent to {@link net.dv8tion.jda.core.entities.Message#getMentionedMembers() Message#getMentionedMembers()}
+     * This will retrieve ass the users mentioned in a message as members. If a user mentioned is not part of the guild, it will not be included.
      */
     public abstract List<Member> getMentionedMembers();
 
@@ -162,8 +161,9 @@ public abstract class CommandEvent extends Event {
      * Parses {@link CommandEvent#getContent() getContent()} as a list of arguments that are space delimited.
      * Code block formatting is stripped and no formatted content is passed such as Mentions.
      * Phrases contained within quotation marks are not separated.
+     * Formatted input and mentions are ignored.
      * <p>For example, if {@link CommandEvent#getContent() getContent()} returns
-     * <pre>{@code hello, 1 23 "say no more"}</pre>
+     * <pre>{@code hello, 1 23 <@12341482523> "say no more"}</pre>
      * <p>Then this method will return a list with elements
      * <pre>{@code ["hello,", "1", "23", "say no more"]}</pre>
      * @return A mutable list of args. Every time this method is called {@link CommandEvent#getContent() getContent()} is parsed again and a new list is returned.
@@ -225,11 +225,12 @@ public abstract class CommandEvent extends Event {
      * @return {@link java.util.stream.IntStream} of ints in the order declared by user.
      * <p> if such is the case that there are no integers within the message, an Empty IntStream is returned.</p>
      */
+    @NotNull
     public IntStream getIntArgs() {
-        return getContent() == null ? IntStream.empty() : Arrays.stream(getContent().split(" ")).flatMapToInt(this::parseIntArg);
+        return getContent() == null ? IntStream.empty() : Arrays.stream(getContent().split(" ")).flatMapToInt(CommandEvent::parseIntArg);
     }
 
-    public IntStream parseIntArg(String s) {
+    public static IntStream parseIntArg(String s) {
         try {
             final String[] split = s.split("-");
             if (split.length == 1) {
@@ -255,7 +256,7 @@ public abstract class CommandEvent extends Event {
         return isNumber(getContent());
     }
 
-    public boolean isNumber(String s) {
+    public static boolean isNumber(String s) {
         if (s == null) return false;
         if (s.isEmpty()) return false;
         for (int i = 0; i < s.length(); i++) {
@@ -269,14 +270,18 @@ public abstract class CommandEvent extends Event {
     }
 
     public boolean isHex() {
-        return DiscordPatterns.HEX.matcher(getContent()).matches();
+        return isHex(getContent());
+    }
+
+    public static boolean isHex(String s) {
+        return DiscordPatterns.HEX.matcher(s).matches();
     }
 
     public boolean isFloat() {
         return isFloat(getContent());
     }
 
-    public boolean isFloat(String s) {
+    public static boolean isFloat(String s) {
         if (s.isEmpty()) return false;
         for (int i = 0; i < s.length(); i++) {
             final char c = s.charAt(i);
