@@ -13,12 +13,12 @@
  *   See the License for the specific language governing permissions and
  *   limitations under the License.
  */
-package net.breadmoirai.sbf.core.impl;
+package net.breadmoirai.sbf.core;
 
-import net.breadmoirai.sbf.core.ICommandEventFactory;
-import net.breadmoirai.sbf.core.IModule;
-import net.breadmoirai.sbf.core.SamuraiClient;
 import net.breadmoirai.sbf.core.command.ICommand;
+import net.breadmoirai.sbf.core.impl.CommandEngineBuilder;
+import net.breadmoirai.sbf.core.impl.CommandEventFactoryImpl;
+import net.breadmoirai.sbf.core.impl.SamuraiClientImpl;
 import net.breadmoirai.sbf.modules.admin.DefaultAdminModule;
 import net.breadmoirai.sbf.modules.admin.IAdminModule;
 import net.breadmoirai.sbf.modules.prefix.DefaultPrefixModule;

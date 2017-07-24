@@ -37,7 +37,7 @@ public class CommandEngineBuilder {
 
     private Map<String, Class<? extends ICommand>> commandMap = new HashMap<>();
 
-    CommandEngineBuilder(List<IModule> modules) {
+    public CommandEngineBuilder(List<IModule> modules) {
         this.modules = modules;
     }
 
@@ -65,7 +65,7 @@ public class CommandEngineBuilder {
             final String key1 = key.toLowerCase();
             if (commandMap.containsKey(key1)) {
                 final Class<? extends ICommand> existing = commandMap.get(key1);
-                logger.error("Key \"" + key + "\" for Command " + commandClass.getSimpleName() + " in Module " + TypeUtils.getTypeArguments(commandClass, ModuleCommand.class).get(ModuleCommand.class.getTypeParameters()[0]).getTypeName() + " is already mapped to Command " + existing.getSimpleName() + " in Module " + TypeUtils.getTypeArguments(existing, ModuleCommand.class).get(ModuleCommand.class.getTypeParameters()[0]).getTypeName());
+                logger.error("Key \"" + key + "\" for Command " + commandClass.getSimpleName() + " is already mapped to Command " + existing.getSimpleName());
             } else {
                 commandMap.put(key, commandClass);
                 logger.info("\"" + key + "\" mapped to " + commandClass.getSimpleName());
