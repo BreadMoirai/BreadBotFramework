@@ -15,7 +15,7 @@
  */
 package net.breadmoirai.sbf.core.response.simple;
 
-import net.breadmoirai.sbf.core.response.Response;
+import net.breadmoirai.sbf.core.impl.Response;
 import net.breadmoirai.sbf.core.response.menu.reactions.IMenuReaction;
 import net.breadmoirai.sbf.core.response.menu.reactions.MenuEmoji;
 import net.breadmoirai.sbf.core.response.menu.reactions.MenuEmote;
@@ -40,8 +40,12 @@ public class ReactionResponse extends Response {
     }
 
     @Override
-    public void send(MessageChannel channel, Consumer<Long> registerMessageId) {
+    public void send(MessageChannel channel) {
         reaction.addReactionTo(channel, getMessageId());
+    }
+
+    public Consumer<Message> getAsConsumer() {
+        return message -> reaction.addReactionTo(message.getChannel(), getMessageId());
     }
 
     @Override
@@ -54,10 +58,6 @@ public class ReactionResponse extends Response {
 
     }
 
-    @Override
-    public void onDeletion(MessageDeleteEvent event) {
-
-    }
 
     @Override
     public EditResponse replace(long messageId) {

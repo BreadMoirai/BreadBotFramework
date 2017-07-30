@@ -17,22 +17,20 @@ package net.breadmoirai.sbf.modules.admin;
 
 import net.breadmoirai.sbf.core.CommandEvent;
 import net.breadmoirai.sbf.core.command.Key;
-import net.breadmoirai.sbf.core.response.Responses;
 import net.breadmoirai.sbf.core.command.ModuleCommand;
 import net.dv8tion.jda.core.entities.Member;
-import net.breadmoirai.sbf.core.response.Response;
 
 import java.util.stream.Collectors;
 
 @Key("admin")
 public class AdminCommand extends ModuleCommand<IAdminModule> {
     @Override
-    public Response execute(CommandEvent event, IAdminModule module) {
-        return Responses.of("**Administrative Members:** " + event.getGuild().getMembers().stream().filter(module::isAdmin).map(Member::getEffectiveName).collect(Collectors.joining(", ")));
+    public void execute(CommandEvent event, IAdminModule module) {
+        event.reply("**Administrative Members:** " + event.getGuild().getMembers().stream().filter(module::isAdmin).map(Member::getEffectiveName).collect(Collectors.joining(", ")));
     }
 
     @Override
-    public Response getHelp(CommandEvent event) {
-        return Responses.of("This command shows which users have the authority to use Administrative commands");
+    public void getHelp(CommandEvent event) {
+        event.reply("This command shows which users have the authority to use Administrative commands");
     }
 }

@@ -15,17 +15,12 @@
  */
 package net.breadmoirai.sbf.core.impl;
 
-import gnu.trove.TCollections;
-import gnu.trove.map.TLongObjectMap;
-import gnu.trove.map.hash.TLongObjectHashMap;
 import net.breadmoirai.sbf.core.*;
-import net.breadmoirai.sbf.core.response.Response;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.ReadyEvent;
-import net.dv8tion.jda.core.events.message.MessageDeleteEvent;
 import net.dv8tion.jda.core.events.message.guild.GenericGuildMessageEvent;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageUpdateEvent;
@@ -35,8 +30,6 @@ import net.dv8tion.jda.core.hooks.ListenerAdapter;
 import net.dv8tion.jda.core.hooks.SubscribeEvent;
 import org.jetbrains.annotations.Contract;
 
-import java.lang.ref.Reference;
-import java.lang.ref.WeakReference;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -50,8 +43,6 @@ public class SamuraiClientImpl implements SamuraiClient {
     private final IEventManager eventManager;
     private final ICommandEventFactory eventFactory;
     private final CommandEngine commandEngine;
-
-    private final TLongObjectMap<Reference<Response>> responseMap = TCollections.synchronizedMap(new TLongObjectHashMap<>());
 
     public SamuraiClientImpl(List<IModule> modules, IEventManager eventManager, ICommandEventFactory eventFactory, CommandEngineBuilder engineBuilder) {
         this.modules = modules;
@@ -109,33 +100,31 @@ public class SamuraiClientImpl implements SamuraiClient {
     }
 
     @Override
-    public void submit(Response response) {
-        submit(response.getChannelId(), response);
+    public void send(Response response) {
+        send(response.getChannelId(), response);
     }
 
     @Override
-    public void submit(long channeId, Response response) {
+    public void send(long channeId, Response response) {
         TextChannel textChannel = jda.getTextChannelById(channeId);
         if (textChannel == null) return;
-        submit(textChannel, response);
+        send(textChannel, response);
     }
 
     @Override
-    public void submit(TextChannel textChannel, Response response) {
+    public void send(TextChannel textChannel, Response response) {
         Objects.requireNonNull(textChannel, "TextChannel");
         Objects.requireNonNull(response, "Response");
-        response.setClient(this);
-        response.setGuildId(textChannel.getGuild().getIdLong());
-        response.setChannelId(textChannel.getIdLong());
-        response.send(textChannel, id -> responseMap.put(id, new WeakReference<Response>(response)));
+        response.base(0, textChannel.getIdLong(), textChannel.getGuild().getIdLong(), 0, this);
+        response.send(textChannel);
     }
 
     @Override
-    public void submit(User user, Response response) {
+    public void send(User user, Response response) {
         Objects.requireNonNull(user, "User");
         Objects.requireNonNull(user, "Response");
         response.setClient(this);
-        user.openPrivateChannel().queue(privateChannel -> response.send(privateChannel, id -> responseMap.put(id, new WeakReference<Response>(response))));
+        user.openPrivateChannel().queue(response::send);
     }
 
 
@@ -171,20 +160,8 @@ public class SamuraiClientImpl implements SamuraiClient {
                 if (commandEvent != null) {
                     final Optional<Response> response = commandEngine.execute(commandEvent);
                     response.ifPresent(r -> r.setClient(SamuraiClientImpl.this));
-                    response.ifPresent(SamuraiClientImpl.this::submit);
+                    response.ifPresent(SamuraiClientImpl.this::send);
                     eventManager.handle(commandEvent);
-                }
-            }
-        }
-
-        @SubscribeEvent
-        @Override
-        public void onMessageDelete(MessageDeleteEvent event) {
-            final Reference<Response> responseWeakRef = responseMap.get(event.getMessageIdLong());
-            if (responseWeakRef != null) {
-                final Response response = responseWeakRef.get();
-                if (response != null) {
-                    response.onDeletion(event);
                 }
             }
         }

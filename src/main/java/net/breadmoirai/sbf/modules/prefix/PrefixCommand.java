@@ -15,28 +15,30 @@
  */
 package net.breadmoirai.sbf.modules.prefix;
 
-import net.breadmoirai.sbf.core.command.ModuleCommand;
 import net.breadmoirai.sbf.core.CommandEvent;
 import net.breadmoirai.sbf.core.command.Key;
-import net.breadmoirai.sbf.core.response.Response;
-import net.breadmoirai.sbf.core.response.Responses;
+import net.breadmoirai.sbf.core.command.ModuleCommand;
 import net.breadmoirai.sbf.util.DiscordPatterns;
 
 @Key("prefix")
-public class PrefixCommand extends ModuleCommand<IPrefixModule> {
+public class PrefixCommand extends ModuleCommand<DynamicPrefixModule> {
+
     @Override
-    public Response execute(CommandEvent event, IPrefixModule module) {
+    public void execute(CommandEvent event, DynamicPrefixModule module) {
         if (event.hasContent()) {
             final String content = event.getContent();
-            if (DiscordPatterns.WHITE_SPACE.matcher(content).find())
-                return Responses.of("New prefix must not contain spaces");
-            else if (content.length() > 16)
-                return Responses.of("New prefix must not be greater than 16 characters");
-            else {
+            if (DiscordPatterns.WHITE_SPACE.matcher(content).find()) {
+                event.reply("New prefix must not contain spaces");
+                return;
+            } else if (content.length() > 16) {
+                event.reply("New prefix must not be greater than 16 characters");
+                return;
+            } else {
                 module.changePrefix(event.getGuildId(), content);
-                return Responses.ofFormat("Prefix has been set to `%s`", content);
+                event.replyFormat("Prefix has been set to `%s`", content);
+                return;
             }
         }
-        return Responses.ofFormat("The current prefix is `%s`", module.getPrefix(event.getGuildId()));
+        event.replyFormat("The current prefix is `%s`", module.getPrefix(event.getGuildId()));
     }
 }

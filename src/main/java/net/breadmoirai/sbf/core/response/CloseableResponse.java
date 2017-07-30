@@ -15,6 +15,7 @@
  */
 package net.breadmoirai.sbf.core.response;
 
+import net.breadmoirai.sbf.core.impl.Response;
 import net.breadmoirai.sbf.core.response.menu.ResponseMenu;
 
 public interface CloseableResponse {

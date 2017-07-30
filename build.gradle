@@ -3,13 +3,13 @@ plugins {
     id 'idea'
     id 'com.github.johnrengelman.shadow' version '1.2.4'
     id 'com.sedmelluq.jdaction' version '1.0.1'
-    id 'com.jfrog.bintray' version '1.7.2'
+    id 'com.jfrog.bintray' version '1.7.3'
     id 'maven-publish'
     id 'signing'
 }
 
 group 'net.breadmoirai'
-version '0.3.10'
+version '0.5.0'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -21,21 +21,21 @@ repositories {
 
 dependencies {
     //Discord Java Library
-    compile 'net.dv8tion:JDA:3.2.0_227'
+    compileOnly 'net.dv8tion:JDA:3.2.0_241'
 
     //Database
-    compile 'org.jdbi:jdbi3:3.0.0-beta1'
-    compile 'org.jdbi:jdbi3-parent:3.0.0-beta1'
-    compile 'org.jdbi:jdbi3-sqlobject:3.0.0-beta1'
+//    compile 'org.jdbi:jdbi3:3.0.0-beta1'
+//    compile 'org.jdbi:jdbi3-parent:3.0.0-beta1'
+//    compile 'org.jdbi:jdbi3-sqlobject:3.0.0-beta1'
 
     //slf4j
-    compile 'org.slf4j:slf4j-api:1.8.0-alpha2'
+//    compile 'org.slf4j:slf4j-api:1.8.0-alpha2'
 
     //Utility
     compile 'org.reflections:reflections:0.9.10'
     //compile 'com.jagrosh:JDA-Utilities:1.2'
     compile 'org.jetbrains:annotations:13.0'
-
+//    compile 'org.apache.commons:commons-lang3:3.6'
 
     //testing
 //    compile 'com.sedmelluq:lavaplayer:1.2.42'
@@ -93,14 +93,31 @@ task sourcesJar(type: Jar, dependsOn: classes) {
     from sourceSets.main.java.srcDirs
 }
 
-task jarMake{
+task jarMake {
     dependsOn jar
     dependsOn sourcesJar
     dependsOn javadocJar
     dependsOn shadowJar
 }
 
-task javadocDocsDir(type: Copy) {
+task javadocDir(type: Copy) {
+    delete('docs')
     from javadoc.destinationDir
     into 'docs'
+}
+
+task publishJavadoc(type: Exec) {
+    dependsOn javadoc
+    dependsOn javadocDir
+    commandLine 'bash',
+    """
+        cd ${javadocDir.destinationDir.absolutePath}
+        git checkout -t origin/gh-pages
+        git add .
+        git add -u
+        git commit -m "JavadocWebsite ver ${project.version} on ${new Date()}"
+        git push origin gh-pages
+        cd ..
+        rm -rf ${javadocDir.destinationDir.absolutePath}
+    """
 }

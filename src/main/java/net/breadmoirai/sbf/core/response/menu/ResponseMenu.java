@@ -18,8 +18,7 @@ package net.breadmoirai.sbf.core.response.menu;
 import net.breadmoirai.sbf.core.response.CloseableResponse;
 import net.breadmoirai.sbf.core.response.simple.EditResponse;
 import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.events.message.MessageDeleteEvent;
-import net.breadmoirai.sbf.core.response.Response;
+import net.breadmoirai.sbf.core.impl.Response;
 import net.breadmoirai.sbf.waiter.EventWaiter;
 
 public class ResponseMenu extends Response implements CloseableResponse {
@@ -43,20 +42,16 @@ public class ResponseMenu extends Response implements CloseableResponse {
         menu.waitForEvent(this, EventWaiter.get());
     }
 
-    @Override
-    public void onDeletion(MessageDeleteEvent event) {
-        menu.onDelete(this);
-    }
-
-
     /**
      * replaces message with {@code newResponse}
      *
      * @param newResponse the response to be used to replace
      */
-    public void replaceWith(Response newResponse) {
+    @Override
+    public EditResponse replaceWith(Response newResponse) {
         EditResponse replace = replace(this.getMessageId());
-        getClient().submit(message.getTextChannel(), replace);
+        replace.base(this);
+        return replace;
     }
 
     /**

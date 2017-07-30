@@ -22,10 +22,13 @@ import net.breadmoirai.sbf.modules.prefix.IPrefixModule;
 import net.breadmoirai.sbf.util.DiscordPatterns;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.events.message.guild.GenericGuildMessageEvent;
+import net.dv8tion.jda.core.utils.SimpleLog;
 
 import java.util.regex.Matcher;
 
 public class CommandEventFactoryImpl implements ICommandEventFactory {
+
+    private static final SimpleLog LOG = SimpleLog.getLog("CommandEvent");
 
     private final IPrefixModule prefixModule;
 
@@ -45,7 +48,9 @@ public class CommandEventFactoryImpl implements ICommandEventFactory {
             final String[] split = DiscordPatterns.WHITE_SPACE.split(contentRaw, 2);
             key = split[0];
             content = split.length > 1 ? split[1].trim() : null;
-            return new MessageReceivedCommandEvent(client, event, message, prefix, key, content);
+            final CommandEvent commandEvent = new MessageReceivedCommandEvent(client, event, message, prefix, key, content);
+            LOG.trace(commandEvent);
+            return commandEvent;
         } else {
             if (contentRaw.startsWith(prefix)) {
                 final String[] split = DiscordPatterns.WHITE_SPACE.split(contentRaw.substring(prefix.length()), 2);

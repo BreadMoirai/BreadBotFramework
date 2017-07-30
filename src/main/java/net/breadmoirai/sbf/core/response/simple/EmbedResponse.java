@@ -13,44 +13,44 @@
  *   See the License for the specific language governing permissions and
  *   limitations under the License.
  */
+
 package net.breadmoirai.sbf.core.response.simple;
 
 import net.breadmoirai.sbf.core.impl.Response;
+import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.MessageChannel;
+import net.dv8tion.jda.core.entities.MessageEmbed;
 import net.dv8tion.jda.core.events.message.MessageDeleteEvent;
 
-public class EditResponse extends Response {
-    private final Response response;
+import java.util.function.Consumer;
 
-    public EditResponse(Response response, long messageId) {
-        this.response = response;
-        this.setAuthorId(response.getAuthorId());
-        this.setGuildId(response.getGuildId());
-        this.setChannelId(response.getChannelId());
-        this.setMessageId(messageId);
-    }
+public class EmbedResponse extends Response {
 
-    @Override
-    public void send(MessageChannel channel) {
-        final Message message = buildMessage();
-        if (message == null) return;
-        channel.editMessageById(getMessageId(), message).queue(this::onSend);
+    private MessageEmbed message;
+    private Consumer<Message> consumer;
+
+    public EmbedResponse(MessageEmbed message) {
+        this.message = message;
     }
 
     @Override
     public Message buildMessage() {
-        return response.buildMessage();
+        return new MessageBuilder().setEmbed(message).build();
+    }
+
+    public MessageEmbed getMessage() {
+        return message;
     }
 
     @Override
     public void onSend(Message message) {
-        response.onSend(message);
+        if (consumer != null) consumer.accept(message);
     }
 
-    @Override
-    public EditResponse replace(long messageId) {
-        setMessageId(messageId);
+    public EmbedResponse andThen(Consumer<Message> onSend) {
+        if (consumer == null) consumer = onSend;
+        else consumer = consumer.andThen(onSend);
         return this;
     }
+
 }

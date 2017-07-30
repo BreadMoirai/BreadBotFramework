@@ -16,27 +16,24 @@
 package net.breadmoirai.sbf.core.command;
 
 import net.breadmoirai.sbf.core.CommandEvent;
-import net.breadmoirai.sbf.core.response.Response;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashMap;
 
 public abstract class MultiCommand extends Command {
 
-    private static final HashMap<Class<? extends MultiCommand>, HashMap<String, Method>> METHOD_MAP = new HashMap<>();
+    private static final HashMap<Class<? extends MultiCommand>, HashMap<String, java.lang.reflect.Method>> METHOD_MAP = new HashMap<>();
 
     @Override
-    public Response execute(CommandEvent event) {
-        final Method method = METHOD_MAP.get(this.getClass()).get(event.getKey().toLowerCase());
+    public void execute(CommandEvent event) {
+        final java.lang.reflect.Method method = METHOD_MAP.get(this.getClass()).get(event.getKey().toLowerCase());
         try {
-            return (Response) method.invoke(this, event);
+            method.invoke(this, event);
         } catch (IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();
         }
-        return null;
     }
 
     @Override
@@ -45,12 +42,11 @@ public abstract class MultiCommand extends Command {
     }
 
     public static String[] register(Class<? extends MultiCommand> commandClass) {
-        final HashMap<String, Method> map = new HashMap<>();
+        final HashMap<String, java.lang.reflect.Method> map = new HashMap<>();
         METHOD_MAP.put(commandClass, map);
         return Arrays.stream(commandClass.getDeclaredMethods())
                 .filter(method -> method.isAnnotationPresent(Key.class))
-                .filter(method -> Response.class.isAssignableFrom(method.getReturnType())
-                        || method.getReturnType()==Void.TYPE)
+                .filter(method -> method.getReturnType() == Void.TYPE)
                 .filter(method -> method.getParameterCount() == 1)
                 .filter(method -> method.getParameterTypes()[0] == CommandEvent.class)
                 .flatMap(method -> Arrays.stream(method.getAnnotation(Key.class).value())

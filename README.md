@@ -215,7 +215,29 @@ public class CatDogCommand extends ModuleMultiSubCommand<CatDogModule> {
 }
 ```
 
+## Depedencies
 
+<p>+--- org.jdbi:jdbi3:3.0.0-beta1  
+|    +--- org.antlr:antlr-runtime:3.4  
+|    |    +--- org.antlr:stringtemplate:3.2.1 
+|    |    |    \--- antlr:antlr:2.7.7  
+|    |    \--- antlr:antlr:2.7.7  
+|    +--- org.slf4j:slf4j-api:1.7.21  
+|    +--- com.google.code.findbugs:annotations:3.0.1  
+|    |    +--- net.jcip:jcip-annotations:1.0  
+|    |    \--- com.google.code.findbugs:jsr305:3.0.1  
+|    +--- com.google.guava:guava:21.0  
+|    \--- net.jodah:expiringmap:0.5.6  
++--- org.jdbi:jdbi3-parent:3.0.0-beta1  
++--- org.jdbi:jdbi3-sqlobject:3.0.0-beta1  
+|    +--- org.jdbi:jdbi3:3.0.0-beta1 (*)  
+|    +--- com.google.code.findbugs:annotations:3.0.1 (*)  
+|    \--- org.assertj:assertj-core:3.5.2  
++--- org.reflections:reflections:0.9.10  
+|    +--- com.google.guava:guava:18.0 -> 21.0  
+|    +--- org.javassist:javassist:3.18.2-GA  
+|    \--- com.google.code.findbugs:annotations:2.0.1 -> 3.0.1 (*)  
+\--- org.jetbrains:annotations:13.0  
        
 
 

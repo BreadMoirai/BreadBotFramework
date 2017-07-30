@@ -17,13 +17,10 @@ package net.breadmoirai.sbf.core.command;
 
 import net.breadmoirai.sbf.core.CommandEvent;
 import net.breadmoirai.sbf.core.IModule;
-import net.breadmoirai.sbf.core.response.Response;
-import net.breadmoirai.sbf.core.response.Responses;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * This is a plain Command that is not explicitly tied to any Modules.
@@ -33,12 +30,11 @@ public abstract class Command implements ICommand {
     private CommandEvent event;
 
     @Override
-    public final Optional<Response> call() {
-        final Response r = execute(getEvent());
-        return Optional.ofNullable(r);
+    public void run() {
+        execute(event);
     }
 
-    public abstract Response execute(CommandEvent event);
+    public abstract void execute(CommandEvent event);
 
     @Override
     final public CommandEvent getEvent() {
@@ -57,9 +53,5 @@ public abstract class Command implements ICommand {
 
     public boolean isMarkedWith(Class<? extends Annotation> annotation) {
         return this.getClass().isAnnotationPresent(annotation);
-    }
-
-    public Response getHelp(CommandEvent event) {
-        return Responses.of("No help available here.");
     }
 }

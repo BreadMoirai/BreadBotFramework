@@ -13,44 +13,43 @@
  *   See the License for the specific language governing permissions and
  *   limitations under the License.
  */
+
 package net.breadmoirai.sbf.core.response.simple;
 
 import net.breadmoirai.sbf.core.impl.Response;
 import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.events.message.MessageDeleteEvent;
 
-public class EditResponse extends Response {
-    private final Response response;
+import java.util.function.Consumer;
 
-    public EditResponse(Response response, long messageId) {
-        this.response = response;
-        this.setAuthorId(response.getAuthorId());
-        this.setGuildId(response.getGuildId());
-        this.setChannelId(response.getChannelId());
-        this.setMessageId(messageId);
-    }
+public class MessageResponse extends Response {
 
-    @Override
-    public void send(MessageChannel channel) {
-        final Message message = buildMessage();
-        if (message == null) return;
-        channel.editMessageById(getMessageId(), message).queue(this::onSend);
+    private Message message;
+    private Consumer<Message> consumer;
+
+    public MessageResponse(Message message) {
+        this.message = message;
     }
 
     @Override
     public Message buildMessage() {
-        return response.buildMessage();
+        return message;
+    }
+
+    public Message getMessage() {
+        return message;
     }
 
     @Override
     public void onSend(Message message) {
-        response.onSend(message);
+        this.message = message;
+        if (consumer != null) consumer.accept(message);
     }
 
-    @Override
-    public EditResponse replace(long messageId) {
-        setMessageId(messageId);
+    public MessageResponse andThen(Consumer<Message> onSend) {
+        if (consumer == null) consumer = onSend;
+        else consumer = consumer.andThen(onSend);
         return this;
     }
+
 }

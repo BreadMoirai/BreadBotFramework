@@ -17,21 +17,18 @@ package net.breadmoirai.sbf.core.command;
 
 import net.breadmoirai.sbf.core.CommandEvent;
 import net.breadmoirai.sbf.core.IModule;
-import net.breadmoirai.sbf.core.response.Response;
-import net.breadmoirai.sbf.core.response.Responses;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * @see ModuleCommand
  * @see BiModuleCommand
  */
-public interface ICommand {
+public interface ICommand extends Runnable {
 
-    Optional<Response> call();
+    void run();
 
     void setEvent(CommandEvent event);
 
@@ -41,7 +38,7 @@ public interface ICommand {
 
     boolean isMarkedWith(Class<? extends Annotation> annotation);
 
-    default Response getHelp() {
-        return Responses.of("No Help Available");
+    default void getHelp(CommandEvent event) {
+        event.reply("No Help Available");
     }
 }

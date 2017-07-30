@@ -16,7 +16,7 @@
 package net.breadmoirai.sbf.core;
 
 import net.breadmoirai.sbf.core.command.ICommand;
-import net.breadmoirai.sbf.core.response.Response;
+import net.breadmoirai.sbf.core.impl.Response;
 
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -32,10 +32,12 @@ public interface CommandEngine {
             final Class<? extends ICommand> commandClass = getCommandClass(key);
             if (commandClass != null) return commandClass.newInstance();
         } catch (InstantiationException | IllegalAccessException e) {
-            e.printStackTrace();
+            log(e);
         }
         return null;
     }
+
+    void log(ReflectiveOperationException e);
 
     Stream<Class<? extends ICommand>> getCommands();
 

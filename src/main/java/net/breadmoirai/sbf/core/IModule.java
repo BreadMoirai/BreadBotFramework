@@ -16,8 +16,6 @@
 package net.breadmoirai.sbf.core;
 
 import net.breadmoirai.sbf.core.impl.CommandEngineBuilder;
-import net.breadmoirai.sbf.core.response.Response;
-import net.breadmoirai.sbf.core.response.Responses;
 import org.json.JSONObject;
 
 public interface IModule {
@@ -28,13 +26,18 @@ public interface IModule {
 
     void init(CommandEngineBuilder engineBuilder, SamuraiClient client);
 
-    default Response getHelp() {return Responses.of("This is not the help you are looking for");}
+    default void getHelp(CommandEvent event) {
+        event.reply("This is not the help you are looking for");
+    }
 
     default boolean isJSONconfigurable() {
         return false;
     }
 
-    default void addJSONconfig(long guildId, JSONObject jsonObject) {}
+    default void addJSONconfig(long guildId, JSONObject jsonObject) {
+    }
 
-    default boolean loadJSONconfig(long guildId, JSONObject jsonObject) { return false;}
+    default boolean loadJSONconfig(long guildId, JSONObject jsonObject) {
+        return false;
+    }
 }

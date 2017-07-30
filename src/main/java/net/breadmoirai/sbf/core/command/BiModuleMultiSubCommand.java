@@ -17,54 +17,47 @@ package net.breadmoirai.sbf.core.command;
 
 import net.breadmoirai.sbf.core.CommandEvent;
 import net.breadmoirai.sbf.core.IModule;
-import net.breadmoirai.sbf.core.response.Response;
-import org.apache.commons.lang3.reflect.TypeUtils;
+import net.breadmoirai.sbf.util.TypeFinder;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.lang.reflect.Type;
-import java.lang.reflect.TypeVariable;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public abstract class BiModuleMultiSubCommand<M1 extends IModule, M2 extends IModule> extends BiModuleCommand<M1, M2> {
 
-    private static final HashMap<Class<? extends BiModuleMultiSubCommand>, HashMap<String, Method>> METHOD_MAP = new HashMap<>();
+    private static final HashMap<Class<? extends BiModuleMultiSubCommand>, HashMap<String, java.lang.reflect.Method>> METHOD_MAP = new HashMap<>();
 
     @Override
-    public final Response execute(CommandEvent event, M1 module1, M2 module2) {
+    public final void execute(CommandEvent event, M1 module1, M2 module2) {
         final List<String> args = event.getArgs();
         final String subKey = args.size() > 1 ? args.get(0).toLowerCase() : "";
-        final Method method = METHOD_MAP.get(this.getClass()).get(subKey);
+        final java.lang.reflect.Method method = METHOD_MAP.get(this.getClass()).get(subKey);
         try {
-            return (Response) method.invoke(this, event, module1, module2);
+            method.invoke(this, event, module1, module2);
         } catch (IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();
         }
-        return null;
     }
 
     @Override
     public boolean isMarkedWith(Class<? extends Annotation> annotation) {
-        final Method method = METHOD_MAP.get(this.getClass()).get(getEvent().getKey().toLowerCase());
+        final java.lang.reflect.Method method = METHOD_MAP.get(this.getClass()).get(getEvent().getKey().toLowerCase());
         return super.isMarkedWith(annotation) || (method != null && method.isAnnotationPresent(annotation));
     }
 
     public static String[] register(Class<? extends BiModuleMultiSubCommand> commandClass) {
         if (!commandClass.isAnnotationPresent(Key.class)) return null;
-        final Map<TypeVariable<?>, Type> typeArguments = TypeUtils.getTypeArguments(commandClass, BiModuleCommand.class);
-        final TypeVariable<Class<BiModuleCommand>>[] typeParameters = BiModuleCommand.class.getTypeParameters();
-        final Type moduleType1 = typeArguments.get(typeParameters[0]);
-        final Type moduleType2 = typeArguments.get(typeParameters[1]);
-        final HashMap<String, Method> map = new HashMap<>();
+        final Type[] typeArguments = TypeFinder.getTypeArguments(commandClass.getClass(), BiModuleCommand.class);
+        final Type moduleType1 = typeArguments[0];
+        final Type moduleType2 = typeArguments[1];
+        final HashMap<String, java.lang.reflect.Method> map = new HashMap<>();
         METHOD_MAP.put(commandClass, map);
         Arrays.stream(commandClass.getDeclaredMethods())
                 .filter(method -> method.isAnnotationPresent(Key.class))
-                .filter(method -> Response.class.isAssignableFrom(method.getReturnType())
-                        || method.getReturnType()==Void.TYPE)
+                .filter(method -> method.getReturnType() == Void.TYPE)
                 .filter(method -> method.getParameterCount() == 2)
                 .filter(method -> method.getParameterTypes()[0] == CommandEvent.class)
                 .filter(method -> method.getParameterTypes()[1] == moduleType1)

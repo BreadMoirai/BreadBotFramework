@@ -17,15 +17,12 @@ package net.breadmoirai.sbf.core.command;
 
 import net.breadmoirai.sbf.core.CommandEvent;
 import net.breadmoirai.sbf.core.IModule;
-import net.breadmoirai.sbf.core.response.Response;
-import org.apache.commons.lang3.reflect.TypeUtils;
+import net.breadmoirai.sbf.util.TypeFinder;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import java.lang.reflect.TypeVariable;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 public abstract class BiModuleCommand<M1 extends IModule, M2 extends IModule> implements ICommand {
 
@@ -36,12 +33,11 @@ public abstract class BiModuleCommand<M1 extends IModule, M2 extends IModule> im
     private CommandEvent event;
 
     @Override
-    public final Optional<Response> call() {
-        final Response r = execute(getEvent(), module1, module2);
-        return Optional.ofNullable(r);
+    public void run() {
+        execute(getEvent(), module1, module2);
     }
 
-    public abstract Response execute(CommandEvent event, M1 module1, M2 module2);
+    public abstract void execute(CommandEvent event, M1 module1, M2 module2);
 
     @Override
     public boolean isMarkedWith(Class<? extends Annotation> annotation) {
@@ -55,11 +51,7 @@ public abstract class BiModuleCommand<M1 extends IModule, M2 extends IModule> im
 
     @Override
     final public boolean setModules(Map<Type, IModule> moduleTypeMap) {
-        Type[] moduleType = commandTypeMap.computeIfAbsent(this.getClass(), k -> {
-            final Map<TypeVariable<?>, Type> typeArguments = TypeUtils.getTypeArguments(this.getClass(), BiModuleCommand.class);
-            final TypeVariable<Class<ModuleCommand>>[] typeParameters = ModuleCommand.class.getTypeParameters();
-            return new Type[]{typeArguments.get(typeParameters[0]), typeArguments.get(typeParameters[1])};
-        });
+        Type[] moduleType = commandTypeMap.computeIfAbsent(this.getClass(), k -> TypeFinder.getTypeArguments(this.getClass(), BiModuleCommand.class));
         //noinspection unchecked
         this.module1 = (M1) moduleType[0];
         //noinspection unchecked

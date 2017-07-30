@@ -15,7 +15,7 @@
  */
 package net.breadmoirai.sbf.core;
 
-import net.breadmoirai.sbf.core.response.Response;
+import net.breadmoirai.sbf.core.impl.Response;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
 
@@ -33,11 +33,11 @@ public interface SamuraiClient {
 
     CommandEngine getCommandEngine();
 
-    void submit(Response response);
+    void send(Response response);
 
-    void submit(long channeId, Response response);
+    void send(long channeId, Response response);
 
-    void submit(TextChannel channel, Response response);
+    void send(TextChannel channel, Response response);
 
-    void submit(User user, Response response);
+    void send(User user, Response response);
 }

@@ -13,13 +13,28 @@
  *   See the License for the specific language governing permissions and
  *   limitations under the License.
  */
+package net.breadmoirai.sbf.modules.prefix;
 
-package net.breadmoirai.sbf.core.response.simple;
+import net.breadmoirai.sbf.core.SamuraiClient;
+import net.breadmoirai.sbf.core.impl.CommandEngineBuilder;
+import net.breadmoirai.sbf.database.Database;
 
-import net.breadmoirai.sbf.core.impl.Response;
+public class UnmodifiablePrefixModule implements IPrefixModule {
 
-public abstract class BasicResponse extends Response {
+    private final String defaultPrefix;
 
-    //something will go here eventually.
+    public UnmodifiablePrefixModule(String prefix) {
+        this.defaultPrefix = prefix;
+    }
+
+    @Override
+    public void init(CommandEngineBuilder engineBuilder, SamuraiClient client) {
+
+    }
+
+    @Override
+    public String getPrefix(long guildId) {
+        return defaultPrefix;
+    }
 
 }

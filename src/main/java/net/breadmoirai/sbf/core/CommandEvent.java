@@ -15,6 +15,13 @@
  */
 package net.breadmoirai.sbf.core;
 
+import net.breadmoirai.sbf.core.impl.Response;
+import net.breadmoirai.sbf.core.response.menu.PromptBuilder;
+import net.breadmoirai.sbf.core.response.menu.ReactionMenuBuilder;
+import net.breadmoirai.sbf.core.response.simple.EmbedResponse;
+import net.breadmoirai.sbf.core.response.simple.MessageResponse;
+import net.breadmoirai.sbf.core.response.simple.ReactionResponse;
+import net.breadmoirai.sbf.core.response.simple.StringResponse;
 import net.breadmoirai.sbf.util.DiscordPatterns;
 import net.breadmoirai.sbf.util.UnknownEmote;
 import net.dv8tion.jda.core.JDA;
@@ -210,6 +217,57 @@ public abstract class CommandEvent extends Event {
     public abstract void replyReaction(Emote emote);
     public abstract void replyReaction(String emoji);
 
+    public void replyFormat(String format, Object... args) {
+        reply(String.format(format, args));
+    }
+
+    public StringResponse respond(String message) {
+        final StringResponse r = new StringResponse(message);
+        r.base(this);
+        return r;
+    }
+
+    public EmbedResponse respond(MessageEmbed message){
+        final EmbedResponse r = new EmbedResponse(message);
+        r.base(this);
+        return r;
+    }
+
+    public MessageResponse respond(Message message){
+        final MessageResponse r = new MessageResponse(message);
+        r.base(this);
+        return r;
+    }
+
+    public ReactionResponse respondReaction(Emote emote){
+        final ReactionResponse r = new ReactionResponse(getMessageId(), emote);
+        r.base(this);
+        return r;
+    }
+
+    public ReactionResponse respondReaction(String emoji){
+        final ReactionResponse r = new ReactionResponse(getMessageId(), emoji);
+        r.base(this);
+        return r;
+    }
+
+
+    public ReactionMenuBuilder respondReactionMenu() {
+        final ReactionMenuBuilder r = new ReactionMenuBuilder();
+        r.base(this);
+        return r;
+    }
+
+    public PromptBuilder respondPrompt() {
+        final PromptBuilder r = new PromptBuilder();
+        r.base(this);
+        return r;
+    }
+
+    public void replyWith(Response r) {
+        r.base(this);
+        client.send(this.getChannel(), r);
+    }
 
     /**
      * This splits the message into lines separated via "\n"

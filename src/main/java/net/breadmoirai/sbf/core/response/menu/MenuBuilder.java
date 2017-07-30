@@ -15,6 +15,8 @@
  */
 package net.breadmoirai.sbf.core.response.menu;
 
+import net.breadmoirai.sbf.core.CommandEvent;
+import net.breadmoirai.sbf.core.SamuraiClient;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.entities.Message;
@@ -22,6 +24,12 @@ import net.dv8tion.jda.core.entities.Message;
 import java.util.function.Consumer;
 
 public abstract class MenuBuilder {
+
+    private long authorId;
+    private long channelId;
+    private long guildId;
+    private long messageId;
+    private SamuraiClient client;
 
     public ResponseMenu buildResponse(Consumer<EmbedBuilder> embedCustomizer) {
         final EmbedBuilder eb = new EmbedBuilder();
@@ -33,13 +41,17 @@ public abstract class MenuBuilder {
         final Menu menu = build();
         menu.attachOptions(embed);
         menu.setMessage(new MessageBuilder().setEmbed(embed.build()).build());
-        return new ResponseMenu(menu);
+        final ResponseMenu r = new ResponseMenu(menu);
+        r.base(authorId, channelId, guildId, messageId, client);
+        return r;
     }
 
     public ResponseMenu buildResponse(Message message) {
         final Menu menu = build();
         menu.setMessage(message);
-        return new ResponseMenu(menu);
+        final ResponseMenu r = new ResponseMenu(menu);
+        r.base(authorId, channelId, guildId, messageId, client);
+        return r;
     }
 
     public ResponseMenu attachTo(Message message) {
@@ -52,4 +64,37 @@ public abstract class MenuBuilder {
     }
 
     protected abstract Menu build();
+
+    public final void base(CommandEvent event) {
+        final long authorId = event.getAuthorId();
+        final long channelId = event.getChannelId();
+        final long guildId = event.getGuildId();
+        final long messageId = event.getMessageId();
+        final SamuraiClient client = event.getClient();
+        setAuthorId(authorId);
+        setChannelId(channelId);
+        setGuildId(guildId);
+        setMessageId(messageId);
+        setClient(client);
+    }
+
+    public void setAuthorId(long authorId) {
+        this.authorId = authorId;
+    }
+
+    public void setChannelId(long channelId) {
+        this.channelId = channelId;
+    }
+
+    public void setGuildId(long guildId) {
+        this.guildId = guildId;
+    }
+
+    public void setMessageId(long messageId) {
+        this.messageId = messageId;
+    }
+
+    public void setClient(SamuraiClient client) {
+        this.client = client;
+    }
 }

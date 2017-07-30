@@ -19,7 +19,7 @@ import net.breadmoirai.sbf.core.CommandEngine;
 import net.breadmoirai.sbf.core.CommandEvent;
 import net.breadmoirai.sbf.core.IModule;
 import net.breadmoirai.sbf.core.command.ICommand;
-import net.breadmoirai.sbf.core.response.Response;
+import net.dv8tion.jda.core.utils.SimpleLog;
 
 import java.lang.reflect.Type;
 import java.util.*;
@@ -27,6 +27,8 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 public class CommandEngineImpl implements CommandEngine {
+
+    public static final SimpleLog LOG = SimpleLog.getLog("CommandEngine");
 
     private final Map<Type, IModule> moduleTypeMap;
     private final Map<String, Class<? extends ICommand>> commandMap;
@@ -78,19 +80,7 @@ public class CommandEngineImpl implements CommandEngine {
             command.setEvent(event);
             if (command.setModules(moduleTypeMap)
                     && postProcessPredicate.test(command)) {
-                final Optional<Response> call = command.call();
-                call.ifPresent(r -> {
-                    final CommandEvent evt = command.getEvent();
-                    if (r.getAuthorId() == 0)
-                        r.setAuthorId(evt.getAuthorId());
-                    if (r.getChannelId() == 0)
-                        r.setChannelId(evt.getChannelId());
-                    if (r.getGuildId() == 0)
-                        r.setGuildId(evt.getGuildId());
-                    if (r.getMessageId() == 0)
-                        r.setMessageId(evt.getMessageId());
-                });
-                return call;
+                command.run();
             }
         }
         return Optional.empty();
@@ -99,6 +89,11 @@ public class CommandEngineImpl implements CommandEngine {
     @Override
     public Class<? extends ICommand> getCommandClass(String key) {
         return commandMap.get(key);
+    }
+
+    @Override
+    public void log(ReflectiveOperationException e) {
+        LOG.warn("Command could not be instantiated: [" + e.getClass().getSimpleName() + "] " + e.getMessage());
     }
 
     @Override

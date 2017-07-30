@@ -15,7 +15,7 @@
  */
 package net.breadmoirai.sbf.core.response.list;
 
-import net.breadmoirai.sbf.core.response.Response;
+import net.breadmoirai.sbf.core.impl.Response;
 import net.breadmoirai.sbf.core.response.CloseableResponse;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.events.message.MessageDeleteEvent;
@@ -32,11 +32,6 @@ public class ResponseList extends Response implements CloseableResponse {
 
     @Override
     public void onSend(Message message) {
-
-    }
-
-    @Override
-    public void onDeletion(MessageDeleteEvent event) {
 
     }
 

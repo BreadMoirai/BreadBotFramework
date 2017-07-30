@@ -19,6 +19,7 @@ package net.breadmoirai.sbf.waiter;
 
 import net.dv8tion.jda.core.events.Event;
 import net.dv8tion.jda.core.events.ShutdownEvent;
+import net.dv8tion.jda.core.hooks.EventListener;
 import net.dv8tion.jda.core.hooks.SubscribeEvent;
 
 import java.util.ArrayList;
@@ -41,7 +42,7 @@ import java.util.stream.Collectors;
  *
  * @author John Grosh (jagrosh)
  */
-public class EventWaiter {
+public class EventWaiter implements EventListener {
 
     private static final EventWaiter INSTANCE;
 
@@ -132,6 +133,7 @@ public class EventWaiter {
     }
 
     @SubscribeEvent
+    @Override
     public final void onEvent(Event event)
     {
         Class c = event.getClass();

@@ -27,31 +27,4 @@ public interface IPrefixModule extends IModule {
     }
 
     String getPrefix(long guildId);
-
-    void changePrefix(long guildId, String newPrefix);
-
-    @Override
-    default boolean isJSONconfigurable() {
-        return true;
-    }
-
-    @Override
-    default void addJSONconfig(long guildId, JSONObject jsonObject) {
-        jsonObject.put("prefix", getPrefix(guildId));
-    }
-
-    @Override
-    default boolean loadJSONconfig(long guildId, JSONObject jsonObject) {
-        if (!jsonObject.has("prefix")) return false;
-        try {
-            final String prefix = jsonObject.getString("prefix");
-            if (prefix.isEmpty()) return false;
-            if (!prefix.equals(getPrefix(guildId))) {
-                changePrefix(guildId, prefix);
-            }
-            return true;
-        } catch (JSONException e) {
-            return false;
-        }
-    }
 }
