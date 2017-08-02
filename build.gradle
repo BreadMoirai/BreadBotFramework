@@ -1,15 +1,30 @@
+buildscript {
+    repositories {
+        flatDir {
+            dirs 'C:/Users/TonTL/Desktop/git/github-release/build/libs'
+        }
+    }
+    dependencies {
+        classpath group: 'com.github.breadmoirai', name: 'github-release', version: '0.1.0'
+    }
+}
+
 plugins {
     id 'java'
     id 'idea'
+    //id 'groovy'
     id 'com.github.johnrengelman.shadow' version '1.2.4'
     id 'com.sedmelluq.jdaction' version '1.0.1'
     id 'com.jfrog.bintray' version '1.7.3'
     id 'maven-publish'
     id 'signing'
+    //id 'net.breadmoirai.github-release'
 }
 
-group 'net.breadmoirai'
-version '0.5.0'
+apply plugin: 'com.github.breadmoirai.github-release'
+
+group 'com.github.breadmoirai'
+version '0.4.2'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -20,6 +35,10 @@ repositories {
 }
 
 dependencies {
+    //plugin
+    //gradleApi()
+    //compileClasspath 'net.breadmoirai:github-release:0.1.0'
+
     //Discord Java Library
     compileOnly 'net.dv8tion:JDA:3.2.0_241'
 
@@ -30,7 +49,8 @@ dependencies {
 
     //slf4j
 //    compile 'org.slf4j:slf4j-api:1.8.0-alpha2'
-
+    compile 'com.squareup.okhttp3:okhttp:3.8.1'
+    compile 'com.j256.simplemagic:simplemagic:1.10'
     //Utility
     compile 'org.reflections:reflections:0.9.10'
     //compile 'com.jagrosh:JDA-Utilities:1.2'
@@ -45,16 +65,56 @@ dependencies {
 //    compile 'com.google.apis:google-api-services-youtube:v3-rev183-1.22.0'
 }
 
+githubRelease {
+    token = new File('github.token').text
+    body = """
+## Adding as Dependency
+### Gradle
+
+\tallprojects {
+\t\trepositories {
+\t\t\t...
+\t\t\tmaven { url 'https://dl.bintray.com/breadmoirai/maven'}
+\t\t}
+\t}
+
+\tdependencies {
+\t\tcompile 'net.breadmoirai:SamuraiBotFramework:0.3.3'
+\t}
+"""
+    String version = project.version
+    def maven = """
+### Maven
+
+\\t<repositories>
+\\t\\t<repository>
+\\t\\t\\t<id>jitpack.io</id>
+\\t\\t\\t\\t<url>https://jitpack.io</url>
+\\t\\t</repository>
+\\t</repositories>
+
+\\t<dependency>
+\\t\\t<groupId>com.github.BreadMoirai</groupId>
+\\t\\t<artifactId>Samurai7</artifactId>
+\\t\\t<version>v{${version}}</version>
+\\t</dependency>"""
+    prerelease = true
+    draft = true
+    FilenameFilter filter = { dir, file -> file.contains(version) }
+    releaseAssets = jar.destinationDir.listFiles filter
+}
+
+
 bintray {
     user = 'breadmoirai'
     key = new File('bintray.key').getText()
     publications = ["BintrayRelease"]
+    publish = true
     pkg {
         repo = 'maven'
         name = 'SBF'
         licenses = ['Apache-2.0']
         vcsUrl = 'https://github.com/breadmoirai/SamuraiBotFramework.git'
-        publish = true
         version {
             name = project.version
             released = new Date()
@@ -110,7 +170,7 @@ task publishJavadoc(type: Exec) {
     dependsOn javadoc
     dependsOn javadocDir
     commandLine 'bash',
-    """
+            """
         cd ${javadocDir.destinationDir.absolutePath}
         git checkout -t origin/gh-pages
         git add .
