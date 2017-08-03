@@ -17,7 +17,6 @@ package com.github.breadmoirai.bot.framework.core.response.menu;
 
 import net.dv8tion.jda.core.entities.Emote;
 import net.dv8tion.jda.core.events.message.guild.react.GenericGuildMessageReactionEvent;
-import com.github.breadmoirai.bot.framework.core.response.Responses;
 
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
@@ -92,7 +91,7 @@ public class PromptBuilder extends MenuBuilder {
 
     @Override
     public Menu build() {
-        final ReactionMenuBuilder mb = Responses.newReactionMenu();
+        final ReactionMenuBuilder mb = new ReactionMenuBuilder();
         final BiPredicate<GenericGuildMessageReactionEvent, ResponseMenu> yesPredicate = (event, menu) -> {
             onYes.accept(menu);
             return true;

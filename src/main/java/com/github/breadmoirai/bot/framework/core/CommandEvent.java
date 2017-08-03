@@ -27,13 +27,13 @@ import com.github.breadmoirai.bot.framework.util.UnknownEmote;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.Event;
-import org.assertj.core.util.Lists;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.stream.Collectors;
@@ -178,7 +178,7 @@ public abstract class CommandEvent extends Event {
     public List<String> getArgs() {
         return hasContent()
                 ? Arrays.stream(DiscordPatterns.ARGUMENT_SPLITTER.split(getContent().replace('`', '\"'))).filter((s) -> !s.isEmpty()).filter(s -> !((s.startsWith("<") && s.endsWith(">")) || s.equals("@everyone") || s.equals("@here"))).map(s -> s.replace('\"', ' ')).map(String::trim).map(String::toLowerCase).collect(Collectors.toList())
-                : Lists.emptyList();
+                : Collections.emptyList();
     }
 
     /**

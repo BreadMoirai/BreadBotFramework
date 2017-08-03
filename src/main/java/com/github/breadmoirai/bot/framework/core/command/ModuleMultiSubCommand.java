@@ -18,8 +18,10 @@ package com.github.breadmoirai.bot.framework.core.command;
 import com.github.breadmoirai.bot.framework.core.CommandEvent;
 import com.github.breadmoirai.bot.framework.core.IModule;
 import com.github.breadmoirai.bot.framework.util.TypeFinder;
+import net.dv8tion.jda.core.utils.tuple.Pair;
 
 import java.lang.annotation.Annotation;
+import java.lang.invoke.MethodHandle;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
 import java.util.Arrays;
@@ -28,39 +30,38 @@ import java.util.List;
 
 public abstract class ModuleMultiSubCommand<M extends IModule> extends ModuleCommand<M> {
 
-    private static final HashMap<Class<? extends ModuleMultiSubCommand>, HashMap<String, java.lang.reflect.Method>> METHOD_MAP = new HashMap<>();
-
     @Override
     public void execute(CommandEvent event, M module) {
-        final List<String> args = event.getArgs();
-        final String subKey = args.size() > 1 ? args.get(0).toLowerCase() : "";
-        final java.lang.reflect.Method method = METHOD_MAP.get(this.getClass()).get(subKey);
-        try {
-            method.invoke(this, event, module);
-        } catch (IllegalAccessException | InvocationTargetException e) {
-            e.printStackTrace();
-        }
+        Commands.getHandle(getKey(event)).ifPresent(cmd -> {
+            try {
+                cmd.invoke(this, event, module);
+            } catch (Throwable throwable) {
+                Commands.LOG.fatal(throwable);
+            }
+        });
     }
 
     @Override
     public boolean isMarkedWith(Class<? extends Annotation> annotation) {
-        final java.lang.reflect.Method method = METHOD_MAP.get(this.getClass()).get(getEvent().getKey().toLowerCase());
-        return super.isMarkedWith(annotation) || (method != null && method.isAnnotationPresent(annotation));
+        return super.isMarkedWith(annotation) || Commands.isAnnotatedWith(getKey(getEvent()), annotation);
+    }
+
+    public String getKey(CommandEvent event) {
+        final List<String> args = event.getArgs();
+        final String subKey = args.size() > 1 ? args.get(0).toLowerCase() : "";
+        return subKey.isEmpty() ? event.getKey().toLowerCase() : event.getKey().toLowerCase() + ' ' + subKey;
     }
 
     public static String[] register(Class<? extends ModuleMultiSubCommand> commandClass) {
-        final Type[] typeArguments = TypeFinder.getTypeArguments(commandClass.getClass(), BiModuleCommand.class);
-        final Type moduleType = typeArguments[0];
-        final HashMap<String, java.lang.reflect.Method> map = new HashMap<>();
-        METHOD_MAP.put(commandClass, map);
+        if (!commandClass.isAnnotationPresent(Key.class)) return null;
+        final Type moduleType = TypeFinder.getTypeArguments(commandClass.getClass(), BiModuleCommand.class)[0];
         Arrays.stream(commandClass.getDeclaredMethods())
                 .filter(method -> method.isAnnotationPresent(Key.class))
                 .filter(method -> method.getReturnType() == Void.TYPE)
                 .filter(method -> method.getParameterCount() == 2)
                 .filter(method -> method.getParameterTypes()[0] == CommandEvent.class)
                 .filter(method -> method.getParameterTypes()[1] == moduleType)
-                .forEach(method -> Arrays.stream(method.getAnnotation(Key.class).value())
-                        .forEach(s -> map.put(s, method)));
+                .forEach(method -> Commands.mapSubMethodKeys(commandClass, method, commandClass.getAnnotation(Key.class).value()));
         return commandClass.getAnnotation(Key.class).value();
     }
 }

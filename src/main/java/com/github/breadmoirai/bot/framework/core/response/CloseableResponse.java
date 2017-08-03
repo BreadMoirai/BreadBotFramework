@@ -17,6 +17,7 @@ package com.github.breadmoirai.bot.framework.core.response;
 
 import com.github.breadmoirai.bot.framework.core.impl.Response;
 import com.github.breadmoirai.bot.framework.core.response.menu.ResponseMenu;
+import com.github.breadmoirai.bot.framework.core.response.simple.StringResponse;
 
 public interface CloseableResponse {
 
@@ -32,7 +33,7 @@ public interface CloseableResponse {
      * Calls {@link ResponseMenu#cancel(Response, boolean) this#cancel} with param {@code "Action Cancelled", true}.
      */
     default void cancel() {
-        cancel(Responses.of("Action Cancelled"), true);
+        cancel(new StringResponse("Action Cancelled"), true);
     }
 
     /**
