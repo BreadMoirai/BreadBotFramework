@@ -16,7 +16,7 @@
 
 package com.github.breadmoirai.bot.framework.core.response.simple;
 
-import com.github.breadmoirai.bot.framework.core.impl.Response;
+import com.github.breadmoirai.bot.framework.core.Response;
 
 public abstract class BasicResponse extends Response {
 

@@ -25,7 +25,7 @@ plugins {
 apply plugin: 'com.github.breadmoirai.github-release'
 
 group 'com.github.breadmoirai'
-version '0.4.3'
+version '0.4.4'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8

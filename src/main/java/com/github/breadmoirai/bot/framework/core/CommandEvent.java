@@ -15,7 +15,6 @@
  */
 package com.github.breadmoirai.bot.framework.core;
 
-import com.github.breadmoirai.bot.framework.core.impl.Response;
 import com.github.breadmoirai.bot.framework.core.response.menu.PromptBuilder;
 import com.github.breadmoirai.bot.framework.core.response.menu.ReactionMenuBuilder;
 import com.github.breadmoirai.bot.framework.core.response.simple.EmbedResponse;

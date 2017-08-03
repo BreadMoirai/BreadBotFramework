@@ -58,6 +58,10 @@ public class SamuraiClientImpl implements SamuraiClient {
         this.commandEngine = engineBuilder.build();
     }
 
+    @Override
+    public JDA getJDA() {
+        return jda;
+    }
 
     @Override
     public boolean hasModule(String moduleName) {
@@ -99,35 +103,6 @@ public class SamuraiClientImpl implements SamuraiClient {
         return commandEngine;
     }
 
-    @Override
-    public void send(Response response) {
-        send(response.getChannelId(), response);
-    }
-
-    @Override
-    public void send(long channeId, Response response) {
-        TextChannel textChannel = jda.getTextChannelById(channeId);
-        if (textChannel == null) return;
-        send(textChannel, response);
-    }
-
-    @Override
-    public void send(TextChannel textChannel, Response response) {
-        Objects.requireNonNull(textChannel, "TextChannel");
-        Objects.requireNonNull(response, "Response");
-        response.base(0, textChannel.getIdLong(), textChannel.getGuild().getIdLong(), 0, this);
-        response.send(textChannel);
-    }
-
-    @Override
-    public void send(User user, Response response) {
-        Objects.requireNonNull(user, "User");
-        Objects.requireNonNull(user, "Response");
-        response.setClient(this);
-        user.openPrivateChannel().queue(response::send);
-    }
-
-
     private class SamuraiEventListener extends ListenerAdapter {
 
         private final Predicate<Message> preProcessPredicate;
@@ -158,9 +133,7 @@ public class SamuraiClientImpl implements SamuraiClient {
             if (preProcessPredicate.test(message)) {
                 final CommandEvent commandEvent = eventFactory.createEvent(event, message, SamuraiClientImpl.this);
                 if (commandEvent != null) {
-                    final Optional<Response> response = commandEngine.execute(commandEvent);
-                    response.ifPresent(r -> r.setClient(SamuraiClientImpl.this));
-                    response.ifPresent(SamuraiClientImpl.this::send);
+                    commandEngine.execute(commandEvent);
                     eventManager.handle(commandEvent);
                 }
             }

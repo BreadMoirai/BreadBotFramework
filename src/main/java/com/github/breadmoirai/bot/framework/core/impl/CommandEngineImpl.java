@@ -18,6 +18,7 @@ package com.github.breadmoirai.bot.framework.core.impl;
 import com.github.breadmoirai.bot.framework.core.CommandEngine;
 import com.github.breadmoirai.bot.framework.core.CommandEvent;
 import com.github.breadmoirai.bot.framework.core.IModule;
+import com.github.breadmoirai.bot.framework.core.Response;
 import com.github.breadmoirai.bot.framework.core.command.ICommand;
 import net.dv8tion.jda.core.utils.SimpleLog;
 
@@ -72,7 +73,7 @@ public class CommandEngineImpl implements CommandEngine {
 
 
     @Override
-    public Optional<Response> execute(CommandEvent event) {
+    public void execute(CommandEvent event) {
         ICommand command;
         final String key = event.getKey().toLowerCase();
         command = getCommand(key);
@@ -83,7 +84,6 @@ public class CommandEngineImpl implements CommandEngine {
                 command.run();
             }
         }
-        return Optional.empty();
     }
 
     @Override

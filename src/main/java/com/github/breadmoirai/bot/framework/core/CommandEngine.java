@@ -16,14 +16,13 @@
 package com.github.breadmoirai.bot.framework.core;
 
 import com.github.breadmoirai.bot.framework.core.command.ICommand;
-import com.github.breadmoirai.bot.framework.core.impl.Response;
 
 import java.util.Optional;
 import java.util.stream.Stream;
 
 public interface CommandEngine {
 
-    Optional<Response> execute(CommandEvent event);
+    void execute(CommandEvent event);
 
     Class<? extends ICommand> getCommandClass(String key);
 

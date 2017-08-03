@@ -15,7 +15,7 @@
  */
 package com.github.breadmoirai.bot.framework.core.response.list;
 
-import com.github.breadmoirai.bot.framework.core.impl.Response;
+import com.github.breadmoirai.bot.framework.core.Response;
 import com.github.breadmoirai.bot.framework.core.response.CloseableResponse;
 import net.dv8tion.jda.core.entities.Message;
 

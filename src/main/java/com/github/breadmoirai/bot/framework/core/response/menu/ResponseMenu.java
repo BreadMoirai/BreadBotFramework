@@ -18,7 +18,7 @@ package com.github.breadmoirai.bot.framework.core.response.menu;
 import com.github.breadmoirai.bot.framework.core.response.CloseableResponse;
 import com.github.breadmoirai.bot.framework.core.response.simple.EditResponse;
 import net.dv8tion.jda.core.entities.Message;
-import com.github.breadmoirai.bot.framework.core.impl.Response;
+import com.github.breadmoirai.bot.framework.core.Response;
 import com.github.breadmoirai.bot.framework.waiter.EventWaiter;
 
 public class ResponseMenu extends Response implements CloseableResponse {

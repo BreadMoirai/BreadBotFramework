@@ -15,10 +15,11 @@
  */
 package com.github.breadmoirai.bot.framework.core;
 
-import com.github.breadmoirai.bot.framework.core.impl.Response;
+import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
 
+import java.util.Objects;
 import java.util.Optional;
 
 public interface SamuraiClient {
@@ -33,11 +34,31 @@ public interface SamuraiClient {
 
     CommandEngine getCommandEngine();
 
-    void send(Response response);
+    JDA getJDA();
 
-    void send(long channeId, Response response);
+    default void send(Response response) {
+        send(response.getChannelId(), response);
+    }
 
-    void send(TextChannel channel, Response response);
 
-    void send(User user, Response response);
+    default void send(long channeId, Response response) {
+        TextChannel textChannel = getJDA().getTextChannelById(channeId);
+        if (textChannel == null) return;
+        send(textChannel, response);
+    }
+
+
+    default void send(TextChannel textChannel, Response response) {
+        Objects.requireNonNull(textChannel, "TextChannel");
+        Objects.requireNonNull(response, "Response");
+        response.base(0, textChannel.getIdLong(), textChannel.getGuild().getIdLong(), 0, this);
+        response.send(textChannel);
+    }
+
+    default void send(User user, Response response) {
+        Objects.requireNonNull(user, "User");
+        Objects.requireNonNull(user, "Response");
+        response.setClient(this);
+        user.openPrivateChannel().queue(response::send);
+    }
 }

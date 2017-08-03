@@ -16,7 +16,7 @@
 
 package com.github.breadmoirai.bot.framework.core.response.simple;
 
-import com.github.breadmoirai.bot.framework.core.impl.Response;
+import com.github.breadmoirai.bot.framework.core.Response;
 import net.dv8tion.jda.core.entities.Message;
 
 import java.util.function.Consumer;

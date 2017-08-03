@@ -13,10 +13,8 @@
  *   See the License for the specific language governing permissions and
  *   limitations under the License.
  */
-package com.github.breadmoirai.bot.framework.core.impl;
+package com.github.breadmoirai.bot.framework.core;
 
-import com.github.breadmoirai.bot.framework.core.CommandEvent;
-import com.github.breadmoirai.bot.framework.core.SamuraiClient;
 import com.github.breadmoirai.bot.framework.core.response.simple.EditResponse;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageChannel;
