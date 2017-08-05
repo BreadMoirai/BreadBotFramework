@@ -17,9 +17,65 @@
 package com.github.breadmoirai.bot.framework.core.response.simple;
 
 import com.github.breadmoirai.bot.framework.core.Response;
+import net.dv8tion.jda.core.entities.Message;
+
+import java.util.function.Consumer;
 
 public abstract class BasicResponse extends Response {
 
-    //something will go here eventually.
+    private Consumer<Message> onSuccess;
+    private Consumer<Throwable> onFailure;
 
+    @Override
+    protected void onSend(Message message) {
+        if (onSuccess != null) {
+            onSuccess.accept(message);
+        }
+    }
+
+    @Override
+    protected void onFailure(Throwable t) {
+        if (onFailure == null) {
+            super.onFailure(t);
+        } else onFailure.accept(t);
+    }
+
+    /**
+     * Sets a consumer to be called when the message is sent
+     */
+    public BasicResponse onSuccess(Consumer<Message> successConsumer) {
+        this.onSuccess = successConsumer;
+        return this;
+    }
+
+    /**
+     *  Appends this consumer to the success consumer if it exists.
+     *  Otherwise {@link com.github.breadmoirai.bot.framework.core.response.simple.BasicResponse#onSuccess(Consumer)} is called
+     */
+    public BasicResponse andThen(Consumer<Message> successConsumer) {
+        if (this.onSuccess == null) this.onSuccess = successConsumer;
+        else this.onSuccess = this.onSuccess.andThen(successConsumer);
+        return this;
+    }
+
+    /**
+     * override the default failure consumer
+     */
+    public BasicResponse onFailure(Consumer<Throwable> failureConsumer) {
+        this.onFailure = failureConsumer;
+        return this;
+    }
+
+    /**
+     * appends failure behavior to any existing behavior
+     * @see com.github.breadmoirai.bot.framework.core.Response#setDefaultFailure
+     */
+    public BasicResponse withFailure(Consumer<Throwable> failureConsumer) {
+        if (onFailure == null) onFailure = t -> {
+            super.onFailure(t);
+            failureConsumer.accept(t);
+        };
+        else onFailure = onFailure.andThen(failureConsumer);
+        return this;
+    }
 }

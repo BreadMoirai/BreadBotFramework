@@ -19,6 +19,7 @@ import com.github.breadmoirai.bot.framework.core.response.menu.ResponseMenu;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.events.message.guild.react.GenericGuildMessageReactionEvent;
+import net.dv8tion.jda.core.requests.RestAction;
 
 public interface IMenuReaction {
 
@@ -26,9 +27,9 @@ public interface IMenuReaction {
 
     boolean hasOption();
 
-    void addReactionTo(Message message);
+    RestAction<Void> addReactionTo(Message message);
 
-    void addReactionTo(MessageChannel channel, long messageId);
+    RestAction<Void> addReactionTo(MessageChannel channel, long messageId);
 
     boolean hasPredicate();
 

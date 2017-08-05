@@ -18,16 +18,12 @@ package com.github.breadmoirai.bot.framework.core.command;
 import com.github.breadmoirai.bot.framework.core.CommandEvent;
 import com.github.breadmoirai.bot.framework.core.IModule;
 import com.github.breadmoirai.bot.framework.util.TypeFinder;
-import net.dv8tion.jda.core.utils.tuple.Pair;
 
 import java.lang.annotation.Annotation;
-import java.lang.invoke.MethodHandle;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public abstract class BiModuleMultiSubCommand<M1 extends IModule, M2 extends IModule> extends BiModuleCommand<M1, M2> {
 
@@ -35,13 +31,7 @@ public abstract class BiModuleMultiSubCommand<M1 extends IModule, M2 extends IMo
 
     @Override
     public final void execute(CommandEvent event, M1 module1, M2 module2) {
-        Commands.getHandle(getKey(event)).ifPresent(cmd -> {
-            try {
-                cmd.invoke(this, event, module1, module2);
-            } catch (Throwable throwable) {
-                Commands.LOG.fatal(throwable);
-            }
-        });
+        Commands.invokeCommand(getKey(event), this, event, module1, module2);
     }
 
     @Override

@@ -62,7 +62,7 @@ public class ReactionMenu extends Menu {
 
     @Override
     void addReactions(Message message) {
-        reactions.forEach(r -> r.addReactionTo(message));
+        reactions.forEach(r -> r.addReactionTo(message).queue());
     }
 
     @Override

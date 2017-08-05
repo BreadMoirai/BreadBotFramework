@@ -75,8 +75,8 @@ public class CommandEngineBuilder {
     @SuppressWarnings("unchecked")
     public CommandEngineBuilder registerCommand(Class<? extends ICommand> commandClass) {
         final String[] keys;
-        if (MultiCommand.class.isAssignableFrom(commandClass)) {
-            keys = MultiCommand.register((Class<? extends MultiCommand>) commandClass);
+        if (AbstractCommand.class.isAssignableFrom(commandClass)) {
+            keys = AbstractCommand.register((Class<? extends AbstractCommand>) commandClass);
         } else if (MultiSubCommand.class.isAssignableFrom(commandClass)) {
             keys = MultiSubCommand.register((Class<? extends MultiSubCommand>) commandClass);
         } else if (ModuleMultiCommand.class.isAssignableFrom(commandClass)) {
@@ -87,6 +87,8 @@ public class CommandEngineBuilder {
             keys = BiModuleMultiCommand.register((Class<? extends BiModuleMultiCommand>) commandClass);
         } else if (BiModuleMultiSubCommand.class.isAssignableFrom(commandClass)) {
             keys = BiModuleMultiSubCommand.register((Class<? extends BiModuleMultiSubCommand>) commandClass);
+        } else if (MultiCommand.class.isAssignableFrom(commandClass)) {
+            keys = MultiCommand.register((Class<? extends MultiCommand>) commandClass);
         } else if (commandClass.isAnnotationPresent(Key.class)) {
             keys = commandClass.getAnnotation(Key.class).value();
         } else {

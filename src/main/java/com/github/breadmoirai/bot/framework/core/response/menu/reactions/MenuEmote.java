@@ -20,6 +20,7 @@ import net.dv8tion.jda.core.entities.Emote;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.events.message.guild.react.GenericGuildMessageReactionEvent;
+import net.dv8tion.jda.core.requests.RestAction;
 
 import java.util.function.BiPredicate;
 
@@ -47,13 +48,13 @@ public class MenuEmote implements IMenuReaction {
     }
 
     @Override
-    public void addReactionTo(Message message) {
-        message.addReaction(e).queue();
+    public RestAction<Void> addReactionTo(Message message) {
+        return message.addReaction(e);
     }
 
     @Override
-    public void addReactionTo(MessageChannel channel, long messageId) {
-        channel.addReactionById(messageId, e).queue();
+    public RestAction<Void> addReactionTo(MessageChannel channel, long messageId) {
+        return channel.addReactionById(messageId, e);
     }
 
     @Override

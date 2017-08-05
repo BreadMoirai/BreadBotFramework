@@ -17,6 +17,7 @@ package com.github.breadmoirai.bot.framework.core.command;
 
 import com.github.breadmoirai.bot.framework.core.CommandEvent;
 import com.github.breadmoirai.bot.framework.core.IModule;
+import com.github.breadmoirai.bot.framework.core.Response;
 import com.github.breadmoirai.bot.framework.util.TypeFinder;
 import net.dv8tion.jda.core.utils.tuple.Pair;
 
@@ -30,13 +31,7 @@ public abstract class ModuleMultiCommand<M extends IModule> extends ModuleComman
 
     @Override
     public void execute(CommandEvent event, M module) {
-        Commands.getHandle(event.getKey().toLowerCase()).ifPresent(cmd -> {
-            try {
-                cmd.invoke(this, event, module);
-            } catch (Throwable throwable) {
-                Commands.LOG.fatal(throwable);
-            }
-        });
+        Commands.invokeCommand(event.getKey().toLowerCase(), this, event, module);
     }
 
     @Override
@@ -45,10 +40,10 @@ public abstract class ModuleMultiCommand<M extends IModule> extends ModuleComman
     }
 
     public static String[] register(Class<? extends ModuleMultiCommand> commandClass) {
-        final Type moduleType = TypeFinder.getTypeArguments(commandClass.getClass(), BiModuleCommand.class)[0];
+        final Type moduleType = TypeFinder.getTypeArguments(commandClass.getClass(), ModuleCommand.class)[0];
         return Arrays.stream(commandClass.getDeclaredMethods())
                 .filter(method -> method.isAnnotationPresent(Key.class))
-                .filter(method -> method.getReturnType() == Void.TYPE)
+                .filter(method -> method.getReturnType() == Void.TYPE || Response.class.isAssignableFrom(method.getReturnType()))
                 .filter(method -> method.getParameterCount() == 2)
                 .filter(method -> method.getParameterTypes()[0] == CommandEvent.class)
                 .filter(method -> method.getParameterTypes()[1] == moduleType)

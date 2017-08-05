@@ -1,5 +1,7 @@
 package com.github.breadmoirai.bot.framework.util;
 
+import com.github.breadmoirai.bot.framework.error.TypeFinderException;
+
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 

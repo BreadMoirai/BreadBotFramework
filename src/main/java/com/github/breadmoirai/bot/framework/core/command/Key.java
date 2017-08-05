@@ -19,6 +19,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.stream.Stream;
 
 /**
  * This annotation marks what classes should be available as a command and defines what key is used to trigger the class.

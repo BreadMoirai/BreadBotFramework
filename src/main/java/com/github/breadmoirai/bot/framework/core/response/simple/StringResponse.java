@@ -16,7 +16,6 @@
 
 package com.github.breadmoirai.bot.framework.core.response.simple;
 
-import com.github.breadmoirai.bot.framework.core.Response;
 import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageChannel;
@@ -25,10 +24,9 @@ import java.util.Iterator;
 import java.util.Queue;
 import java.util.function.Consumer;
 
-public class StringResponse extends Response {
+public class StringResponse extends BasicResponse {
 
     private String message;
-    private Consumer<Message> consumer;
     private MessageBuilder.SplitPolicy[] policy;
 
     public StringResponse(String message) {
@@ -57,17 +55,6 @@ public class StringResponse extends Response {
         return message;
     }
 
-    @Override
-    public void onSend(Message message) {
-        if (consumer != null) consumer.accept(message);
-    }
-
-    public StringResponse andThen(Consumer<Message> onSend) {
-        if (consumer == null) consumer = onSend;
-        else consumer = consumer.andThen(onSend);
-        return this;
-    }
-
     public StringResponse setSplitPolicy(MessageBuilder.SplitPolicy... policy) {
         this.policy = policy;
         return this;
@@ -82,4 +69,27 @@ public class StringResponse extends Response {
         return new StringResponse(this.message + '\n' + response.message);
     }
 
+    @Override
+    public StringResponse onSuccess(Consumer<Message> successConsumer) {
+        super.onSuccess(successConsumer);
+        return this;
+    }
+
+    @Override
+    public StringResponse andThen(Consumer<Message> successConsumer) {
+        super.andThen(successConsumer);
+        return this;
+    }
+
+    @Override
+    public StringResponse onFailure(Consumer<Throwable> failureConsumer) {
+        super.onFailure(failureConsumer);
+        return this;
+    }
+
+    @Override
+    public StringResponse withFailure(Consumer<Throwable> failureConsumer) {
+        super.withFailure(failureConsumer);
+        return this;
+    }
 }

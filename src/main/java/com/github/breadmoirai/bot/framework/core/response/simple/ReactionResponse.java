@@ -39,8 +39,8 @@ public class ReactionResponse extends Response {
     }
 
     @Override
-    public void send(MessageChannel channel) {
-        reaction.addReactionTo(channel, getMessageId());
+    protected void send(MessageChannel channel) {
+        reaction.addReactionTo(channel, getMessageId()).queue(null, );
     }
 
     public Consumer<Message> getAsConsumer() {
@@ -53,13 +53,29 @@ public class ReactionResponse extends Response {
     }
 
     @Override
-    public void onSend(Message message) {
+    public EditResponse replace(long messageId) {
+        throw new UnsupportedOperationException("You can't replace a reaction");
+    }
+    
+    public EditResponse onSuccess(Consumer<Void> successConsumer) {
+        super.onSuccess(successConsumer);
+        return this;
+    }
 
+    public EditResponse andThen(Consumer<Void> successConsumer) {
+        super.andThen(successConsumer);
+        return this;
     }
 
 
-    @Override
-    public EditResponse replace(long messageId) {
-        throw new UnsupportedOperationException("You can't replace a reaction");
+    public EditResponse onFailure(Consumer<Throwable> failureConsumer) {
+        super.onFailure(failureConsumer);
+        return this;
+    }
+
+
+    public EditResponse withFailure(Consumer<Throwable> failureConsumer) {
+        super.withFailure(failureConsumer);
+        return this;
     }
 }

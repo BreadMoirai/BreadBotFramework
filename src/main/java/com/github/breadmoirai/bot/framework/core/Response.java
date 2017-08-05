@@ -25,6 +25,21 @@ import java.util.function.Consumer;
 
 public abstract class Response implements Serializable {
 
+    private static Consumer<Throwable> DEFAULT_FAILURE;
+
+    static {
+        DEFAULT_FAILURE = RestAction.DEFAULT_FAILURE;
+    }
+
+    /**
+     * sets the default failure consumer to be called when sending a response.
+     * Defaults to logging the error.
+     * @param onFailure
+     */
+    public static void setDefaultFailure(Consumer<Throwable> onFailure) {
+        DEFAULT_FAILURE = onFailure;
+    }
+
     private transient SamuraiClient client;
 
     private long authorId, messageId, channelId, guildId;
@@ -41,8 +56,8 @@ public abstract class Response implements Serializable {
         channel.sendMessage(message).queue(onSend, this::onFailure);
     }
 
-    public void onFailure(Throwable t) {
-        RestAction.DEFAULT_FAILURE.accept(t);
+    protected void onFailure(Throwable t) {
+        DEFAULT_FAILURE.accept(t);
     }
 
     public final SamuraiClient getClient() {
@@ -55,7 +70,7 @@ public abstract class Response implements Serializable {
 
     public abstract Message buildMessage();
 
-    public abstract void onSend(Message message);
+    protected abstract void onSend(Message message);
 
     public final long getAuthorId() {
         return authorId;

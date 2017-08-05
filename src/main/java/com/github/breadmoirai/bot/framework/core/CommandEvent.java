@@ -59,7 +59,7 @@ public abstract class CommandEvent extends Event {
     public abstract String getPrefix();
 
     /**
-     * The command key.
+     * The command key. The case is not guaranteed.
      *
      * @return a {@link java.lang.String String}. May be empty.
      */

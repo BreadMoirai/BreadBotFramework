@@ -53,9 +53,9 @@ public abstract class BiModuleCommand<M1 extends IModule, M2 extends IModule> im
     final public boolean setModules(Map<Type, IModule> moduleTypeMap) {
         Type[] moduleType = commandTypeMap.computeIfAbsent(this.getClass(), k -> TypeFinder.getTypeArguments(this.getClass(), BiModuleCommand.class));
         //noinspection unchecked
-        this.module1 = (M1) moduleType[0];
+        this.module1 = (M1) moduleTypeMap.get(moduleType[0]);
         //noinspection unchecked
-        this.module2 = (M2) moduleType[1];
+        this.module2 = (M2) moduleTypeMap.get(moduleType[1]);
 
         return module1 != null && module2 != null;
     }

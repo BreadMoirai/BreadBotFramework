@@ -16,25 +16,17 @@
 package com.github.breadmoirai.bot.framework.core.command;
 
 import com.github.breadmoirai.bot.framework.core.CommandEvent;
-import net.dv8tion.jda.core.utils.tuple.Pair;
+import com.github.breadmoirai.bot.framework.core.Response;
 
 import java.lang.annotation.Annotation;
-import java.lang.invoke.MethodHandle;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 
 public abstract class MultiSubCommand extends Command {
 
     @Override
     public void execute(CommandEvent event) {
-        Commands.getHandle(getKey(event)).ifPresent(cmd -> {
-            try {
-                cmd.invoke(this, event);
-            } catch (Throwable throwable) {
-                Commands.LOG.fatal(throwable);
-            }
-        });
+        Commands.invokeCommand(getKey(event), this, event);
     }
 
     public String getKey(CommandEvent event) {
@@ -52,7 +44,7 @@ public abstract class MultiSubCommand extends Command {
         if (!commandClass.isAnnotationPresent(Key.class)) return null;
         Arrays.stream(commandClass.getDeclaredMethods())
                 .filter(method -> method.isAnnotationPresent(Key.class))
-                .filter(method -> method.getReturnType() == Void.TYPE)
+                .filter(method -> method.getReturnType() == Void.TYPE || Response.class.isAssignableFrom(method.getReturnType()))
                 .filter(method -> method.getParameterCount() == 1)
                 .filter(method -> method.getParameterTypes()[0] == CommandEvent.class)
                 .forEach(method -> Commands.mapSubMethodKeys(commandClass, method, commandClass.getAnnotation(Key.class).value()));

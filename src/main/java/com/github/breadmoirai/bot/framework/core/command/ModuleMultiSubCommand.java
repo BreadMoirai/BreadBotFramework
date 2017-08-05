@@ -17,6 +17,7 @@ package com.github.breadmoirai.bot.framework.core.command;
 
 import com.github.breadmoirai.bot.framework.core.CommandEvent;
 import com.github.breadmoirai.bot.framework.core.IModule;
+import com.github.breadmoirai.bot.framework.core.Response;
 import com.github.breadmoirai.bot.framework.util.TypeFinder;
 import net.dv8tion.jda.core.utils.tuple.Pair;
 
@@ -32,13 +33,7 @@ public abstract class ModuleMultiSubCommand<M extends IModule> extends ModuleCom
 
     @Override
     public void execute(CommandEvent event, M module) {
-        Commands.getHandle(getKey(event)).ifPresent(cmd -> {
-            try {
-                cmd.invoke(this, event, module);
-            } catch (Throwable throwable) {
-                Commands.LOG.fatal(throwable);
-            }
-        });
+        Commands.invokeCommand(getKey(event), this, event, module);
     }
 
     @Override
@@ -54,10 +49,10 @@ public abstract class ModuleMultiSubCommand<M extends IModule> extends ModuleCom
 
     public static String[] register(Class<? extends ModuleMultiSubCommand> commandClass) {
         if (!commandClass.isAnnotationPresent(Key.class)) return null;
-        final Type moduleType = TypeFinder.getTypeArguments(commandClass.getClass(), BiModuleCommand.class)[0];
+        final Type moduleType = TypeFinder.getTypeArguments(commandClass.getClass(), ModuleCommand.class)[0];
         Arrays.stream(commandClass.getDeclaredMethods())
                 .filter(method -> method.isAnnotationPresent(Key.class))
-                .filter(method -> method.getReturnType() == Void.TYPE)
+                .filter(method -> method.getReturnType() == Void.TYPE || Response.class.isAssignableFrom(method.getReturnType()))
                 .filter(method -> method.getParameterCount() == 2)
                 .filter(method -> method.getParameterTypes()[0] == CommandEvent.class)
                 .filter(method -> method.getParameterTypes()[1] == moduleType)

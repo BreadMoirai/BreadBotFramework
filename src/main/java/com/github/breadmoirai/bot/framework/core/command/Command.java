@@ -17,8 +17,10 @@ package com.github.breadmoirai.bot.framework.core.command;
 
 import com.github.breadmoirai.bot.framework.core.CommandEvent;
 import com.github.breadmoirai.bot.framework.core.IModule;
+import com.github.breadmoirai.bot.framework.core.Response;
 
 import java.lang.annotation.Annotation;
+import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Type;
 import java.util.Map;
 
@@ -51,6 +53,7 @@ public abstract class Command implements ICommand {
         this.event = event;
     }
 
+    @Override
     public boolean isMarkedWith(Class<? extends Annotation> annotation) {
         return this.getClass().isAnnotationPresent(annotation);
     }

@@ -1,6 +1,6 @@
-package com.github.breadmoirai.bot.framework.util;
+package com.github.breadmoirai.bot.framework.error;
 
-public class TypeFinderException extends RuntimeException {
+public class TypeFinderException extends Error {
 
     public TypeFinderException(String s) {
         super(s);
