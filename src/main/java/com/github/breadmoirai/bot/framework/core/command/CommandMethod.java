@@ -1,7 +1,5 @@
 package com.github.breadmoirai.bot.framework.core.command;
 
-import com.github.breadmoirai.bot.framework.core.command.Key;
-
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -30,8 +28,8 @@ public class CommandMethod {
     }
 
     public Stream<String> getKeys() {
-        final Key classKey = commandClass.getAnnotation(Key.class);
-        final Key methodKey = method.getAnnotation(Key.class);
+        final Command classKey = commandClass.getAnnotation(Command.class);
+        final Command methodKey = method.getAnnotation(Command.class);
         if (classKey != null && methodKey != null) {
             return Arrays.stream(classKey.value())
                     .flatMap(s -> Arrays.stream(methodKey.value())

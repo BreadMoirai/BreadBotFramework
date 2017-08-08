@@ -19,14 +19,10 @@ import com.github.breadmoirai.bot.framework.core.CommandEvent;
 import com.github.breadmoirai.bot.framework.core.IModule;
 import com.github.breadmoirai.bot.framework.core.Response;
 import com.github.breadmoirai.bot.framework.util.TypeFinder;
-import net.dv8tion.jda.core.utils.tuple.Pair;
 
 import java.lang.annotation.Annotation;
-import java.lang.invoke.MethodHandle;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 
 public abstract class ModuleMultiSubCommand<M extends IModule> extends ModuleCommand<M> {
@@ -48,15 +44,15 @@ public abstract class ModuleMultiSubCommand<M extends IModule> extends ModuleCom
     }
 
     public static String[] register(Class<? extends ModuleMultiSubCommand> commandClass) {
-        if (!commandClass.isAnnotationPresent(Key.class)) return null;
+        if (!commandClass.isAnnotationPresent(Command.class)) return null;
         final Type moduleType = TypeFinder.getTypeArguments(commandClass.getClass(), ModuleCommand.class)[0];
         Arrays.stream(commandClass.getDeclaredMethods())
-                .filter(method -> method.isAnnotationPresent(Key.class))
+                .filter(method -> method.isAnnotationPresent(Command.class))
                 .filter(method -> method.getReturnType() == Void.TYPE || Response.class.isAssignableFrom(method.getReturnType()))
                 .filter(method -> method.getParameterCount() == 2)
                 .filter(method -> method.getParameterTypes()[0] == CommandEvent.class)
                 .filter(method -> method.getParameterTypes()[1] == moduleType)
-                .forEach(method -> Commands.mapSubMethodKeys(commandClass, method, commandClass.getAnnotation(Key.class).value()));
-        return commandClass.getAnnotation(Key.class).value();
+                .forEach(method -> Commands.mapMethodKeys(commandClass, method));
+        return commandClass.getAnnotation(Command.class).value();
     }
 }

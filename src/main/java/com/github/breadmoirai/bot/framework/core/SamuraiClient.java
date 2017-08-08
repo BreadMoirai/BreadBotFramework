@@ -19,8 +19,8 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
 
+import java.lang.reflect.Type;
 import java.util.Objects;
-import java.util.Optional;
 
 public interface SamuraiClient {
 
@@ -28,9 +28,11 @@ public interface SamuraiClient {
 
     boolean hasModule(Class<? extends IModule> moduleClass);
 
-    <T extends IModule> Optional<T> getModule(Class<T> moduleClass);
+    <T extends IModule> T getModule(Class<T> moduleClass);
 
-    Optional<IModule> getModule(String moduleName);
+    IModule getModule(String moduleName);
+
+    IModule getModule(Type moduleType);
 
     CommandEngine getCommandEngine();
 
@@ -39,7 +41,6 @@ public interface SamuraiClient {
     default void send(Response response) {
         send(response.getChannelId(), response);
     }
-
 
     default void send(long channeId, Response response) {
         TextChannel textChannel = getJDA().getTextChannelById(channeId);
@@ -61,4 +62,5 @@ public interface SamuraiClient {
         response.setClient(this);
         user.openPrivateChannel().queue(response::send);
     }
+
 }

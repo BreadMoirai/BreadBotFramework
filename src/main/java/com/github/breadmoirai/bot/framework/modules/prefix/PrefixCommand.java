@@ -16,11 +16,11 @@
 package com.github.breadmoirai.bot.framework.modules.prefix;
 
 import com.github.breadmoirai.bot.framework.core.CommandEvent;
-import com.github.breadmoirai.bot.framework.core.command.Key;
+import com.github.breadmoirai.bot.framework.core.command.Command;
 import com.github.breadmoirai.bot.framework.core.command.ModuleCommand;
 import com.github.breadmoirai.bot.framework.util.DiscordPatterns;
 
-@Key("prefix")
+@Command("prefix")
 public class PrefixCommand extends ModuleCommand<DynamicPrefixModule> {
 
     @Override

@@ -15,46 +15,19 @@
  */
 package com.github.breadmoirai.bot.framework.core.command;
 
-import com.github.breadmoirai.bot.framework.core.CommandEvent;
-import com.github.breadmoirai.bot.framework.core.IModule;
-import com.github.breadmoirai.bot.framework.core.Response;
-
-import java.lang.annotation.Annotation;
-import java.lang.invoke.MethodHandle;
-import java.lang.reflect.Type;
-import java.util.Map;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * This is a plain Command that is not explicitly tied to any Modules.
+ * This annotation marks what classes should be available as a command and defines what key is used to trigger the class.
+ * <p> should only be used on classes that are derived from {@link ICommand}</p>
  */
-public abstract class Command implements ICommand {
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.TYPE, ElementType.METHOD})
+public @interface Command {
 
-    private CommandEvent event;
+    String[] value() default {};
 
-    @Override
-    public void run() {
-        execute(event);
-    }
-
-    public abstract void execute(CommandEvent event);
-
-    @Override
-    final public CommandEvent getEvent() {
-        return event;
-    }
-
-    @Override
-    final public boolean setModules(Map<Type, IModule> moduleTypeMap) {
-        return true;
-    }
-
-    @Override
-    final public void setEvent(CommandEvent event) {
-        this.event = event;
-    }
-
-    @Override
-    public boolean isMarkedWith(Class<? extends Annotation> annotation) {
-        return this.getClass().isAnnotationPresent(annotation);
-    }
 }

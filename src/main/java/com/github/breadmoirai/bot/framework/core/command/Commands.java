@@ -13,11 +13,6 @@ import java.util.stream.Stream;
 
 public class Commands {
 
-
-    enum Type {
-        SINGLE, MULTI, SUB;
-    }
-
     private static final SimpleLog LOG = SimpleLog.getLog("Command");
 
     private static final Map<String, CommandMethod> METHODS = new HashMap<>();

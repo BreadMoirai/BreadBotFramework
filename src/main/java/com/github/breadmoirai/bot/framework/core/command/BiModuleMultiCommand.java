@@ -40,7 +40,7 @@ public abstract class BiModuleMultiCommand<M1 extends IModule, M2 extends IModul
         final Type moduleType1 = typeArguments[0];
         final Type moduleType2 = typeArguments[1];
         return Arrays.stream(commandClass.getDeclaredMethods())
-                .filter(method -> method.isAnnotationPresent(Key.class))
+                .filter(method -> method.isAnnotationPresent(Command.class))
                 .filter(method -> method.getReturnType() == Void.TYPE)
                 .filter(method -> method.getParameterCount() == 2)
                 .filter(method -> method.getParameterTypes()[0] == CommandEvent.class)

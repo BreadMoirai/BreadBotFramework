@@ -18,8 +18,6 @@ package com.github.breadmoirai.bot.framework.core.impl;
 import com.github.breadmoirai.bot.framework.core.*;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.TextChannel;
-import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.ReadyEvent;
 import net.dv8tion.jda.core.events.message.guild.GenericGuildMessageEvent;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
@@ -28,21 +26,23 @@ import net.dv8tion.jda.core.hooks.IEventManager;
 import net.dv8tion.jda.core.hooks.InterfacedEventManager;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 import net.dv8tion.jda.core.hooks.SubscribeEvent;
-import org.jetbrains.annotations.Contract;
 
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.Map;
 import java.util.function.Predicate;
 
 public class SamuraiClientImpl implements SamuraiClient {
 
     private JDA jda;
 
-    private final List<IModule> modules;
     private final IEventManager eventManager;
     private final ICommandEventFactory eventFactory;
     private final CommandEngine commandEngine;
+    private final List<IModule> modules;
+    private final Map<Type, IModule> moduleTypeMap;
 
     public SamuraiClientImpl(List<IModule> modules, IEventManager eventManager, ICommandEventFactory eventFactory, CommandEngineBuilder engineBuilder) {
         this.modules = modules;
@@ -56,6 +56,36 @@ public class SamuraiClientImpl implements SamuraiClient {
         this.eventManager = eventManager;
         this.eventFactory = eventFactory;
         this.commandEngine = engineBuilder.build();
+
+        final HashMap<Type, IModule> typeMap = new HashMap<>(modules.size());
+        for (IModule module : modules) {
+            Class<?> moduleClass = module.getClass();
+            do {
+                typeMap.put(moduleClass, module);
+                for (Class<?> inter : moduleClass.getInterfaces()) {
+                    final List<Class<?>> interfaceList = getInterfaceHierarchy(inter, IModule.class);
+                    if (interfaceList != null) {
+                        for (Class<?> interfaceClass : interfaceList)
+                            typeMap.put(interfaceClass, module);
+                    }
+                }
+            } while (IModule.class.isAssignableFrom(moduleClass = moduleClass.getSuperclass()));
+        }
+        this.moduleTypeMap = typeMap;
+    }
+
+    private List<Class<?>> getInterfaceHierarchy(Class<?> from, Class<?> toSuper) {
+        if (!from.isInterface())
+            return null;
+        if (from == toSuper)
+            return new ArrayList<>();
+        final Class<?>[] interfaces = from.getInterfaces();
+        if (interfaces.length == 0)
+            return null;
+        final List<Class<?>> interfaceList = getInterfaceHierarchy(interfaces[0], toSuper);
+        if (interfaceList != null)
+            interfaceList.add(0, from);
+        return interfaceList;
     }
 
     @Override
@@ -70,7 +100,7 @@ public class SamuraiClientImpl implements SamuraiClient {
 
     @Override
     public boolean hasModule(Class<? extends IModule> moduleClass) {
-        return moduleClass != null && modules.stream().map(Object::getClass).anyMatch(moduleClass::equals);
+        return moduleTypeMap.containsKey(moduleClass);
     }
 
     /**
@@ -79,11 +109,10 @@ public class SamuraiClientImpl implements SamuraiClient {
      * @param moduleClass The class of the Module to find
      * @return Optional containing the module if found.
      */
-    @Contract("_->!null")
     @Override
-    public <T extends IModule> Optional<T> getModule(Class<T> moduleClass) {
+    public <T extends IModule> T getModule(Class<T> moduleClass) {
         //noinspection unchecked
-        return moduleClass == null ? Optional.empty() : modules.stream().filter(module -> moduleClass.isAssignableFrom(module.getClass())).map(iModule -> (T) iModule).findAny();
+        return (T) moduleTypeMap.get(moduleClass);
     }
 
     /**
@@ -92,10 +121,14 @@ public class SamuraiClientImpl implements SamuraiClient {
      * @param moduleName the name of the module to find. If the module does not override {@link com.github.breadmoirai.bot.framework.core.IModule#getName IModule#getName} the name of the class is used.
      * @return Optional containing the module if foundd.
      */
-    @Contract("_->!null")
     @Override
-    public Optional<IModule> getModule(String moduleName) {
-        return moduleName == null ? Optional.empty() : modules.stream().filter(module -> module.getName().equalsIgnoreCase(moduleName)).findAny();
+    public IModule getModule(String moduleName) {
+        return moduleName == null ? null : modules.stream().filter(module -> module.getName().equalsIgnoreCase(moduleName)).findAny().orElse(null);
+    }
+
+    @Override
+    public IModule getModule(Type moduleType) {
+        return moduleTypeMap.get(moduleType);
     }
 
     @Override

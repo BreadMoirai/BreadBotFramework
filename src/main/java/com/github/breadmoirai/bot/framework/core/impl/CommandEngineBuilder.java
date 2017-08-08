@@ -16,9 +16,13 @@
 package com.github.breadmoirai.bot.framework.core.impl;
 
 import com.github.breadmoirai.bot.framework.core.CommandEngine;
+import com.github.breadmoirai.bot.framework.core.CommandEvent;
 import com.github.breadmoirai.bot.framework.core.IModule;
 import com.github.breadmoirai.bot.framework.core.command.*;
+import com.github.breadmoirai.bot.framework.error.EmptyCommandAnnotation;
+import com.github.breadmoirai.bot.framework.error.MissingCommandAnnotation;
 import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.SimpleLog;
 import org.reflections.Reflections;
 
@@ -27,13 +31,13 @@ import java.util.function.Predicate;
 
 public class CommandEngineBuilder {
 
-    private static final SimpleLog LOG = SimpleLog.getLog("CommandEngine");
+    private static final SimpleLog LOG = SimpleLog.getLog("CommandBuilder");
     private final List<IModule> modules;
 
     private Predicate<Message> preProcessPredicate;
-    private Predicate<ICommand> postProcessPredicate;
+    private Predicate<CommandEvent> postProcessPredicate;
 
-    private Map<String, Class<? extends ICommand>> commandMap = new HashMap<>();
+    private Map<String, CommandWrapper> commandMap = new HashMap<>();
 
     public CommandEngineBuilder(List<IModule> modules) {
         this.modules = modules;
@@ -46,7 +50,7 @@ public class CommandEngineBuilder {
         return this;
     }
 
-    public CommandEngineBuilder addPostProcessPredicate(Predicate<ICommand> predicate) {
+    public CommandEngineBuilder addPostProcessPredicate(Predicate<CommandEvent> predicate) {
         if (postProcessPredicate == null) {
             postProcessPredicate = predicate;
         } else postProcessPredicate = postProcessPredicate.and(predicate);
@@ -54,18 +58,19 @@ public class CommandEngineBuilder {
     }
 
 
-    private CommandEngineBuilder registerCommand(Class<? extends ICommand> commandClass, String... keys) {
-        if (keys == null || keys.length == 0) {
+    private CommandEngineBuilder registerCommand(CommandWrapper wrapper, String... keys) {
+        final Class<?> commandClass = wrapper.getCommandClass();
+        if (keys.length == 0) {
             LOG.warn("No key found for " + commandClass.getSimpleName());
             return this;
         }
         for (String key : keys) {
             final String key1 = key.toLowerCase();
             if (commandMap.containsKey(key1)) {
-                final Class<? extends ICommand> existing = commandMap.get(key1);
-                LOG.warn("Key \"" + key + "\" for Command " + commandClass.getSimpleName() + " is already mapped to Command " + existing.getSimpleName());
+                final CommandWrapper existing = commandMap.get(key1);
+                LOG.warn("Key \"" + key + "\" for Command " + commandClass.getSimpleName() + " is already mapped to Command " + existing.getCommandClass().getSimpleName());
             } else {
-                commandMap.put(key, commandClass);
+                commandMap.put(key, wrapper);
                 LOG.info("\"" + key + "\" mapped to " + commandClass.getSimpleName());
             }
         }
@@ -73,10 +78,10 @@ public class CommandEngineBuilder {
     }
 
     @SuppressWarnings("unchecked")
-    public CommandEngineBuilder registerCommand(Class<? extends ICommand> commandClass) {
+    public CommandEngineBuilder registerCommand(Class<?> commandClass) {
         final String[] keys;
-        if (AbstractCommand.class.isAssignableFrom(commandClass)) {
-            keys = AbstractCommand.register((Class<? extends AbstractCommand>) commandClass);
+        if (MultiCommand.class.isAssignableFrom(commandClass)) {
+            keys = MultiCommand.register((Class<? extends MultiCommand>) commandClass);
         } else if (MultiSubCommand.class.isAssignableFrom(commandClass)) {
             keys = MultiSubCommand.register((Class<? extends MultiSubCommand>) commandClass);
         } else if (ModuleMultiCommand.class.isAssignableFrom(commandClass)) {
@@ -87,12 +92,12 @@ public class CommandEngineBuilder {
             keys = BiModuleMultiCommand.register((Class<? extends BiModuleMultiCommand>) commandClass);
         } else if (BiModuleMultiSubCommand.class.isAssignableFrom(commandClass)) {
             keys = BiModuleMultiSubCommand.register((Class<? extends BiModuleMultiSubCommand>) commandClass);
-        } else if (MultiCommand.class.isAssignableFrom(commandClass)) {
-            keys = MultiCommand.register((Class<? extends MultiCommand>) commandClass);
-        } else if (commandClass.isAnnotationPresent(Key.class)) {
-            keys = commandClass.getAnnotation(Key.class).value();
+        } else if (ICommand.class.isAssignableFrom(commandClass)) {
+            CommandEngineBuilder.checkCommandAnnotation(commandClass);
+            final Command annotation = commandClass.getAnnotation(Command.class);
+            keys = annotation.value();
         } else {
-            keys = null;
+
         }
         if (keys == null)
             LOG.warn("No key found for " + commandClass.getSimpleName());
@@ -103,7 +108,7 @@ public class CommandEngineBuilder {
 
     public CommandEngineBuilder registerCommand(String commandPackagePrefix) {
         final Reflections reflections = new Reflections(commandPackagePrefix);
-        final Set<Class<?>> classes = reflections.getTypesAnnotatedWith(Key.class);
+        final Set<Class<?>> classes = reflections.getTypesAnnotatedWith(Command.class);
         for (Class<?> commandClass : classes) {
             if (ICommand.class.isAssignableFrom(commandClass)) {
                 //noinspection unchecked
@@ -160,6 +165,19 @@ public class CommandEngineBuilder {
 
     CommandEngine build() {
         return new CommandEngineImpl(modules, commandMap, postProcessPredicate);
+    }
+
+    public static void checkCommandAnnotation(Class<?> klass) {
+        final Command annotation = klass.getAnnotation(Command.class);
+        if (annotation == null) {
+            throw new MissingCommandAnnotation(klass);
+        }
+        final String[] value = annotation.value();
+        if (value.length == 0) {
+            throw new EmptyCommandAnnotation(klass);
+                    }
+        Checks.noneContainBlanks(Arrays.asList(value), "Command Class: " + klass.getName() + " @Command keys");
+
     }
 
 }

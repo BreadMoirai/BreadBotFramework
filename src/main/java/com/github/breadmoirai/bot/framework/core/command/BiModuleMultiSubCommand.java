@@ -46,19 +46,19 @@ public abstract class BiModuleMultiSubCommand<M1 extends IModule, M2 extends IMo
     }
 
     public static String[] register(Class<? extends BiModuleMultiSubCommand> commandClass) {
-        if (!commandClass.isAnnotationPresent(Key.class)) return null;
+        if (!commandClass.isAnnotationPresent(Command.class)) return null;
         final Type[] typeArguments = TypeFinder.getTypeArguments(commandClass.getClass(), BiModuleCommand.class);
         final Type moduleType1 = typeArguments[0];
         final Type moduleType2 = typeArguments[1];
         Arrays.stream(commandClass.getDeclaredMethods())
-                .filter(method -> method.isAnnotationPresent(Key.class))
+                .filter(method -> method.isAnnotationPresent(Command.class))
                 .filter(method -> method.getReturnType() == Void.TYPE)
                 .filter(method -> method.getParameterCount() == 2)
                 .filter(method -> method.getParameterTypes()[0] == CommandEvent.class)
                 .filter(method -> method.getParameterTypes()[1] == moduleType1)
                 .filter(method -> method.getParameterTypes()[2] == moduleType2)
-                .forEach(method -> Commands.mapSubMethodKeys(commandClass, method, commandClass.getAnnotation(Key.class).value()));
-        return commandClass.getAnnotation(Key.class).value();
+                .forEach(method -> Commands.mapMethodKeys(commandClass, method));
+        return commandClass.getAnnotation(Command.class).value();
     }
 
 

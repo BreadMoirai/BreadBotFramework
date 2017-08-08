@@ -19,13 +19,10 @@ import com.github.breadmoirai.bot.framework.core.CommandEvent;
 import com.github.breadmoirai.bot.framework.core.IModule;
 import com.github.breadmoirai.bot.framework.core.Response;
 import com.github.breadmoirai.bot.framework.util.TypeFinder;
-import net.dv8tion.jda.core.utils.tuple.Pair;
 
 import java.lang.annotation.Annotation;
-import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Type;
 import java.util.Arrays;
-import java.util.HashMap;
 
 public abstract class ModuleMultiCommand<M extends IModule> extends ModuleCommand<M> {
 
@@ -42,7 +39,7 @@ public abstract class ModuleMultiCommand<M extends IModule> extends ModuleComman
     public static String[] register(Class<? extends ModuleMultiCommand> commandClass) {
         final Type moduleType = TypeFinder.getTypeArguments(commandClass.getClass(), ModuleCommand.class)[0];
         return Arrays.stream(commandClass.getDeclaredMethods())
-                .filter(method -> method.isAnnotationPresent(Key.class))
+                .filter(method -> method.isAnnotationPresent(Command.class))
                 .filter(method -> method.getReturnType() == Void.TYPE || Response.class.isAssignableFrom(method.getReturnType()))
                 .filter(method -> method.getParameterCount() == 2)
                 .filter(method -> method.getParameterTypes()[0] == CommandEvent.class)

@@ -16,13 +16,13 @@
 package com.github.breadmoirai.bot.framework.modules.admin;
 
 import com.github.breadmoirai.bot.framework.core.CommandEvent;
-import com.github.breadmoirai.bot.framework.core.command.Key;
+import com.github.breadmoirai.bot.framework.core.command.Command;
 import com.github.breadmoirai.bot.framework.core.command.ModuleCommand;
 import net.dv8tion.jda.core.entities.Member;
 
 import java.util.stream.Collectors;
 
-@Key("admin")
+@Command("admin")
 public class AdminCommand extends ModuleCommand<IAdminModule> {
     @Override
     public void execute(CommandEvent event, IAdminModule module) {

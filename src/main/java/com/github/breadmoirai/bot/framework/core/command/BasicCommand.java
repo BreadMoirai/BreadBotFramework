@@ -20,20 +20,31 @@ import com.github.breadmoirai.bot.framework.core.CommandEvent;
 import java.lang.annotation.Annotation;
 
 /**
- * @see ModuleCommand
- * @see BiModuleCommand
+ * This is a plain Command that is not explicitly tied to any Modules.
  */
-public interface ICommand extends Runnable {
+public abstract class BasicCommand implements ICommand {
 
-    void run();
+    private CommandEvent event;
 
-    void setEvent(CommandEvent event);
+    @Override
+    public void run() {
+        execute(event);
+    }
 
-    CommandEvent getEvent();
+    public abstract void execute(CommandEvent event);
 
-    boolean isMarkedWith(Class<? extends Annotation> annotation);
+    @Override
+    final public CommandEvent getEvent() {
+        return event;
+    }
 
-    default void getHelp(CommandEvent event) {
-        event.reply("No Help Available");
+    @Override
+    final public void setEvent(CommandEvent event) {
+        this.event = event;
+    }
+
+    @Override
+    public boolean isMarkedWith(Class<? extends Annotation> annotation) {
+        return this.getClass().isAnnotationPresent(annotation);
     }
 }

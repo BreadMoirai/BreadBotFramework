@@ -17,12 +17,13 @@ package com.github.breadmoirai.bot.framework.core.command;
 
 import com.github.breadmoirai.bot.framework.core.CommandEvent;
 import com.github.breadmoirai.bot.framework.core.Response;
+import net.dv8tion.jda.core.utils.SimpleLog;
 
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.List;
 
-public abstract class MultiSubCommand extends Command {
+public abstract class MultiSubCommand extends BasicCommand {
 
     @Override
     public void execute(CommandEvent event) {
@@ -41,13 +42,13 @@ public abstract class MultiSubCommand extends Command {
     }
 
     public static String[] register(Class<? extends MultiSubCommand> commandClass) {
-        if (!commandClass.isAnnotationPresent(Key.class)) return null;
+
         Arrays.stream(commandClass.getDeclaredMethods())
-                .filter(method -> method.isAnnotationPresent(Key.class))
+                .filter(method -> method.isAnnotationPresent(Command.class))
                 .filter(method -> method.getReturnType() == Void.TYPE || Response.class.isAssignableFrom(method.getReturnType()))
                 .filter(method -> method.getParameterCount() == 1)
                 .filter(method -> method.getParameterTypes()[0] == CommandEvent.class)
-                .forEach(method -> Commands.mapSubMethodKeys(commandClass, method, commandClass.getAnnotation(Key.class).value()));
-        return commandClass.getAnnotation(Key.class).value();
+                .forEach(method -> Commands.mapMethodKeys(commandClass, method));
+        return commandClass.getAnnotation(Command.class).value();
     }
 }

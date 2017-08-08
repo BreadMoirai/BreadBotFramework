@@ -44,6 +44,7 @@ import java.util.stream.IntStream;
 public abstract class CommandEvent extends Event {
 
     private final SamuraiClient client;
+    private List<String> args;
 
     public CommandEvent(JDA api, long responseNumber, SamuraiClient client) {
         super(api, responseNumber);
@@ -172,12 +173,15 @@ public abstract class CommandEvent extends Event {
      * <pre>{@code hello, 1 23 <@12341482523> "say no more"}</pre>
      * <p>Then this method will return a list with elements
      * <pre>{@code ["hello,", "1", "23", "say no more"]}</pre>
-     * @return A mutable list of args. Every time this method is called {@link CommandEvent#getContent() getContent()} is parsed again and a new list is returned.
+     * @return An immutable list of args.
      */
     public List<String> getArgs() {
-        return hasContent()
-                ? Arrays.stream(DiscordPatterns.ARGUMENT_SPLITTER.split(getContent().replace('`', '\"'))).filter((s) -> !s.isEmpty()).filter(s -> !((s.startsWith("<") && s.endsWith(">")) || s.equals("@everyone") || s.equals("@here"))).map(s -> s.replace('\"', ' ')).map(String::trim).map(String::toLowerCase).collect(Collectors.toList())
-                : Collections.emptyList();
+        if (args == null) {
+            args = hasContent()
+                    ? Arrays.stream(DiscordPatterns.ARGUMENT_SPLITTER.split(getContent().replace('`', '\"'))).filter((s) -> !s.isEmpty()).filter(s -> !((s.startsWith("<") && s.endsWith(">")) || s.equals("@everyone") || s.equals("@here"))).map(s -> s.replace('\"', ' ')).map(String::trim).map(String::toLowerCase).collect(Collectors.toList())
+                    : Collections.emptyList();
+        }
+        return args;
     }
 
     /**

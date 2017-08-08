@@ -20,7 +20,6 @@ import com.github.breadmoirai.bot.framework.core.IModule;
 import com.github.breadmoirai.bot.framework.util.TypeFinder;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -40,13 +39,16 @@ import java.util.Map;
  */
 public abstract class ModuleCommand<M extends IModule> implements ICommand {
 
-    private static Map<Class<? extends ModuleCommand>, Type> commandTypeMap = new HashMap<>();
+    private static Map<Class<? extends ModuleCommand>, Class<? extends IModule>> commandTypeMap = new HashMap<>();
 
     private M module;
     private CommandEvent event;
 
     @Override
     public final void run() {
+        Class<? extends IModule> moduleType = commandTypeMap.computeIfAbsent(this.getClass(), this::getType);
+        //noinspection unchecked
+        this.module = (M) event.getClient().getModule(moduleType);
         execute(getEvent(), module);
     }
 
@@ -58,15 +60,6 @@ public abstract class ModuleCommand<M extends IModule> implements ICommand {
     }
 
     @Override
-    final public boolean setModules(Map<Type, IModule> moduleTypeMap) {
-        Type moduleType = commandTypeMap.computeIfAbsent(this.getClass(), k -> TypeFinder.getTypeArguments(this.getClass(), ModuleCommand.class)[0]);
-        //noinspection unchecked
-        this.module = (M) moduleTypeMap.get(moduleType);
-
-        return module != null;
-    }
-
-    @Override
     final public void setEvent(CommandEvent event) {
         this.event = event;
     }
@@ -74,5 +67,10 @@ public abstract class ModuleCommand<M extends IModule> implements ICommand {
     @Override
     public boolean isMarkedWith(Class<? extends Annotation> annotation) {
         return this.getClass().isAnnotationPresent(annotation);
+    }
+
+    private Class<? extends IModule> getType(Class<? extends ModuleCommand> k) {
+        //noinspection unchecked
+        return (Class<? extends IModule>) TypeFinder.getTypeArguments(this.getClass(), ModuleCommand.class)[0];
     }
 }

@@ -1,14 +1,14 @@
-buildscript {
-    ext.kotlin_version = '1.1.3-2'
-    repositories {
-        flatDir {
-            dirs 'C:/Users/TonTL/Desktop/git/github-release/build/libs'
-        }
-    }
-    dependencies {
-        classpath group: 'com.github.breadmoirai', name: 'github-release', version: '0.1.0'
-    }
-}
+//buildscript {
+//    ext.kotlin_version = '1.1.3-2'
+//    repositories {
+//        flatDir {
+//            dirs 'C:/Users/TonTL/Desktop/git/github-release/build/libs'
+//        }
+//    }
+//    dependencies {
+//        classpath group: 'com.github.breadmoirai', name: 'github-release', version: '0.1.0'
+//    }
+//}
 
 plugins {
     id 'java'
@@ -20,7 +20,7 @@ plugins {
     id 'signing'
 }
 
-apply plugin: 'com.github.breadmoirai.github-release'
+//apply plugin: 'com.github.breadmoirai.github-release'
 
 group 'com.github.breadmoirai'
 version '0.4.4'
@@ -61,61 +61,61 @@ dependencies {
 //    compile 'com.google.apis:google-api-services-youtube:v3-rev183-1.22.0'
 }
 
-githubRelease {
-    token = new File('github.token').text
-    String version = project.version
-    body = """
-## Adding as Dependency
-### Gradle
-
-\tallprojects {
-\t\trepositories {
-\t\t\t...
-\t\t\tmaven { url 'https://dl.bintray.com/breadmoirai/maven'}
-\t\t}
-\t}
-
-\tdependencies {
-\t\tcompile '${project.group}:${project.name}:${project.version}'
-\t}
-    
-### Maven
-\t<repositories>
-\t\t<repository>
-\t\t\t<snapshots>
-\t\t\t\t<enabled>false</enabled>
-\t\t\t</snapshots>
-\t\t\t<id>bintray-breadmoirai-maven</id>
-\t\t\t<name>bintray</name>
-\t\t\t<url>http://dl.bintray.com/breadmoirai/maven</url>
-\t\t</repository>
-\t</repositories>
-\t<pluginRepositories>
-\t\t<pluginRepository>
-\t\t\t<snapshots>
-\t\t\t\t<enabled>false</enabled>
-\t\t\t</snapshots>
-\t\t\t<id>bintray-breadmoirai-maven</id>
-\t\t\t<name>bintray-plugins</name>
-\t\t\t<url>http://dl.bintray.com/breadmoirai/maven</url>
-\t\t</pluginRepository>
-\t</pluginRepositories>
-
-\t<dependency>
-\t\t<groupId>${project.group}</groupId>
-\t\t<artifactId>${project.name}</artifactId>
-\t\t<version>${project.version}</version>
-\t\t<type>pom</type>
-\t</dependency>"""
-    prerelease = true
-    FilenameFilter filter = { dir, file -> file.contains(version) }
-    releaseAssets = jar.destinationDir.listFiles filter
-}
+//githubRelease {
+//    token = new File('github.token').text
+//    String version = project.version
+//    body = """
+//## Adding as Dependency
+//### Gradle
+//
+//\tallprojects {
+//\t\trepositories {
+//\t\t\t...
+//\t\t\tmaven { url 'https://dl.bintray.com/breadmoirai/maven'}
+//\t\t}
+//\t}
+//
+//\tdependencies {
+//\t\tcompile '${project.group}:${project.name}:${project.version}'
+//\t}
+//
+//### Maven
+//\t<repositories>
+//\t\t<repository>
+//\t\t\t<snapshots>
+//\t\t\t\t<enabled>false</enabled>
+//\t\t\t</snapshots>
+//\t\t\t<id>bintray-breadmoirai-maven</id>
+//\t\t\t<name>bintray</name>
+//\t\t\t<url>http://dl.bintray.com/breadmoirai/maven</url>
+//\t\t</repository>
+//\t</repositories>
+//\t<pluginRepositories>
+//\t\t<pluginRepository>
+//\t\t\t<snapshots>
+//\t\t\t\t<enabled>false</enabled>
+//\t\t\t</snapshots>
+//\t\t\t<id>bintray-breadmoirai-maven</id>
+//\t\t\t<name>bintray-plugins</name>
+//\t\t\t<url>http://dl.bintray.com/breadmoirai/maven</url>
+//\t\t</pluginRepository>
+//\t</pluginRepositories>
+//
+//\t<dependency>
+//\t\t<groupId>${project.group}</groupId>
+//\t\t<artifactId>${project.name}</artifactId>
+//\t\t<version>${project.version}</version>
+//\t\t<type>pom</type>
+//\t</dependency>"""
+//    prerelease = true
+//    FilenameFilter filter = { dir, file -> file.contains(version) }
+//    releaseAssets = jar.destinationDir.listFiles filter
+//}
 
 
 bintray {
     user = 'breadmoirai'
-    key = new File('bintray.key').getText()
+//    key = new File('bintray.key').getText()
     publications = ["BintrayRelease"]
     publish = true
     pkg {
