@@ -13,11 +13,11 @@
  *   See the License for the specific language governing permissions and
  *   limitations under the License.
  */
-package com.github.breadmoirai.bot.framework.core.command;
+package com.github.breadmoirai.framework.core.command;
 
-import com.github.breadmoirai.bot.framework.core.CommandEvent;
-import com.github.breadmoirai.bot.framework.core.IModule;
-import com.github.breadmoirai.bot.framework.util.TypeFinder;
+import com.github.breadmoirai.framework.core.CommandEvent;
+import com.github.breadmoirai.framework.core.IModule;
+import com.github.breadmoirai.framework.util.TypeFinder;
 import net.dv8tion.jda.core.utils.tuple.Pair;
 
 import java.lang.annotation.Annotation;
