@@ -17,28 +17,51 @@ package com.github.breadmoirai.framework.event.args;
 import com.github.breadmoirai.framework.util.Emoji;
 import net.dv8tion.jda.core.entities.*;
 
+import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.stream.IntStream;
 
-public interface EventArgument {
+public interface CommandArgument {
 
     String getString();
 
-    boolean matches(String regex);
+    /**
+     * Invocation is exactly the same as:
+     * <pre><code>
+     *     this.{@link CommandArgument#getString() getString()}.{@link java.lang.String#matches(String) matches}(regex)
+     * </code></pre>
+     *
+     * @param   regex
+     *          the regular expression to which this string is to be matched
+     *
+     * @return  {@code true} if, and only if, this string matches the
+     *          given regular expression
+     */
+    default boolean matches(String regex) {
+        return getString().matches(regex);
+    }
 
-    boolean matches(Pattern pattern);
+    default boolean matches(Pattern pattern) {
+        return pattern.matcher(getString()).matches();
+    }
 
-    boolean isNumeric();
+    /**
+     *
+     * @return
+     */
+    default boolean isNumeric() {
+        return false;
+    }
 
-    int getAsInt();
+    int getInt();
 
-    long getAsLong();
+    long getLong();
 
     boolean isFloat();
 
-    float getAsFloat();
+    float getFloat();
 
-    double getAsDouble();
+    double getDouble();
 
     boolean isRange();
 
@@ -46,15 +69,17 @@ public interface EventArgument {
 
     boolean isHex();
 
-    int getAsIntFromHex();
+    int getIntFromHex();
 
-    boolean isUser();
+    default boolean isUser() {return false;}
 
-    User getAsUser();
+    default User getUser() {return null;}
 
-    boolean isMember();
+    default boolean isMember() {return false;}
 
-    Member getAsMember();
+    Member getMemberMention();
+
+    Optional<Member> getAsMember();
 
     boolean isRole();
 

@@ -17,13 +17,14 @@ package com.github.breadmoirai.framework.event;
 
 import com.github.breadmoirai.framework.core.Response;
 import com.github.breadmoirai.framework.core.SamuraiClient;
-import com.github.breadmoirai.framework.event.args.ArgumentList;
+import com.github.breadmoirai.framework.event.args.CommandArgumentList;
 import com.github.breadmoirai.framework.core.response.menu.PromptBuilder;
 import com.github.breadmoirai.framework.core.response.menu.ReactionMenuBuilder;
 import com.github.breadmoirai.framework.core.response.simple.EmbedResponse;
 import com.github.breadmoirai.framework.core.response.simple.MessageResponse;
 import com.github.breadmoirai.framework.core.response.simple.ReactionResponse;
 import com.github.breadmoirai.framework.core.response.simple.StringResponse;
+import com.github.breadmoirai.framework.event.args.CommandArgument;
 import com.github.breadmoirai.framework.util.DiscordPatterns;
 import com.github.breadmoirai.framework.util.UnknownEmote;
 import net.dv8tion.jda.core.JDA;
@@ -172,8 +173,10 @@ public abstract class CommandEvent extends Event {
      * Code block formatting is stripped and no formatted content is passed such as Mentions.
      * Phrases contained within quotation marks are not separated.
      * Formatted input and mentions are ignored.
+     * If message content contains an uneven number of {@code "}, the result is not predictable.
+     *
      * <p>For example, if {@link CommandEvent#getContent() getContent()} returns
-     * <pre>{@code hello, 1 23 <@12341482523> "say no more"}</pre>
+     * <pre>{@code hello, 1 23 <@12341482523> "say no more" @everyone}</pre>
      * <p>Then this method will return a list with elements
      * <pre>{@code ["hello,", "1", "23", "say no more"]}</pre>
      * @return An immutable list of args.
@@ -187,7 +190,13 @@ public abstract class CommandEvent extends Event {
         return args;
     }
 
-    public ArgumentList getArguments() {
+    /**
+     * returns an ordered list of all arguments passing including mentions, emojis, emotes, etc.
+     * Arguments enclosed in quotes will be returned as a single argument.
+     * @return an implementation of <code>{@link java.util.List}<{@link CommandArgument EventArgument}></code> in which arguments are lazily parsed.
+     */
+    public CommandArgumentList getArguments() {
+        return new CommandArgumentList(hasContent() ? Arrays.stream(DiscordPatterns.ARGUMENT_SPLITTER.split(getContent().replace('`', '\"'))).filter(s -> !s.isEmpty()).map(s -> s.replace('\"', ' ')).map(String::trim).map(String::toLowerCase).toArray(String[]::new) : new String[]{}, getJDA());
 
     }
 
