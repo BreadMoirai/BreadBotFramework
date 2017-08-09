@@ -169,7 +169,9 @@ public abstract class CommandEvent extends Event {
     public abstract List<Member> getMentionedMembers();
 
     /**
-     * Parses {@link CommandEvent#getContent() getContent()} as a list of arguments that are space delimited.
+     * I think {@link CommandEvent#getArguments()} is more useful than this. idk.
+     *
+     * <p>Parses {@link CommandEvent#getContent() getContent()} as a list of arguments that are space delimited.
      * Code block formatting is stripped and no formatted content is passed such as Mentions.
      * Phrases contained within quotation marks are not separated.
      * Formatted input and mentions are ignored.
@@ -196,8 +198,7 @@ public abstract class CommandEvent extends Event {
      * @return an implementation of <code>{@link java.util.List}<{@link CommandArgument EventArgument}></code> in which arguments are lazily parsed.
      */
     public CommandArgumentList getArguments() {
-        return new CommandArgumentList(hasContent() ? Arrays.stream(DiscordPatterns.ARGUMENT_SPLITTER.split(getContent().replace('`', '\"'))).filter(s -> !s.isEmpty()).map(s -> s.replace('\"', ' ')).map(String::trim).map(String::toLowerCase).toArray(String[]::new) : new String[]{}, getJDA());
-
+        return new CommandArgumentList(hasContent() ? Arrays.stream(DiscordPatterns.ARGUMENT_SPLITTER.split(getContent().replace('`', '\"'))).filter(s -> !s.isEmpty()).map(s -> s.replace('\"', ' ')).map(String::trim).map(String::toLowerCase).toArray(String[]::new) : new String[]{}, getChannel());
     }
 
     /**

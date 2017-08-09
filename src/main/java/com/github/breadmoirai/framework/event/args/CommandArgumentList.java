@@ -30,10 +30,23 @@ public class CommandArgumentList extends AbstractList<CommandArgument> {
         this(strings, channel.getJDA(), channel.getGuild(), channel);
     }
 
+    public JDA getJDA() {
+        return jda;
+    }
+
+    public Guild getGuild() {
+        return guild;
+    }
+
+    public TextChannel getChannel() {
+        return channel;
+    }
+
     /**
      * <p>Lazily evaluates and returns the value at the given index.
-     *
+     * <p>
      * Prior to retrieving an argument,
+     *
      * @param index the index of the argument starting at 0.
      * @return non-null CommandArgument
      */
