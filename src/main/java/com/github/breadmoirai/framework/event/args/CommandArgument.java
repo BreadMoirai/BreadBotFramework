@@ -26,10 +26,27 @@ import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.stream.IntStream;
 
+/**
+ * This represents a space separated argument in a Command.
+ */
 public interface CommandArgument {
 
+    /**
+     * This is a getter method.
+     * @return The underlying string for this argument.
+     */
     String getString();
+
+    /**
+     * This is a getter method.
+     * Returns the {@link net.dv8tion.jda.core.JDA} instance.
+     */
     JDA getJDA();
+
+    /**
+     * This is a getter method.
+     * @return The {@link net.dv8tion.jda.core.entities.Guild} this argument was sent in.
+     */
     Guild getGuild();
 
     /**
@@ -86,14 +103,18 @@ public interface CommandArgument {
      * Equivalent to {@link com.github.breadmoirai.framework.event.args.CommandArgument#isNumeric isNumeric()} but also checks that the number is within the range of an integer
      * @return {@code true} if and only if this argument only contains {@code 0-9} with an optional prefix of {@code -} or {@code +} and the number does not exceed {@link java.lang.Integer#MAX_VALUE} or {@link java.lang.Integer#MIN_VALUE}
      */
-    boolean isInteger();
+    default boolean isInteger() {
+        return Arguments.isInteger(getString());
+    }
 
     /**
      * Parses the argument as an Integer with {@link java.lang.Integer#parseInt(String)}
      * @return an int
      * @throws NumberFormatException if {@link com.github.breadmoirai.framework.event.args.CommandArgument#isInteger isInteger()} returns {@code false}
      */
-    int getInt();
+    default int parseInt() {
+        return Integer.parseInt(getString());
+    }
 
     /**
      * Equivalent to {@link com.github.breadmoirai.framework.event.args.CommandArgument#isNumeric isNumeric()} but also checks that the number is within the range of an integer
@@ -107,7 +128,7 @@ public interface CommandArgument {
      * @return a long
      * @throws NumberFormatException if {@link com.github.breadmoirai.framework.event.args.CommandArgument#isInteger isInteger()} returns {@code false}
      */
-    long getLong();
+    long parseLong();
 
     /**
      * Checks the expression against the regex provided in {@link java.lang.Double#valueOf(String)}
@@ -120,7 +141,7 @@ public interface CommandArgument {
      * @return a float
      * @throws NumberFormatException if {@link com.github.breadmoirai.framework.event.args.CommandArgument#isFloat() isFloat()} returns {@code false}
      */
-    float getFloat();
+    float parseFloat();
 
     /**
      * Parses the argument as an Long with {@link java.lang.Double#parseDouble(String)}
@@ -128,7 +149,7 @@ public interface CommandArgument {
      * @return a double
      * @throws NumberFormatException if {@link com.github.breadmoirai.framework.event.args.CommandArgument#isFloat() isFloat()} returns {@code false}
      */
-    double getDouble();
+    double parseDouble();
 
     /**
      * A range is defined as two positive integers separated by a dash with no whitespace
@@ -151,7 +172,7 @@ public interface CommandArgument {
      * @return an ordered {@link java.util.stream.IntStream}. If {@link com.github.breadmoirai.framework.event.args.CommandArgument#isRange isRange()} would return false, An empty IntStream will be returned.
      */
     @NotNull
-    IntStream getRange();
+    IntStream parseRange();
 
     /**
      * Checks if this matches a hexadecimal number, specifically whether this argument consists of digits 0-10 and/or letters a-f optionally prefixed by {@code #} or {@code 0x}
@@ -166,7 +187,7 @@ public interface CommandArgument {
      * @return an int
      * @throws NumberFormatException if {@link com.github.breadmoirai.framework.event.args.CommandArgument#isHex isHex()} would return false
      */
-    int getIntFromHex();
+    int parseIntFromHex();
 
     /**
      * Checks if this argument is a {@link net.dv8tion.jda.core.entities.User} mention.
@@ -294,13 +315,30 @@ public interface CommandArgument {
 
     /**
      * Will attempt to match this argument against the emojis found in {@link com.github.breadmoirai.framework.util.Emoji} using their unicode value.
-     * @return {@code true if }
+     * @return {@code true} if an {@link com.github.breadmoirai.framework.util.Emoji} was successfully matched.
      */
     boolean isEmoji();
 
+    /**
+     * Attempts to find a matching {@link com.github.breadmoirai.framework.util.Emoji}.
+     * @return The {@link com.github.breadmoirai.framework.util.Emoji} if matched, null otherwise.
+     */
+    @Nullable
     Emoji getEmoji();
 
+    /**
+     * Checks if this argument is in a valid {@link net.dv8tion.jda.core.entities.Emote} mention form.
+     * The result of this method is equivalent to checking this argument against a regex of {@code <:.+:[0-9]+>}
+     * @return {@code true} if this argument matches the format required
+     */
     boolean isEmote();
 
+    /**
+     * If {@link #isEmote()} would return {@code true}, this method will always return a {@code not-null} value, {@code null} otherwise.
+     * If the formatting is correct but {@link net.dv8tion.jda.core.JDA} cannot resolve the {@link net.dv8tion.jda.core.entities.Emote},
+     * a {@link net.dv8tion.jda.core.entities.IFakeable Fake} {@link net.dv8tion.jda.core.entities.Emote} will be returned.
+     * @return An {@link net.dv8tion.jda.core.entities.Emote} if the formatting is correct. Otherwise {@code null}.
+     */
+    @Nullable
     Emote getEmote();
 }

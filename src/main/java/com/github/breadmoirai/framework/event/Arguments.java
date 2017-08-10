@@ -35,4 +35,8 @@ public class Arguments {
     public static boolean isDouble(String s) {
         return FloatValue.matcher(s).matches();
     }
+
+    public static boolean isInteger(String string) {
+        return false;
+    }
 }
