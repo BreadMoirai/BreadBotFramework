@@ -26,7 +26,4 @@ public interface CommandHandle {
 
     boolean execute(Object parent, CommandEvent event, int subKey) throws Throwable;
 
-    static Map<String, CommandHandle> from(Class<?> commandClass) {
-
-    }
 }

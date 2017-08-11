@@ -7,6 +7,9 @@ import com.github.breadmoirai.framework.error.MissingCommandMethod;
 import net.dv8tion.jda.core.utils.SimpleLog;
 
 import java.lang.annotation.Annotation;
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -21,24 +24,30 @@ public class CommandWrapper implements ICommand {
     private final Map<String, CommandHandle> handleMap = new HashMap<>();
 
     private final Class<?> aClass;
+    private final MethodHandle contructor;
 
     private transient CommandEvent event;
     private final String[] keys;
 
-    public CommandWrapper(Class<?> aClass) throws NoSuchMethodException {
+    public CommandWrapper(Class<?> aClass) throws NoSuchMethodException, IllegalAccessException {
+        MethodHandle constructor = MethodHandles.publicLookup().findConstructor(aClass, MethodType.methodType(Void.TYPE));
+        this.contructor = constructor;
         this.aClass = aClass;
-        final Constructor<?> constructor = aClass.getConstructor();
         keys = register(aClass);
     }
 
     @Override
     public void run() {
-        aClass.ne
-        execute(event);
-        event = null;
+        try {
+            Object command = contructor.invoke();
+            execute(command, event);
+            event = null;
+        } catch (Throwable throwable) {
+            Commands.
+        }
     }
 
-    private void execute(CommandEvent event) {
+    private void execute(Object command, CommandEvent event) {
         final String key = event.getKey().toLowerCase();
     }
 
