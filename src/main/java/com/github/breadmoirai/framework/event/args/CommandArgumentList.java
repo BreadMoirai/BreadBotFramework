@@ -1,30 +1,28 @@
 package com.github.breadmoirai.framework.event.args;
 
-import com.sun.org.apache.xpath.internal.Arg;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.TextChannel;
 
 import java.util.AbstractList;
+import java.util.Arrays;
 import java.util.Spliterator;
 import java.util.Spliterators;
 
 public class CommandArgumentList extends AbstractList<CommandArgument> {
 
-    final private String[] strings;
     final private CommandArgument[] arguments;
     private final JDA jda;
     private final Guild guild;
     private final TextChannel channel;
-    private final CommandArgumentFactory factory;
 
     public CommandArgumentList(String[] strings, JDA jda, Guild guild, TextChannel channel) {
-        this.strings = strings;
-        arguments = new CommandArgument[strings.length];
+        this.arguments = new CommandArgument[strings.length];
         this.jda = jda;
         this.guild = guild;
         this.channel = channel;
-        factory = new CommandArgumentFactory(jda, guild, channel);
+        CommandArgumentFactory factory = new CommandArgumentFactory(jda, guild, channel);
+        Arrays.parallelSetAll(arguments, value -> factory.parse(strings[value]));
     }
 
     public CommandArgumentList(String[] strings, TextChannel channel) {
@@ -53,15 +51,12 @@ public class CommandArgumentList extends AbstractList<CommandArgument> {
      */
     @Override
     public CommandArgument get(int index) {
-        if (arguments[index] == null) {
-            arguments[index] = factory.parse(strings[index]);
-        }
         return arguments[index];
     }
 
     @Override
     public int size() {
-        return strings.length;
+        return arguments.length;
     }
 
     @Override
@@ -99,16 +94,24 @@ public class CommandArgumentList extends AbstractList<CommandArgument> {
     }
 
     /**
+     * Finds the index of the first argument that matches the specified type.
      *
+     * @param type The {@link com.github.breadmoirai.framework.event.args.ArgumentType} to search for.
      *
-     * @param type
-     *
-     * @return
+     * @return The index of the argument if found. If none of the arguments match the type provided, {@code -1} is returned.
      */
     public int indexOf(ArgumentType type) {
         return indexOf(0, type);
     }
 
+    /**
+     * Finds the first argument of the specified type that occurs after the index given.
+     *
+     * @param startIndex The index from which to start searching.
+     * @param type The {@link com.github.breadmoirai.framework.event.args.ArgumentType} to search for.
+     *
+     * @return The index of the argument if found. If none of the arguments match the type provided, {@code -1} is returned. If the {@code startIndex} provided is less than {@code 0}, it will be treated as {@code 0}. If the {@code startIndex} provided is greater than or equal to the size of this list, {@code -1} will be returned.
+     */
     public int indexOf(int startIndex, ArgumentType type) {
         for (int i = startIndex; i < size(); i++) {
             if (get(i).isOfType(type)) return i;
