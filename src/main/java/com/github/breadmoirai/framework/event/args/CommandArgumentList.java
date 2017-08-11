@@ -100,8 +100,8 @@ public class CommandArgumentList extends AbstractList<CommandArgument> {
      *
      * @return The index of the argument if found. If none of the arguments match the type provided, {@code -1} is returned.
      */
-    public int indexOf(ArgumentType type) {
-        return indexOf(0, type);
+    public int indexOfType(ArgumentType type) {
+        return indexOfType(0, type);
     }
 
     /**
@@ -112,7 +112,7 @@ public class CommandArgumentList extends AbstractList<CommandArgument> {
      *
      * @return The index of the argument if found. If none of the arguments match the type provided, {@code -1} is returned. If the {@code startIndex} provided is less than {@code 0}, it will be treated as {@code 0}. If the {@code startIndex} provided is greater than or equal to the size of this list, {@code -1} will be returned.
      */
-    public int indexOf(int startIndex, ArgumentType type) {
+    public int indexOfType(int startIndex, ArgumentType type) {
         for (int i = startIndex; i < size(); i++) {
             if (get(i).isOfType(type)) return i;
         }
