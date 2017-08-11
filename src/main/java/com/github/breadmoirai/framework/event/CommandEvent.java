@@ -17,7 +17,6 @@ package com.github.breadmoirai.framework.event;
 
 import com.github.breadmoirai.framework.core.Response;
 import com.github.breadmoirai.framework.core.SamuraiClient;
-import com.github.breadmoirai.framework.event.args.CommandArgumentList;
 import com.github.breadmoirai.framework.core.response.menu.PromptBuilder;
 import com.github.breadmoirai.framework.core.response.menu.ReactionMenuBuilder;
 import com.github.breadmoirai.framework.core.response.simple.EmbedResponse;
@@ -25,6 +24,7 @@ import com.github.breadmoirai.framework.core.response.simple.MessageResponse;
 import com.github.breadmoirai.framework.core.response.simple.ReactionResponse;
 import com.github.breadmoirai.framework.core.response.simple.StringResponse;
 import com.github.breadmoirai.framework.event.args.CommandArgument;
+import com.github.breadmoirai.framework.event.args.CommandArgumentList;
 import com.github.breadmoirai.framework.util.DiscordPatterns;
 import com.github.breadmoirai.framework.util.UnknownEmote;
 import net.dv8tion.jda.core.JDA;
@@ -58,6 +58,7 @@ public abstract class CommandEvent extends Event {
     public SamuraiClient getClient() {
         return client;
     }
+
     /**
      * The command prefix.
      */
@@ -68,7 +69,7 @@ public abstract class CommandEvent extends Event {
      *
      * @return a {@link java.lang.String String}. May be empty.
      */
-    public abstract  String getKey();
+    public abstract String getKey();
 
     /**
      * Whatever comes after the prefix and key.
@@ -76,7 +77,7 @@ public abstract class CommandEvent extends Event {
      * @return a {@link java.lang.String String} that does not contain the prefix or the key.
      * @see CommandEvent#getArgs()
      */
-    public abstract  String getContent();
+    public abstract String getContent();
 
     public abstract Message getMessage();
 
@@ -106,6 +107,7 @@ public abstract class CommandEvent extends Event {
 
     /**
      * The currently logged-in account as a {@link net.dv8tion.jda.core.entities.Member Member} of the {@link net.dv8tion.jda.core.entities.Guild Guild} in which this command was invoked.
+     *
      * @return in this case, Samurai as a {@link net.dv8tion.jda.core.entities.Member Member}.
      * @see CommandEvent#getSelfUser()
      */
@@ -115,6 +117,7 @@ public abstract class CommandEvent extends Event {
 
     /**
      * The {@link net.dv8tion.jda.core.entities.Guild Guild} in which the command was invoked.
+     *
      * @return a Discord {@link net.dv8tion.jda.core.entities.Guild Guild}.
      */
     public abstract Guild getGuild();
@@ -123,6 +126,7 @@ public abstract class CommandEvent extends Event {
 
     /**
      * The {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} in which the command was invoked.
+     *
      * @return a Discord {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}.
      */
     public abstract TextChannel getChannel();
@@ -131,6 +135,7 @@ public abstract class CommandEvent extends Event {
 
     /**
      * The time this command was sent by the invoker.
+     *
      * @return a {@link java.time.OffsetDateTime OffsetDateTime}.
      * @see CommandEvent#getInstant()
      */
@@ -138,12 +143,14 @@ public abstract class CommandEvent extends Event {
 
     /**
      * The time of which this command was invoked as an {@link java.time.Instant Instant}.
+     *
      * @return {@link CommandEvent#getTime() getTime()} as an {@link java.time.Instant Instant}.
      */
     public abstract Instant getInstant();
 
     /**
      * The core of the API.
+     *
      * @return {@link net.dv8tion.jda.core.JDA JDA}.
      */
     public abstract JDA getJDA();
@@ -170,17 +177,18 @@ public abstract class CommandEvent extends Event {
 
     /**
      * I think {@link CommandEvent#getArguments(int)} is more useful than this. idk.
-     *
+     * <p>
      * <p>Parses {@link CommandEvent#getContent() getContent()} as a list of arguments that are space delimited.
      * Code block formatting is stripped and no formatted content is passed such as Mentions.
      * Phrases contained within quotation marks are not separated.
      * Formatted input and mentions are ignored.
      * If message content contains an uneven number of {@code "}, the result is not predictable.
-     *
+     * <p>
      * <p>For example, if {@link CommandEvent#getContent() getContent()} returns
      * <pre>{@code hello, 1 23 <@12341482523> "say no more" @everyone}</pre>
      * <p>Then this method will return a list with elements
      * <pre>{@code ["hello,", "1", "23", "say no more"]}</pre>
+     *
      * @return An immutable list of args.
      */
     public List<String> getArgs() {
@@ -198,15 +206,25 @@ public abstract class CommandEvent extends Event {
      * If message content contains an uneven number of {@code "}, the result is not predictable.
      *
      * @param limit the limit to set for a maximum number of arguments. For more information on how this is used, see {@link java.util.regex.Pattern#split(java.lang.CharSequence, int)}
-     *
      * @return an implementation of <code>{@link java.util.List}<{@link CommandArgument EventArgument}></code> in which arguments are lazily parsed.
      */
     public CommandArgumentList getArguments(int limit) {
-        return new CommandArgumentList(hasContent() ? Arrays.stream(DiscordPatterns.ARGUMENT_SPLITTER.split(getContent().replace('`', '\"'), limit)).filter(s -> !s.isEmpty()).map(s -> s.replace('\"', ' ')).map(String::trim).filter(s1 -> !s1.isEmpty()).map(String::toLowerCase).toArray(String[]::new) : new String[]{}, getChannel());
+        return new CommandArgumentList(hasContent()
+                ?
+                Arrays.stream(
+                        DiscordPatterns.ARGUMENT_SPLITTER.split(getContent().replace('`', '\"'), limit))
+                        .map(s -> s.replace('\"', ' '))
+                        .map(String::trim)
+                        .filter(s -> !s.isEmpty())
+                        .map(String::toLowerCase)
+                        .toArray(String[]::new)
+                :
+                new String[]{}, getChannel());
     }
 
     /**
      * Parses {@link CommandEvent#getContent() getContent()} to find any custom emotes. If the bot is not in the guild with an emote used, An {@link UnknownEmote UnknownEmote} will be added to the list instead. Only methods {@link net.dv8tion.jda.core.entities.Emote#getName() Emote#getName()}, {@link net.dv8tion.jda.core.entities.Emote#getId() Emote#getId()}, {@link net.dv8tion.jda.core.entities.Emote#getCreationTime() Emote#getCreationTime()}, and {@link net.dv8tion.jda.core.entities.Emote#getImageUrl() Emote#getImageUrl()} are supported. You can check for these with {@link net.dv8tion.jda.core.entities.Emote#isFake() Emote#isFake()}
+     *
      * @return A mutable list of args. Every time this method is called {@link CommandEvent#getContent() getContent()} is parsed again and a new list is returned.
      */
     public List<Emote> getEmotes() {
@@ -225,6 +243,7 @@ public abstract class CommandEvent extends Event {
 
     /**
      * Checks for whether {@link CommandEvent#getContent() getContent()} will return an empty or null {@link java.lang.String String}
+     *
      * @return {@code true} if {@link CommandEvent#getContent() getContent()} is not empty. False otherwise.
      */
     public boolean hasContent() {
@@ -233,12 +252,19 @@ public abstract class CommandEvent extends Event {
 
 
     public abstract void reply(String message);
+
     public abstract void reply(MessageEmbed message);
+
     public abstract void reply(Message message);
+
     public abstract void replyPrivate(String message);
+
     public abstract void replyPrivate(MessageEmbed message);
+
     public abstract void replyPrivate(Message message);
+
     public abstract void replyReaction(Emote emote);
+
     public abstract void replyReaction(String emoji);
 
     public void replyFormat(String format, Object... args) {
@@ -251,25 +277,25 @@ public abstract class CommandEvent extends Event {
         return r;
     }
 
-    public EmbedResponse respond(MessageEmbed message){
+    public EmbedResponse respond(MessageEmbed message) {
         final EmbedResponse r = new EmbedResponse(message);
         r.base(this);
         return r;
     }
 
-    public MessageResponse respond(Message message){
+    public MessageResponse respond(Message message) {
         final MessageResponse r = new MessageResponse(message);
         r.base(this);
         return r;
     }
 
-    public ReactionResponse respondReaction(Emote emote){
+    public ReactionResponse respondReaction(Emote emote) {
         final ReactionResponse r = new ReactionResponse(getMessageId(), emote);
         r.base(this);
         return r;
     }
 
-    public ReactionResponse respondReaction(String emoji){
+    public ReactionResponse respondReaction(String emoji) {
         final ReactionResponse r = new ReactionResponse(getMessageId(), emoji);
         r.base(this);
         return r;
@@ -295,90 +321,11 @@ public abstract class CommandEvent extends Event {
 
     /**
      * This splits the message into lines separated via "\n"
+     *
      * @return an array of Strings
      */
     public String[] lines() {
         return DiscordPatterns.LINES.split(getContent());
     }
 
-    /**
-     * Retrieves the contents of the message as Ints. A message of {@code "hello 1 3 9-6 4-5 what 30 20} will return an IntStream with the elements of {@code [1,3,9,8,7,6,4,5,30,20]}.
-     * If a number or range of numbers fall above the maximum size of an Integer, it will not be included in the returned IntStream.
-     * @return {@link java.util.stream.IntStream} of ints in the order declared by user.
-     * <p> if such is the case that there are no integers within the message, an Empty IntStream is returned.</p>
-     */
-    @NotNull
-    public IntStream getIntArgs() {
-        return getContent() == null ? IntStream.empty() : Arrays.stream(getContent().split(" ")).flatMapToInt(CommandEvent::parseIntArg);
-    }
-
-    public static IntStream parseIntArg(String s) {
-        try {
-            final String[] split = s.split("-");
-            if (split.length == 1) {
-                if (isNumber(split[0]))
-                    return IntStream.of(Integer.parseInt(split[0]));
-            } else if (split.length == 2) {
-                if (isNumber(split[0]) && isNumber(split[1])) {
-                    final int a = Integer.parseInt(split[0]);
-                    final int b = Integer.parseInt(split[1]);
-                    if (a < b)
-                        return IntStream.rangeClosed(a, b);
-                    else return IntStream.rangeClosed(b, a).map(i -> a - i + b);
-
-                }
-            }
-        } catch (NumberFormatException e) {
-            return IntStream.empty();
-        }
-        return IntStream.empty();
-    }
-
-    public boolean isNumeric() {
-        return isNumber(getContent());
-    }
-
-    public static boolean isNumber(String s) {
-        if (s == null) return false;
-        if (s.isEmpty()) return false;
-        for (int i = 0; i < s.length(); i++) {
-            if (i == 0 && s.charAt(i) == '-') {
-                if (s.length() == 1) return false;
-                else continue;
-            }
-            if (Character.digit(s.charAt(i), 10) < 0) return false;
-        }
-        return true;
-    }
-
-    public boolean isHex() {
-        return isHex(getContent());
-    }
-
-    public static boolean isHex(String s) {
-        return DiscordPatterns.HEX.matcher(s).matches();
-    }
-
-    public boolean isFloat() {
-        return isFloat(getContent());
-    }
-
-    public static boolean isFloat(String s) {
-        if (s.isEmpty()) return false;
-        for (int i = 0; i < s.length(); i++) {
-            final char c = s.charAt(i);
-            if (i == 0 && c == '-') {
-                if (s.length() == 1) return false;
-                else continue;
-            }
-            if (Character.digit(c, 10) < 0 && c != '.') return false;
-        }
-        return true;
-    }
-
-    /**
-     * Do not use. This is a work in progress
-     * @return shit.
-     */
-    public abstract CommandEvent serialize();
 }
