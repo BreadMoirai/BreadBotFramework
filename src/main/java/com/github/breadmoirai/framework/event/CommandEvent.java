@@ -169,7 +169,7 @@ public abstract class CommandEvent extends Event {
     public abstract List<Member> getMentionedMembers();
 
     /**
-     * I think {@link CommandEvent#getArguments()} is more useful than this. idk.
+     * I think {@link CommandEvent#getArguments(int)} is more useful than this. idk.
      *
      * <p>Parses {@link CommandEvent#getContent() getContent()} as a list of arguments that are space delimited.
      * Code block formatting is stripped and no formatted content is passed such as Mentions.
@@ -193,12 +193,16 @@ public abstract class CommandEvent extends Event {
     }
 
     /**
-     * returns an ordered list of all arguments passing including mentions, emojis, emotes, etc.
+     * <p>Parses {@link CommandEvent#getContent() getContent()} as a list of arguments that are space delimited.
      * Arguments enclosed in quotes will be returned as a single argument.
+     * If message content contains an uneven number of {@code "}, the result is not predictable.
+     *
+     * @param limit the limit to set for a maximum number of arguments. For more information on how this is used, see {@link java.util.regex.Pattern#split(java.lang.CharSequence, int)}
+     *
      * @return an implementation of <code>{@link java.util.List}<{@link CommandArgument EventArgument}></code> in which arguments are lazily parsed.
      */
-    public CommandArgumentList getArguments() {
-        return new CommandArgumentList(hasContent() ? Arrays.stream(DiscordPatterns.ARGUMENT_SPLITTER.split(getContent().replace('`', '\"'))).filter(s -> !s.isEmpty()).map(s -> s.replace('\"', ' ')).map(String::trim).map(String::toLowerCase).toArray(String[]::new) : new String[]{}, getChannel());
+    public CommandArgumentList getArguments(int limit) {
+        return new CommandArgumentList(hasContent() ? Arrays.stream(DiscordPatterns.ARGUMENT_SPLITTER.split(getContent().replace('`', '\"'), limit)).filter(s -> !s.isEmpty()).map(s -> s.replace('\"', ' ')).map(String::trim).filter(s1 -> !s1.isEmpty()).map(String::toLowerCase).toArray(String[]::new) : new String[]{}, getChannel());
     }
 
     /**

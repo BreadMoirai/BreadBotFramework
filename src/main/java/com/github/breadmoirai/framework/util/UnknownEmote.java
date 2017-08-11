@@ -69,17 +69,17 @@ public class UnknownEmote implements Emote {
 
     @Override
     public AuditableRestAction<Void> delete() {
-        return null;
+        throw new UnsupportedOperationException("This emote is a fake emote.");
     }
 
     @Override
     public EmoteManager getManager() {
-        return null;
+        throw new UnsupportedOperationException("This emote is a fake emote.");
     }
 
     @Override
     public EmoteManagerUpdatable getManagerUpdatable() {
-        return null;
+        throw new UnsupportedOperationException("This emote is a fake emote.");
     }
 
     @Override
@@ -91,5 +91,6 @@ public class UnknownEmote implements Emote {
     public long getIdLong() {
         return id;
     }
+
 
 }

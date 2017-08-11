@@ -1,5 +1,6 @@
 package com.github.breadmoirai.framework.event.args;
 
+import com.sun.org.apache.xpath.internal.Arg;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.TextChannel;
@@ -66,5 +67,52 @@ public class CommandArgumentList extends AbstractList<CommandArgument> {
     @Override
     public Spliterator<CommandArgument> spliterator() {
         return Spliterators.spliterator(this, Spliterator.SIZED | Spliterator.IMMUTABLE | Spliterator.NONNULL | Spliterator.ORDERED);
+    }
+
+    /**
+     * Attempts to match each {@link com.github.breadmoirai.framework.event.args.CommandArgument} to a {@link com.github.breadmoirai.framework.event.args.ArgumentType} in the order passed.
+     * Will automatically fail if the amount of {@link com.github.breadmoirai.framework.event.args.ArgumentType ArgumentTypes} provided is greater than the amount of arguments passed.
+     *
+     * @param types the types of which to look for.
+     *
+     * @return {@code true} if the {@link com.github.breadmoirai.framework.event.args.ArgumentType ArgumentTypes} provided match the {@link com.github.breadmoirai.framework.event.args.CommandArgument CommandArguments} in this list with {@link com.github.breadmoirai.framework.event.args.CommandArgument#isOfType(ArgumentType)}
+     */
+    public boolean matchesType(ArgumentType... types) {
+        return matchesType(0, types);
+    }
+
+    /**
+     * Attempts to match each {@link com.github.breadmoirai.framework.event.args.CommandArgument} to a {@link com.github.breadmoirai.framework.event.args.ArgumentType} in the order passed.
+     * Will automatically fail if the amount of {@link com.github.breadmoirai.framework.event.args.ArgumentType ArgumentTypes} provided is greater than the amount of arguments passed.
+     *
+     * @param startIndex the starting index of which to start matching Types.
+     * @param types the types of which to look for.
+     *
+     * @return {@code true} if the {@link com.github.breadmoirai.framework.event.args.ArgumentType ArgumentTypes} provided match the {@link com.github.breadmoirai.framework.event.args.CommandArgument CommandArguments} in this list with {@link com.github.breadmoirai.framework.event.args.CommandArgument#isOfType(ArgumentType)}
+     */
+    public boolean matchesType(int startIndex, ArgumentType... types) {
+        if (startIndex + types.length > size()) return false;
+        for (int j = 0; j < types.length; j++) {
+            if (!get(j + startIndex).isOfType(types[j])) return false;
+        }
+        return true;
+    }
+
+    /**
+     *
+     *
+     * @param type
+     *
+     * @return
+     */
+    public int indexOf(ArgumentType type) {
+        return indexOf(0, type);
+    }
+
+    public int indexOf(int startIndex, ArgumentType type) {
+        for (int i = startIndex; i < size(); i++) {
+            if (get(i).isOfType(type)) return i;
+        }
+        return -1;
     }
 }
