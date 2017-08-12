@@ -318,14 +318,4 @@ public abstract class CommandEvent extends Event {
         r.base(this);
         client.send(this.getChannel(), r);
     }
-
-    /**
-     * This splits the message into lines separated via "\n"
-     *
-     * @return an array of Strings
-     */
-    public String[] lines() {
-        return DiscordPatterns.LINES.split(getContent());
-    }
-
 }

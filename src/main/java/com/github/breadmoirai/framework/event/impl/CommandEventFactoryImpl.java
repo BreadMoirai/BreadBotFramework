@@ -13,10 +13,11 @@
  *   See the License for the specific language governing permissions and
  *   limitations under the License.
  */
-package com.github.breadmoirai.framework.core.impl;
+package com.github.breadmoirai.framework.event.impl;
 
+import com.github.breadmoirai.framework.core.impl.CommandEngineBuilder;
 import com.github.breadmoirai.framework.event.CommandEvent;
-import com.github.breadmoirai.framework.core.ICommandEventFactory;
+import com.github.breadmoirai.framework.event.ICommandEventFactory;
 import com.github.breadmoirai.framework.core.SamuraiClient;
 import com.github.breadmoirai.framework.event.impl.MessageReceivedCommandEvent;
 import com.github.breadmoirai.framework.modules.prefix.IPrefixModule;
@@ -36,7 +37,6 @@ public class CommandEventFactoryImpl implements ICommandEventFactory {
     public CommandEventFactoryImpl(CommandEngineBuilder client) {
         this.prefixModule = client.getModule(IPrefixModule.class);
     }
-
 
     @Override
     public CommandEvent createEvent(GenericGuildMessageEvent event, Message message, SamuraiClient client) {

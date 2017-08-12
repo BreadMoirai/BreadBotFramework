@@ -13,8 +13,9 @@
  *   See the License for the specific language governing permissions and
  *   limitations under the License.
  */
-package com.github.breadmoirai.framework.core;
+package com.github.breadmoirai.framework.event;
 
+import com.github.breadmoirai.framework.core.SamuraiClient;
 import com.github.breadmoirai.framework.event.CommandEvent;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.events.message.guild.GenericGuildMessageEvent;

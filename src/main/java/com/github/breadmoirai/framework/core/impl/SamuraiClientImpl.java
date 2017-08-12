@@ -17,6 +17,7 @@ package com.github.breadmoirai.framework.core.impl;
 
 import com.github.breadmoirai.framework.core.*;
 import com.github.breadmoirai.framework.event.CommandEvent;
+import com.github.breadmoirai.framework.event.ICommandEventFactory;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.events.ReadyEvent;

@@ -17,8 +17,9 @@ package com.github.breadmoirai.framework.core;
 
 import com.github.breadmoirai.framework.core.command.ICommand;
 import com.github.breadmoirai.framework.core.impl.CommandEngineBuilder;
-import com.github.breadmoirai.framework.core.impl.CommandEventFactoryImpl;
+import com.github.breadmoirai.framework.event.impl.CommandEventFactoryImpl;
 import com.github.breadmoirai.framework.core.impl.SamuraiClientImpl;
+import com.github.breadmoirai.framework.event.ICommandEventFactory;
 import com.github.breadmoirai.framework.modules.admin.DefaultAdminModule;
 import com.github.breadmoirai.framework.modules.admin.IAdminModule;
 import com.github.breadmoirai.framework.modules.prefix.DynamicPrefixModule;
