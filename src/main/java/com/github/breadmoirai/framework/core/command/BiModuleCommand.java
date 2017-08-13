@@ -27,33 +27,16 @@ import java.util.Map;
 
 public abstract class BiModuleCommand<M1 extends IModule, M2 extends IModule> implements ICommand {
 
-    private static Map<Class<? extends BiModuleCommand>, Type[]> commandTypeMap = new HashMap<>();
-
-    private CommandEvent event;
+    private final Type[] types = TypeFinder.getTypeArguments(this.getClass(), BiModuleCommand.class);
 
     @Override
-    public void run() {
-        Type[] moduleType = commandTypeMap.computeIfAbsent(this.getClass(), k -> TypeFinder.getTypeArguments(this.getClass(), BiModuleCommand.class));
-
-        final SamuraiClient client = getEvent().getClient();
+    public void handle(CommandEvent event) throws Throwable {
+        final SamuraiClient client = event.getClient();
         //noinspection unchecked
-        execute(getEvent(), (M1) client.getModule(moduleType[0]), (M2) client.getModule(moduleType[1]));
+        execute(event, (M1) client.getModule(types[0]), (M2) client.getModule(types[1]));
     }
 
     public abstract void execute(CommandEvent event, M1 module1, M2 module2);
 
-    @Override
-    public boolean isMarkedWith(Class<? extends Annotation> annotation) {
-        return this.getClass().isAnnotationPresent(annotation);
-    }
 
-    @Override
-    final public CommandEvent getEvent() {
-        return event;
-    }
-
-    @Override
-    final public void setEvent(CommandEvent event) {
-        this.event = event;
-    }
 }

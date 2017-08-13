@@ -17,23 +17,12 @@ package com.github.breadmoirai.framework.core.command;
 
 import com.github.breadmoirai.framework.event.CommandEvent;
 
-import java.lang.annotation.Annotation;
+@FunctionalInterface
+public interface ICommand {
 
-/**
- * @see ModuleCommand
- * @see BiModuleCommand
- */
-public interface ICommand extends Runnable {
+    void handle(CommandEvent event) throws Throwable;
 
-    void run();
-
-    void setEvent(CommandEvent event);
-
-    CommandEvent getEvent();
-
-    boolean isMarkedWith(Class<? extends Annotation> annotation);
-
-    default void getHelp(CommandEvent event) {
-        event.reply("No Help Available");
+    default CommandInfo getInfo() {
+        return null;
     }
 }

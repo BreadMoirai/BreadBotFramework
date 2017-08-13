@@ -142,7 +142,7 @@ public class SamuraiClientImpl implements SamuraiClient {
 
         private final Predicate<Message> preProcessPredicate;
 
-        public SamuraiEventListener(Predicate<Message> preProcessPredicate) {
+        SamuraiEventListener(Predicate<Message> preProcessPredicate) {
             this.preProcessPredicate = preProcessPredicate == null ? message -> true : preProcessPredicate;
         }
 
@@ -168,7 +168,7 @@ public class SamuraiClientImpl implements SamuraiClient {
             if (preProcessPredicate.test(message)) {
                 final CommandEvent commandEvent = eventFactory.createEvent(event, message, SamuraiClientImpl.this);
                 if (commandEvent != null) {
-                    commandEngine.execute(commandEvent);
+                    commandEngine.handle(commandEvent);
                     eventManager.handle(commandEvent);
                 }
             }

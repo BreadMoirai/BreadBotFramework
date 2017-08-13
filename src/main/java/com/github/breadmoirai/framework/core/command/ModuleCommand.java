@@ -20,6 +20,7 @@ import com.github.breadmoirai.framework.core.IModule;
 import com.github.breadmoirai.framework.util.TypeFinder;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -39,38 +40,16 @@ import java.util.Map;
  */
 public abstract class ModuleCommand<M extends IModule> implements ICommand {
 
-    private static Map<Class<? extends ModuleCommand>, Class<? extends IModule>> commandTypeMap = new HashMap<>();
-
-    private M module;
-    private CommandEvent event;
+    private Type moduleType = TypeFinder.getTypeArguments(this.getClass(), ModuleCommand.class)[0];
 
     @Override
-    public final void run() {
-        Class<? extends IModule> moduleType = commandTypeMap.computeIfAbsent(this.getClass(), this::getType);
-        //noinspection unchecked
-        this.module = (M) event.getClient().getModule(moduleType);
-        execute(getEvent(), module);
+    public final void handle(CommandEvent event) {
+        @SuppressWarnings("unchecked")
+        M module = (M) event.getClient().getModule(moduleType);
+
+        execute(event, module);
     }
 
     public abstract void execute(CommandEvent event, M module);
 
-    @Override
-    final public CommandEvent getEvent() {
-        return event;
-    }
-
-    @Override
-    final public void setEvent(CommandEvent event) {
-        this.event = event;
-    }
-
-    @Override
-    public boolean isMarkedWith(Class<? extends Annotation> annotation) {
-        return this.getClass().isAnnotationPresent(annotation);
-    }
-
-    private Class<? extends IModule> getType(Class<? extends ModuleCommand> k) {
-        //noinspection unchecked
-        return (Class<? extends IModule>) TypeFinder.getTypeArguments(this.getClass(), ModuleCommand.class)[0];
-    }
 }

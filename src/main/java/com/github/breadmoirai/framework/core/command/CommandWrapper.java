@@ -1,16 +1,14 @@
 package com.github.breadmoirai.framework.core.command;
 
-import com.github.breadmoirai.framework.event.CommandEvent;
 import com.github.breadmoirai.framework.core.Response;
 import com.github.breadmoirai.framework.error.AmbiguousCommandMethod;
 import com.github.breadmoirai.framework.error.MissingCommandMethod;
+import com.github.breadmoirai.framework.event.CommandEvent;
 import net.dv8tion.jda.core.utils.SimpleLog;
 
-import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -26,7 +24,6 @@ public class CommandWrapper implements ICommand {
     private final Class<?> aClass;
     private final MethodHandle contructor;
 
-    private transient CommandEvent event;
     private final String[] keys;
 
     public CommandWrapper(Class<?> aClass) throws NoSuchMethodException, IllegalAccessException {
@@ -37,33 +34,20 @@ public class CommandWrapper implements ICommand {
     }
 
     @Override
-    public void run() {
+    public void handle(CommandEvent event) {
         try {
-            Object command = contructor.invoke();
-            execute(command, event);
-            event = null;
+            Object obj = contructor.invoke();
+
+
         } catch (Throwable throwable) {
-            Commands.
+            throwable.printStackTrace();
         }
     }
 
+
+
     private void execute(Object command, CommandEvent event) {
         final String key = event.getKey().toLowerCase();
-    }
-
-    @Override
-    final public CommandEvent getEvent() {
-        return event;
-    }
-
-    @Override
-    final public void setEvent(CommandEvent event) {
-        this.event = event;
-    }
-
-    @Override
-    public boolean isMarkedWith(Class<? extends Annotation> annotation) {
-        return this.getClass().isAnnotationPresent(annotation);
     }
 
     @SuppressWarnings("unchecked")
@@ -90,7 +74,6 @@ public class CommandWrapper implements ICommand {
             } else Commands.mapMethodKeys(commandClass, methods.get(0));
         }
 
-        return keys;
     }
 
     private static Stream<String> mapCommandHandles(Class<?> commandClass) {

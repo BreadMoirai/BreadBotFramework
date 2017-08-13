@@ -15,30 +15,11 @@
  */
 package com.github.breadmoirai.framework.core;
 
-import com.github.breadmoirai.framework.core.command.ICommand;
 import com.github.breadmoirai.framework.event.CommandEvent;
-
-import java.util.stream.Stream;
 
 public interface CommandEngine {
 
-    void execute(CommandEvent event);
-
-    Class<? extends ICommand> getCommandClass(String key);
-
-    default ICommand getCommand(String key) {
-        try {
-            final Class<? extends ICommand> commandClass = getCommandClass(key);
-            if (commandClass != null) return commandClass.newInstance();
-        } catch (InstantiationException | IllegalAccessException e) {
-            log(e);
-        }
-        return null;
-    }
-
-    void log(ReflectiveOperationException e);
-
-    Stream<Class<? extends ICommand>> getCommands();
+    void handle(CommandEvent event);
 
     boolean hasCommand(String key);
 }
