@@ -14,10 +14,10 @@
 */
 package com.github.breadmoirai.framework.core.command;
 
-import com.github.breadmoirai.framework.event.CommandEvent;
 import com.github.breadmoirai.framework.core.IModule;
 import com.github.breadmoirai.framework.core.Response;
 import com.github.breadmoirai.framework.core.SamuraiClient;
+import com.github.breadmoirai.framework.event.CommandEvent;
 
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
@@ -25,7 +25,6 @@ import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Stream;
 
 public class CommandMethodHandle implements CommandHandle {
 
@@ -54,12 +53,7 @@ public class CommandMethodHandle implements CommandHandle {
     }
 
     @Override
-    public String[] getKeys() {
-        return keys;
-    }
-
-    @Override
-    public boolean execute(Object parent, CommandEvent event, String subKey) throws Throwable {
+    public boolean execute(Object parent, CommandEvent event, int subKey) throws Throwable {
         if (params == null) {
             final Class<?>[] parameterTypes = method.getParameterTypes();
             final ArrayList<Class<? extends IModule>> params = new ArrayList<>(parameterTypes.length);
@@ -82,10 +76,5 @@ public class CommandMethodHandle implements CommandHandle {
             r.send();
         }
         return true;
-    }
-
-    @Override
-    public Stream<CommandHandle> getHandles() {
-        return Stream.empty();
     }
 }

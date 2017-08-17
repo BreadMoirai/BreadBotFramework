@@ -15,14 +15,11 @@
  */
 package com.github.breadmoirai.framework.core.command;
 
-import com.github.breadmoirai.framework.event.CommandEvent;
 import com.github.breadmoirai.framework.core.IModule;
+import com.github.breadmoirai.framework.event.CommandEvent;
 import com.github.breadmoirai.framework.util.TypeFinder;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Commands should be derived from either this or {@link BiModuleCommand}.
@@ -46,7 +43,6 @@ public abstract class ModuleCommand<M extends IModule> implements ICommand {
     public final void handle(CommandEvent event) {
         @SuppressWarnings("unchecked")
         M module = (M) event.getClient().getModule(moduleType);
-
         execute(event, module);
     }
 

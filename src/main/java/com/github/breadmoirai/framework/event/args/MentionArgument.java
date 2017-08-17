@@ -26,6 +26,23 @@ public class MentionArgument implements CommandArgument{
     }
 
     @Override
+    public boolean isOfType(ArgumentType type) {
+        switch (type) {
+            case USER:
+                return isUser();
+            case MEMBER:
+                return isMember();
+            case ROLE:
+                return isRole();
+            case TEXTCHANNEL:
+                return isTextChannel();
+            case EMOTE:
+                return isEmote();
+        }
+        return false;
+    }
+
+    @Override
     public String getArgument() {
         return arg;
     }
@@ -224,5 +241,8 @@ public class MentionArgument implements CommandArgument{
         return null;
     }
 
-
+    @Override
+    public String toString() {
+        return getArgument();
+    }
 }

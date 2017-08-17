@@ -27,8 +27,7 @@ public class CommandWrapper implements ICommand {
     private final String[] keys;
 
     public CommandWrapper(Class<?> aClass) throws NoSuchMethodException, IllegalAccessException {
-        MethodHandle constructor = MethodHandles.publicLookup().findConstructor(aClass, MethodType.methodType(Void.TYPE));
-        this.contructor = constructor;
+        this.contructor = MethodHandles.publicLookup().findConstructor(aClass, MethodType.methodType(Void.TYPE));
         this.aClass = aClass;
         keys = register(aClass);
     }

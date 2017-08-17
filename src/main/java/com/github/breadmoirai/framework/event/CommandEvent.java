@@ -30,7 +30,6 @@ import com.github.breadmoirai.framework.util.UnknownEmote;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.Event;
-import org.jetbrains.annotations.NotNull;
 
 import java.time.Instant;
 import java.time.OffsetDateTime;
@@ -40,12 +39,18 @@ import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 /**
  * This holds the context of a command including arguments.
  */
 public abstract class CommandEvent extends Event {
+
+    private static int DEFAULT_LIMIT = -1;
+    private CommandArgumentList argumentList;
+
+    public static void setDefaultArgumentLimit(int limit) {
+        DEFAULT_LIMIT = limit;
+    }
 
     private final SamuraiClient client;
     private List<String> args;
@@ -183,7 +188,7 @@ public abstract class CommandEvent extends Event {
      * Phrases contained within quotation marks are not separated.
      * Formatted input and mentions are ignored.
      * If message content contains an uneven number of {@code "}, the result is not predictable.
-     * <p>
+     *
      * <p>For example, if {@link CommandEvent#getContent() getContent()} returns
      * <pre>{@code hello, 1 23 <@12341482523> "say no more" @everyone}</pre>
      * <p>Then this method will return a list with elements
@@ -201,25 +206,72 @@ public abstract class CommandEvent extends Event {
     }
 
     /**
+     *
+     * @return the number of arguments provided.
+     */
+    public int getArgumentCount() {
+        return getArguments().size();
+    }
+
+    /**
+     * retrieves a {@link com.github.breadmoirai.framework.event.args.CommandArgument} from the {@link com.github.breadmoirai.framework.event.args.CommandArgumentList} returned by {@link com.github.breadmoirai.framework.event.CommandEvent#getArguments()}
+     *
+     * @param index the index of the argument starting at 0. This does not include the key.
+     *
+     * @return the non-null CommandArgument
+     *
+     * @throws IndexOutOfBoundsException if the index is less than 0 or greater than {@link com.github.breadmoirai.framework.event.CommandEvent#argumentCount}
+     */
+    public CommandArgument getArgumentAt(int index) {
+        return getArguments().get(index);
+    }
+
+    /**
+     * Calls {@link com.github.breadmoirai.framework.event.CommandEvent#getArguments(int)} with the default limit.
+     *
+     * @return a CommandArgumentList
+     *
+     * @see com.github.breadmoirai.framework.event.CommandEvent#getArguments(int)
+     * @see com.github.breadmoirai.framework.event.CommandEvent#setDefaultArgumentLimit
+     */
+    public CommandArgumentList getArguments() {
+        return getArguments(DEFAULT_LIMIT);
+    }
+
+    /**
      * <p>Parses {@link CommandEvent#getContent() getContent()} as a list of arguments that are space delimited.
      * Arguments enclosed in quotes will be returned as a single argument.
      * If message content contains an uneven number of {@code "}, the result is not predictable.
      *
      * @param limit the limit to set for a maximum number of arguments. For more information on how this is used, see {@link java.util.regex.Pattern#split(java.lang.CharSequence, int)}
+     *
      * @return an implementation of <code>{@link java.util.List}<{@link CommandArgument EventArgument}></code> in which arguments are lazily parsed.
      */
     public CommandArgumentList getArguments(int limit) {
-        return new CommandArgumentList(hasContent()
-                ?
-                Arrays.stream(
-                        DiscordPatterns.ARGUMENT_SPLITTER.split(getContent().replace('`', '\"'), limit))
-                        .map(s -> s.replace('\"', ' '))
-                        .map(String::trim)
-                        .filter(s -> !s.isEmpty())
-                        .map(String::toLowerCase)
-                        .toArray(String[]::new)
-                :
-                new String[]{}, getChannel());
+        if (!hasContent()) {
+            if (argumentList == null) {
+                argumentList = new CommandArgumentList(new String[]{}, getChannel());
+            }
+            return argumentList;
+        }
+        if (limit == DEFAULT_LIMIT) {
+            if (argumentList == null) {
+                argumentList = createNewArgumentList(DEFAULT_LIMIT);
+            }
+            return argumentList;
+        }
+        return createNewArgumentList(limit);
+    }
+
+    private CommandArgumentList createNewArgumentList(int limit) {
+        final String[] split = DiscordPatterns.ARGUMENT_SPLITTER.split(getContent().replace('`', '\"'), limit);
+        final String[] strings = Arrays.stream(split)
+                .map(s -> s.replace('\"', ' '))
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .map(String::toLowerCase)
+                .toArray(String[]::new);
+        return new CommandArgumentList(strings, getChannel());
     }
 
     /**

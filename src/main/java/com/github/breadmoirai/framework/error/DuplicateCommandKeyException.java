@@ -12,17 +12,11 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 */
-package com.github.breadmoirai.framework.core.command;
+package com.github.breadmoirai.framework.error;
 
-import com.github.breadmoirai.framework.event.CommandEvent;
+public class DuplicateCommandKeyException extends Exception {
 
-public interface CommandHandle {
-
-    default boolean execute(CommandEvent event) throws Throwable {
-        return execute(null, event, 0);
+    public DuplicateCommandKeyException(String key, Object a, Object b) {
+        super("Duplicate Command key: \"" + key + "\" found for " + a + " and " + b);
     }
-
-    boolean execute(Object parent, CommandEvent event, int subKey) throws Throwable;
-
-    String[] getKeys();
 }

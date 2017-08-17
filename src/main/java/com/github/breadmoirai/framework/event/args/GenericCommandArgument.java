@@ -27,6 +27,26 @@ public class GenericCommandArgument implements CommandArgument {
     }
 
     @Override
+    public boolean isOfType(ArgumentType type) {
+        switch (type) {
+            case INTEGER:
+                return isInteger();
+            case LONG:
+                return isLong();
+            case FLOAT:
+            case DOUBLE:
+                return isFloat();
+            case RANGE:
+                return isRange();
+            case HEX:
+                return isHex();
+            case EMOJI:
+                return isEmoji();
+        }
+        return false;
+    }
+
+    @Override
     public String getArgument() {
         return arg;
     }

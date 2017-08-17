@@ -24,18 +24,17 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
-public class CommandClassHandle implements CommandHandle {
+public class InnerCommandClassHandle implements CommandHandle {
 
     private final String[] keys;
     private final Class<?> klass;
     private final Map<String, CommandHandle> handles;
     private final MethodHandle constructor;
-    private final boolean hasClassKey;
 
-    public CommandClassHandle(Class<?> klass) throws NoSuchMethodException, IllegalAccessException, DuplicateCommandKeyException {
+    public InnerCommandClassHandle(Class<?> klass) throws NoSuchMethodException, IllegalAccessException, DuplicateCommandKeyException {
         this.klass = klass;
 
-        constructor = MethodHandles.publicLookup().findConstructor(klass, MethodType.methodType(void.class));
+        constructor = MethodHandles.publicLookup().findConstructor(klass, MethodType.methodType(void.class, klass.getEnclosingClass()));
         handles = new HashMap<>();
 
         final Class<?>[] inners = klass.getDeclaredClasses();
@@ -77,39 +76,31 @@ public class CommandClassHandle implements CommandHandle {
 
 
         final Command key = klass.getAnnotation(Command.class);
-        hasClassKey = key != null;
-        if (hasClassKey) {
-            final String[] keyValues = key.value();
-            if (keyValues.length == 0) {
-                String name = klass.getSimpleName().toLowerCase();
-                if (!name.startsWith("command") && name.endsWith("command")) {
-                    name = name.replace("command", "");
-                }
-                keys = new String[]{name};
-            } else {
-                keys = keyValues;
+        final String[] keyValues = key.value();
+        if (keyValues.length == 0) {
+            String name = klass.getSimpleName().toLowerCase();
+            if (!name.startsWith("command") && name.endsWith("command")) {
+                name = name.replace("command", "");
             }
+            keys = new String[]{name};
         } else {
-            keys = handles.keySet().toArray(new String[0]);
+            keys = keyValues;
         }
     }
 
     @Override
     public boolean execute(Object parent, CommandEvent event, int subKey) throws Throwable {
-        final Object commandObj = constructor.invoke();
-        if (hasClassKey) {
-            return handles.get(event.getKey().toLowerCase()).execute(commandObj, event, 0);
-        } else {
-            if (event.getArgumentCount() >= 1) {
-                final CommandHandle commandHandle = handles.get(event.getArgumentAt(0).getArgument());
-                if (commandHandle != null)
-                    return commandHandle.execute(commandObj, event, 1);
-            }
-            final CommandHandle defaultHandle = handles.get("");
-            if (defaultHandle != null) return defaultHandle.execute(commandObj, event, 1);
+        final Object commandObj = constructor.invoke(parent);
+        if (event.getArgumentCount() > subKey) {
+            final CommandHandle commandHandle = handles.get(event.getArgumentAt(subKey).getArgument());
+            if (commandHandle != null)
+                return commandHandle.execute(commandObj, event, subKey + 1);
         }
+        final CommandHandle defaultHandle = handles.get("");
+        if (defaultHandle != null) return defaultHandle.execute(commandObj, event, subKey + 1);
+
         return false;
-    }
+}
 
     @Override
     public String[] getKeys() {
