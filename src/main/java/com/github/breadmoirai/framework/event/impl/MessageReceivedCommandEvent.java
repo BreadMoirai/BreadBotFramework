@@ -189,10 +189,10 @@ public class MessageReceivedCommandEvent extends CommandEvent {
         getClient().send(getChannel(), respondReaction(emoji));
     }
 
-    @Override
-    public CommandEvent serialize() {
-        return new SerializableCommandEvent(this);
-    }
+//    @Override
+//    public CommandEvent serialize() {
+//        return new SerializableCommandEvent(this);
+//    }
 
 
 }

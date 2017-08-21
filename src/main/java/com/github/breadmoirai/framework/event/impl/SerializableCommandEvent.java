@@ -218,9 +218,9 @@ public class SerializableCommandEvent extends CommandEvent implements Serializab
 
     }
 
-    @Override
-    public CommandEvent serialize() {
-        return this;
-    }
+//    @Override
+//    public CommandEvent serialize() {
+//        return this;
+//    }
 
 }
