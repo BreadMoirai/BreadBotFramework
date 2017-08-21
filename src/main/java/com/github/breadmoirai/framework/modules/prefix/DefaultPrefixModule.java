@@ -18,11 +18,11 @@ package com.github.breadmoirai.framework.modules.prefix;
 import com.github.breadmoirai.framework.core.SamuraiClient;
 import com.github.breadmoirai.framework.core.impl.CommandEngineBuilder;
 
-public class UnmodifiablePrefixModule implements IPrefixModule {
+public class DefaultPrefixModule implements IPrefixModule {
 
     private final String defaultPrefix;
 
-    public UnmodifiablePrefixModule(String prefix) {
+    public DefaultPrefixModule(String prefix) {
         this.defaultPrefix = prefix;
     }
 

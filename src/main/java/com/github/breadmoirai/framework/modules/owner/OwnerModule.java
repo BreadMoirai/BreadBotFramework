@@ -36,7 +36,7 @@ public class OwnerModule implements IModule {
 
     @Override
     public void init(CommandEngineBuilder config, SamuraiClient client) {
-        config.addPostProcessPredicate(command -> !command.isMarkedWith(Owner.class) || isOwner(command.getEvent().getAuthor()));
+//        config.addPostProcessPredicate(command -> !command.isMarkedWith(Owner.class) || isOwner(command.getEvent().getAuthor()));
     }
 
     public boolean isOwner(User author) {

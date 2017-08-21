@@ -29,8 +29,8 @@ public class AdminCommand extends ModuleCommand<IAdminModule> {
         event.reply("**Administrative Members:** " + event.getGuild().getMembers().stream().filter(module::isAdmin).map(Member::getEffectiveName).collect(Collectors.joining(", ")));
     }
 
-    @Override
-    public void getHelp(CommandEvent event) {
-        event.reply("This command shows which users have the authority to use Administrative commands");
-    }
+//    @Override
+//    public void getHelp(CommandEvent event) {
+//        event.reply("This command shows which users have the authority to use Administrative commands");
+//    }
 }

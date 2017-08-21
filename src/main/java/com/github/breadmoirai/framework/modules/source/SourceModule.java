@@ -29,13 +29,13 @@ public class SourceModule implements IModule {
 
     @Override
     public void init(CommandEngineBuilder config, SamuraiClient client) {
-        config.addPostProcessPredicate(command -> {
-            if (command.isMarkedWith(SourceGuild.class)) {
-                long value = command.getClass().getAnnotation(SourceGuild.class).value();
-                if (value == 0) value = sourceGuildId;
-                return value == command.getEvent().getGuildId();
-            }
-            return true;
-        });
+//        config.addPostProcessPredicate(command -> {
+//            if (command.isMarkedWith(SourceGuild.class)) {
+//                long value = command.getClass().getAnnotation(SourceGuild.class).value();
+//                if (value == 0) value = sourceGuildId;
+//                return value == command.getEvent().getGuildId();
+//            }
+//            return true;
+//        });
     }
 }

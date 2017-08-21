@@ -28,7 +28,7 @@ public interface IAdminModule extends IModule {
 
     @Override
     default void init(CommandEngineBuilder config, SamuraiClient client) {
-        config.addPostProcessPredicate(command -> !command.isMarkedWith(Admin.class) || isAdmin(command.getEvent().getMember()));
+//        config.addPostProcessPredicate(command -> !command.isMarkedWith(Admin.class) || isAdmin(command.getEvent().getMember()));
         config.registerCommand(AdminCommand.class);
     }
 
