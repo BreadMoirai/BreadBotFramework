@@ -188,7 +188,7 @@ public abstract class CommandEvent extends Event {
      * Phrases contained within quotation marks are not separated.
      * Formatted input and mentions are ignored.
      * If message content contains an uneven number of {@code "}, the result is not predictable.
-     *
+     * <p>
      * <p>For example, if {@link CommandEvent#getContent() getContent()} returns
      * <pre>{@code hello, 1 23 <@12341482523> "say no more" @everyone}</pre>
      * <p>Then this method will return a list with elements
@@ -206,7 +206,6 @@ public abstract class CommandEvent extends Event {
     }
 
     /**
-     *
      * @return the number of arguments provided.
      */
     public int getArgumentCount() {
@@ -217,10 +216,8 @@ public abstract class CommandEvent extends Event {
      * retrieves a {@link com.github.breadmoirai.framework.event.args.CommandArgument} from the {@link com.github.breadmoirai.framework.event.args.CommandArgumentList} returned by {@link com.github.breadmoirai.framework.event.CommandEvent#getArguments()}
      *
      * @param index the index of the argument starting at 0. This does not include the key.
-     *
      * @return the non-null CommandArgument
-     *
-     * @throws IndexOutOfBoundsException if the index is less than 0 or greater than {@link com.github.breadmoirai.framework.event.CommandEvent#argumentCount}
+     * @throws IndexOutOfBoundsException if the index is less than 0 or greater than {@link com.github.breadmoirai.framework.event.CommandEvent#getArgumentCount()}
      */
     public CommandArgument getArgumentAt(int index) {
         return getArguments().get(index);
@@ -230,7 +227,6 @@ public abstract class CommandEvent extends Event {
      * Calls {@link com.github.breadmoirai.framework.event.CommandEvent#getArguments(int)} with the default limit.
      *
      * @return a CommandArgumentList
-     *
      * @see com.github.breadmoirai.framework.event.CommandEvent#getArguments(int)
      * @see com.github.breadmoirai.framework.event.CommandEvent#setDefaultArgumentLimit
      */
@@ -244,7 +240,6 @@ public abstract class CommandEvent extends Event {
      * If message content contains an uneven number of {@code "}, the result is not predictable.
      *
      * @param limit the limit to set for a maximum number of arguments. For more information on how this is used, see {@link java.util.regex.Pattern#split(java.lang.CharSequence, int)}
-     *
      * @return an implementation of <code>{@link java.util.List}<{@link CommandArgument EventArgument}></code> in which arguments are lazily parsed.
      */
     public CommandArgumentList getArguments(int limit) {
@@ -369,5 +364,10 @@ public abstract class CommandEvent extends Event {
     public void replyWith(Response r) {
         r.base(this);
         client.send(this.getChannel(), r);
+    }
+
+    @Override
+    public String toString() {
+        return String.format("CommandEvent{ Guild=%d, Channel=%d, Author=%d, Content=%s }", getGuildId(), getChannelId(), getAuthorId(), getContent());
     }
 }
