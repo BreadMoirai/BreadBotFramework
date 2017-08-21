@@ -16,17 +16,15 @@
 
 package com.github.breadmoirai.framework.core.response.simple;
 
-import com.github.breadmoirai.framework.core.Response;
 import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageEmbed;
 
 import java.util.function.Consumer;
 
-public class EmbedResponse extends Response {
+public class EmbedResponse extends BasicResponse {
 
     private MessageEmbed message;
-    private Consumer<Message> consumer;
 
     public EmbedResponse(MessageEmbed message) {
         this.message = message;
@@ -42,14 +40,26 @@ public class EmbedResponse extends Response {
     }
 
     @Override
-    public void onSend(Message message) {
-        if (consumer != null) consumer.accept(message);
-    }
-
-    public EmbedResponse andThen(Consumer<Message> onSend) {
-        if (consumer == null) consumer = onSend;
-        else consumer = consumer.andThen(onSend);
+    public EmbedResponse uponSuccess(Consumer<Message> successConsumer) {
+        super.uponSuccess(successConsumer);
         return this;
     }
 
+    @Override
+    public EmbedResponse withSuccess(Consumer<Message> successConsumer) {
+        super.withSuccess(successConsumer);
+        return this;
+    }
+
+    @Override
+    public EmbedResponse uponFailure(Consumer<Throwable> failureConsumer) {
+        super.uponFailure(failureConsumer);
+        return this;
+    }
+
+    @Override
+    public EmbedResponse withFailure(Consumer<Throwable> failureConsumer) {
+        super.withFailure(failureConsumer);
+        return this;
+    }
 }

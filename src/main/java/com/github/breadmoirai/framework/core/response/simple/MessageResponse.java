@@ -16,15 +16,13 @@
 
 package com.github.breadmoirai.framework.core.response.simple;
 
-import com.github.breadmoirai.framework.core.Response;
 import net.dv8tion.jda.core.entities.Message;
 
 import java.util.function.Consumer;
 
-public class MessageResponse extends Response {
+public class MessageResponse extends BasicResponse {
 
     private Message message;
-    private Consumer<Message> consumer;
 
     public MessageResponse(Message message) {
         this.message = message;
@@ -40,15 +38,26 @@ public class MessageResponse extends Response {
     }
 
     @Override
-    public void onSend(Message message) {
-        this.message = message;
-        if (consumer != null) consumer.accept(message);
-    }
-
-    public MessageResponse andThen(Consumer<Message> onSend) {
-        if (consumer == null) consumer = onSend;
-        else consumer = consumer.andThen(onSend);
+    public MessageResponse uponSuccess(Consumer<Message> successConsumer) {
+        super.uponSuccess(successConsumer);
         return this;
     }
 
+    @Override
+    public MessageResponse withSuccess(Consumer<Message> successConsumer) {
+        super.withSuccess(successConsumer);
+        return this;
+    }
+
+    @Override
+    public MessageResponse uponFailure(Consumer<Throwable> failureConsumer) {
+        super.uponFailure(failureConsumer);
+        return this;
+    }
+
+    @Override
+    public MessageResponse withFailure(Consumer<Throwable> failureConsumer) {
+        super.withFailure(failureConsumer);
+        return this;
+    }
 }

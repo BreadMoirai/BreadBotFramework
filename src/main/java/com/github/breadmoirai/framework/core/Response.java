@@ -41,6 +41,7 @@ public abstract class Response implements Serializable {
         DEFAULT_FAILURE = onFailure;
     }
 
+
     private transient SamuraiClient client;
 
     private long authorId, messageId, channelId, guildId;
@@ -57,10 +58,6 @@ public abstract class Response implements Serializable {
         channel.sendMessage(message).queue(onSend, this::onFailure);
     }
 
-    protected void onFailure(Throwable t) {
-        DEFAULT_FAILURE.accept(t);
-    }
-
     public final SamuraiClient getClient() {
         return client;
     }
@@ -71,7 +68,11 @@ public abstract class Response implements Serializable {
 
     public abstract Message buildMessage();
 
-    protected abstract void onSend(Message message);
+    public void onFailure(Throwable t) {
+        DEFAULT_FAILURE.accept(t);
+    }
+
+    public abstract void onSend(Message message);
 
     public final long getAuthorId() {
         return authorId;

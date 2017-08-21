@@ -70,20 +70,20 @@ public class StringResponse extends BasicResponse {
     }
 
     @Override
-    public StringResponse onSuccess(Consumer<Message> successConsumer) {
-        super.onSuccess(successConsumer);
+    public StringResponse uponSuccess(Consumer<Message> successConsumer) {
+        super.uponSuccess(successConsumer);
         return this;
     }
 
     @Override
-    public StringResponse andThen(Consumer<Message> successConsumer) {
-        super.andThen(successConsumer);
+    public StringResponse withSuccess(Consumer<Message> successConsumer) {
+        super.withSuccess(successConsumer);
         return this;
     }
 
     @Override
-    public StringResponse onFailure(Consumer<Throwable> failureConsumer) {
-        super.onFailure(failureConsumer);
+    public StringResponse uponFailure(Consumer<Throwable> failureConsumer) {
+        super.uponFailure(failureConsumer);
         return this;
     }
 

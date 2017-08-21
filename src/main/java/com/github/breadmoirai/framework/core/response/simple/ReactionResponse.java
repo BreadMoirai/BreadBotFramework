@@ -15,7 +15,6 @@
  */
 package com.github.breadmoirai.framework.core.response.simple;
 
-import com.github.breadmoirai.framework.core.Response;
 import com.github.breadmoirai.framework.core.response.menu.reactions.IMenuReaction;
 import com.github.breadmoirai.framework.core.response.menu.reactions.MenuEmoji;
 import com.github.breadmoirai.framework.core.response.menu.reactions.MenuEmote;
@@ -25,7 +24,7 @@ import net.dv8tion.jda.core.entities.MessageChannel;
 
 import java.util.function.Consumer;
 
-public class ReactionResponse extends Response {
+public class ReactionResponse extends BasicResponse {
     private final IMenuReaction reaction;
 
     public ReactionResponse(long messageId, String unicode) {
@@ -40,7 +39,7 @@ public class ReactionResponse extends Response {
 
     @Override
     protected void send(MessageChannel channel) {
-        reaction.addReactionTo(channel, getMessageId()).queue(null, );
+        reaction.addReactionTo(channel, getMessageId()).queue(null, null);
     }
 
     public Consumer<Message> getAsConsumer() {
@@ -54,27 +53,29 @@ public class ReactionResponse extends Response {
 
     @Override
     public EditResponse replace(long messageId) {
-        throw new UnsupportedOperationException("You can't replace a reaction");
+        throw new UnsupportedOperationException("You can't replace a reaction :thonk:");
     }
-    
-    public EditResponse onSuccess(Consumer<Void> successConsumer) {
-        super.onSuccess(successConsumer);
+
+    @Override
+    public ReactionResponse uponSuccess(Consumer<Message> successConsumer) {
+        super.uponSuccess(successConsumer);
         return this;
     }
 
-    public EditResponse andThen(Consumer<Void> successConsumer) {
-        super.andThen(successConsumer);
+    @Override
+    public ReactionResponse withSuccess(Consumer<Message> successConsumer) {
+        super.withSuccess(successConsumer);
         return this;
     }
 
-
-    public EditResponse onFailure(Consumer<Throwable> failureConsumer) {
-        super.onFailure(failureConsumer);
+    @Override
+    public ReactionResponse uponFailure(Consumer<Throwable> failureConsumer) {
+        super.uponFailure(failureConsumer);
         return this;
     }
 
-
-    public EditResponse withFailure(Consumer<Throwable> failureConsumer) {
+    @Override
+    public ReactionResponse withFailure(Consumer<Throwable> failureConsumer) {
         super.withFailure(failureConsumer);
         return this;
     }

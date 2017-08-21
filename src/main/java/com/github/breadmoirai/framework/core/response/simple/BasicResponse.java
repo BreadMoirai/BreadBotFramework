@@ -27,14 +27,14 @@ public abstract class BasicResponse extends Response {
     private Consumer<Throwable> onFailure;
 
     @Override
-    protected void onSend(Message message) {
+    public void onSend(Message message) {
         if (onSuccess != null) {
             onSuccess.accept(message);
         }
     }
 
     @Override
-    protected void onFailure(Throwable t) {
+    public void onFailure(Throwable t) {
         if (onFailure == null) {
             super.onFailure(t);
         } else onFailure.accept(t);
@@ -43,16 +43,16 @@ public abstract class BasicResponse extends Response {
     /**
      * Sets a consumer to be called when the message is sent
      */
-    public BasicResponse onSuccess(Consumer<Message> successConsumer) {
+    public BasicResponse uponSuccess(Consumer<Message> successConsumer) {
         this.onSuccess = successConsumer;
         return this;
     }
 
     /**
      *  Appends this consumer to the success consumer if it exists.
-     *  Otherwise {@link com.github.breadmoirai.framework.core.response.simple.BasicResponse#onSuccess(Consumer)} is called
+     *  Otherwise {@link com.github.breadmoirai.framework.core.response.simple.BasicResponse#uponSuccess(Consumer)} is called
      */
-    public BasicResponse andThen(Consumer<Message> successConsumer) {
+    public BasicResponse withSuccess(Consumer<Message> successConsumer) {
         if (this.onSuccess == null) this.onSuccess = successConsumer;
         else this.onSuccess = this.onSuccess.andThen(successConsumer);
         return this;
@@ -61,7 +61,7 @@ public abstract class BasicResponse extends Response {
     /**
      * override the default failure consumer
      */
-    public BasicResponse onFailure(Consumer<Throwable> failureConsumer) {
+    public BasicResponse uponFailure(Consumer<Throwable> failureConsumer) {
         this.onFailure = failureConsumer;
         return this;
     }
