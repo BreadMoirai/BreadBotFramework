@@ -17,18 +17,17 @@ package com.github.breadmoirai.framework.core;
 
 import com.github.breadmoirai.framework.core.command.ICommand;
 import com.github.breadmoirai.framework.core.impl.CommandEngineBuilder;
-import com.github.breadmoirai.framework.event.impl.CommandEventFactoryImpl;
 import com.github.breadmoirai.framework.core.impl.SamuraiClientImpl;
 import com.github.breadmoirai.framework.event.ICommandEventFactory;
+import com.github.breadmoirai.framework.event.impl.CommandEventFactoryImpl;
+import com.github.breadmoirai.framework.modules.admin.Admin;
 import com.github.breadmoirai.framework.modules.admin.DefaultAdminModule;
 import com.github.breadmoirai.framework.modules.admin.IAdminModule;
-import com.github.breadmoirai.framework.modules.prefix.DynamicPrefixModule;
+import com.github.breadmoirai.framework.modules.prefix.DefaultPrefixModule;
 import com.github.breadmoirai.framework.modules.prefix.IPrefixModule;
-import com.github.breadmoirai.framework.modules.prefix.UnmodifiablePrefixModule;
-import com.github.breadmoirai.framework.modules.source.SourceModule;
-import com.github.breadmoirai.framework.modules.admin.Admin;
 import com.github.breadmoirai.framework.modules.prefix.PrefixCommand;
 import com.github.breadmoirai.framework.modules.source.SourceGuild;
+import com.github.breadmoirai.framework.modules.source.SourceModule;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.hooks.AnnotatedEventManager;
 import net.dv8tion.jda.core.hooks.IEventManager;
@@ -63,18 +62,18 @@ public class SamuraiClientBuilder {
     }
 
     /**
-     * Define the default prefix of new guilds. If this is not set, a {@link DynamicPrefixModule DefaultPrefixModule} with prefix {@code !} is added.
+     * Define the default prefix of new guilds. If this is not set, a {@link DefaultPrefixModule DefaultPrefixModule} with prefix {@code !} is added.
      *
      * <p>This module comes with a {@link PrefixCommand PrefixCommand} that allows members to check the prefix of the guild and allows administrators to change the prefix.
      * <p>Make Sure to include an <b>AdminModule</b> through {@link SamuraiClientBuilder#addAdminModule} or {@link SamuraiClientBuilder#addAdminModule(Predicate)} otherwise the guild prefix can be changed by any member.
      *
      * <p>This method's implementation is:
-     * <pre><code> {@link SamuraiClientBuilder#addModule(IModule...) addModule}(new {@link DynamicPrefixModule DefaultPrefixModule}(prefix)) </code></pre>
+     * <pre><code> {@link SamuraiClientBuilder#addModule(IModule...) addModule}(new {@link DefaultPrefixModule DefaultPrefixModule}(prefix)) </code></pre>
      *
      * <p>You can define a different prefix implementation by providing a class to {@link SamuraiClientBuilder#addModule(IModule...)} that implements {@link IPrefixModule IPrefixModule}
      */
     public SamuraiClientBuilder addDefaultPrefixModule(String prefix) {
-        addModule(new DynamicPrefixModule(prefix));
+        addModule(new DefaultPrefixModule(prefix));
         return this;
     }
 
@@ -164,7 +163,7 @@ public class SamuraiClientBuilder {
 
     private <T extends IEventManager> T build(T eventManager) {
         final CommandEngineBuilder commandEngineBuilder = new CommandEngineBuilder(modules);
-        if (!commandEngineBuilder.hasModule(IPrefixModule.class)) modules.add(new UnmodifiablePrefixModule("!"));
+        if (!commandEngineBuilder.hasModule(IPrefixModule.class)) modules.add(new DefaultPrefixModule("!"));
         if (commandEventFactory == null) commandEventFactory = new CommandEventFactoryImpl(commandEngineBuilder);
         commandEngineModifier.accept(commandEngineBuilder);
         samuraiClient = new SamuraiClientImpl(modules, eventManager, commandEventFactory, commandEngineBuilder);

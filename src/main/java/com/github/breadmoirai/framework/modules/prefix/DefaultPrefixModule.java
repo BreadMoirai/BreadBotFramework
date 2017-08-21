@@ -15,20 +15,12 @@
  */
 package com.github.breadmoirai.framework.modules.prefix;
 
-import com.github.breadmoirai.framework.core.SamuraiClient;
-import com.github.breadmoirai.framework.core.impl.CommandEngineBuilder;
-
 public class DefaultPrefixModule implements IPrefixModule {
 
     private final String defaultPrefix;
 
     public DefaultPrefixModule(String prefix) {
         this.defaultPrefix = prefix;
-    }
-
-    @Override
-    public void init(CommandEngineBuilder engineBuilder, SamuraiClient client) {
-
     }
 
     @Override

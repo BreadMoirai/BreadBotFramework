@@ -16,8 +16,15 @@
 package com.github.breadmoirai.framework.modules.prefix;
 
 import com.github.breadmoirai.framework.core.IModule;
+import com.github.breadmoirai.framework.core.SamuraiClient;
+import com.github.breadmoirai.framework.core.impl.CommandEngineBuilder;
 
 public interface IPrefixModule extends IModule {
+
+    @Override
+    default void init(CommandEngineBuilder engineBuilder, SamuraiClient client) {
+        engineBuilder.registerCommand(PrefixCommand.class);
+    }
 
     @Override
     default String getName() {

@@ -19,7 +19,7 @@ import com.github.breadmoirai.framework.core.command.Command;
 import com.github.breadmoirai.framework.core.command.ModuleCommand;
 import com.github.breadmoirai.framework.event.CommandEvent;
 
-@Command("prefix")
+@Command
 public class PrefixCommand extends ModuleCommand<IPrefixModule> {
 
 //    @Override
