@@ -16,14 +16,13 @@
 package com.github.breadmoirai.framework.core.impl;
 
 import com.github.breadmoirai.framework.core.CommandEngine;
-import com.github.breadmoirai.framework.event.CommandEvent;
 import com.github.breadmoirai.framework.core.IModule;
 import com.github.breadmoirai.framework.core.command.ICommand;
+import com.github.breadmoirai.framework.event.CommandEvent;
 import net.dv8tion.jda.core.utils.SimpleLog;
 
 import java.util.List;
 import java.util.Map;
-import java.util.function.Predicate;
 
 public class CommandEngineImpl implements CommandEngine {
 
@@ -31,11 +30,8 @@ public class CommandEngineImpl implements CommandEngine {
 
     private final Map<String, ICommand> commandMap;
 
-    private final Predicate<ICommand> postProcessPredicate;
-
-    public CommandEngineImpl(List<IModule> modules, Map<String, ICommand> commandMap, Predicate<ICommand> postProcessPredicate) {
+    public CommandEngineImpl(List<IModule> modules, Map<String, ICommand> commandMap) {
         this.commandMap = commandMap;
-        this.postProcessPredicate = postProcessPredicate == null ? iCommand -> true : postProcessPredicate;
     }
 
     @Override

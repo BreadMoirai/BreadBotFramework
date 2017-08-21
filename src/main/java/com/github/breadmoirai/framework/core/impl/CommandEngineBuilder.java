@@ -16,16 +16,14 @@
 package com.github.breadmoirai.framework.core.impl;
 
 import com.github.breadmoirai.framework.core.CommandEngine;
-import com.github.breadmoirai.framework.event.CommandEvent;
 import com.github.breadmoirai.framework.core.IModule;
 import com.github.breadmoirai.framework.core.command.*;
-import com.github.breadmoirai.framework.error.EmptyCommandAnnotation;
-import com.github.breadmoirai.framework.error.MissingCommandAnnotation;
+import com.github.breadmoirai.framework.error.DuplicateCommandKeyException;
 import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.SimpleLog;
 import org.reflections.Reflections;
 
+import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.function.Predicate;
 
@@ -35,9 +33,8 @@ public class CommandEngineBuilder {
     private final List<IModule> modules;
 
     private Predicate<Message> preProcessPredicate;
-    private Predicate<CommandEvent> postProcessPredicate;
 
-    private Map<String, CommandWrapper> commandMap = new HashMap<>();
+    private Map<String, ICommand> commandMap = new HashMap<>();
 
     public CommandEngineBuilder(List<IModule> modules) {
         this.modules = modules;
@@ -50,28 +47,73 @@ public class CommandEngineBuilder {
         return this;
     }
 
-    public CommandEngineBuilder addPostProcessPredicate(Predicate<CommandEvent> predicate) {
-        if (postProcessPredicate == null) {
-            postProcessPredicate = predicate;
-        } else postProcessPredicate = postProcessPredicate.and(predicate);
-        return this;
+    public Predicate<Message> getPreProcessPredicate() {
+        return preProcessPredicate;
     }
 
-
-    private CommandEngineBuilder registerCommand(CommandWrapper wrapper, String... keys) {
-        final Class<?> commandClass = wrapper.getCommandClass();
+    /**
+     * This method ignores any annotations attached to the class and registers it with the provided keys.
+     * This is useful for short and simple commands such as
+     * <pre><code>
+     *     registerCommand(event -> {
+     *          if (event.getAuthorId() == 12356789L)
+     *              event.getJDA().shutdown();
+     *     },"shutdown");
+     * </code></pre>
+     * <p>
+     * <p>Commands registered this way will use the provided
+     * {@link com.github.breadmoirai.framework.core.command.ICommand} object
+     * to perform it's action whenever it is called.
+     *
+     * @param command an object ICommand
+     * @param keys    keys which trigger the command
+     * @return this
+     * @see com.github.breadmoirai.framework.core.impl.CommandEngineBuilder#registerCommand(java.lang.Class)
+     * @see com.github.breadmoirai.framework.core.impl.CommandEngineBuilder#registerCommand(java.lang.Object)
+     */
+    public CommandEngineBuilder registerCommand(ICommand command, String... keys) {
+        final Class<?> commandClass = command.getClass();
         if (keys.length == 0) {
-            LOG.warn("No key found for " + commandClass.getSimpleName());
+            LOG.fatal("No key found for " + commandClass.getSimpleName());
             return this;
         }
+
         for (String key : keys) {
             final String key1 = key.toLowerCase();
             if (commandMap.containsKey(key1)) {
-                final CommandWrapper existing = commandMap.get(key1);
-                LOG.warn("Key \"" + key + "\" for Command " + commandClass.getSimpleName() + " is already mapped to Command " + existing.getCommandClass().getSimpleName());
+                final ICommand existing = commandMap.get(key1);
+                LOG.fatal(String.format("Key \"%s\" for %s is already mapped to %s", key, command, existing));
             } else {
-                commandMap.put(key, wrapper);
-                LOG.info("\"" + key + "\" mapped to " + commandClass.getSimpleName());
+                commandMap.put(key, command);
+                LOG.info(String.format("\"%s\" mapped to %s", key, command));
+            }
+        }
+        return this;
+    }
+
+    public CommandEngineBuilder registerCommand(Object command) {
+        if (command instanceof Class) {
+            return registerCommand(((Class) command));
+        } else if (command instanceof String) {
+            return registerCommand(((String) command));
+        } else if (command instanceof ICommand) {
+            final Class<?> commandClass = command.getClass();
+            final Command key = commandClass.getAnnotation(Command.class);
+            if (key == null || key.value().length == 0) {
+                String name = commandClass.getSimpleName().toLowerCase();
+                if (!name.startsWith("command") && name.endsWith("command")) {
+                    name = name.replace("command", "");
+                }
+                registerCommand(((ICommand) command), name);
+            } else {
+                registerCommand(((ICommand) command), key.value());
+            }
+        } else {
+            try {
+                final CommandAdapter commandAdapter = new CommandAdapter(command);
+                registerCommand(commandAdapter, commandAdapter.getKeys());
+            } catch (NoSuchMethodException | IllegalAccessException | DuplicateCommandKeyException e) {
+                LOG.fatal(e);
             }
         }
         return this;
@@ -79,59 +121,59 @@ public class CommandEngineBuilder {
 
     @SuppressWarnings("unchecked")
     public CommandEngineBuilder registerCommand(Class<?> commandClass) {
-        final String[] keys;
-        if (MultiCommand.class.isAssignableFrom(commandClass)) {
-            keys = MultiCommand.register((Class<? extends MultiCommand>) commandClass);
-        } else if (MultiSubCommand.class.isAssignableFrom(commandClass)) {
-            keys = MultiSubCommand.register((Class<? extends MultiSubCommand>) commandClass);
-        } else if (ModuleMultiCommand.class.isAssignableFrom(commandClass)) {
-            keys = ModuleMultiCommand.register((Class<? extends ModuleMultiCommand>) commandClass);
-        } else if (ModuleMultiSubCommand.class.isAssignableFrom(commandClass)) {
-            keys = ModuleMultiSubCommand.register((Class<? extends ModuleMultiSubCommand>) commandClass);
-        } else if (BiModuleMultiCommand.class.isAssignableFrom(commandClass)) {
-            keys = BiModuleMultiCommand.register((Class<? extends BiModuleMultiCommand>) commandClass);
-        } else if (BiModuleMultiSubCommand.class.isAssignableFrom(commandClass)) {
-            keys = BiModuleMultiSubCommand.register((Class<? extends BiModuleMultiSubCommand>) commandClass);
-        } else if (ICommand.class.isAssignableFrom(commandClass)) {
-            CommandEngineBuilder.checkCommandAnnotation(commandClass);
-            final Command annotation = commandClass.getAnnotation(Command.class);
-            keys = annotation.value();
-        } else {
-
+        final CommandWrapper wrapper;
+        try {
+            if (BiModuleCommand.class.isAssignableFrom(commandClass)) {
+                wrapper = new BiModuleCommandWrapper((Class<? extends BiModuleCommand>) commandClass);
+            } else if (ModuleCommand.class.isAssignableFrom(commandClass)) {
+                wrapper = new ModuleCommandWrapper((Class<? extends ModuleCommand>) commandClass);
+            } else if (ICommand.class.isAssignableFrom(commandClass)) {
+                wrapper = new RawCommandWrapper((Class<? extends ICommand>) commandClass);
+            } else {
+                wrapper = new CommandAdapter(commandClass);
+            }
+        } catch (NoSuchMethodException | DuplicateCommandKeyException | IllegalAccessException e) {
+            LOG.fatal(e);
+            return this;
         }
-        if (keys == null)
-            LOG.warn("No key found for " + commandClass.getSimpleName());
-        else
-            registerCommand(commandClass, keys);
+        registerCommand(wrapper, wrapper.getKeys());
         return this;
     }
 
     public CommandEngineBuilder registerCommand(String commandPackagePrefix) {
         final Reflections reflections = new Reflections(commandPackagePrefix);
-        final Set<Class<?>> classes = reflections.getTypesAnnotatedWith(Command.class);
+        final Set<Class<?>> classes = reflections.getSubTypesOf(Object.class);
         for (Class<?> commandClass : classes) {
+            final int mod = commandClass.getModifiers();
+            if (commandClass.isInterface()
+                    || commandClass.isSynthetic()
+                    || commandClass.isAnonymousClass()
+                    || commandClass.isArray()
+                    || commandClass.isAnnotation()
+                    || commandClass.isEnum()
+                    || commandClass.isPrimitive()
+                    || commandClass.isLocalClass()
+                    || commandClass.isMemberClass()
+                    || Modifier.isAbstract(mod)
+                    || Modifier.isPrivate(mod)
+                    || Modifier.isProtected(mod))
+                continue;
             if (ICommand.class.isAssignableFrom(commandClass)) {
-                //noinspection unchecked
-                registerCommand((Class<? extends ICommand>) commandClass);
+                registerCommand(commandClass);
+            } else {
+                if (commandClass.isAnnotationPresent(Command.class)
+                        || Arrays.stream(commandClass.getMethods())
+                        .anyMatch(method -> method.isAnnotationPresent(Command.class))) {
+                    registerCommand(commandClass);
+                }
             }
         }
-        final Set<Class<? extends ModuleMultiCommand>> multiCommands = reflections.getSubTypesOf(ModuleMultiCommand.class);
-        for (Class<? extends ModuleMultiCommand> commandClass : multiCommands) registerCommand(commandClass);
         return this;
     }
 
-    Map<String, Class<? extends ICommand>> getCommandMap() {
+    Map<String, ICommand> getCommandMap() {
         return commandMap;
     }
-
-    Predicate<Message> getPreProcessPredicate() {
-        return preProcessPredicate;
-    }
-
-    Predicate<ICommand> getPostProcessPredicate() {
-        return postProcessPredicate;
-    }
-
 
     public boolean hasModule(Class<? extends IModule> moduleClass) {
         return moduleClass != null && modules.stream().map(Object::getClass).anyMatch(moduleClass::isAssignableFrom);
@@ -164,19 +206,7 @@ public class CommandEngineBuilder {
     }
 
     CommandEngine build() {
-        return new CommandEngineImpl(modules, commandMap, postProcessPredicate);
-    }
-
-    public static void checkCommandAnnotation(Class<?> klass) {
-        final Command annotation = klass.getAnnotation(Command.class);
-        if (annotation == null) {
-            throw new MissingCommandAnnotation(klass);
-        }
-        final String[] value = annotation.value();
-        if (value.length == 0) {
-            throw new EmptyCommandAnnotation(klass);
-                    }
-        Checks.noneContainBlanks(Arrays.asList(value), "Command Class: " + klass.getName() + " @Command keys");
+        return new CommandEngineImpl(modules, commandMap);
 
     }
 

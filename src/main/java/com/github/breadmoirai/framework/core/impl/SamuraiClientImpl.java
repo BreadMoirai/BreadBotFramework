@@ -48,8 +48,8 @@ public class SamuraiClientImpl implements SamuraiClient {
 
     public SamuraiClientImpl(List<IModule> modules, IEventManager eventManager, ICommandEventFactory eventFactory, CommandEngineBuilder engineBuilder) {
         this.modules = modules;
-        eventManager.register(this.new SamuraiEventListener(engineBuilder.getPreProcessPredicate()));
         modules.forEach(module -> module.init(engineBuilder, this));
+        eventManager.register(this.new SamuraiEventListener(engineBuilder.getPreProcessPredicate()));
 
         if (eventManager instanceof InterfacedEventManager)
             modules.stream().filter(net.dv8tion.jda.core.hooks.EventListener.class::isInstance).forEach(eventManager::register);
