@@ -15,6 +15,7 @@
  */
 package com.github.breadmoirai.framework.core.response.simple;
 
+import com.github.breadmoirai.framework.core.Response;
 import com.github.breadmoirai.framework.core.response.menu.reactions.IMenuReaction;
 import com.github.breadmoirai.framework.core.response.menu.reactions.MenuEmoji;
 import com.github.breadmoirai.framework.core.response.menu.reactions.MenuEmote;
@@ -24,7 +25,10 @@ import net.dv8tion.jda.core.entities.MessageChannel;
 
 import java.util.function.Consumer;
 
-public class ReactionResponse extends BasicResponse {
+public class ReactionResponse extends Response {
+
+    private Consumer<Void> onSuccess;
+    private Consumer<Throwable> onFailure;
     private final IMenuReaction reaction;
 
     public ReactionResponse(long messageId, String unicode) {
@@ -38,12 +42,30 @@ public class ReactionResponse extends BasicResponse {
     }
 
     @Override
+    public void onSend(Message message) {
+        //hjirhh
+    }
+
+    @Override
     protected void send(MessageChannel channel) {
-        reaction.addReactionTo(channel, getMessageId()).queue(null, null);
+        reaction.addReactionTo(channel, getMessageId()).queue(this::onSend, this::onFailure);
+    }
+
+    private void onSend(Void nothing) {
+        if (onSuccess != null) {
+            onSuccess.accept(nothing);
+        }
+    }
+
+    @Override
+    public void onFailure(Throwable t) {
+        if (onFailure == null) {
+            super.onFailure(t);
+        } else onFailure.accept(t);
     }
 
     public Consumer<Message> getAsConsumer() {
-        return message -> reaction.addReactionTo(message.getChannel(), getMessageId());
+        return message -> reaction.addReactionTo(message.getChannel(), message.getIdLong()).queue(this::onSend, this::onFailure);
     }
 
     @Override
@@ -56,27 +78,29 @@ public class ReactionResponse extends BasicResponse {
         throw new UnsupportedOperationException("You can't replace a reaction :thonk:");
     }
 
-    @Override
-    public ReactionResponse uponSuccess(Consumer<Message> successConsumer) {
-        super.uponSuccess(successConsumer);
+    public ReactionResponse uponSuccess(Consumer<Void> successConsumer) {
+        this.onSuccess = successConsumer;
         return this;
     }
 
-    @Override
-    public ReactionResponse withSuccess(Consumer<Message> successConsumer) {
-        super.withSuccess(successConsumer);
+    public ReactionResponse withSuccess(Consumer<Void> successConsumer) {
+        if (this.onSuccess == null) this.onSuccess = successConsumer;
+        else this.onSuccess = this.onSuccess.andThen(successConsumer);
         return this;
     }
 
-    @Override
     public ReactionResponse uponFailure(Consumer<Throwable> failureConsumer) {
-        super.uponFailure(failureConsumer);
+        this.onFailure = failureConsumer;
         return this;
     }
 
-    @Override
+    @SuppressWarnings("Duplicates")
     public ReactionResponse withFailure(Consumer<Throwable> failureConsumer) {
-        super.withFailure(failureConsumer);
+        if (onFailure == null) onFailure = t -> {
+            super.onFailure(t);
+            failureConsumer.accept(t);
+        };
+        else onFailure = onFailure.andThen(failureConsumer);
         return this;
     }
 }

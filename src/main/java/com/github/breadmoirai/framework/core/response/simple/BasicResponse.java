@@ -70,6 +70,7 @@ public abstract class BasicResponse extends Response {
      * appends failure behavior to any existing behavior
      * @see com.github.breadmoirai.framework.core.Response#setDefaultFailure
      */
+    @SuppressWarnings("Duplicates")
     public BasicResponse withFailure(Consumer<Throwable> failureConsumer) {
         if (onFailure == null) onFailure = t -> {
             super.onFailure(t);
