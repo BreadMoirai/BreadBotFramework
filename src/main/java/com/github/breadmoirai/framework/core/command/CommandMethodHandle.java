@@ -77,4 +77,9 @@ public class CommandMethodHandle implements CommandHandle {
         }
         return true;
     }
+
+    @Override
+    public String[] getKeys() {
+        return keys;
+    }
 }

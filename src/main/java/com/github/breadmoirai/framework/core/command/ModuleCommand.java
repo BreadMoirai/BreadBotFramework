@@ -48,4 +48,8 @@ public abstract class ModuleCommand<M extends IModule> implements ICommand {
 
     public abstract void execute(CommandEvent event, M module);
 
+    @Override
+    public String toString() {
+        return String.format("%s<%s>", this.getClass().getSimpleName(), moduleType.getTypeName());
+    }
 }

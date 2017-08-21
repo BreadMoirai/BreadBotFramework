@@ -13,8 +13,8 @@ import java.util.stream.Stream;
 
 public class Commands {
 
-    public static final SimpleLog PUBLICLOG
-    private static final SimpleLog LOG = SimpleLog.getLog("Command");
+    public static final SimpleLog BUILDLOG = SimpleLog.getLog("CommandBuilder");
+    public static final SimpleLog LOG = SimpleLog.getLog("Command");
 
     private static final Map<String, CommandMethod> METHODS = new HashMap<>();
 
