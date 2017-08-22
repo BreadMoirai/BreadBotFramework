@@ -13,23 +13,34 @@
  *   See the License for the specific language governing permissions and
  *   limitations under the License.
  */
-package com.github.breadmoirai.bot.modules.prefix;
+package com.github.breadmoirai.bot.framework.response.list;
 
-import com.github.breadmoirai.bot.framework.IModule;
-import com.github.breadmoirai.bot.framework.SamuraiClient;
-import com.github.breadmoirai.bot.framework.impl.CommandEngineBuilder;
+import com.github.breadmoirai.bot.framework.Response;
+import com.github.breadmoirai.bot.framework.response.CloseableResponse;
+import net.dv8tion.jda.core.entities.Message;
 
-public interface IPrefixModule extends IModule {
+public class ResponseList extends Response implements CloseableResponse {
+
+//    private transient final ListResponse;
+    private transient Message message;
 
     @Override
-    default void init(CommandEngineBuilder engineBuilder, SamuraiClient client) {
-        engineBuilder.registerCommand(PrefixCommand.class);
+    public Message buildMessage() {
+        return null;
     }
 
     @Override
-    default String getName() {
-        return "PrefixModule";
+    public void onSend(Message message) {
+
     }
 
-    String getPrefix(long guildId);
+    @Override
+    public void cancel(Response cancelMessage, boolean clearReactions) {
+
+    }
+
+    @Override
+    public void delete() {
+
+    }
 }

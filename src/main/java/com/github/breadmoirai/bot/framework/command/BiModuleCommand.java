@@ -13,25 +13,27 @@
  *   See the License for the specific language governing permissions and
  *   limitations under the License.
  */
-package com.github.breadmoirai.bot.modules.admin;
+package com.github.breadmoirai.bot.framework.command;
 
+import com.github.breadmoirai.bot.framework.event.CommandEvent;
 import com.github.breadmoirai.bot.framework.IModule;
 import com.github.breadmoirai.bot.framework.SamuraiClient;
-import com.github.breadmoirai.bot.framework.impl.CommandEngineBuilder;
-import net.dv8tion.jda.core.entities.Member;
+import com.github.breadmoirai.bot.util.TypeFinder;
 
-public interface IAdminModule extends IModule {
+import java.lang.reflect.Type;
 
-    @Override
-    default String getName() {
-        return "AdminModule";
-    }
+public abstract class BiModuleCommand<M1 extends IModule, M2 extends IModule> implements ICommand {
+
+    private final Type[] types = TypeFinder.getTypeArguments(this.getClass(), BiModuleCommand.class);
 
     @Override
-    default void init(CommandEngineBuilder config, SamuraiClient client) {
-//        config.addPostProcessPredicate(command -> !command.isMarkedWith(Admin.class) || isAdmin(command.getEvent().getMember()));
-        config.registerCommand(AdminCommand.class);
+    public void handle(CommandEvent event) throws Throwable {
+        final SamuraiClient client = event.getClient();
+        //noinspection unchecked
+        execute(event, (M1) client.getModule(types[0]), (M2) client.getModule(types[1]));
     }
 
-    boolean isAdmin(Member member);
+    public abstract void execute(CommandEvent event, M1 module1, M2 module2);
+
+
 }

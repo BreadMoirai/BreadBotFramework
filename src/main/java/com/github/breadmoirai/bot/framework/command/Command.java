@@ -13,23 +13,21 @@
  *   See the License for the specific language governing permissions and
  *   limitations under the License.
  */
-package com.github.breadmoirai.bot.modules.prefix;
+package com.github.breadmoirai.bot.framework.command;
 
-import com.github.breadmoirai.bot.framework.IModule;
-import com.github.breadmoirai.bot.framework.SamuraiClient;
-import com.github.breadmoirai.bot.framework.impl.CommandEngineBuilder;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-public interface IPrefixModule extends IModule {
+/**
+ * This annotation marks what classes should be available as a command and defines what key is used to trigger the class.
+ * <p> should only be used on classes that are derived from {@link ICommand}</p>
+ */
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.TYPE, ElementType.METHOD})
+public @interface Command {
 
-    @Override
-    default void init(CommandEngineBuilder engineBuilder, SamuraiClient client) {
-        engineBuilder.registerCommand(PrefixCommand.class);
-    }
+    String[] value() default {};
 
-    @Override
-    default String getName() {
-        return "PrefixModule";
-    }
-
-    String getPrefix(long guildId);
 }

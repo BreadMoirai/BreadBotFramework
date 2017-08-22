@@ -15,14 +15,14 @@
  */
 package com.github.breadmoirai.bot.framework.event;
 
-import com.github.breadmoirai.bot.framework.core.Response;
-import com.github.breadmoirai.bot.framework.core.SamuraiClient;
-import com.github.breadmoirai.bot.framework.core.response.menu.PromptBuilder;
-import com.github.breadmoirai.bot.framework.core.response.menu.ReactionMenuBuilder;
-import com.github.breadmoirai.bot.framework.core.response.simple.EmbedResponse;
-import com.github.breadmoirai.bot.framework.core.response.simple.MessageResponse;
-import com.github.breadmoirai.bot.framework.core.response.simple.ReactionResponse;
-import com.github.breadmoirai.bot.framework.core.response.simple.StringResponse;
+import com.github.breadmoirai.bot.framework.Response;
+import com.github.breadmoirai.bot.framework.SamuraiClient;
+import com.github.breadmoirai.bot.framework.response.menu.PromptBuilder;
+import com.github.breadmoirai.bot.framework.response.menu.ReactionMenuBuilder;
+import com.github.breadmoirai.bot.framework.response.simple.EmbedResponse;
+import com.github.breadmoirai.bot.framework.response.simple.MessageResponse;
+import com.github.breadmoirai.bot.framework.response.simple.ReactionResponse;
+import com.github.breadmoirai.bot.framework.response.simple.StringResponse;
 import com.github.breadmoirai.bot.framework.event.args.CommandArgument;
 import com.github.breadmoirai.bot.framework.event.args.CommandArgumentList;
 import com.github.breadmoirai.bot.util.DiscordPatterns;

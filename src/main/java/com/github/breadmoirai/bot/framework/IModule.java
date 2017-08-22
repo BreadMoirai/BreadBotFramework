@@ -13,25 +13,32 @@
  *   See the License for the specific language governing permissions and
  *   limitations under the License.
  */
-package com.github.breadmoirai.bot.modules.admin;
+package com.github.breadmoirai.bot.framework;
 
-import com.github.breadmoirai.bot.framework.IModule;
-import com.github.breadmoirai.bot.framework.SamuraiClient;
 import com.github.breadmoirai.bot.framework.impl.CommandEngineBuilder;
-import net.dv8tion.jda.core.entities.Member;
+import com.github.breadmoirai.bot.framework.event.CommandEvent;
+import org.json.JSONObject;
 
-public interface IAdminModule extends IModule {
+public interface IModule {
 
-    @Override
     default String getName() {
-        return "AdminModule";
+        return this.getClass().getSimpleName();
     }
 
-    @Override
-    default void init(CommandEngineBuilder config, SamuraiClient client) {
-//        config.addPostProcessPredicate(command -> !command.isMarkedWith(Admin.class) || isAdmin(command.getEvent().getMember()));
-        config.registerCommand(AdminCommand.class);
+    void init(CommandEngineBuilder engineBuilder, SamuraiClient client);
+
+    default void getHelp(CommandEvent event) {
+        event.reply("This is not the help you are looking for");
     }
 
-    boolean isAdmin(Member member);
+    default boolean isJSONconfigurable() {
+        return false;
+    }
+
+    default void addJSONconfig(long guildId, JSONObject jsonObject) {
+    }
+
+    default boolean loadJSONconfig(long guildId, JSONObject jsonObject) {
+        return false;
+    }
 }

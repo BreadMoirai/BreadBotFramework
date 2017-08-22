@@ -13,23 +13,16 @@
  *   See the License for the specific language governing permissions and
  *   limitations under the License.
  */
-package com.github.breadmoirai.bot.modules.prefix;
+package com.github.breadmoirai.bot.framework.command;
 
-import com.github.breadmoirai.bot.framework.IModule;
-import com.github.breadmoirai.bot.framework.SamuraiClient;
-import com.github.breadmoirai.bot.framework.impl.CommandEngineBuilder;
+import com.github.breadmoirai.bot.framework.event.CommandEvent;
 
-public interface IPrefixModule extends IModule {
+@FunctionalInterface
+public interface ICommand {
 
-    @Override
-    default void init(CommandEngineBuilder engineBuilder, SamuraiClient client) {
-        engineBuilder.registerCommand(PrefixCommand.class);
+    void handle(CommandEvent event) throws Throwable;
+
+    default CommandInfo getInfo() {
+        return null;
     }
-
-    @Override
-    default String getName() {
-        return "PrefixModule";
-    }
-
-    String getPrefix(long guildId);
 }

@@ -15,10 +15,10 @@
  */
 package com.github.breadmoirai.bot.framework.event.impl;
 
-import com.github.breadmoirai.bot.framework.core.impl.CommandEngineBuilder;
+import com.github.breadmoirai.bot.framework.impl.CommandEngineBuilder;
 import com.github.breadmoirai.bot.framework.event.CommandEvent;
 import com.github.breadmoirai.bot.framework.event.ICommandEventFactory;
-import com.github.breadmoirai.bot.framework.core.SamuraiClient;
+import com.github.breadmoirai.bot.framework.SamuraiClient;
 import com.github.breadmoirai.bot.modules.prefix.IPrefixModule;
 import com.github.breadmoirai.bot.util.DiscordPatterns;
 import net.dv8tion.jda.core.entities.Message;

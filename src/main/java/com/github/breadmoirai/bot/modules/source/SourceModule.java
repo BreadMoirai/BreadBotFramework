@@ -15,9 +15,9 @@
  */
 package com.github.breadmoirai.bot.modules.source;
 
-import com.github.breadmoirai.bot.framework.core.SamuraiClient;
-import com.github.breadmoirai.bot.framework.core.impl.CommandEngineBuilder;
-import com.github.breadmoirai.bot.framework.core.IModule;
+import com.github.breadmoirai.bot.framework.SamuraiClient;
+import com.github.breadmoirai.bot.framework.impl.CommandEngineBuilder;
+import com.github.breadmoirai.bot.framework.IModule;
 
 public class SourceModule implements IModule {
 

@@ -15,8 +15,8 @@
  */
 package com.github.breadmoirai.bot.modules.prefix;
 
-import com.github.breadmoirai.bot.framework.core.command.Command;
-import com.github.breadmoirai.bot.framework.core.command.ModuleCommand;
+import com.github.breadmoirai.bot.framework.command.Command;
+import com.github.breadmoirai.bot.framework.command.ModuleCommand;
 import com.github.breadmoirai.bot.framework.event.CommandEvent;
 
 @Command

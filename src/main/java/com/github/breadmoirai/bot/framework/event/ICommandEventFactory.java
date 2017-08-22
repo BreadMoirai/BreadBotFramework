@@ -15,7 +15,7 @@
  */
 package com.github.breadmoirai.bot.framework.event;
 
-import com.github.breadmoirai.bot.framework.core.SamuraiClient;
+import com.github.breadmoirai.bot.framework.SamuraiClient;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.events.message.guild.GenericGuildMessageEvent;
 
