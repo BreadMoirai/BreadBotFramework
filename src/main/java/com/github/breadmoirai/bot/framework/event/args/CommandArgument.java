@@ -78,40 +78,15 @@ public interface CommandArgument {
     }
 
     /**
-     * Checks if this argument is of the type given. If this is a formatted mention, i.e. {@link com.github.breadmoirai.bot.framework.event.args.CommandArgument#isMention isMention()} would return {@code true} and {@code notnull} is also {@code true}, this will also check if the argument can correctly be resolved to a valid {@link net.dv8tion.jda.core.JDA} entity.
+     * Checks if this argument is of the type given. If this is a formatted mention, i.e. {@link com.github.breadmoirai.bot.framework.event.args.CommandArgument#isMention isMention()} would return {@code true}, {@code notnull} is also {@code true}, this will also check if the argument can correctly be resolved to a valid {@link net.dv8tion.jda.core.JDA} entity or primitive or custom Object registered with {@link com.github.breadmoirai.bot.framework.event.args.ArgumentTypes}.
      * <p>If this argument is an {@link net.dv8tion.jda.core.entities.Emote}, the method will return {@code true}. However, if the {@link net.dv8tion.jda.core.entities.Emote} is not a valid {@link net.dv8tion.jda.core.JDA} entity, it will NOT be reflected in this method. Instead the object returned by {@link com.github.breadmoirai.bot.framework.event.args.CommandArgument#getEmote} will return an {@link net.dv8tion.jda.core.entities.Emote} with {@link net.dv8tion.jda.core.entities.IFakeable#isFake() isFake()} returning {@code true}
      *
      * @param type The type of argument to test for.
      *
      * @return {@code true} if this argument is of the type passed.
      */
-    default boolean isOfType(ArgumentType type) {
-        switch (type) {
-            case INTEGER:
-                return isInteger();
-            case LONG:
-                return isLong();
-            case FLOAT:
-            case DOUBLE:
-                return isFloat();
-            case RANGE:
-                return isRange();
-            case HEX:
-                return isHex();
-            case USER:
-                return isUser();
-            case MEMBER:
-                return isMember();
-            case ROLE:
-                return isRole();
-            case TEXTCHANNEL:
-                return isTextChannel();
-            case EMOTE:
-                return isEmote();
-            case EMOJI:
-                return isEmoji();
-        }
-        return false;
+    default boolean isOfType(Class<?> type) {
+        return ArgumentTypes.isType(type, this);
     }
 
     /**
@@ -280,18 +255,24 @@ public interface CommandArgument {
      *
      * @return {@code true} if this is a formatted {@link net.dv8tion.jda.core.entities.User} mention.
      */
-    default boolean isUser() {
-        return false;
-    }
+    boolean isUser();
+
+    /**
+     * Checks if this argument is a {@link net.dv8tion.jda.core.entities.User} mention that can be correctly resolved to a {@link net.dv8tion.jda.core.entities.User}.
+     * The result of this method is equivalent to checking this argument against a regex of {@code <@(!)?[0-9]+>} and then checking to see if {@link net.dv8tion.jda.core.JDA} has knowledge of a {@link net.dv8tion.jda.core.entities.User} with that id.
+     *
+     * If this method returns {@code false} and {@link com.github.breadmoirai.bot.framework.event.args.CommandArgument#isUser} returns {@code true}, this CommandArgument is can be cast to an  {@link com.github.breadmoirai.bot.framework.event.args.impl.InvalidMentionArgument InvalidMentionArgument}
+     *
+     * @return {@code true} if this is a formatted {@link net.dv8tion.jda.core.entities.User} mention.
+     */
+    boolean isValidUser();
 
     /**
      * If this is a {@link net.dv8tion.jda.core.entities.User} mention, will return the specified user.
      *
      * @return The {@link net.dv8tion.jda.core.entities.User} if found by JDA. Otherwise, {@code null}.
      */
-    default User getUser() {
-        return null;
-    }
+    User getUser();
 
     /**
      * First checks if the argument is a {@link net.dv8tion.jda.core.entities.User} mention.
@@ -301,11 +282,9 @@ public interface CommandArgument {
      * {@link net.dv8tion.jda.core.entities.Guild} to see if it is a
      * {@link net.dv8tion.jda.core.entities.Member}.
      *
-     * @return The {@link net.dv8tion.jda.core.entities.Member} if it can be resolved. Otherwise {@code null}
+     * @return {@code true} if the {@link net.dv8tion.jda.core.entities.Member} can be resolved to a valid JDA entity. Otherwise {@code false}
      */
-    default boolean isMember() {
-        return false;
-    }
+    boolean isValidMember();
 
     /**
      * The {@link net.dv8tion.jda.core.entities.Member} if it can be resolved.
@@ -313,9 +292,7 @@ public interface CommandArgument {
      * @return The {@link net.dv8tion.jda.core.entities.Member} if found, otherwise {@code null}
      */
     @Nullable
-    default Member getMember() {
-        return null;
-    }
+    Member getMember();
 
     /**
      * Searches for a member in the {@link net.dv8tion.jda.core.entities.Guild} using the argument as criteria.
@@ -340,14 +317,20 @@ public interface CommandArgument {
     List<Member> searchMembers();
 
     /**
+     * Checks if this argument is of the same format as a {@link net.dv8tion.jda.core.entities.Role} mention.
+     * The result of this method is equivalent to checking this argument against a regex of {@code <@&[0-9]+>}.
+     *
+     * @return {@code true} if this argument is formatted as a {@link net.dv8tion.jda.core.entities.Role} mention
+     */
+    boolean isRole();
+
+    /**
      * Checks if this argument is a {@link net.dv8tion.jda.core.entities.Role} mention.
      * The result of this method is equivalent to checking this argument against a regex of {@code <@&[0-9]+>} and checking if it can be correctly resolved to a {@link net.dv8tion.jda.core.entities.Role} within the {@link net.dv8tion.jda.core.entities.Guild}.
      *
      * @return {@code true} if this is a valid {@link net.dv8tion.jda.core.entities.Role} mention
      */
-    default boolean isRole() {
-        return false;
-    }
+    boolean isValidRole();
 
     /**
      * Attempts to resolve this argument to a {@link net.dv8tion.jda.core.entities.Role} in the {@link net.dv8tion.jda.core.entities.Guild}.
@@ -356,9 +339,7 @@ public interface CommandArgument {
      * @return {@link net.dv8tion.jda.core.entities.Role} if role is present within the {@link net.dv8tion.jda.core.entities.Guild}, otherwise {@code null}
      */
     @Nullable
-    default Role getRole() {
-        return null;
-    }
+    Role getRole();
 
     /**
      * Attempts to match this argument to a {@link net.dv8tion.jda.core.entities.Role} by name.
@@ -386,9 +367,17 @@ public interface CommandArgument {
      *
      * @return {@code true} if this is a correctly formatted {@link net.dv8tion.jda.core.entities.TextChannel} mention
      */
-    default boolean isTextChannel() {
-        return false;
-    }
+    boolean isTextChannel();
+
+    /**
+     * Checks if this argument is a {@link net.dv8tion.jda.core.entities.TextChannel} mention that can be correctly resolved to a {@link net.dv8tion.jda.core.entities.TextChannel}.
+     * The result of this method is equivalent to checking this argument against a regex of {@code <#[0-9]+>} and then checking to see if {@link net.dv8tion.jda.core.JDA} has knowledge of a {@link net.dv8tion.jda.core.entities.TextChannel} with that id.
+     *
+     * If this method returns {@code false} and {@link com.github.breadmoirai.bot.framework.event.args.CommandArgument#isTextChannel()} returns {@code true}, this CommandArgument is can be cast to an  {@link com.github.breadmoirai.bot.framework.event.args.impl.InvalidMentionArgument InvalidMentionArgument}
+     *
+     * @return {@code true} if this is a formatted {@link net.dv8tion.jda.core.entities.TextChannel} mention.
+     */
+    boolean isValidTextChannel();
 
     /**
      * Attempts to resolve this argument as a {@link net.dv8tion.jda.core.entities.TextChannel} mention to a {@link net.dv8tion.jda.core.entities.TextChannel} in the {@link net.dv8tion.jda.core.entities.Guild}.
@@ -398,9 +387,7 @@ public interface CommandArgument {
      * @return {@link net.dv8tion.jda.core.entities.Role} role is present within the {@link net.dv8tion.jda.core.entities.Guild}, otherwise {@code null}
      */
     @Nullable
-    default TextChannel getTextChannel() {
-        return null;
-    }
+    TextChannel getTextChannel();
 
     /**
      * Attempts to match this argument to a {@link net.dv8tion.jda.core.entities.TextChannel} by name.

@@ -1,10 +1,16 @@
 package com.github.breadmoirai.bot.framework.event.args;
 
+import com.github.breadmoirai.bot.util.Emoji;
+import gnu.trove.impl.Constants;
+import gnu.trove.map.TObjectIntMap;
+import gnu.trove.map.hash.TObjectIntHashMap;
 import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.entities.*;
 
 import java.util.*;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 /**
  * A list implementation for {@link com.github.breadmoirai.bot.framework.event.args.CommandArgument CommandArguments} that includes a specialized iterator. All arguments are in lowercase.
@@ -65,13 +71,23 @@ public class CommandArgumentList extends AbstractList<CommandArgument> {
     }
 
     /**
+     * Creates a {@link java.util.Spliterator} using {@link com.github.breadmoirai.bot.framework.event.args.CommandArgumentList#typeIterator} as the base.
+     *
+     * @param types the {@link java.util.Spliterator} will only see {@link com.github.breadmoirai.bot.framework.event.args.CommandArgument CommandArguments} that satisfy at least one of the types provided.
+     * @return a {@link java.util.Spliterator} of type CommandArgument.
+     */
+    public Spliterator<CommandArgument> spliterator(Class<?>... types) {
+        return Spliterators.spliteratorUnknownSize(typeIterator(types), Spliterator.IMMUTABLE | Spliterator.NONNULL | Spliterator.ORDERED);
+    }
+
+    /**
      * Attempts to match each {@link com.github.breadmoirai.bot.framework.event.args.CommandArgument} to a {@link com.github.breadmoirai.bot.framework.event.args.ArgumentType} in the order passed.
      * Will automatically fail if the amount of {@link com.github.breadmoirai.bot.framework.event.args.ArgumentType ArgumentTypes} provided is greater than the amount of arguments passed.
      *
      * @param types the types of which to look for.
-     * @return {@code true} if the {@link com.github.breadmoirai.bot.framework.event.args.ArgumentType ArgumentTypes} provided match the {@link com.github.breadmoirai.bot.framework.event.args.CommandArgument CommandArguments} in this list with {@link com.github.breadmoirai.bot.framework.event.args.CommandArgument#isOfType(ArgumentType)}
+     * @return {@code true} if the {@link com.github.breadmoirai.bot.framework.event.args.ArgumentType ArgumentTypes} provided match the {@link com.github.breadmoirai.bot.framework.event.args.CommandArgument CommandArguments} in this list with {@link com.github.breadmoirai.bot.framework.event.args.CommandArgument#isOfType(Class)}
      */
-    public boolean matchesType(ArgumentType... types) {
+    public boolean matchesType(Class<?>... types) {
         return matchesType(0, types);
     }
 
@@ -81,9 +97,9 @@ public class CommandArgumentList extends AbstractList<CommandArgument> {
      *
      * @param startIndex the starting index of which to start matching Types.
      * @param types      the types of which to look for.
-     * @return {@code true} if the {@link com.github.breadmoirai.bot.framework.event.args.ArgumentType ArgumentTypes} provided match the {@link com.github.breadmoirai.bot.framework.event.args.CommandArgument CommandArguments} in this list with {@link com.github.breadmoirai.bot.framework.event.args.CommandArgument#isOfType(ArgumentType)}
+     * @return {@code true} if the {@link com.github.breadmoirai.bot.framework.event.args.ArgumentType ArgumentTypes} provided match the {@link com.github.breadmoirai.bot.framework.event.args.CommandArgument CommandArguments} in this list with {@link com.github.breadmoirai.bot.framework.event.args.CommandArgument#isOfType(Class)}
      */
-    public boolean matchesType(int startIndex, ArgumentType... types) {
+    public boolean matchesType(int startIndex, Class<?>... types) {
         if (startIndex + types.length > size()) return false;
         for (int j = 0; j < types.length; j++) {
             if (!get(j + startIndex).isOfType(types[j])) return false;
@@ -97,7 +113,7 @@ public class CommandArgumentList extends AbstractList<CommandArgument> {
      * @param type The {@link com.github.breadmoirai.bot.framework.event.args.ArgumentType} to search for.
      * @return The index of the argument if found. If none of the arguments match the type provided, {@code -1} is returned.
      */
-    public int indexOfType(ArgumentType type) {
+    public int indexOfType(Class<?> type) {
         return indexOfType(0, type);
     }
 
@@ -108,26 +124,39 @@ public class CommandArgumentList extends AbstractList<CommandArgument> {
      * @param type       The {@link com.github.breadmoirai.bot.framework.event.args.ArgumentType} to search for.
      * @return The index of the argument if found. If none of the arguments match the type provided, {@code -1} is returned. If the {@code startIndex} provided is less than {@code 0}, it will be treated as {@code 0}. If the {@code startIndex} provided is greater than or equal to the size of this list, {@code -1} will be returned.
      */
-    public int indexOfType(int startIndex, ArgumentType type) {
+    public int indexOfType(int startIndex, Class<?> type) {
         for (int i = startIndex; i < size(); i++) {
             if (get(i).isOfType(type)) return i;
         }
         return -1;
     }
 
+    /**
+     * Takes all the arguments of {@code int} and {@code range} and creates an {@link java.util.stream.IntStream}.
+     *
+     * @return an ordered {@link java.util.stream.IntStream} in the order the user provided.
+     */
+    public IntStream ints() {
+        return stream(Integer.class, IntStream.class).flatMapToInt(CommandArgument::parseRange);
+    }
+
+    public Stream<CommandArgument> stream(Class<?>... types) {
+        return StreamSupport.stream(spliterator(types), false);
+    }
+
     public ArgumentIterator argumentIterator() {
         return new ArgumentIterator();
     }
 
-    public ArgumentTypeIterator typeIterator(ArgumentType... types) {
+    public ArgumentTypeIterator typeIterator(Class<?>... types) {
         return new ArgumentTypeIterator(types);
     }
 
-    private class ArgumentTypeIterator {
+    private class ArgumentTypeIterator implements Iterator<CommandArgument> {
         private int cursor;
-        private final ArgumentType[] types;
+        private final Class<?>[] types;
 
-        public ArgumentTypeIterator(ArgumentType[] types) {
+        public ArgumentTypeIterator(Class<?>[] types) {
             this.types = types;
         }
 
@@ -142,7 +171,7 @@ public class CommandArgumentList extends AbstractList<CommandArgument> {
          */
         public int nextIndex() {
             for (int i = cursor; i < size(); i++) {
-                for (ArgumentType type : types) {
+                for (Class<?> type : types) {
                     if (get(i).isOfType(type)) {
                         return i;
                     }
@@ -186,10 +215,10 @@ public class CommandArgumentList extends AbstractList<CommandArgument> {
 
     private class ArgumentIterator {
 
-        private final int[] cursor;
+        private final TObjectIntMap<Class<?>> cursorMap;
 
         ArgumentIterator() {
-            cursor = new int[ArgumentType.values().length];
+            cursorMap = new TObjectIntHashMap<>(Constants.DEFAULT_CAPACITY, Constants.DEFAULT_LOAD_FACTOR, 0);
         }
 
         /**
@@ -197,13 +226,12 @@ public class CommandArgumentList extends AbstractList<CommandArgument> {
          * subsequent call to {@link #next}. (Returns {@code -1} if the list
          * iterator is at the end of the list.)
          *
-         * @param type
          * @return the index of the element that would be returned by a
          * subsequent call to {@code next}, or {@code -1} if the list
          * iterator is at the end of the list
          */
-        public int nextIndex(ArgumentType type) {
-            final int cursor = this.cursor[type.ordinal()];
+        public int nextIndex(Class<?> type) {
+            final int cursor = this.cursorMap.putIfAbsent(type, 0);
             return indexOfType(cursor, type);
         }
 
@@ -217,7 +245,7 @@ public class CommandArgumentList extends AbstractList<CommandArgument> {
          * @return {@code true} if the list iterator has more elements when
          * traversing the list in the forward direction
          */
-        public boolean hasNext(ArgumentType type) {
+        public boolean hasNext(Class<?> type) {
             return nextIndex(type) != -1;
         }
 
@@ -228,209 +256,193 @@ public class CommandArgumentList extends AbstractList<CommandArgument> {
          * @param type
          * @return
          */
-        public CommandArgument next(ArgumentType type) {
+        public CommandArgument next(Class<?> type) {
             final int i = nextIndex(type);
             if (i == -1) throw new NoSuchElementException();
-            this.cursor[type.ordinal()] = i + 1;
+            this.cursorMap.put(type, i + 1);
             return get(i);
         }
 
-        public CommandArgument current(ArgumentType type) {
-            final int cursor = this.cursor[type.ordinal()];
+        public CommandArgument current(Class<?> type) {
+            final int cursor = this.cursorMap.putIfAbsent(type, 0);
             if (cursor <= 0 || cursor > size()) throw new NoSuchElementException();
             return get(cursor - 1);
         }
 
         public int nextIntegerIndex() {
-            return nextIndex(ArgumentType.INTEGER);
+            return nextIndex(Integer.TYPE);
         }
 
         public int nextLongIndex() {
-            return nextIndex(ArgumentType.LONG);
+            return nextIndex(Long.TYPE);
         }
 
         public int nextFloatIndex() {
-            return nextIndex(ArgumentType.FLOAT);
+            return nextIndex(Float.TYPE);
         }
 
         public int nextDoubleIndex() {
-            return nextIndex(ArgumentType.DOUBLE);
+            return nextIndex(Double.TYPE);
         }
 
         public int nextRangeIndex() {
-            return nextIndex(ArgumentType.RANGE);
-        }
-
-        public int nextHexIndex() {
-            return nextIndex(ArgumentType.HEX);
+            return nextIndex(IntStream.class);
         }
 
         public int nextUserIndex() {
-            return nextIndex(ArgumentType.USER);
+            return nextIndex(User.class);
         }
 
         public int nextMemberIndex() {
-            return nextIndex(ArgumentType.MEMBER);
+            return nextIndex(Member.class);
         }
 
         public int nextRoleIndex() {
-            return nextIndex(ArgumentType.ROLE);
+            return nextIndex(Role.class);
         }
 
         public int nextTextChannelIndex() {
-            return nextIndex(ArgumentType.TEXTCHANNEL);
+            return nextIndex(TextChannel.class);
         }
 
         public int nextEmoteIndex() {
-            return nextIndex(ArgumentType.EMOTE);
+            return nextIndex(Emote.class);
         }
 
         public int nextEmojiIndex() {
-            return nextIndex(ArgumentType.EMOJI);
+            return nextIndex(Emoji.class);
         }
-
+        
         public boolean hasNextInteger() {
-            return hasNext(ArgumentType.INTEGER);
+            return hasNext(Integer.TYPE);
         }
 
         public boolean hasNextLong() {
-            return hasNext(ArgumentType.LONG);
+            return hasNext(Long.TYPE);
         }
 
         public boolean hasNextFloat() {
-            return hasNext(ArgumentType.FLOAT);
+            return hasNext(Float.TYPE);
         }
 
         public boolean hasNextDouble() {
-            return hasNext(ArgumentType.DOUBLE);
+            return hasNext(Double.TYPE);
         }
 
         public boolean hasNextRange() {
-            return hasNext(ArgumentType.RANGE);
-        }
-
-        public boolean hasNextHex() {
-            return hasNext(ArgumentType.HEX);
+            return hasNext(IntStream.class);
         }
 
         public boolean hasNextUser() {
-            return hasNext(ArgumentType.USER);
+            return hasNext(User.class);
         }
 
         public boolean hasNextMember() {
-            return hasNext(ArgumentType.MEMBER);
+            return hasNext(Member.class);
         }
 
         public boolean hasNextRole() {
-            return hasNext(ArgumentType.ROLE);
+            return hasNext(Role.class);
         }
 
         public boolean hasNextTextChannel() {
-            return hasNext(ArgumentType.TEXTCHANNEL);
+            return hasNext(TextChannel.class);
         }
 
         public boolean hasNextEmote() {
-            return hasNext(ArgumentType.EMOTE);
+            return hasNext(Emote.class);
         }
 
         public boolean hasNextEmoji() {
-            return hasNext(ArgumentType.EMOJI);
+            return hasNext(Emoji.class);
         }
 
         public CommandArgument nextInteger() {
-            return next(ArgumentType.INTEGER);
+            return next(Integer.TYPE);
         }
 
         public CommandArgument nextLong() {
-            return next(ArgumentType.LONG);
+            return next(Long.TYPE);
         }
 
         public CommandArgument nextFloat() {
-            return next(ArgumentType.FLOAT);
+            return next(Float.TYPE);
         }
 
         public CommandArgument nextDouble() {
-            return next(ArgumentType.DOUBLE);
+            return next(Double.TYPE);
         }
 
         public CommandArgument nextRange() {
-            return next(ArgumentType.RANGE);
-        }
-
-        public CommandArgument nextHex() {
-            return next(ArgumentType.HEX);
+            return next(IntStream.class);
         }
 
         public CommandArgument nextUser() {
-            return next(ArgumentType.USER);
+            return next(User.class);
         }
 
         public CommandArgument nextMember() {
-            return next(ArgumentType.MEMBER);
+            return next(Member.class);
         }
 
         public CommandArgument nextRole() {
-            return next(ArgumentType.ROLE);
+            return next(Role.class);
         }
 
         public CommandArgument nextTextChannel() {
-            return next(ArgumentType.TEXTCHANNEL);
+            return next(TextChannel.class);
         }
 
         public CommandArgument nextEmote() {
-            return next(ArgumentType.EMOTE);
+            return next(Emote.class);
         }
 
         public CommandArgument nextEmoji() {
-            return next(ArgumentType.EMOJI);
+            return next(Emoji.class);
         }
 
         public CommandArgument currentInteger() {
-            return current(ArgumentType.INTEGER);
+            return current(Integer.TYPE);
         }
 
         public CommandArgument currentLong() {
-            return current(ArgumentType.LONG);
+            return current(Long.TYPE);
         }
 
         public CommandArgument currentFloat() {
-            return current(ArgumentType.FLOAT);
+            return current(Float.TYPE);
         }
 
         public CommandArgument currentDouble() {
-            return current(ArgumentType.DOUBLE);
+            return current(Double.TYPE);
         }
 
         public CommandArgument currentRange() {
-            return current(ArgumentType.RANGE);
-        }
-
-        public CommandArgument currentHex() {
-            return current(ArgumentType.HEX);
+            return current(IntStream.class);
         }
 
         public CommandArgument currentUser() {
-            return current(ArgumentType.USER);
+            return current(User.class);
         }
 
         public CommandArgument currentMember() {
-            return current(ArgumentType.MEMBER);
+            return current(Member.class);
         }
 
         public CommandArgument currentRole() {
-            return current(ArgumentType.ROLE);
+            return current(Role.class);
         }
 
         public CommandArgument currentTextChannel() {
-            return current(ArgumentType.TEXTCHANNEL);
+            return current(TextChannel.class);
         }
 
         public CommandArgument currentEmote() {
-            return current(ArgumentType.EMOTE);
+            return current(Emote.class);
         }
 
         public CommandArgument currentEmoji() {
-            return current(ArgumentType.EMOJI);
+            return current(Emoji.class);
         }
 
     }

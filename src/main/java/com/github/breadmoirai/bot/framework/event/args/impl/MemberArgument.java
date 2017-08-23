@@ -1,4 +1,4 @@
-package com.github.breadmoirai.bot.framework.event.args;
+package com.github.breadmoirai.bot.framework.event.args.impl;
 
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Guild;
@@ -21,7 +21,7 @@ public class MemberArgument extends UserArgument {
     }
 
     @Override
-    public boolean isMember() {
+    public boolean isValidMember() {
         return true;
     }
 

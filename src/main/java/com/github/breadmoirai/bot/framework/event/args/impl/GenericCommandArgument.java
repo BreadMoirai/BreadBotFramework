@@ -1,5 +1,6 @@
-package com.github.breadmoirai.bot.framework.event.args;
+package com.github.breadmoirai.bot.framework.event.args.impl;
 
+import com.github.breadmoirai.bot.framework.event.args.CommandArgument;
 import com.github.breadmoirai.bot.util.Emoji;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.*;
@@ -27,26 +28,6 @@ public class GenericCommandArgument implements CommandArgument {
     }
 
     @Override
-    public boolean isOfType(ArgumentType type) {
-        switch (type) {
-            case INTEGER:
-                return isInteger();
-            case LONG:
-                return isLong();
-            case FLOAT:
-            case DOUBLE:
-                return isFloat();
-            case RANGE:
-                return isRange();
-            case HEX:
-                return isHex();
-            case EMOJI:
-                return isEmoji();
-        }
-        return false;
-    }
-
-    @Override
     public String getArgument() {
         return arg;
     }
@@ -66,6 +47,32 @@ public class GenericCommandArgument implements CommandArgument {
         return channel;
     }
 
+    @Override
+    public boolean isUser() {
+        return false;
+    }
+
+    @Override
+    public boolean isValidUser() {
+        return false;
+    }
+
+    @Override
+    public User getUser() {
+        return null;
+    }
+
+    @Override
+    public boolean isValidMember() {
+        return false;
+    }
+
+    @Nullable
+    @Override
+    public Member getMember() {
+        return null;
+    }
+
     @NotNull
     @Override
     public Optional<Member> findMember() {
@@ -76,6 +83,22 @@ public class GenericCommandArgument implements CommandArgument {
     @Override
     public List<Member> searchMembers() {
         return memberStream().distinct().collect(Collectors.toList());
+    }
+
+    @Override
+    public boolean isRole() {
+        return false;
+    }
+
+    @Override
+    public boolean isValidRole() {
+        return false;
+    }
+
+    @Nullable
+    @Override
+    public Role getRole() {
+        return null;
     }
 
     private Stream<Member> memberStream() {
@@ -98,6 +121,22 @@ public class GenericCommandArgument implements CommandArgument {
     @Override
     public List<Role> searchRoles() {
         return roleStream().distinct().collect(Collectors.toList());
+    }
+
+    @Override
+    public boolean isTextChannel() {
+        return false;
+    }
+
+    @Override
+    public boolean isValidTextChannel() {
+        return false;
+    }
+
+    @Nullable
+    @Override
+    public TextChannel getTextChannel() {
+        return null;
     }
 
     private Stream<Role> roleStream() {

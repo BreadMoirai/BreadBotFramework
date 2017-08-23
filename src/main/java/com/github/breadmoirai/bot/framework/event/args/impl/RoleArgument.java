@@ -1,4 +1,4 @@
-package com.github.breadmoirai.bot.framework.event.args;
+package com.github.breadmoirai.bot.framework.event.args.impl;
 
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Guild;
@@ -22,6 +22,11 @@ public class RoleArgument extends MentionArgument {
 
     @Override
     public boolean isRole() {
+        return true;
+    }
+
+    @Override
+    public boolean isValidRole() {
         return true;
     }
 

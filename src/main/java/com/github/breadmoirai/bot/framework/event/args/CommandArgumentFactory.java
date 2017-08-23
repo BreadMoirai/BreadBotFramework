@@ -1,6 +1,7 @@
 package com.github.breadmoirai.bot.framework.event.args;
 
 import com.github.breadmoirai.bot.framework.event.Arguments;
+import com.github.breadmoirai.bot.framework.event.args.impl.*;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.entities.impl.EmoteImpl;
@@ -26,11 +27,13 @@ public class CommandArgumentFactory {
                         case '&':
                             i++;
                             String roleId = s.substring(i, s.length() - 1);
+
                             if (Arguments.isLong(roleId)) {
-                                long idlong = Long.parseLong(roleId);
-                                Role role = guild.getRoleById(idlong);
+                                long idLong = Long.parseLong(roleId);
+                                Role role = guild.getRoleById(idLong);
                                 if (role != null)
                                     return new RoleArgument(jda, guild, channel, s, role);
+                                return new InvalidRoleArgument(jda, guild, channel, s, idLong);
                             } else break;
                         case '!':
                             i++;
@@ -44,6 +47,7 @@ public class CommandArgumentFactory {
                                 User user = jda.getUserById(idLong);
                                 if (user != null)
                                     return new UserArgument(jda, guild, channel, s, user);
+                                return new InvalidUserArgument(jda, guild, channel, s, idLong);
                             }
                     }
                 }
@@ -55,6 +59,7 @@ public class CommandArgumentFactory {
                         TextChannel textChannel = guild.getTextChannelById(idLong);
                         if (textChannel != null)
                             return new TextChannelArgument(jda, guild, channel, s, textChannel);
+                        return new InvalidTextChannelArgument(jda, guild, channel, s, idLong);
                     }
                 }
                 break;

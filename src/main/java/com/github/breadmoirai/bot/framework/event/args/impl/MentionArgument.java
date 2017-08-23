@@ -1,5 +1,6 @@
-package com.github.breadmoirai.bot.framework.event.args;
+package com.github.breadmoirai.bot.framework.event.args.impl;
 
+import com.github.breadmoirai.bot.framework.event.args.CommandArgument;
 import com.github.breadmoirai.bot.util.Emoji;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.*;
@@ -11,7 +12,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.IntStream;
 
-public class MentionArgument implements CommandArgument{
+public class MentionArgument implements CommandArgument {
 
     private final JDA jda;
     private final Guild guild;
@@ -23,23 +24,6 @@ public class MentionArgument implements CommandArgument{
         this.guild = guild;
         this.channel = channel;
         this.arg = arg;
-    }
-
-    @Override
-    public boolean isOfType(ArgumentType type) {
-        switch (type) {
-            case USER:
-                return isUser();
-            case MEMBER:
-                return isMember();
-            case ROLE:
-                return isRole();
-            case TEXTCHANNEL:
-                return isTextChannel();
-            case EMOTE:
-                return isEmote();
-        }
-        return false;
     }
 
     @Override
@@ -134,12 +118,17 @@ public class MentionArgument implements CommandArgument{
     }
 
     @Override
+    public boolean isValidUser() {
+        return false;
+    }
+
+    @Override
     public User getUser() {
         return null;
     }
 
     @Override
-    public boolean isMember() {
+    public boolean isValidMember() {
         return false;
     }
 
@@ -166,6 +155,11 @@ public class MentionArgument implements CommandArgument{
         return false;
     }
 
+    @Override
+    public boolean isValidRole() {
+        return false;
+    }
+
     @Nullable
     @Override
     public Role getRole() {
@@ -186,6 +180,11 @@ public class MentionArgument implements CommandArgument{
 
     @Override
     public boolean isTextChannel() {
+        return false;
+    }
+
+    @Override
+    public boolean isValidTextChannel() {
         return false;
     }
 
