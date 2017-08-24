@@ -86,7 +86,11 @@ public interface CommandArgument {
      * @return {@code true} if this argument is of the type passed.
      */
     default boolean isOfType(Class<?> type) {
-        return ArgumentTypes.isType(type, this);
+        return ArgumentTypes.isOfType(type, this);
+    }
+
+    default <T> T getAsType(Class<T> type) {
+        return ArgumentTypes.getAsType(type, this);
     }
 
     /**

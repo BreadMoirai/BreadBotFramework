@@ -68,7 +68,7 @@ public class CommandAdapter extends CommandWrapper implements CommandHandle {
     public boolean execute(Object parent, CommandEvent event, int subKey) throws Throwable {
         final Object commandObj = supplier.get();
         if (commandObj == null) return false;
-        if (hasClassKey) {
+        if (!hasClassKey) {
             return handleMap.get(event.getKey().toLowerCase()).execute(commandObj, event, 0);
         } else {
             if (event.getArgumentCount() >= 1) {

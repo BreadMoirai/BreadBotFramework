@@ -157,16 +157,22 @@ public class SamuraiClientImpl implements SamuraiClient {
         @SubscribeEvent
         @Override
         public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
+            System.out.println("received");
             onGuildMessageEvent(event, event.getMessage());
         }
 
         @SubscribeEvent
         @Override
         public void onGuildMessageUpdate(GuildMessageUpdateEvent event) {
+
+            if (event.getMessage().isPinned()) return;
+            System.out.println("updated");
             onGuildMessageEvent(event, event.getMessage());
         }
 
+
         private void onGuildMessageEvent(GenericGuildMessageEvent event, Message message) {
+            System.out.println("generic");
             if (preProcessPredicate.test(message)) {
                 final CommandEvent commandEvent = eventFactory.createEvent(event, message, SamuraiClientImpl.this);
                 if (commandEvent != null) {

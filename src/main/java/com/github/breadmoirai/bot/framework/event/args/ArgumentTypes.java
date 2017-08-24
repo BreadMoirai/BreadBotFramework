@@ -70,7 +70,7 @@ public enum ArgumentTypes {
         map.put(type, new ArgumentTypeImpl<>(isType, getAsType));
     }
 
-    public static boolean isType(Class<?> type, CommandArgument arg) {
+    public static boolean isOfType(Class<?> type, CommandArgument arg) {
         return map.getOrDefault(type, voidType).test(arg);
     }
 

@@ -47,7 +47,7 @@ public class Commands {
         if (commandMethod != null) {
             try {
                 // todo maybe map asSpreader in methodMapping instead of during invocation? check other use cases
-                final Object invoke = commandMethod.getHandle().asSpreader(Object.class, args.length).invoke(command, event, args);
+                final Object invoke = commandMethod.getHandle().asSpreader(Object[].class, args.length).invoke(command, event, args);
                 if (invoke instanceof Response) {
                     final Response response = (Response) invoke;
                     response.base(event);

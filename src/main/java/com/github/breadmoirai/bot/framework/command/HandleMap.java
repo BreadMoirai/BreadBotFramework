@@ -15,10 +15,11 @@
 package com.github.breadmoirai.bot.framework.command;
 
 import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.Map;
 
 public class HandleMap {
-    private Map<String, CommandHandle> handles;
+    private Map<String, CommandHandle> handles = new HashMap<>();
 
     public HandleMap(Class<?> commandClass) throws IllegalAccessException, NoSuchMethodException {
         for (Class<?> inner : commandClass.getDeclaredClasses()) {

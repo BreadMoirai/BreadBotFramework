@@ -48,10 +48,6 @@ public class CommandMethodHandle implements CommandHandle {
         return handle;
     }
 
-    public boolean isAnnotationPresent(Class<? extends Annotation> annotation) {
-        return method.isAnnotationPresent(annotation);
-    }
-
     @Override
     public boolean execute(Object parent, CommandEvent event, int subKey) throws Throwable {
         if (params == null) {
@@ -69,7 +65,7 @@ public class CommandMethodHandle implements CommandHandle {
         }
         final SamuraiClient client = event.getClient();
         final Object[] modules = params.stream().map(client::getModule).toArray();
-        final Object invoke = getHandle().asSpreader(Object.class, modules.length).invoke(parent, event, modules);
+        final Object invoke = getHandle().asSpreader(Object[].class, modules.length).invoke(parent, event, modules);
         if (invoke instanceof Response){
             final Response r = (Response) invoke;
             r.base(event);

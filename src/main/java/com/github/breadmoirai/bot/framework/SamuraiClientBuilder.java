@@ -33,10 +33,7 @@ import net.dv8tion.jda.core.hooks.AnnotatedEventManager;
 import net.dv8tion.jda.core.hooks.IEventManager;
 import net.dv8tion.jda.core.hooks.InterfacedEventManager;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -130,8 +127,8 @@ public class SamuraiClientBuilder {
         return this;
     }
 
-    public SamuraiClientBuilder registerCommand(Class<? extends ICommand> commandClass) {
-        configure(ceb -> ceb.registerCommand(commandClass));
+    public SamuraiClientBuilder registerCommand(Object o) {
+        configure(ceb -> ceb.registerCommand(o));
         return this;
     }
 

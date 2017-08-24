@@ -22,7 +22,7 @@ plugins {
 apply plugin: 'com.github.breadmoirai.github-release'
 
 group 'com.github.breadmoirai'
-version '0.5.0'
+version '0.5.TEST_11'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -34,17 +34,17 @@ repositories {
 
 dependencies {
     //Discord Java Library
-    compileOnly 'net.dv8tion:JDA:3.2.0_241'
+    compileOnly 'net.dv8tion:JDA:3.2.0_248'
 
     //Database
-    compile 'org.jdbi:jdbi3:3.0.0-beta1'
-    compile 'org.jdbi:jdbi3-parent:3.0.0-beta1'
-    compile 'org.jdbi:jdbi3-sqlobject:3.0.0-beta1'
+//    compile 'org.jdbi:jdbi3:3.0.0-beta1'
+//    compile 'org.jdbi:jdbi3-parent:3.0.0-beta1'
+//    compile 'org.jdbi:jdbi3-sqlobject:3.0.0-beta1'
 
     //slf4j
-//    compile 'org.slf4j:slf4j-api:1.8.0-alpha2'
-    compile 'com.squareup.okhttp3:okhttp:3.8.1'
-    compile 'com.j256.simplemagic:simplemagic:1.10'
+    compile 'org.slf4j:slf4j-api:1.8.0-alpha2'
+//    compile 'com.squareup.okhttp3:okhttp:3.8.1'
+//    compile 'com.j256.simplemagic:simplemagic:1.10'
     //Utility
     compile 'org.reflections:reflections:0.9.10'
     //compile 'com.jagrosh:JDA-Utilities:1.2'
@@ -61,51 +61,9 @@ dependencies {
 }
 
 githubRelease {
-    token = getProperty('github.token').toString()
+    token = getProperty('github.key').toString()
     String version = project.version
-    body = """
-## Adding as Dependency
-### Gradle
-
-\tallprojects {
-\t\trepositories {
-\t\t\t...
-\t\t\tmaven { url 'https://dl.bintray.com/breadmoirai/maven'}
-\t\t}
-\t}
-
-\tdependencies {
-\t\tcompile '${project.group}:${project.name}:${project.version}'
-\t}
-    
-### Maven
-\t<repositories>
-\t\t<repository>
-\t\t\t<snapshots>
-\t\t\t\t<enabled>false</enabled>
-\t\t\t</snapshots>
-\t\t\t<id>bintray-breadmoirai-maven</id>
-\t\t\t<name>bintray</name>
-\t\t\t<url>http://dl.bintray.com/breadmoirai/maven</url>
-\t\t</repository>
-\t</repositories>
-\t<pluginRepositories>
-\t\t<pluginRepository>
-\t\t\t<snapshots>
-\t\t\t\t<enabled>false</enabled>
-\t\t\t</snapshots>
-\t\t\t<id>bintray-breadmoirai-maven</id>
-\t\t\t<name>bintray-plugins</name>
-\t\t\t<url>http://dl.bintray.com/breadmoirai/maven</url>
-\t\t</pluginRepository>
-\t</pluginRepositories>
-
-\t<dependency>
-\t\t<groupId>${project.group}</groupId>
-\t\t<artifactId>${project.name}</artifactId>
-\t\t<version>${project.version}</version>
-\t\t<type>pom</type>
-\t</dependency>"""
+    body = "\n## Adding as Dependency\n### Gradle\n\n\tallprojects {\n\t\trepositories {\n\t\t\t...\n\t\t\tmaven { url 'https://dl.bintray.com/breadmoirai/maven'}\n\t\t}\n\t}\n\n\tdependencies {\n\t\tcompile '$project.group:$project.name:$project.version\n\t}\n\n### Maven\n\t<repositories>\n\t\t<repository>\n\t\t\t<snapshots>\n\t\t\t\t<enabled>false</enabled>\n\t\t\t</snapshots>\n\t\t\t<id>bintray-breadmoirai-maven</id>\n\t\t\t<name>bintray</name>\n\t\t\t<url>http://dl.bintray.com/breadmoirai/maven</url>\n\t\t</repository>\n\t</repositories>\n\t<pluginRepositories>\n\t\t<pluginRepository>\n\t\t\t<snapshots>\n\t\t\t\t<enabled>false</enabled>\n\t\t\t</snapshots>\n\t\t\t<id>bintray-breadmoirai-maven</id>\n\t\t\t<name>bintray-plugins</name>\n\t\t\t<url>http://dl.bintray.com/breadmoirai/maven</url>\n\t\t</pluginRepository>\n\t</pluginRepositories>\n\n\t<dependency>\n\t\t<groupId>$project.group</groupId>\n\t\t<artifactId>$project.name</artifactId>\n\t\t<version>$project.version</version>\n\t\t<type>pom</type>\n\t</dependency>"
     prerelease = true
     FilenameFilter filter = { dir, file -> file.contains(version) }
     releaseAssets = jar.destinationDir.listFiles filter
@@ -170,6 +128,7 @@ task javadocDir(type: Copy) {
 }
 
 task publishJavadoc(type: Exec) {
+    group 'publishing'
     dependsOn javadoc
     dependsOn javadocDir
     """
