@@ -5,7 +5,6 @@ import com.github.breadmoirai.bot.util.Emoji;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.*;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.List;
@@ -122,6 +121,7 @@ public class MentionArgument implements CommandArgument {
         return false;
     }
 
+    @NotNull
     @Override
     public User getUser() {
         return null;
@@ -132,7 +132,7 @@ public class MentionArgument implements CommandArgument {
         return false;
     }
 
-    @Nullable
+    @NotNull
     @Override
     public Member getMember() {
         return null;
@@ -160,7 +160,7 @@ public class MentionArgument implements CommandArgument {
         return false;
     }
 
-    @Nullable
+    @NotNull
     @Override
     public Role getRole() {
         return null;
@@ -188,7 +188,7 @@ public class MentionArgument implements CommandArgument {
         return false;
     }
 
-    @Nullable
+    @NotNull
     @Override
     public TextChannel getTextChannel() {
         return null;
@@ -223,7 +223,7 @@ public class MentionArgument implements CommandArgument {
         return false;
     }
 
-    @Nullable
+    @NotNull
     @Override
     public Emote getEmote() {
         return null;
@@ -234,7 +234,7 @@ public class MentionArgument implements CommandArgument {
         return false;
     }
 
-    @Nullable
+    @NotNull
     @Override
     public Emoji getEmoji() {
         return null;

@@ -4,6 +4,7 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
+import org.jetbrains.annotations.NotNull;
 
 public class UserArgument extends MentionArgument {
 
@@ -24,6 +25,7 @@ public class UserArgument extends MentionArgument {
         return true;
     }
 
+    @NotNull
     @Override
     public User getUser() {
         return user;

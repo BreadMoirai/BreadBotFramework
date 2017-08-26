@@ -1,8 +1,8 @@
 package com.github.breadmoirai.bot.framework.command;
 
-import com.github.breadmoirai.bot.framework.event.args.ArgumentType;
+import com.github.breadmoirai.bot.framework.event.args.ArgumentMapper;
 
 public class CommandInfo {
     String[] keys;
-    ArgumentType[] types;
+    ArgumentMapper[] types;
 }

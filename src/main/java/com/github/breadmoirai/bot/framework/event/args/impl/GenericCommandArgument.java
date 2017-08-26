@@ -1,11 +1,9 @@
 package com.github.breadmoirai.bot.framework.event.args.impl;
 
 import com.github.breadmoirai.bot.framework.event.args.CommandArgument;
-import com.github.breadmoirai.bot.util.Emoji;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.*;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Optional;
@@ -58,19 +56,8 @@ public class GenericCommandArgument implements CommandArgument {
     }
 
     @Override
-    public User getUser() {
-        return null;
-    }
-
-    @Override
     public boolean isValidMember() {
         return false;
-    }
-
-    @Nullable
-    @Override
-    public Member getMember() {
-        return null;
     }
 
     @NotNull
@@ -93,12 +80,6 @@ public class GenericCommandArgument implements CommandArgument {
     @Override
     public boolean isValidRole() {
         return false;
-    }
-
-    @Nullable
-    @Override
-    public Role getRole() {
-        return null;
     }
 
     private Stream<Member> memberStream() {
@@ -133,11 +114,6 @@ public class GenericCommandArgument implements CommandArgument {
         return false;
     }
 
-    @Nullable
-    @Override
-    public TextChannel getTextChannel() {
-        return null;
-    }
 
     private Stream<Role> roleStream() {
         final String arg = getArgument().toLowerCase();
@@ -179,23 +155,22 @@ public class GenericCommandArgument implements CommandArgument {
         return voiceChannelStream().distinct().collect(Collectors.toList());
     }
 
+    @Override
+    public boolean isEmote() {
+        return false;
+    }
+
+    @Override
+    public boolean isEmoji() {
+        return false;
+    }
+
     private Stream<VoiceChannel> voiceChannelStream() {
         final String arg = getArgument().toLowerCase();
         List<VoiceChannel> channels = getGuild().getVoiceChannels();
         Stream<VoiceChannel> exact = channels.stream().filter(channel -> channel.getName().equalsIgnoreCase(arg));
         Stream<VoiceChannel> contains = channels.stream().filter(channel -> channel.getName().toLowerCase().contains(arg));
         return Stream.concat(exact, contains);
-    }
-
-    @Override
-    public boolean isEmoji() {
-        return getEmoji() != null;
-    }
-
-    @Nullable
-    @Override
-    public Emoji getEmoji() {
-        return Emoji.find(getArgument());
     }
 
     @Override

@@ -18,8 +18,8 @@ import com.github.breadmoirai.bot.framework.event.Arguments;
 import com.github.breadmoirai.bot.util.Emoji;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.*;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Optional;
@@ -77,9 +77,12 @@ public interface CommandArgument {
         return false;
     }
 
+
+//    Checks if this argument is of the type given. If this is a formatted mention, i.e. {@link com.github.breadmoirai.bot.framework.event.args.CommandArgument#isMention isMention()} would return {@code true}, {@code notnull} is also {@code true}, this will also check if the argument can correctly be resolved to a valid {@link net.dv8tion.jda.core.JDA} entity or primitive or custom Object registered with {@link com.github.breadmoirai.bot.framework.event.args.ArgumentTypes}.
+//            * <p>If this argument is an {@link net.dv8tion.jda.core.entities.Emote}, the method will return {@code true}. However, if the {@link net.dv8tion.jda.core.entities.Emote} is not a valid {@link net.dv8tion.jda.core.JDA} entity, it will NOT be reflected in this method. Instead the object returned by {@link com.github.breadmoirai.bot.framework.event.args.CommandArgument#getEmote} will return an {@link net.dv8tion.jda.core.entities.Emote} with {@link net.dv8tion.jda.core.entities.IFakeable#isFake() isFake()} returning {@code true}
+
     /**
-     * Checks if this argument is of the type given. If this is a formatted mention, i.e. {@link com.github.breadmoirai.bot.framework.event.args.CommandArgument#isMention isMention()} would return {@code true}, {@code notnull} is also {@code true}, this will also check if the argument can correctly be resolved to a valid {@link net.dv8tion.jda.core.JDA} entity or primitive or custom Object registered with {@link com.github.breadmoirai.bot.framework.event.args.ArgumentTypes}.
-     * <p>If this argument is an {@link net.dv8tion.jda.core.entities.Emote}, the method will return {@code true}. However, if the {@link net.dv8tion.jda.core.entities.Emote} is not a valid {@link net.dv8tion.jda.core.JDA} entity, it will NOT be reflected in this method. Instead the object returned by {@link com.github.breadmoirai.bot.framework.event.args.CommandArgument#getEmote} will return an {@link net.dv8tion.jda.core.entities.Emote} with {@link net.dv8tion.jda.core.entities.IFakeable#isFake() isFake()} returning {@code true}
+     * @see com.github.breadmoirai.bot.framework.event.args.ArgumentTypes#isOfType(java.lang.Class, com.github.breadmoirai.bot.framework.event.args.CommandArgument)
      *
      * @param type The type of argument to test for.
      *
@@ -89,7 +92,19 @@ public interface CommandArgument {
         return ArgumentTypes.isOfType(type, this);
     }
 
-    default <T> T getAsType(Class<T> type) {
+    /**
+     * @see com.github.breadmoirai.bot.framework.event.args.ArgumentTypes#isOfType(java.lang.Class, com.github.breadmoirai.bot.framework.event.args.CommandArgument, int)
+     *
+     * @param type the argument type to test for
+     * @param flags testing flags. {@link ArgumentFlags}
+     *
+     * @return {@code true} if this argument is of the type passed.
+     */
+    default boolean isOfType(Class<?> type, int flags) {
+        return ArgumentTypes.isOfType(type, this, flags);
+    }
+
+    default <T> Optional<T> getAsType(Class<T> type) {
         return ArgumentTypes.getAsType(type, this);
     }
 
@@ -245,11 +260,7 @@ public interface CommandArgument {
      */
     default int parseIntFromHex() {
         String s = getArgument();
-        if (s.startsWith("#")) {
-            s = s.substring(1);
-        } else if (s.startsWith("0x") || s.startsWith("0X")) {
-            s = s.substring(2);
-        }
+        s = Arguments.stripHexPrefix(s);
         return Integer.parseInt(s, 16);
     }
 
@@ -267,16 +278,21 @@ public interface CommandArgument {
      *
      * If this method returns {@code false} and {@link com.github.breadmoirai.bot.framework.event.args.CommandArgument#isUser} returns {@code true}, this CommandArgument is can be cast to an  {@link com.github.breadmoirai.bot.framework.event.args.impl.InvalidMentionArgument InvalidMentionArgument}
      *
-     * @return {@code true} if this is a formatted {@link net.dv8tion.jda.core.entities.User} mention.
+     * @return {@code true} if this is a formatted {@link net.dv8tion.jda.core.entities.User} mention that can be resolved to an entity.
      */
     boolean isValidUser();
 
     /**
      * If this is a {@link net.dv8tion.jda.core.entities.User} mention, will return the specified user.
      *
-     * @return The {@link net.dv8tion.jda.core.entities.User} if found by JDA. Otherwise, {@code null}.
+     * @return The {@link net.dv8tion.jda.core.entities.User} if found by JDA.
+     *
+     * @throws UnsupportedOperationException if {@link com.github.breadmoirai.bot.framework.event.args.CommandArgument#isValidUser()} would return {@code false}
      */
-    User getUser();
+    @NotNull
+    default User getUser() {
+        throw new UnsupportedOperationException("This argument is not a User");
+    }
 
     /**
      * First checks if the argument is a {@link net.dv8tion.jda.core.entities.User} mention.
@@ -293,10 +309,14 @@ public interface CommandArgument {
     /**
      * The {@link net.dv8tion.jda.core.entities.Member} if it can be resolved.
      *
-     * @return The {@link net.dv8tion.jda.core.entities.Member} if found, otherwise {@code null}
+     * @return The {@link net.dv8tion.jda.core.entities.Member} if found.
+     *
+     * @throws UnsupportedOperationException if {@link CommandArgument#isValidMember()} would return {@code false}
      */
-    @Nullable
-    Member getMember();
+    @NotNull
+    default Member getMember() {
+        throw new UnsupportedOperationException("This argument is not a member");
+    }
 
     /**
      * Searches for a member in the {@link net.dv8tion.jda.core.entities.Guild} using the argument as criteria.
@@ -332,7 +352,7 @@ public interface CommandArgument {
      * Checks if this argument is a {@link net.dv8tion.jda.core.entities.Role} mention.
      * The result of this method is equivalent to checking this argument against a regex of {@code <@&[0-9]+>} and checking if it can be correctly resolved to a {@link net.dv8tion.jda.core.entities.Role} within the {@link net.dv8tion.jda.core.entities.Guild}.
      *
-     * @return {@code true} if this is a valid {@link net.dv8tion.jda.core.entities.Role} mention
+     * @return {@code true} if this is a valid {@link net.dv8tion.jda.core.entities.Role} mention that can be resolved to a valid JDA entity.
      */
     boolean isValidRole();
 
@@ -341,9 +361,13 @@ public interface CommandArgument {
      * If {@link com.github.breadmoirai.bot.framework.event.args.CommandArgument#isRole isRole()} would return true, it is guaranteed that this method returns a {@code non-null} value.
      *
      * @return {@link net.dv8tion.jda.core.entities.Role} if role is present within the {@link net.dv8tion.jda.core.entities.Guild}, otherwise {@code null}
+     *
+     * @throws UnsupportedOperationException if {@link com.github.breadmoirai.bot.framework.event.args.CommandArgument#isValidRole()} would return {@code false}
      */
-    @Nullable
-    Role getRole();
+    @NotNull
+    default Role getRole() {
+        throw new UnsupportedOperationException("This argument is not a Role");
+    }
 
     /**
      * Attempts to match this argument to a {@link net.dv8tion.jda.core.entities.Role} by name.
@@ -379,7 +403,7 @@ public interface CommandArgument {
      *
      * If this method returns {@code false} and {@link com.github.breadmoirai.bot.framework.event.args.CommandArgument#isTextChannel()} returns {@code true}, this CommandArgument is can be cast to an  {@link com.github.breadmoirai.bot.framework.event.args.impl.InvalidMentionArgument InvalidMentionArgument}
      *
-     * @return {@code true} if this is a formatted {@link net.dv8tion.jda.core.entities.TextChannel} mention.
+     * @return {@code true} if this is a formatted {@link net.dv8tion.jda.core.entities.TextChannel} mention and can be correctly resolved to a JDA entity.
      */
     boolean isValidTextChannel();
 
@@ -388,10 +412,14 @@ public interface CommandArgument {
      *
      * <p>If {@link com.github.breadmoirai.bot.framework.event.args.CommandArgument#isTextChannel isTextChannel()} would return true, it is guaranteed that this method returns a {@code non-null} value.
      *
-     * @return {@link net.dv8tion.jda.core.entities.Role} role is present within the {@link net.dv8tion.jda.core.entities.Guild}, otherwise {@code null}
+     * @return {@link net.dv8tion.jda.core.entities.TextChannel} if can be resolved to a JDA entity
+     *
+     * @throws UnsupportedOperationException if {@link com.github.breadmoirai.bot.framework.event.args.CommandArgument#isValidTextChannel()} would return {@code false}
      */
-    @Nullable
-    TextChannel getTextChannel();
+    @NotNull
+    default TextChannel getTextChannel() {
+        throw new UnsupportedOperationException("This argument is not a TextChannel");
+    }
 
     /**
      * Attempts to match this argument to a {@link net.dv8tion.jda.core.entities.TextChannel} by name.
@@ -434,9 +462,7 @@ public interface CommandArgument {
      *
      * @return {@code true} if this argument matches the format required
      */
-    default boolean isEmote() {
-        return false;
-    }
+    boolean isEmote();
 
     /**
      * If {@link #isEmote()} would return {@code true}, this method will always return a {@code not-null} value, {@code null} otherwise.
@@ -446,10 +472,12 @@ public interface CommandArgument {
      * <p>If {@link com.github.breadmoirai.bot.framework.event.args.CommandArgument#isEmote isEmote()} would return true, it is guaranteed that this method returns a {@code non-null} value.
      *
      * @return An {@link net.dv8tion.jda.core.entities.Emote} if the formatting is correct. Otherwise {@code null}.
+     *
+     * @throws UnsupportedOperationException if {@link com.github.breadmoirai.bot.framework.event.args.CommandArgument#isEmote()} would return {@code false}
      */
-    @Nullable
+    @NotNull
     default Emote getEmote() {
-        return null;
+        throw new UnsupportedOperationException("This argument is not an Emote");
     }
 
     /**
@@ -466,8 +494,12 @@ public interface CommandArgument {
     /**
      * Attempts to find a matching {@link com.github.breadmoirai.bot.util.Emoji} with {@link com.github.breadmoirai.bot.util.Emoji#find(String)}
      *
-     * @return The {@link com.github.breadmoirai.bot.util.Emoji} if matched, null otherwise.
+     * @return The {@link com.github.breadmoirai.bot.util.Emoji} if matched.
+     *
+     * @throws UnsupportedOperationException if {@link com.github.breadmoirai.bot.framework.event.args.CommandArgument#isEmoji()} would return {@code false}
      */
-    @Nullable
-    Emoji getEmoji();
+    @NotNull
+    default Emoji getEmoji() {
+        throw new UnsupportedOperationException("This argument is not an Emoji");
+    }
 }

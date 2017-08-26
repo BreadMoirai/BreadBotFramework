@@ -5,7 +5,6 @@ import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.TextChannel;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.List;
@@ -25,7 +24,7 @@ public class MemberArgument extends UserArgument {
         return true;
     }
 
-    @Nullable
+    @NotNull
     @Override
     public Member getMember() {
         return member;

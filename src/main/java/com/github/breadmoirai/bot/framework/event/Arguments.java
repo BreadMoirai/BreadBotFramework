@@ -1,5 +1,7 @@
 package com.github.breadmoirai.bot.framework.event;
 
+import org.jetbrains.annotations.Contract;
+
 import java.util.regex.Pattern;
 import java.util.stream.IntStream;
 
@@ -231,5 +233,16 @@ public class Arguments {
             if (!Character.isDigit(c) && !Character.isAlphabetic(c) && c != '-' && c != '_') return false;
         }
         return true;
+    }
+
+    @Contract("null -> null; !null -> !null")
+    public static String stripHexPrefix(String s) {
+        if (s == null) return null;
+        if (s.startsWith("#")) {
+            return s.substring(1);
+        } else if (s.startsWith("0x") || s.startsWith("0X")) {
+            return s.substring(2);
+        }
+        return s;
     }
 }

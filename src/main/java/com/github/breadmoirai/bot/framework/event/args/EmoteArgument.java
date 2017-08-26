@@ -5,7 +5,7 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Emote;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.TextChannel;
-import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 public class EmoteArgument extends MentionArgument {
 
@@ -21,7 +21,7 @@ public class EmoteArgument extends MentionArgument {
         return true;
     }
 
-    @Nullable
+    @NotNull
     @Override
     public Emote getEmote() {
         return emote;

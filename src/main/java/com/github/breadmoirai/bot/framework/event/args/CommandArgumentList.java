@@ -81,23 +81,23 @@ public class CommandArgumentList extends AbstractList<CommandArgument> {
     }
 
     /**
-     * Attempts to match each {@link com.github.breadmoirai.bot.framework.event.args.CommandArgument} to a {@link com.github.breadmoirai.bot.framework.event.args.ArgumentType} in the order passed.
-     * Will automatically fail if the amount of {@link com.github.breadmoirai.bot.framework.event.args.ArgumentType ArgumentTypes} provided is greater than the amount of arguments passed.
+     * Attempts to match each {@link com.github.breadmoirai.bot.framework.event.args.CommandArgument} to a {@link ArgumentMapper} in the order passed.
+     * Will automatically fail if the amount of {@link ArgumentMapper ArgumentTypes} provided is greater than the amount of arguments passed.
      *
      * @param types the types of which to look for.
-     * @return {@code true} if the {@link com.github.breadmoirai.bot.framework.event.args.ArgumentType ArgumentTypes} provided match the {@link com.github.breadmoirai.bot.framework.event.args.CommandArgument CommandArguments} in this list with {@link com.github.breadmoirai.bot.framework.event.args.CommandArgument#isOfType(Class)}
+     * @return {@code true} if the {@link ArgumentMapper ArgumentTypes} provided match the {@link com.github.breadmoirai.bot.framework.event.args.CommandArgument CommandArguments} in this list with {@link com.github.breadmoirai.bot.framework.event.args.CommandArgument#isOfType(Class)}
      */
     public boolean matchesType(Class<?>... types) {
         return matchesType(0, types);
     }
 
     /**
-     * Attempts to match each {@link com.github.breadmoirai.bot.framework.event.args.CommandArgument} to a {@link com.github.breadmoirai.bot.framework.event.args.ArgumentType} in the order passed.
-     * Will automatically fail if the amount of {@link com.github.breadmoirai.bot.framework.event.args.ArgumentType ArgumentTypes} provided is greater than the amount of arguments passed.
+     * Attempts to match each {@link com.github.breadmoirai.bot.framework.event.args.CommandArgument} to a {@link ArgumentMapper} in the order passed.
+     * Will automatically fail if the amount of {@link ArgumentMapper ArgumentTypes} provided is greater than the amount of arguments passed.
      *
      * @param startIndex the starting index of which to start matching Types.
      * @param types      the types of which to look for.
-     * @return {@code true} if the {@link com.github.breadmoirai.bot.framework.event.args.ArgumentType ArgumentTypes} provided match the {@link com.github.breadmoirai.bot.framework.event.args.CommandArgument CommandArguments} in this list with {@link com.github.breadmoirai.bot.framework.event.args.CommandArgument#isOfType(Class)}
+     * @return {@code true} if the {@link ArgumentMapper ArgumentTypes} provided match the {@link com.github.breadmoirai.bot.framework.event.args.CommandArgument CommandArguments} in this list with {@link com.github.breadmoirai.bot.framework.event.args.CommandArgument#isOfType(Class)}
      */
     public boolean matchesType(int startIndex, Class<?>... types) {
         if (startIndex + types.length > size()) return false;
@@ -110,7 +110,7 @@ public class CommandArgumentList extends AbstractList<CommandArgument> {
     /**
      * Finds the index of the first argument that matches the specified type.
      *
-     * @param type The {@link com.github.breadmoirai.bot.framework.event.args.ArgumentType} to search for.
+     * @param type The {@link ArgumentMapper} to search for.
      * @return The index of the argument if found. If none of the arguments match the type provided, {@code -1} is returned.
      */
     public int indexOfType(Class<?> type) {
@@ -121,7 +121,7 @@ public class CommandArgumentList extends AbstractList<CommandArgument> {
      * Finds the first argument of the specified type that occurs after the index given.
      *
      * @param startIndex The index from which to start searching.
-     * @param type       The {@link com.github.breadmoirai.bot.framework.event.args.ArgumentType} to search for.
+     * @param type       The {@link ArgumentMapper} to search for.
      * @return The index of the argument if found. If none of the arguments match the type provided, {@code -1} is returned. If the {@code startIndex} provided is less than {@code 0}, it will be treated as {@code 0}. If the {@code startIndex} provided is greater than or equal to the size of this list, {@code -1} will be returned.
      */
     public int indexOfType(int startIndex, Class<?> type) {

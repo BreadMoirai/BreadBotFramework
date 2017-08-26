@@ -30,7 +30,7 @@ public class RoleArgument extends MentionArgument {
         return true;
     }
 
-    @Nullable
+    @NotNull
     @Override
     public Role getRole() {
         return role;

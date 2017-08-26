@@ -4,7 +4,6 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.TextChannel;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.List;
@@ -28,7 +27,7 @@ public class TextChannelArgument extends MentionArgument {
         return true;
     }
 
-    @Nullable
+    @NotNull
     @Override
     public TextChannel getTextChannel() {
         return channel;

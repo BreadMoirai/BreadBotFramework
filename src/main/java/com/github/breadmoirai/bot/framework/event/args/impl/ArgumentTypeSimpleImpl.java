@@ -14,26 +14,26 @@
 */
 package com.github.breadmoirai.bot.framework.event.args.impl;
 
-import com.github.breadmoirai.bot.framework.event.args.ArgumentMapper;
-import com.github.breadmoirai.bot.framework.event.args.ArgumentTypeMapper;
-import com.github.breadmoirai.bot.framework.event.args.ArgumentTypePredicate;
-import com.github.breadmoirai.bot.framework.event.args.CommandArgument;
+import com.github.breadmoirai.bot.framework.event.args.*;
 
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
-public class ArgumentTypeImpl<T> implements ArgumentMapper<T> {
-    private final ArgumentTypePredicate predicate;
-    private final ArgumentTypeMapper<T> mapper;
+public class ArgumentTypeSimpleImpl<T> implements ArgumentTypeSimple<T> {
+    private final Predicate<CommandArgument> predicate;
+    private final Function<CommandArgument, T> mapper;
 
-    public ArgumentTypeImpl(ArgumentTypePredicate predicate, ArgumentTypeMapper<T> mapper) {
+    public ArgumentTypeSimpleImpl(Predicate<CommandArgument> predicate, Function<CommandArgument, T> mapper) {
         this.predicate = predicate;
         this.mapper = mapper;
     }
 
+
     @Override
-    public Optional<T> map(CommandArgument arg, int flags) {
-        if (predicate.test(arg, flags)) {
-            return Optional.of(mapper.map(arg, flags));
+    public Optional<T> map(CommandArgument arg) {
+        if (predicate.test(arg)) {
+            return Optional.of(mapper.apply(arg));
         } else return Optional.empty();
     }
 }
