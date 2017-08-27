@@ -24,6 +24,7 @@ import java.util.function.Function;
  * All default emojis in discord
  * <p><b>Image URL is not fixed and can change without notice</b>
  * <p> The name of each emoji is the default name as if clicked by the user
+ * <p>If an emoji is postfixed with a skin-tone, the skin-tone is removed.
  * <p> Alternate names have <b>NOT</b> been accounted for.
  * <p> Emojis that begin with a number is preceded by an underscore, namely the following
  * <ul>
@@ -1412,12 +1413,19 @@ public enum Emoji {
     }
 
     /**
-     * Attempts to match an Emoji by their utf8 encoding
+     * Attempts to match an Emoji by their utf8 encoding.
+     * If the emoji is postfixed with a skin-tone, the skin-tone is ignored.
      *
      * @param s the String to match
      * @return the Emoji if found. Else {@code null}
      */
     public static Emoji find(String s) {
+        if (s.charAt(s.length()-2) == '\uD83C') {
+            char tone = s.charAt(s.length() - 1);
+            if (tone >= '\uDFFC' && tone <= '\uDFFF') {
+                s = s.substring(0, s.length()-2);
+            }
+        }
         int i = binarySearch(SORTED, s, Emoji::getUtf8, String::compareTo);
         if (i == -1) return null;
         else return SORTED[i];

@@ -2,10 +2,12 @@ package com.github.breadmoirai.bot.framework.event.args;
 
 import com.github.breadmoirai.bot.framework.event.Arguments;
 import com.github.breadmoirai.bot.framework.event.args.impl.*;
+import com.github.breadmoirai.bot.util.Emoji;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.entities.impl.EmoteImpl;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
+import org.jetbrains.annotations.Nullable;
 
 public class CommandArgumentFactory {
     private final JDA jda;
@@ -82,6 +84,35 @@ public class CommandArgumentFactory {
                 }
             }
         }
+        CommandArgument x = tryEmoji(s);
+        if (x != null) return x;
         return new GenericCommandArgument(jda, guild, channel, s);
+    }
+
+    @Nullable
+    public CommandArgument tryEmoji(String s) {
+        if (s.length() > 11) {
+            return null;
+        } else if (s.length() > 4) {
+            if (s.charAt(0) != '\uD83D') return null;
+        } else if (s.length() == 4) {
+            if (s.charAt(0) != '\uD83C') return null;
+        } else if (s.length() == 2) {
+            if (s.charAt(0) < '\uD83C' || s.charAt(0) > '\uD83E')
+                return null;
+            if (s.charAt(1) != '\u20E3')
+                return null;
+        } else if (s.length() == 1) {
+            char c = s.charAt(0);
+            if (c == '\u00A9') return new EmojiArgument(jda, guild, channel, s, Emoji.COPYRIGHT);
+            else if (c == '\u00AE') return new EmojiArgument(jda, guild, channel, s, Emoji.REGISTERED);
+            else if (c < '\u203C' || c > '\u3299') return null;
+
+        }
+        Emoji emoji = Emoji.find(s);
+        if (emoji != null) {
+            return new EmojiArgument(jda, guild, channel, s, emoji);
+        }
+        return null;
     }
 }
