@@ -1,6 +1,6 @@
-package com.github.breadmoirai.bot.framework.event.args.impl;
+package com.github.breadmoirai.bot.framework.arg.impl;
 
-import com.github.breadmoirai.bot.framework.event.args.CommandArgument;
+import com.github.breadmoirai.bot.framework.arg.CommandArgument;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.*;
 import org.jetbrains.annotations.NotNull;

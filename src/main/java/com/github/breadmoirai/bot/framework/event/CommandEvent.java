@@ -23,13 +23,14 @@ import com.github.breadmoirai.bot.framework.response.simple.EmbedResponse;
 import com.github.breadmoirai.bot.framework.response.simple.MessageResponse;
 import com.github.breadmoirai.bot.framework.response.simple.ReactionResponse;
 import com.github.breadmoirai.bot.framework.response.simple.StringResponse;
-import com.github.breadmoirai.bot.framework.event.args.CommandArgument;
-import com.github.breadmoirai.bot.framework.event.args.CommandArgumentList;
+import com.github.breadmoirai.bot.framework.arg.CommandArgument;
+import com.github.breadmoirai.bot.framework.arg.CommandArgumentList;
 import com.github.breadmoirai.bot.util.DiscordPatterns;
 import com.github.breadmoirai.bot.util.UnknownEmote;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.Event;
+import org.jetbrains.annotations.NotNull;
 
 import java.time.Instant;
 import java.time.OffsetDateTime;
@@ -38,6 +39,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -213,7 +215,7 @@ public abstract class CommandEvent extends Event {
     }
 
     /**
-     * retrieves a {@link com.github.breadmoirai.bot.framework.event.args.CommandArgument} from the {@link com.github.breadmoirai.bot.framework.event.args.CommandArgumentList} returned by {@link com.github.breadmoirai.bot.framework.event.CommandEvent#getArguments()}
+     * retrieves a {@link com.github.breadmoirai.bot.framework.arg.CommandArgument} from the {@link com.github.breadmoirai.bot.framework.arg.CommandArgumentList} returned by {@link com.github.breadmoirai.bot.framework.event.CommandEvent#getArguments()}
      *
      * @param index the index of the argument starting at 0. This does not include the key.
      * @return the non-null CommandArgument
@@ -258,8 +260,50 @@ public abstract class CommandEvent extends Event {
         return createNewArgumentList(limit);
     }
 
-    private CommandArgumentList createNewArgumentList(int limit) {
-        final String[] split = DiscordPatterns.ARGUMENT_SPLITTER.split(getContent().replace('`', '\"'), limit);
+    /**
+     * Creates a new list of arguments using the provided regex to split the message contents.
+     *
+     * @param regex the regex to split on
+     * @param limit the split limit
+     *
+     * @return a new {@link com.github.breadmoirai.bot.framework.arg.CommandArgumentList}.
+     *
+     * @see java.util.regex.Pattern#split(java.lang.CharSequence, int)
+     */
+    @NotNull
+    public CommandArgumentList createNewArgumentList(String regex, int limit) {
+        return createNewArgumentList(Pattern.compile(regex), limit);
+    }
+
+    /**
+     * Creates a new list of arguments using the default regex to split the message contents.
+     * recommended to use {@link com.github.breadmoirai.bot.framework.event.CommandEvent#getArguments(int)} instead.
+     *
+     * @param limit the split limit
+     *
+     * @return a new {@link com.github.breadmoirai.bot.framework.arg.CommandArgumentList}.
+     *
+     * @see java.util.regex.Pattern#split(java.lang.CharSequence, int)
+     * @see com.github.breadmoirai.bot.util.DiscordPatterns#ARGUMENT_SPLITTER
+     */
+    @NotNull
+    public CommandArgumentList createNewArgumentList(int limit) {
+        return createNewArgumentList(DiscordPatterns.ARGUMENT_SPLITTER, limit);
+    }
+
+    /**
+     * Creates a new list of arguments using the provided regex to split the message contents.
+     *
+     * @param splitter the pattern to split on
+     * @param limit the split limit
+     *
+     * @return a new {@link com.github.breadmoirai.bot.framework.arg.CommandArgumentList}.
+     *
+     * @see java.util.regex.Pattern#split(java.lang.CharSequence, int)
+     */
+    @NotNull
+    public CommandArgumentList createNewArgumentList(Pattern splitter, int limit) {
+        final String[] split = splitter.split(getContent().replace('`', '\"'), limit);
         final String[] strings = Arrays.stream(split)
                 .map(s -> s.replace('\"', ' '))
                 .map(String::trim)

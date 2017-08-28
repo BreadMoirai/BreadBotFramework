@@ -25,5 +25,10 @@ public class DiscordPatterns {
     public static final Pattern USER_MENTION_PREFIX = Pattern.compile("<@(?:!)?([0-9]+)>");
     public static final Pattern HEX = Pattern.compile("^(0x|#)?[0-9A-Fa-f]+$");
     public static final Pattern WHITE_SPACE = Pattern.compile("\\s");
+    /**
+     * Pattern: {@code [\s+](?=(?:[^"]*"[^"]*")*[^"]*$)}
+     * <p>This pattern splits on spaces, ignoring spaces which are enclosed by quotation marks {@code "}.
+     * If there is an uneven number of quotation marks, the result is indeterministic.
+     */
     public static final Pattern ARGUMENT_SPLITTER = Pattern.compile("[\\s+](?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)");
 }

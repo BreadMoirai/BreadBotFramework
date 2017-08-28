@@ -12,17 +12,22 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 */
-package com.github.breadmoirai.bot.framework.event.args;
+package com.github.breadmoirai.bot.framework.arg;
 
-@FunctionalInterface
-public interface ArgumentTypePredicate {
-    /**
-     * Returns {@code true} if the {@link com.github.breadmoirai.bot.framework.event.args.CommandArgument} can be successfully mapped to this type.
-     *
-     * @param arg the {@link com.github.breadmoirai.bot.framework.event.args.CommandArgument}
-     * @param flags the flags. See Constants
-     *
-     * @return {@code true} if {@link ArgumentMapper#map}
-     */
-    boolean test(CommandArgument arg, int flags);
+import java.util.Optional;
+import java.util.function.Function;
+
+/**
+ * This interface ignores flags.
+ *
+ * @param <T> the Type
+ *
+ * @see com.github.breadmoirai.bot.framework.arg.impl.ArgumentTypeSimpleImpl
+ */
+public interface ArgumentMapperSimple<T> extends ArgumentMapper<T>, Function<CommandArgument, Optional<T>> {
+
+    @Override
+    default Optional<T> map(CommandArgument arg, int flags) {
+        return apply(arg);
+    }
 }

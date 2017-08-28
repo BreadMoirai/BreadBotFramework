@@ -1,4 +1,4 @@
-package com.github.breadmoirai.bot.framework.event.args;
+package com.github.breadmoirai.bot.framework.arg;
 
 import gnu.trove.map.TObjectIntMap;
 import gnu.trove.map.hash.TObjectIntHashMap;
@@ -8,7 +8,7 @@ import gnu.trove.map.hash.TObjectIntHashMap;
  */
 public final class ArgumentFlags {
     /**
-     * Signifies that the {@link com.github.breadmoirai.bot.framework.event.args.ArgumentMapper} should do everything it can to map to it's type. This has no effect on numeric types.
+     * Signifies that the {@link com.github.breadmoirai.bot.framework.arg.ArgumentMapper} should do everything it can to map to it's type. This has no effect on numeric types.
      */
     public static final String STRICT = "strict";
     /**

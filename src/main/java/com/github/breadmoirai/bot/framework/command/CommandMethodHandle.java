@@ -17,7 +17,9 @@ package com.github.breadmoirai.bot.framework.command;
 import com.github.breadmoirai.bot.framework.IModule;
 import com.github.breadmoirai.bot.framework.Response;
 import com.github.breadmoirai.bot.framework.SamuraiClient;
+import com.github.breadmoirai.bot.framework.arg.CommandArgumentList;
 import com.github.breadmoirai.bot.framework.event.CommandEvent;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
@@ -25,17 +27,18 @@ import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 public class CommandMethodHandle implements CommandHandle {
 
-    private final Method method;
     private final String[] keys;
-    private MethodHandle handle;
-    private List<Class<? extends IModule>> params;
-
+    private final MethodHandle handle;
+    private final Class<?>[] params;
+    private final Function<CommandEvent, CommandArgumentList> argumentListFactory;
+    private final int limit;
 
     public CommandMethodHandle(Method method) throws IllegalAccessException {
-        this.method = method;
+        this.params = method.getParameterTypes();
         handle = MethodHandles.publicLookup().unreflect(method);
         final Command annotation = method.getAnnotation(Command.class);
         final String[] value = annotation.value();
@@ -50,22 +53,8 @@ public class CommandMethodHandle implements CommandHandle {
 
     @Override
     public boolean execute(Object parent, CommandEvent event, int subKey) throws Throwable {
-        if (params == null) {
-            final Class<?>[] parameterTypes = method.getParameterTypes();
-            final ArrayList<Class<? extends IModule>> params = new ArrayList<>(parameterTypes.length);
-            this.params = params;
-            for (int i = 1; i < parameterTypes.length; i++) {
-                if (IModule.class.isAssignableFrom(parameterTypes[i])) {
-                    //noinspection unchecked
-                    params.add((Class<? extends IModule>) parameterTypes[i]);
-                } else {
-                    params.add(null);
-                }
-            }
-        }
         final SamuraiClient client = event.getClient();
-        final Object[] modules = params.stream().map(client::getModule).toArray();
-        final Object invoke = getHandle().asSpreader(Object[].class, modules.length).invoke(parent, event, modules);
+
         if (invoke instanceof Response){
             final Response r = (Response) invoke;
             r.base(event);

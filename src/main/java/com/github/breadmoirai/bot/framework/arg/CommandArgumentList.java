@@ -1,4 +1,4 @@
-package com.github.breadmoirai.bot.framework.event.args;
+package com.github.breadmoirai.bot.framework.arg;
 
 import com.github.breadmoirai.bot.util.Emoji;
 import gnu.trove.impl.Constants;
@@ -13,7 +13,7 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 /**
- * A list implementation for {@link com.github.breadmoirai.bot.framework.event.args.CommandArgument CommandArguments} that includes a specialized iterator. All arguments are in lowercase.
+ * A list implementation for {@link com.github.breadmoirai.bot.framework.arg.CommandArgument CommandArguments} that includes a specialized iterator. All arguments are in lowercase.
  */
 public class CommandArgumentList extends AbstractList<CommandArgument> {
 
@@ -33,6 +33,13 @@ public class CommandArgumentList extends AbstractList<CommandArgument> {
 
     public CommandArgumentList(String[] strings, TextChannel channel) {
         this(strings, channel.getJDA(), channel.getGuild(), channel);
+    }
+
+    public CommandArgumentList(CommandArgument[] arguments, JDA jda, Guild guild, TextChannel channel) {
+        this.arguments = arguments;
+        this.jda = jda;
+        this.guild = guild;
+        this.channel = channel;
     }
 
     public JDA getJDA() {
@@ -71,9 +78,9 @@ public class CommandArgumentList extends AbstractList<CommandArgument> {
     }
 
     /**
-     * Creates a {@link java.util.Spliterator} using {@link com.github.breadmoirai.bot.framework.event.args.CommandArgumentList#typeIterator} as the base.
+     * Creates a {@link java.util.Spliterator} using {@link com.github.breadmoirai.bot.framework.arg.CommandArgumentList#typeIterator} as the base.
      *
-     * @param types the {@link java.util.Spliterator} will only see {@link com.github.breadmoirai.bot.framework.event.args.CommandArgument CommandArguments} that satisfy at least one of the types provided.
+     * @param types the {@link java.util.Spliterator} will only see {@link com.github.breadmoirai.bot.framework.arg.CommandArgument CommandArguments} that satisfy at least one of the types provided.
      * @return a {@link java.util.Spliterator} of type CommandArgument.
      */
     public Spliterator<CommandArgument> spliterator(Class<?>... types) {
@@ -81,23 +88,23 @@ public class CommandArgumentList extends AbstractList<CommandArgument> {
     }
 
     /**
-     * Attempts to match each {@link com.github.breadmoirai.bot.framework.event.args.CommandArgument} to a {@link ArgumentMapper} in the order passed.
+     * Attempts to match each {@link com.github.breadmoirai.bot.framework.arg.CommandArgument} to a {@link ArgumentMapper} in the order passed.
      * Will automatically fail if the amount of {@link ArgumentMapper ArgumentTypes} provided is greater than the amount of arguments passed.
      *
      * @param types the types of which to look for.
-     * @return {@code true} if the {@link ArgumentMapper ArgumentTypes} provided match the {@link com.github.breadmoirai.bot.framework.event.args.CommandArgument CommandArguments} in this list with {@link com.github.breadmoirai.bot.framework.event.args.CommandArgument#isOfType(Class)}
+     * @return {@code true} if the {@link ArgumentMapper ArgumentTypes} provided match the {@link com.github.breadmoirai.bot.framework.arg.CommandArgument CommandArguments} in this list with {@link com.github.breadmoirai.bot.framework.arg.CommandArgument#isOfType(Class)}
      */
     public boolean matchesType(Class<?>... types) {
         return matchesType(0, types);
     }
 
     /**
-     * Attempts to match each {@link com.github.breadmoirai.bot.framework.event.args.CommandArgument} to a {@link ArgumentMapper} in the order passed.
+     * Attempts to match each {@link com.github.breadmoirai.bot.framework.arg.CommandArgument} to a {@link ArgumentMapper} in the order passed.
      * Will automatically fail if the amount of {@link ArgumentMapper ArgumentTypes} provided is greater than the amount of arguments passed.
      *
      * @param startIndex the starting index of which to start matching Types.
      * @param types      the types of which to look for.
-     * @return {@code true} if the {@link ArgumentMapper ArgumentTypes} provided match the {@link com.github.breadmoirai.bot.framework.event.args.CommandArgument CommandArguments} in this list with {@link com.github.breadmoirai.bot.framework.event.args.CommandArgument#isOfType(Class)}
+     * @return {@code true} if the {@link ArgumentMapper ArgumentTypes} provided match the {@link com.github.breadmoirai.bot.framework.arg.CommandArgument CommandArguments} in this list with {@link com.github.breadmoirai.bot.framework.arg.CommandArgument#isOfType(Class)}
      */
     public boolean matchesType(int startIndex, Class<?>... types) {
         if (startIndex + types.length > size()) return false;

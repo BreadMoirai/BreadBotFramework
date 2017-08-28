@@ -12,15 +12,15 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 */
-package com.github.breadmoirai.bot.framework.event.args.impl;
+package com.github.breadmoirai.bot.framework.arg.impl;
 
-import com.github.breadmoirai.bot.framework.event.args.*;
+import com.github.breadmoirai.bot.framework.arg.*;
 
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-public class ArgumentTypeSimpleImpl<T> implements ArgumentTypeSimple<T> {
+public class ArgumentTypeSimpleImpl<T> implements ArgumentMapperSimple<T> {
     private final Predicate<CommandArgument> predicate;
     private final Function<CommandArgument, T> mapper;
 
@@ -31,7 +31,7 @@ public class ArgumentTypeSimpleImpl<T> implements ArgumentTypeSimple<T> {
 
 
     @Override
-    public Optional<T> map(CommandArgument arg) {
+    public Optional<T> apply(CommandArgument arg) {
         if (predicate.test(arg)) {
             return Optional.of(mapper.apply(arg));
         } else return Optional.empty();

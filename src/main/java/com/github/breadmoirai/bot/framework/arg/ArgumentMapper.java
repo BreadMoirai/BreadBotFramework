@@ -1,4 +1,4 @@
-package com.github.breadmoirai.bot.framework.event.args;
+package com.github.breadmoirai.bot.framework.arg;
 
 import org.jetbrains.annotations.Contract;
 
@@ -11,11 +11,13 @@ import java.util.Optional;
 @FunctionalInterface
 public interface ArgumentMapper<T> {
 
+    ArgumentMapper<Void> VOID_ARGUMENT_MAPPER = (arg, flags) -> Optional.empty();
+
     /**
-     * Maps the {@link com.github.breadmoirai.bot.framework.event.args.CommandArgument} to this given type.
+     * Maps the {@link com.github.breadmoirai.bot.framework.arg.CommandArgument} to this given type.
      * This method should never return a null value.
      *
-     * @param arg The {@link com.github.breadmoirai.bot.framework.event.args.CommandArgument} to be mapped.
+     * @param arg The {@link com.github.breadmoirai.bot.framework.arg.CommandArgument} to be mapped.
      * @param flags the flags. See Class Constants*
      *
      * @return {@code !null} value. Must be wrapped in an {@link java.util.Optional}

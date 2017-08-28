@@ -12,13 +12,12 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 */
-package com.github.breadmoirai.bot.framework.event.args;
+package com.github.breadmoirai.bot.framework.arg;
 
 import com.github.breadmoirai.bot.framework.event.Arguments;
 import com.github.breadmoirai.bot.util.Emoji;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.*;
-import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -56,7 +55,7 @@ public interface CommandArgument {
      * This is a getter method.
      *
      * @return The channel this argument was sent in.
-     * @see com.github.breadmoirai.bot.framework.event.args.CommandArgument#getTextChannel
+     * @see com.github.breadmoirai.bot.framework.arg.CommandArgument#getTextChannel
      */
     TextChannel getChannel();
 
@@ -82,7 +81,7 @@ public interface CommandArgument {
 //            * <p>If this argument is an {@link net.dv8tion.jda.core.entities.Emote}, the method will return {@code true}. However, if the {@link net.dv8tion.jda.core.entities.Emote} is not a valid {@link net.dv8tion.jda.core.JDA} entity, it will NOT be reflected in this method. Instead the object returned by {@link com.github.breadmoirai.bot.framework.event.args.CommandArgument#getEmote} will return an {@link net.dv8tion.jda.core.entities.Emote} with {@link net.dv8tion.jda.core.entities.IFakeable#isFake() isFake()} returning {@code true}
 
     /**
-     * @see com.github.breadmoirai.bot.framework.event.args.ArgumentTypes#isOfType(java.lang.Class, com.github.breadmoirai.bot.framework.event.args.CommandArgument)
+     * @see com.github.breadmoirai.bot.framework.arg.ArgumentTypes#isOfType(java.lang.Class, com.github.breadmoirai.bot.framework.arg.CommandArgument)
      *
      * @param type The type of argument to test for.
      *
@@ -93,7 +92,7 @@ public interface CommandArgument {
     }
 
     /**
-     * @see com.github.breadmoirai.bot.framework.event.args.ArgumentTypes#isOfType(java.lang.Class, com.github.breadmoirai.bot.framework.event.args.CommandArgument, int)
+     * @see com.github.breadmoirai.bot.framework.arg.ArgumentTypes#isOfType(java.lang.Class, com.github.breadmoirai.bot.framework.arg.CommandArgument, int)
      *
      * @param type the argument type to test for
      * @param flags testing flags. {@link ArgumentFlags}
@@ -150,7 +149,7 @@ public interface CommandArgument {
     }
 
     /**
-     * Equivalent to {@link com.github.breadmoirai.bot.framework.event.args.CommandArgument#isNumeric isNumeric()} but also checks that the number is within the range of an integer
+     * Equivalent to {@link com.github.breadmoirai.bot.framework.arg.CommandArgument#isNumeric isNumeric()} but also checks that the number is within the range of an integer
      *
      * @return {@code true} if and only if this argument only contains {@code 0-9} with an optional prefix of {@code -} or {@code +} and the number does not exceed {@link java.lang.Integer#MAX_VALUE} or {@link java.lang.Integer#MIN_VALUE}
      */
@@ -162,14 +161,14 @@ public interface CommandArgument {
      * Parses the argument as an Integer with {@link java.lang.Integer#parseInt(String)}
      *
      * @return an int
-     * @throws NumberFormatException if {@link com.github.breadmoirai.bot.framework.event.args.CommandArgument#isInteger isInteger()} returns {@code false}
+     * @throws NumberFormatException if {@link com.github.breadmoirai.bot.framework.arg.CommandArgument#isInteger isInteger()} returns {@code false}
      */
     default int parseInt() {
         return Integer.parseInt(getArgument());
     }
 
     /**
-     * Equivalent to {@link com.github.breadmoirai.bot.framework.event.args.CommandArgument#isNumeric isNumeric()} but also checks that the number is within the range of an integer
+     * Equivalent to {@link com.github.breadmoirai.bot.framework.arg.CommandArgument#isNumeric isNumeric()} but also checks that the number is within the range of an integer
      *
      * @return {@code true} if and only if this argument only contains {@code 0-9} with an optional prefix of {@code -} or {@code +} and the number does not exceed {@link java.lang.Long#MAX_VALUE} or {@link java.lang.Long#MIN_VALUE}
      */
@@ -181,7 +180,7 @@ public interface CommandArgument {
      * Parses the argument as an Long with {@link java.lang.Long#parseLong(String)}
      *
      * @return a long
-     * @throws NumberFormatException if {@link com.github.breadmoirai.bot.framework.event.args.CommandArgument#isInteger isInteger()} returns {@code false}
+     * @throws NumberFormatException if {@link com.github.breadmoirai.bot.framework.arg.CommandArgument#isInteger isInteger()} returns {@code false}
      */
     default long parseLong() {
         return Long.parseLong(getArgument());
@@ -198,7 +197,7 @@ public interface CommandArgument {
      * Parses the argument as an Long with {@link java.lang.Long#parseLong(String)}
      *
      * @return a float
-     * @throws NumberFormatException if {@link com.github.breadmoirai.bot.framework.event.args.CommandArgument#isFloat() isFloat()} returns {@code false}
+     * @throws NumberFormatException if {@link com.github.breadmoirai.bot.framework.arg.CommandArgument#isFloat() isFloat()} returns {@code false}
      */
     default float parseFloat() {
         return Float.parseFloat(getArgument());
@@ -208,7 +207,7 @@ public interface CommandArgument {
      * Parses the argument as an Long with {@link java.lang.Double#parseDouble(String)}
      *
      * @return a double
-     * @throws NumberFormatException if {@link com.github.breadmoirai.bot.framework.event.args.CommandArgument#isFloat() isFloat()} returns {@code false}
+     * @throws NumberFormatException if {@link com.github.breadmoirai.bot.framework.arg.CommandArgument#isFloat() isFloat()} returns {@code false}
      */
     default double parseDouble() {
         return Double.parseDouble(getArgument());
@@ -233,9 +232,9 @@ public interface CommandArgument {
     /**
      * Parses this argument as an inclusive range and returns an {@link java.util.stream.IntStream} consisting of the elements in the stream in the order declared
      * <p>For example, an argument of {@code "2-6"} will return a stream of {@code [2,3,4,5,6]} and an argument of {@code "8-5"} will return a stream of {@code [8,7,6,5]}.
-     * <p><b>This method CAN be used in cases where {@link com.github.breadmoirai.bot.framework.event.args.CommandArgument#isRange isRange()} would return false.</b> If the argument is a single integer, where {@link com.github.breadmoirai.bot.framework.event.args.CommandArgument#isInteger isInteger()} would return {@code true}, an {@link java.util.stream.IntStream} with a single value will be returned.
+     * <p><b>This method CAN be used in cases where {@link com.github.breadmoirai.bot.framework.arg.CommandArgument#isRange isRange()} would return false.</b> If the argument is a single integer, where {@link com.github.breadmoirai.bot.framework.arg.CommandArgument#isInteger isInteger()} would return {@code true}, an {@link java.util.stream.IntStream} with a single value will be returned.
      *
-     * @return an ordered {@link java.util.stream.IntStream}. If {@link com.github.breadmoirai.bot.framework.event.args.CommandArgument#isRange isRange()} AND {@link com.github.breadmoirai.bot.framework.event.args.CommandArgument#isInteger isInteger()} would return false, An empty IntStream will be returned.
+     * @return an ordered {@link java.util.stream.IntStream}. If {@link com.github.breadmoirai.bot.framework.arg.CommandArgument#isRange isRange()} AND {@link com.github.breadmoirai.bot.framework.arg.CommandArgument#isInteger isInteger()} would return false, An empty IntStream will be returned.
      */
     @NotNull
     default IntStream parseRange() {
@@ -256,7 +255,7 @@ public interface CommandArgument {
      * Parses hexadecimal into an int
      *
      * @return an int
-     * @throws NumberFormatException if {@link com.github.breadmoirai.bot.framework.event.args.CommandArgument#isHex isHex()} would return false
+     * @throws NumberFormatException if {@link com.github.breadmoirai.bot.framework.arg.CommandArgument#isHex isHex()} would return false
      */
     default int parseIntFromHex() {
         String s = getArgument();
@@ -276,7 +275,7 @@ public interface CommandArgument {
      * Checks if this argument is a {@link net.dv8tion.jda.core.entities.User} mention that can be correctly resolved to a {@link net.dv8tion.jda.core.entities.User}.
      * The result of this method is equivalent to checking this argument against a regex of {@code <@(!)?[0-9]+>} and then checking to see if {@link net.dv8tion.jda.core.JDA} has knowledge of a {@link net.dv8tion.jda.core.entities.User} with that id.
      *
-     * If this method returns {@code false} and {@link com.github.breadmoirai.bot.framework.event.args.CommandArgument#isUser} returns {@code true}, this CommandArgument is can be cast to an  {@link com.github.breadmoirai.bot.framework.event.args.impl.InvalidMentionArgument InvalidMentionArgument}
+     * If this method returns {@code false} and {@link com.github.breadmoirai.bot.framework.arg.CommandArgument#isUser} returns {@code true}, this CommandArgument is can be cast to an  {@link com.github.breadmoirai.bot.framework.arg.impl.InvalidMentionArgument InvalidMentionArgument}
      *
      * @return {@code true} if this is a formatted {@link net.dv8tion.jda.core.entities.User} mention that can be resolved to an entity.
      */
@@ -287,7 +286,7 @@ public interface CommandArgument {
      *
      * @return The {@link net.dv8tion.jda.core.entities.User} if found by JDA.
      *
-     * @throws UnsupportedOperationException if {@link com.github.breadmoirai.bot.framework.event.args.CommandArgument#isValidUser()} would return {@code false}
+     * @throws UnsupportedOperationException if {@link com.github.breadmoirai.bot.framework.arg.CommandArgument#isValidUser()} would return {@code false}
      */
     @NotNull
     default User getUser() {
@@ -358,11 +357,11 @@ public interface CommandArgument {
 
     /**
      * Attempts to resolve this argument to a {@link net.dv8tion.jda.core.entities.Role} in the {@link net.dv8tion.jda.core.entities.Guild}.
-     * If {@link com.github.breadmoirai.bot.framework.event.args.CommandArgument#isRole isRole()} would return true, it is guaranteed that this method returns a {@code non-null} value.
+     * If {@link com.github.breadmoirai.bot.framework.arg.CommandArgument#isRole isRole()} would return true, it is guaranteed that this method returns a {@code non-null} value.
      *
      * @return {@link net.dv8tion.jda.core.entities.Role} if role is present within the {@link net.dv8tion.jda.core.entities.Guild}, otherwise {@code null}
      *
-     * @throws UnsupportedOperationException if {@link com.github.breadmoirai.bot.framework.event.args.CommandArgument#isValidRole()} would return {@code false}
+     * @throws UnsupportedOperationException if {@link com.github.breadmoirai.bot.framework.arg.CommandArgument#isValidRole()} would return {@code false}
      */
     @NotNull
     default Role getRole() {
@@ -401,7 +400,7 @@ public interface CommandArgument {
      * Checks if this argument is a {@link net.dv8tion.jda.core.entities.TextChannel} mention that can be correctly resolved to a {@link net.dv8tion.jda.core.entities.TextChannel}.
      * The result of this method is equivalent to checking this argument against a regex of {@code <#[0-9]+>} and then checking to see if {@link net.dv8tion.jda.core.JDA} has knowledge of a {@link net.dv8tion.jda.core.entities.TextChannel} with that id.
      *
-     * If this method returns {@code false} and {@link com.github.breadmoirai.bot.framework.event.args.CommandArgument#isTextChannel()} returns {@code true}, this CommandArgument is can be cast to an  {@link com.github.breadmoirai.bot.framework.event.args.impl.InvalidMentionArgument InvalidMentionArgument}
+     * If this method returns {@code false} and {@link com.github.breadmoirai.bot.framework.arg.CommandArgument#isTextChannel()} returns {@code true}, this CommandArgument is can be cast to an  {@link com.github.breadmoirai.bot.framework.arg.impl.InvalidMentionArgument InvalidMentionArgument}
      *
      * @return {@code true} if this is a formatted {@link net.dv8tion.jda.core.entities.TextChannel} mention and can be correctly resolved to a JDA entity.
      */
@@ -410,11 +409,11 @@ public interface CommandArgument {
     /**
      * Attempts to resolve this argument as a {@link net.dv8tion.jda.core.entities.TextChannel} mention to a {@link net.dv8tion.jda.core.entities.TextChannel} in the {@link net.dv8tion.jda.core.entities.Guild}.
      *
-     * <p>If {@link com.github.breadmoirai.bot.framework.event.args.CommandArgument#isTextChannel isTextChannel()} would return true, it is guaranteed that this method returns a {@code non-null} value.
+     * <p>If {@link com.github.breadmoirai.bot.framework.arg.CommandArgument#isTextChannel isTextChannel()} would return true, it is guaranteed that this method returns a {@code non-null} value.
      *
      * @return {@link net.dv8tion.jda.core.entities.TextChannel} if can be resolved to a JDA entity
      *
-     * @throws UnsupportedOperationException if {@link com.github.breadmoirai.bot.framework.event.args.CommandArgument#isValidTextChannel()} would return {@code false}
+     * @throws UnsupportedOperationException if {@link com.github.breadmoirai.bot.framework.arg.CommandArgument#isValidTextChannel()} would return {@code false}
      */
     @NotNull
     default TextChannel getTextChannel() {
@@ -469,11 +468,11 @@ public interface CommandArgument {
      * If the formatting is correct but {@link net.dv8tion.jda.core.JDA} cannot resolve the {@link net.dv8tion.jda.core.entities.Emote},
      * a {@link net.dv8tion.jda.core.entities.IFakeable Fake} {@link net.dv8tion.jda.core.entities.Emote} will be returned.
      *
-     * <p>If {@link com.github.breadmoirai.bot.framework.event.args.CommandArgument#isEmote isEmote()} would return true, it is guaranteed that this method returns a {@code non-null} value.
+     * <p>If {@link com.github.breadmoirai.bot.framework.arg.CommandArgument#isEmote isEmote()} would return true, it is guaranteed that this method returns a {@code non-null} value.
      *
      * @return An {@link net.dv8tion.jda.core.entities.Emote} if the formatting is correct. Otherwise {@code null}.
      *
-     * @throws UnsupportedOperationException if {@link com.github.breadmoirai.bot.framework.event.args.CommandArgument#isEmote()} would return {@code false}
+     * @throws UnsupportedOperationException if {@link com.github.breadmoirai.bot.framework.arg.CommandArgument#isEmote()} would return {@code false}
      */
     @NotNull
     default Emote getEmote() {
@@ -484,7 +483,7 @@ public interface CommandArgument {
      * Will attempt to match this argument against the emojis found in {@link com.github.breadmoirai.bot.util.Emoji} using their unicode value.
      * The implementation of this method is
      * <pre><code>
-     *     return {@link com.github.breadmoirai.bot.framework.event.args.CommandArgument#getEmoji}() != null
+     *     return {@link com.github.breadmoirai.bot.framework.arg.CommandArgument#getEmoji}() != null
      * </code></pre>
      *
      * @return {@code true} if an {@link com.github.breadmoirai.bot.util.Emoji} was successfully matched.
@@ -496,7 +495,7 @@ public interface CommandArgument {
      *
      * @return The {@link com.github.breadmoirai.bot.util.Emoji} if matched.
      *
-     * @throws UnsupportedOperationException if {@link com.github.breadmoirai.bot.framework.event.args.CommandArgument#isEmoji()} would return {@code false}
+     * @throws UnsupportedOperationException if {@link com.github.breadmoirai.bot.framework.arg.CommandArgument#isEmoji()} would return {@code false}
      */
     @NotNull
     default Emoji getEmoji() {

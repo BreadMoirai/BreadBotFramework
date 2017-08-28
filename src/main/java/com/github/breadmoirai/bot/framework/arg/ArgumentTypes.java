@@ -12,10 +12,10 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 */
-package com.github.breadmoirai.bot.framework.event.args;
+package com.github.breadmoirai.bot.framework.arg;
 
 import com.github.breadmoirai.bot.framework.event.Arguments;
-import com.github.breadmoirai.bot.framework.event.args.impl.ArgumentTypeSimpleImpl;
+import com.github.breadmoirai.bot.framework.arg.impl.ArgumentTypeSimpleImpl;
 import com.github.breadmoirai.bot.util.Emoji;
 import net.dv8tion.jda.core.entities.*;
 
@@ -45,12 +45,8 @@ public final class ArgumentTypes {
 
     private static final Map<Class<?>, ArgumentMapper<?>> map;
 
-    private static final ArgumentMapper<Void> VOID_TYPE;
-
     static {
         map = new HashMap<>();
-
-        VOID_TYPE = (arg, flags) -> Optional.empty();
 
         final ArgumentMapper<Integer> intType = (arg, flags) -> {
             final boolean hex = ArgumentFlags.hasFlag(ArgumentFlags.HEX, flags);
@@ -184,7 +180,7 @@ public final class ArgumentTypes {
 
 
     /**
-     * This ignores flags. Use {@link com.github.breadmoirai.bot.framework.event.args.ArgumentTypes#registerArgumentMapper(java.lang.Class, com.github.breadmoirai.bot.framework.event.args.ArgumentMapper)} otherwise.
+     * This ignores flags. Use {@link com.github.breadmoirai.bot.framework.arg.ArgumentTypes#registerArgumentMapper(java.lang.Class, com.github.breadmoirai.bot.framework.arg.ArgumentMapper)} otherwise.
      *
      * @param type      The type class
      * @param isType    predicate to test if the argument can be parsed to the type provided.
@@ -201,13 +197,13 @@ public final class ArgumentTypes {
      *
      * @param type  the intended type class
      * @param arg   the argument to map from
-     * @param flags any {@link com.github.breadmoirai.bot.framework.event.args.ArgumentFlags flags}
+     * @param flags any {@link com.github.breadmoirai.bot.framework.arg.ArgumentFlags flags}
      * @param <T>   the type
      * @return an Optional containing the result if successful. Otherwise empty.
      */
     public static <T> Optional<T> getAsType(Class<T> type, CommandArgument arg, int flags) {
         //noinspection unchecked
-        return (Optional<T>) map.getOrDefault(type, VOID_TYPE).map(arg, flags);
+        return (Optional<T>) map.getOrDefault(type, ArgumentMapper.VOID_ARGUMENT_MAPPER).map(arg, flags);
     }
 
     /**
@@ -226,7 +222,7 @@ public final class ArgumentTypes {
     /**
      * Implemented as
      * <pre><code>
-     *     {@link com.github.breadmoirai.bot.framework.event.args.ArgumentTypes#getAsType(java.lang.Class, com.github.breadmoirai.bot.framework.event.args.CommandArgument, int) getAsType(type, arg, flags)}.isPresent();
+     *     {@link com.github.breadmoirai.bot.framework.arg.ArgumentTypes#getAsType(java.lang.Class, com.github.breadmoirai.bot.framework.arg.CommandArgument, int) getAsType(type, arg, flags)}.isPresent();
      * </code></pre>
      */
     public static boolean isOfType(Class<?> type, CommandArgument arg, int flags) {
@@ -236,7 +232,7 @@ public final class ArgumentTypes {
     /**
      * Implemented as
      * <pre><code>
-     *     {@link com.github.breadmoirai.bot.framework.event.args.ArgumentTypes#getAsType(java.lang.Class, com.github.breadmoirai.bot.framework.event.args.CommandArgument) getAsType(type, arg, flags)}.isPresent();
+     *     {@link com.github.breadmoirai.bot.framework.arg.ArgumentTypes#getAsType(java.lang.Class, com.github.breadmoirai.bot.framework.arg.CommandArgument) getAsType(type, arg, flags)}.isPresent();
      * </code></pre>
      */
     public static boolean isOfType(Class<?> type, CommandArgument arg) {
