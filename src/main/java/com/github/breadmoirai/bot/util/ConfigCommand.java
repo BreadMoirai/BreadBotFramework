@@ -25,7 +25,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.*;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -63,11 +62,8 @@ public class ConfigCommand {
 
     @Command
     public void upload(CommandEvent event, Message.Attachment file) {
-        try {
-            final InputStream inputStream = new URL(file.getUrl()).openStream();
-            final InputStreamReader reader = new InputStreamReader(inputStream);
-            final BufferedReader buf = new BufferedReader(reader);
-            final String collect = buf.lines().collect(Collectors.joining("\n"));
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(AttachmentUtil.openStream(event.getJDA(), file)))) {
+            final String collect = br.lines().collect(Collectors.joining("\n"));
             final JSONObject jsonObject = new JSONObject(collect);
             int success = 0;
             List<IModule> failed = new ArrayList<>();
