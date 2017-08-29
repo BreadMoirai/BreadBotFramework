@@ -35,7 +35,8 @@ public abstract class Response implements Serializable {
     /**
      * sets the default failure consumer to be called when sending a response.
      * Defaults to logging the error.
-     * @param onFailure
+     *
+     * @param onFailure a consumer to use when any response fails.
      */
     public static void setDefaultFailure(Consumer<Throwable> onFailure) {
         DEFAULT_FAILURE = onFailure;
@@ -46,6 +47,11 @@ public abstract class Response implements Serializable {
 
     private long authorId, messageId, channelId, guildId;
 
+    /**
+     * This method is what is entry point for Responses in terms of sending a message.
+     *
+     * @param channel the target channel to send to.
+     */
     protected void send(MessageChannel channel) {
         channelId = channel.getIdLong();
         final Message message = buildMessage();
@@ -66,12 +72,24 @@ public abstract class Response implements Serializable {
         this.client = client;
     }
 
+    /**
+     * This method is called to get the message to send.
+     *
+     * @return the Message to send.
+     */
     public abstract Message buildMessage();
 
     public void onFailure(Throwable t) {
         DEFAULT_FAILURE.accept(t);
     }
 
+    /**
+     * This is the success consumer.
+     *
+     * @param message the sent message
+     *
+     * @see com.github.breadmoirai.bot.framework.Response#onFailure
+     */
     public abstract void onSend(Message message);
 
     public final long getAuthorId() {
