@@ -26,10 +26,13 @@ import com.github.breadmoirai.bot.framework.response.simple.StringResponse;
 import com.github.breadmoirai.bot.framework.event.args.CommandArgument;
 import com.github.breadmoirai.bot.framework.event.args.CommandArgumentList;
 import com.github.breadmoirai.bot.util.DiscordPatterns;
+import com.github.breadmoirai.bot.util.MissingPermissionResponse;
 import com.github.breadmoirai.bot.util.UnknownEmote;
 import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.Event;
+import net.dv8tion.jda.core.utils.PermissionUtil;
 
 import java.time.Instant;
 import java.time.OffsetDateTime;
@@ -369,5 +372,31 @@ public abstract class CommandEvent extends Event {
     @Override
     public String toString() {
         return String.format("CommandEvent{ Guild=%d, Channel=%d, Author=%d, Content=%s }", getGuildId(), getChannelId(), getAuthorId(), getContent());
+    }
+
+    /**
+     * Checks to see if the bot has the permissions required.
+     *
+     * @param permission any permissions required.
+     *
+     * @return {@code true} if the bot has the permissions required. {@code false} otherwise.
+     */
+    public boolean checkPermission(Permission... permission) {
+        return PermissionUtil.checkPermission(getChannel(), getSelfMember(), permission);
+    }
+
+    /**
+     * Checks to see if the bot has the permissions required. If the permissions required are not found, the user is notified with a {@link com.github.breadmoirai.bot.util.MissingPermissionResponse}.
+     *
+     * @param permission any permissions required.
+     *
+     * @return {@code true} if the bot has the permissions required. {@code false} otherwise.
+     */
+    public boolean requirePermission(Permission... permission) {
+        if (!checkPermission(permission)) {
+            replyWith(new MissingPermissionResponse(this, permission));
+            return false;
+        }
+        return true;
     }
 }
