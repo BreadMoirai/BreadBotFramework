@@ -199,7 +199,7 @@ public abstract class CommandEvent extends Event {
      *
      * @return An immutable list of args.
      */
-    public List<String> getArgs() {
+    public synchronized List<String> getArgs() {
         if (args == null) {
             args = hasContent()
                     ? Arrays.stream(DiscordPatterns.ARGUMENT_SPLITTER.split(getContent().replace('`', '\"'))).filter((s) -> !s.isEmpty()).filter(s -> !((s.startsWith("<") && s.endsWith(">")) || s.equals("@everyone") || s.equals("@here"))).map(s -> s.replace('\"', ' ')).map(String::trim).map(String::toLowerCase).collect(Collectors.toList())
@@ -245,7 +245,7 @@ public abstract class CommandEvent extends Event {
      * @param limit the limit to set for a maximum number of arguments. For more information on how this is used, see {@link java.util.regex.Pattern#split(java.lang.CharSequence, int)}
      * @return an implementation of <code>{@link java.util.List}<{@link CommandArgument EventArgument}></code> in which arguments are lazily parsed.
      */
-    public CommandArgumentList getArguments(int limit) {
+    public synchronized CommandArgumentList getArguments(int limit) {
         if (!hasContent()) {
             if (argumentList == null) {
                 argumentList = new CommandArgumentList(new String[]{}, getChannel());
