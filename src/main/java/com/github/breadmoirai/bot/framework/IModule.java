@@ -27,18 +27,19 @@ public interface IModule {
 
     void init(CommandEngineBuilder engineBuilder, SamuraiClient client);
 
-    default void getHelp(CommandEvent event) {
+    default void onHelpEvent(CommandEvent event) {
         event.reply("This is not the help you are looking for");
     }
 
-    default boolean isJSONconfigurable() {
+    default boolean isJSONConfigurable() {
         return false;
     }
 
-    default void addJSONconfig(long guildId, JSONObject jsonObject) {
+    default void addJSONConfig(long guildId, JSONObject jsonObject) {
     }
 
-    default boolean loadJSONconfig(long guildId, JSONObject jsonObject) {
+    default boolean loadJSONConfig(long guildId, JSONObject jsonObject) {
         return false;
     }
+
 }
