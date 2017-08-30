@@ -159,11 +159,11 @@ public class CommandArgumentList extends AbstractList<CommandArgument> {
         return new ArgumentTypeIterator(types);
     }
 
-    private class ArgumentTypeIterator implements Iterator<CommandArgument> {
+    public class ArgumentTypeIterator implements Iterator<CommandArgument> {
         private int cursor;
         private final Class<?>[] types;
 
-        public ArgumentTypeIterator(Class<?>[] types) {
+        private ArgumentTypeIterator(Class<?>[] types) {
             this.types = types;
         }
 
@@ -220,11 +220,11 @@ public class CommandArgumentList extends AbstractList<CommandArgument> {
     }
 
 
-    private class ArgumentIterator {
+    public class ArgumentIterator {
 
         private final TObjectIntMap<Class<?>> cursorMap;
 
-        ArgumentIterator() {
+        private ArgumentIterator() {
             cursorMap = new TObjectIntHashMap<>(Constants.DEFAULT_CAPACITY, Constants.DEFAULT_LOAD_FACTOR, 0);
         }
 
