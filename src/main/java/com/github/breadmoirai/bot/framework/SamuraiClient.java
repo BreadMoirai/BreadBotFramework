@@ -20,6 +20,7 @@ import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
 
 import java.lang.reflect.Type;
+import java.util.List;
 import java.util.Objects;
 
 public interface SamuraiClient {
@@ -33,6 +34,8 @@ public interface SamuraiClient {
     IModule getModule(String moduleName);
 
     IModule getModule(Type moduleType);
+
+    List<IModule> getModules();
 
     CommandEngine getCommandEngine();
 

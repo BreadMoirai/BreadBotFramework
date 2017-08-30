@@ -32,10 +32,7 @@ import net.dv8tion.jda.core.hooks.ListenerAdapter;
 import net.dv8tion.jda.core.hooks.SubscribeEvent;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Predicate;
 
 public class SamuraiClientImpl implements SamuraiClient {
@@ -49,7 +46,7 @@ public class SamuraiClientImpl implements SamuraiClient {
     private final Map<Type, IModule> moduleTypeMap;
 
     public SamuraiClientImpl(List<IModule> modules, IEventManager eventManager, ICommandEventFactory eventFactory, CommandEngineBuilder engineBuilder) {
-        this.modules = modules;
+        this.modules = Collections.unmodifiableList(modules);
         modules.forEach(module -> module.init(engineBuilder, this));
         eventManager.register(this.new SamuraiEventListener(engineBuilder.getPreProcessPredicate()));
 
@@ -133,6 +130,11 @@ public class SamuraiClientImpl implements SamuraiClient {
     @Override
     public IModule getModule(Type moduleType) {
         return moduleTypeMap.get(moduleType);
+    }
+
+    @Override
+    public List<IModule> getModules() {
+        return modules;
     }
 
     @Override

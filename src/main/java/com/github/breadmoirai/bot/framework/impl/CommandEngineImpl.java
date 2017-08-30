@@ -19,6 +19,7 @@ import com.github.breadmoirai.bot.framework.CommandEngine;
 import com.github.breadmoirai.bot.framework.IModule;
 import com.github.breadmoirai.bot.framework.command.ICommand;
 import com.github.breadmoirai.bot.framework.event.CommandEvent;
+import com.github.breadmoirai.bot.framework.event.impl.HelpEvent;
 import net.dv8tion.jda.core.utils.SimpleLog;
 
 import java.util.List;
@@ -36,6 +37,13 @@ public class CommandEngineImpl implements CommandEngine {
 
     @Override
     public void handle(CommandEvent event) {
+        if (event instanceof HelpEvent) {
+            final IModule module = event.getClient().getModule(event.getKey());
+            if (module != null) {
+                module.onHelpEvent(event);
+                return;
+            }
+        }
         ICommand command;
         final String key = event.getKey().toLowerCase();
         command = commandMap.get(key);

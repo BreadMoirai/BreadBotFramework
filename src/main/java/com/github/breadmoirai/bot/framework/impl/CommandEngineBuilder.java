@@ -140,8 +140,8 @@ public class CommandEngineBuilder {
         return this;
     }
 
-    public CommandEngineBuilder registerCommand(String commandPackagePrefix) {
-        final Reflections reflections = new Reflections(commandPackagePrefix);
+    public CommandEngineBuilder registerCommand(String packageName) {
+        final Reflections reflections = new Reflections(packageName);
         final Set<Class<?>> classes = reflections.getSubTypesOf(Object.class);
         for (Class<?> commandClass : classes) {
             final int mod = commandClass.getModifiers();

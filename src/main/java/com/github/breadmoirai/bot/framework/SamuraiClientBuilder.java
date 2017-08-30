@@ -16,10 +16,10 @@
 package com.github.breadmoirai.bot.framework;
 
 import com.github.breadmoirai.bot.framework.command.ICommand;
-import com.github.breadmoirai.bot.framework.impl.CommandEngineBuilder;
-import com.github.breadmoirai.bot.framework.impl.SamuraiClientImpl;
 import com.github.breadmoirai.bot.framework.event.ICommandEventFactory;
 import com.github.breadmoirai.bot.framework.event.impl.CommandEventFactoryImpl;
+import com.github.breadmoirai.bot.framework.impl.CommandEngineBuilder;
+import com.github.breadmoirai.bot.framework.impl.SamuraiClientImpl;
 import com.github.breadmoirai.bot.modules.admin.Admin;
 import com.github.breadmoirai.bot.modules.admin.DefaultAdminModule;
 import com.github.breadmoirai.bot.modules.admin.IAdminModule;
@@ -33,7 +33,10 @@ import net.dv8tion.jda.core.hooks.AnnotatedEventManager;
 import net.dv8tion.jda.core.hooks.IEventManager;
 import net.dv8tion.jda.core.hooks.InterfacedEventManager;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -127,8 +130,60 @@ public class SamuraiClientBuilder {
         return this;
     }
 
+    /**
+     * Please refer to {@link com.github.breadmoirai.bot.framework.impl.CommandEngineBuilder#registerCommand(java.lang.Object)}
+     *
+     * @param o Object
+     *
+     * @return The {@link com.github.breadmoirai.bot.framework.SamuraiClientBuilder} instance. Useful for chaining.
+     *
+     * @see com.github.breadmoirai.bot.framework.impl.CommandEngineBuilder#registerCommand(java.lang.Object)
+     */
     public SamuraiClientBuilder registerCommand(Object o) {
         configure(ceb -> ceb.registerCommand(o));
+        return this;
+    }
+
+    /**
+     * Please refer to {@link com.github.breadmoirai.bot.framework.impl.CommandEngineBuilder#registerCommand(com.github.breadmoirai.bot.framework.command.ICommand, java.lang.String...)}
+     *
+     * @param command command object.
+     * @param keys vararg keys
+     *
+     * @return The {@link com.github.breadmoirai.bot.framework.SamuraiClientBuilder} instance. Useful for chaining.
+     *
+     * @see com.github.breadmoirai.bot.framework.impl.CommandEngineBuilder#registerCommand(com.github.breadmoirai.bot.framework.command.ICommand, java.lang.String...)
+     */
+    public SamuraiClientBuilder registerCommand(ICommand command, String... keys) {
+        configure(ceb -> ceb.registerCommand(command, keys));
+        return this;
+    }
+
+    /**
+     * Please refer to {@link com.github.breadmoirai.bot.framework.impl.CommandEngineBuilder#registerCommand(java.lang.Class)}
+     *
+     * @param commandClass The class of the command.
+     *
+     * @return The {@link com.github.breadmoirai.bot.framework.SamuraiClientBuilder} instance. Useful for chaining.
+     *
+     * @see com.github.breadmoirai.bot.framework.impl.CommandEngineBuilder#registerCommand(java.lang.Class)
+     */
+    public SamuraiClientBuilder registerCommand(Class<?> commandClass) {
+        configure(ceb -> ceb.registerCommand(commandClass));
+        return this;
+    }
+
+    /**
+     * Please refer to {@link com.github.breadmoirai.bot.framework.impl.CommandEngineBuilder#registerCommand(java.lang.String)}
+     *
+     * @param commandPackage The package of the commands
+     *
+     * @return The {@link com.github.breadmoirai.bot.framework.SamuraiClientBuilder} instance. Useful for chaining.
+     *
+     * @see com.github.breadmoirai.bot.framework.impl.CommandEngineBuilder#registerCommand(java.lang.String)
+     */
+    public SamuraiClientBuilder registerCommand(String commandPackage) {
+        configure(ceb -> ceb.registerCommand(commandPackage));
         return this;
     }
 
