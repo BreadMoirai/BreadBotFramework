@@ -5,13 +5,13 @@ import org.jetbrains.annotations.Contract;
 import java.util.Optional;
 
 /**
- * This class provided behavior to map
- * @param <T>
+ * This class provided behavior to map a {@link com.github.breadmoirai.bot.framework.arg.CommandArgument} to a specified Type.
+ * @param <T> the type to map to.
  */
 @FunctionalInterface
 public interface ArgumentMapper<T> {
 
-    ArgumentMapper<Void> VOID_ARGUMENT_MAPPER = (arg, flags) -> Optional.empty();
+    ArgumentMapper<Void> VOID_MAPPER = (arg, flags) -> Optional.empty();
 
     /**
      * Maps the {@link com.github.breadmoirai.bot.framework.arg.CommandArgument} to this given type.

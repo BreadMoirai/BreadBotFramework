@@ -14,8 +14,8 @@
 */
 package com.github.breadmoirai.bot.framework.arg;
 
-import com.github.breadmoirai.bot.framework.event.Arguments;
 import com.github.breadmoirai.bot.framework.arg.impl.ArgumentTypeSimpleImpl;
+import com.github.breadmoirai.bot.framework.event.Arguments;
 import com.github.breadmoirai.bot.util.Emoji;
 import net.dv8tion.jda.core.entities.*;
 
@@ -203,7 +203,7 @@ public final class ArgumentTypes {
      */
     public static <T> Optional<T> getAsType(Class<T> type, CommandArgument arg, int flags) {
         //noinspection unchecked
-        return (Optional<T>) map.getOrDefault(type, ArgumentMapper.VOID_ARGUMENT_MAPPER).map(arg, flags);
+        return (Optional<T>) map.getOrDefault(type, ArgumentMapper.VOID_MAPPER).map(arg, flags);
     }
 
     /**

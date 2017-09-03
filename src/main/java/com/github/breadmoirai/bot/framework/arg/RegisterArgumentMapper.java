@@ -15,9 +15,6 @@
  */
 package com.github.breadmoirai.bot.framework.arg;
 
-import com.github.breadmoirai.bot.framework.arg.ArgumentMapper;
-import com.github.breadmoirai.bot.framework.arg.ArgumentTypes;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -25,7 +22,7 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE, ElementType.PARAMETER, ElementType.PACKAGE, ElementType.METHOD})
-public @interface RegisterTypeMapper {
+public @interface RegisterArgumentMapper {
 
     Class<ArgumentMapper<?>>[] mapper() default {};
 
