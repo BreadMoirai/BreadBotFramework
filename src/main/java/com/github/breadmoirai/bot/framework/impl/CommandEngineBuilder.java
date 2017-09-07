@@ -18,6 +18,7 @@ package com.github.breadmoirai.bot.framework.impl;
 import com.github.breadmoirai.bot.framework.CommandEngine;
 import com.github.breadmoirai.bot.framework.IModule;
 import com.github.breadmoirai.bot.framework.command.*;
+import com.github.breadmoirai.bot.framework.command.impl.*;
 import com.github.breadmoirai.bot.framework.error.DuplicateCommandKeyException;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.utils.SimpleLog;

@@ -1,5 +1,6 @@
 package com.github.breadmoirai.bot.framework.command;
 
+import com.github.breadmoirai.bot.framework.command.impl.CommandMethod;
 import com.github.breadmoirai.bot.framework.event.CommandEvent;
 import com.github.breadmoirai.bot.framework.Response;
 import com.github.breadmoirai.bot.util.DiscordPatterns;

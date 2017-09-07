@@ -12,21 +12,17 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 */
-package com.github.breadmoirai.bot.framework.command;
+package com.github.breadmoirai.bot.framework.command.impl;
 
-import com.github.breadmoirai.bot.framework.IModule;
 import com.github.breadmoirai.bot.framework.Response;
 import com.github.breadmoirai.bot.framework.SamuraiClient;
 import com.github.breadmoirai.bot.framework.arg.CommandArgumentList;
+import com.github.breadmoirai.bot.framework.command.Command;
 import com.github.breadmoirai.bot.framework.event.CommandEvent;
-import org.jetbrains.annotations.NotNull;
 
-import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.Function;
 
 public class CommandMethodHandle implements CommandHandle {

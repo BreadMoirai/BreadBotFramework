@@ -13,6 +13,10 @@ public interface ArgumentMapper<T> {
 
     ArgumentMapper<Void> VOID_MAPPER = (arg, flags) -> Optional.empty();
 
+    static <R> ArgumentMapper<R> getEmptyMapper(Class<R> type) {
+        return (arg, flags) -> Optional.empty();
+    }
+
     /**
      * Maps the {@link com.github.breadmoirai.bot.framework.arg.CommandArgument} to this given type.
      * This method should never return a null value.

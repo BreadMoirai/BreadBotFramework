@@ -1,5 +1,6 @@
 package com.github.breadmoirai.bot.framework.event;
 
+import com.github.breadmoirai.bot.util.DiscordPatterns;
 import org.jetbrains.annotations.Contract;
 
 import java.util.regex.Pattern;
@@ -7,16 +8,7 @@ import java.util.stream.IntStream;
 
 public class Arguments {
 
-    private static final Pattern FLOAT_REGEX = Pattern.compile("[+-]?(" +
-            "NaN|" +
-            "Infinity|" +
-            "((((\\p{Digit}+)(\\.)?((\\p{Digit}+)?)([eE][+-]?(\\p{Digit}+))?)|" +
-            "(\\.(\\p{Digit}+)([eE][+-]?(\\p{Digit}+))?)|" +
-            "((" +
-            "(0[xX](\\p{XDigit}+)(\\.)?)|" +
-            "(0[xX](\\p{XDigit}+)?(\\.)(\\p{XDigit}+))" +
-            ")[pP][+-]?(\\p{Digit}+)))" +
-            "[fFdD]?))");
+
 
 
     private Arguments() {
@@ -167,7 +159,7 @@ public class Arguments {
     }
 
     public static boolean isFloat(String s) {
-        return FLOAT_REGEX.matcher(s).matches();
+        return DiscordPatterns.FLOAT_REGEX.matcher(s).matches();
     }
 
     public static boolean isDouble(String s) {

@@ -28,6 +28,7 @@ import java.util.stream.IntStream;
 
 /**
  * Does argument Mapping.
+ * Is basically a heterogeneous map of Class<?> to ArgumentMapper<?>
  */
 public final class ArgumentTypes {
     public static final Class<Integer> INTEGER = Integer.TYPE;
@@ -202,8 +203,7 @@ public final class ArgumentTypes {
      * @return an Optional containing the result if successful. Otherwise empty.
      */
     public static <T> Optional<T> getAsType(Class<T> type, CommandArgument arg, int flags) {
-        //noinspection unchecked
-        return (Optional<T>) map.getOrDefault(type, ArgumentMapper.VOID_MAPPER).map(arg, flags);
+        return getMapper(type).map(arg, flags);
     }
 
     /**
@@ -240,4 +240,8 @@ public final class ArgumentTypes {
     }
 
 
+    public static <T> ArgumentMapper<T> getMapper(Class<T> type) {
+        //noinspection unchecked
+        return (ArgumentMapper<T>) map.getOrDefault(type, ArgumentMapper.getEmptyMapper(type));
+    }
 }

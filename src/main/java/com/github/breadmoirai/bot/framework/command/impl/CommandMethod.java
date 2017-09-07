@@ -1,4 +1,6 @@
-package com.github.breadmoirai.bot.framework.command;
+package com.github.breadmoirai.bot.framework.command.impl;
+
+import com.github.breadmoirai.bot.framework.command.Command;
 
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;

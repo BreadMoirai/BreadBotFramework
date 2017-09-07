@@ -31,4 +31,15 @@ public class DiscordPatterns {
      * If there is an uneven number of quotation marks, the result is indeterministic.
      */
     public static final Pattern ARGUMENT_SPLITTER = Pattern.compile("[\\s+](?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)");
+
+    public static final Pattern FLOAT_REGEX = Pattern.compile("[+-]?(" +
+            "NaN|" +
+            "Infinity|" +
+            "((((\\p{Digit}+)(\\.)?((\\p{Digit}+)?)([eE][+-]?(\\p{Digit}+))?)|" +
+            "(\\.(\\p{Digit}+)([eE][+-]?(\\p{Digit}+))?)|" +
+            "((" +
+            "(0[xX](\\p{XDigit}+)(\\.)?)|" +
+            "(0[xX](\\p{XDigit}+)?(\\.)(\\p{XDigit}+))" +
+            ")[pP][+-]?(\\p{Digit}+)))" +
+            "[fFdD]?))");
 }

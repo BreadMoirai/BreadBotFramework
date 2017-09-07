@@ -12,7 +12,10 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 */
-package com.github.breadmoirai.bot.framework.command;
+package com.github.breadmoirai.bot.framework.command.impl;
+
+import com.github.breadmoirai.bot.framework.command.Command;
+import com.github.breadmoirai.bot.framework.command.ICommand;
 
 public abstract class CommandWrapper implements ICommand {
 

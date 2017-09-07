@@ -1,6 +1,8 @@
-package com.github.breadmoirai.bot.framework.command;
+package com.github.breadmoirai.bot.framework.command.impl;
 
 import com.github.breadmoirai.bot.framework.IModule;
+import com.github.breadmoirai.bot.framework.command.Commands;
+import com.github.breadmoirai.bot.framework.command.ModuleCommand;
 import com.github.breadmoirai.bot.framework.event.CommandEvent;
 import com.github.breadmoirai.bot.util.TypeFinder;
 
