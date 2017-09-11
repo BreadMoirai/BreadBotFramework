@@ -1,4 +1,4 @@
-package com.github.breadmoirai.bot.framework.arg;
+package com.github.breadmoirai.bot.framework.command.arg;
 
 import gnu.trove.set.TIntSet;
 

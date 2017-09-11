@@ -1,7 +1,7 @@
-package com.github.breadmoirai.bot.framework.arg;
+package com.github.breadmoirai.bot.framework.command.arg;
 
+import com.github.breadmoirai.bot.framework.command.arg.impl.*;
 import com.github.breadmoirai.bot.framework.event.Arguments;
-import com.github.breadmoirai.bot.framework.arg.impl.*;
 import com.github.breadmoirai.bot.util.Emoji;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.*;

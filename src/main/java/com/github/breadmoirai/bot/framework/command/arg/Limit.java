@@ -13,20 +13,17 @@
  *   See the License for the specific language governing permissions and
  *   limitations under the License.
  */
-package com.github.breadmoirai.bot.framework.arg;
-
-import com.github.breadmoirai.bot.framework.event.CommandEvent;
+package com.github.breadmoirai.bot.framework.command.arg;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.util.function.Function;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.PARAMETER)
-public @interface RegisterArgumentListFactory {
+@Target({ElementType.METHOD, ElementType.TYPE, ElementType.PACKAGE})
+public @interface Limit {
 
-    Class<? extends Function<CommandEvent, CommandArgumentList>> listFactory();
+    int limit();
 
 }

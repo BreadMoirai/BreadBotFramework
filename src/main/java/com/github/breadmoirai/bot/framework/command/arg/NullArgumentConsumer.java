@@ -12,22 +12,13 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 */
-package com.github.breadmoirai.bot.framework.arg;
+package com.github.breadmoirai.bot.framework.command.arg;
 
-import java.util.Optional;
-import java.util.function.Function;
+import com.github.breadmoirai.bot.framework.event.CommandEvent;
 
-/**
- * This interface ignores flags.
- *
- * @param <T> the Type
- *
- * @see com.github.breadmoirai.bot.framework.arg.impl.ArgumentTypeSimpleImpl
- */
-public interface ArgumentMapperSimple<T> extends ArgumentMapper<T>, Function<CommandArgument, Optional<T>> {
+@FunctionalInterface
+public interface NullArgumentConsumer {
 
-    @Override
-    default Optional<T> map(CommandArgument arg, int flags) {
-        return apply(arg);
-    }
+    void accept(CommandEvent event, CommandParameter parameter);
+
 }

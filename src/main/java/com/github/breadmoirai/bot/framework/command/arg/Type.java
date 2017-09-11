@@ -13,7 +13,7 @@
  *   See the License for the specific language governing permissions and
  *   limitations under the License.
  */
-package com.github.breadmoirai.bot.framework.arg;
+package com.github.breadmoirai.bot.framework.command.arg;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -22,8 +22,8 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.PARAMETER)
-public @interface Index {
+public @interface Type {
 
-    int index();
+    Class<?> type();
 
 }

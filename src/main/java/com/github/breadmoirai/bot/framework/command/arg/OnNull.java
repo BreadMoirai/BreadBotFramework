@@ -13,9 +13,7 @@
  *   See the License for the specific language governing permissions and
  *   limitations under the License.
  */
-package com.github.breadmoirai.bot.framework.arg;
-
-import com.github.breadmoirai.bot.framework.arg.ArgumentMapper;
+package com.github.breadmoirai.bot.framework.command.arg;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -24,8 +22,8 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.PARAMETER)
-public @interface Flags {
+public @interface OnNull {
 
-    String[] flags() default {};
+    Class<? extends NullArgumentConsumer> onNull();
 
 }
