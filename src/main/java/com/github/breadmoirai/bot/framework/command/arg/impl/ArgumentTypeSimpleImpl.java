@@ -12,9 +12,10 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 */
-package com.github.breadmoirai.bot.framework.arg.impl;
+package com.github.breadmoirai.bot.framework.command.arg.impl;
 
-import com.github.breadmoirai.bot.framework.arg.*;
+import com.github.breadmoirai.bot.framework.command.arg.ArgumentMapperSimple;
+import com.github.breadmoirai.bot.framework.command.arg.CommandArgument;
 
 import java.util.Optional;
 import java.util.function.Function;

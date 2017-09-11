@@ -21,6 +21,7 @@ public abstract class CommandWrapper implements ICommand {
 
     private final String[] keys;
 
+
     public CommandWrapper(Class<?> commandClass) {
         final Command key = commandClass.getAnnotation(Command.class);
         if (key == null || key.value().length == 0) {

@@ -17,14 +17,14 @@ package com.github.breadmoirai.bot.framework.event;
 
 import com.github.breadmoirai.bot.framework.Response;
 import com.github.breadmoirai.bot.framework.SamuraiClient;
+import com.github.breadmoirai.bot.framework.command.arg.CommandArgument;
+import com.github.breadmoirai.bot.framework.command.arg.CommandArgumentList;
 import com.github.breadmoirai.bot.framework.response.menu.PromptBuilder;
 import com.github.breadmoirai.bot.framework.response.menu.ReactionMenuBuilder;
 import com.github.breadmoirai.bot.framework.response.simple.EmbedResponse;
 import com.github.breadmoirai.bot.framework.response.simple.MessageResponse;
 import com.github.breadmoirai.bot.framework.response.simple.ReactionResponse;
 import com.github.breadmoirai.bot.framework.response.simple.StringResponse;
-import com.github.breadmoirai.bot.framework.arg.CommandArgument;
-import com.github.breadmoirai.bot.framework.arg.CommandArgumentList;
 import com.github.breadmoirai.bot.util.DiscordPatterns;
 import com.github.breadmoirai.bot.util.MissingPermissionResponse;
 import com.github.breadmoirai.bot.util.UnknownEmote;
@@ -32,8 +32,8 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.Event;
-import org.jetbrains.annotations.NotNull;
 import net.dv8tion.jda.core.utils.PermissionUtil;
+import org.jetbrains.annotations.NotNull;
 
 import java.time.Instant;
 import java.time.OffsetDateTime;
@@ -218,7 +218,7 @@ public abstract class CommandEvent extends Event {
     }
 
     /**
-     * retrieves a {@link com.github.breadmoirai.bot.framework.arg.CommandArgument} from the {@link com.github.breadmoirai.bot.framework.arg.CommandArgumentList} returned by {@link com.github.breadmoirai.bot.framework.event.CommandEvent#getArguments()}
+     * retrieves a {@link com.github.breadmoirai.bot.framework.command.arg.CommandArgument} from the {@link com.github.breadmoirai.bot.framework.command.arg.CommandArgumentList} returned by {@link com.github.breadmoirai.bot.framework.event.CommandEvent#getArguments()}
      *
      * @param index the index of the argument starting at 0. This does not include the key.
      * @return the non-null CommandArgument
@@ -269,7 +269,7 @@ public abstract class CommandEvent extends Event {
      * @param regex the regex to split on
      * @param limit the split limit
      *
-     * @return a new {@link com.github.breadmoirai.bot.framework.arg.CommandArgumentList}.
+     * @return a new {@link com.github.breadmoirai.bot.framework.command.arg.CommandArgumentList}.
      *
      * @see java.util.regex.Pattern#split(java.lang.CharSequence, int)
      */
@@ -284,7 +284,7 @@ public abstract class CommandEvent extends Event {
      *
      * @param limit the split limit
      *
-     * @return a new {@link com.github.breadmoirai.bot.framework.arg.CommandArgumentList}.
+     * @return a new {@link com.github.breadmoirai.bot.framework.command.arg.CommandArgumentList}.
      *
      * @see java.util.regex.Pattern#split(java.lang.CharSequence, int)
      * @see com.github.breadmoirai.bot.util.DiscordPatterns#ARGUMENT_SPLITTER
@@ -300,7 +300,7 @@ public abstract class CommandEvent extends Event {
      * @param splitter the pattern to split on
      * @param limit the split limit
      *
-     * @return a new {@link com.github.breadmoirai.bot.framework.arg.CommandArgumentList}.
+     * @return a new {@link com.github.breadmoirai.bot.framework.command.arg.CommandArgumentList}.
      *
      * @see java.util.regex.Pattern#split(java.lang.CharSequence, int)
      */

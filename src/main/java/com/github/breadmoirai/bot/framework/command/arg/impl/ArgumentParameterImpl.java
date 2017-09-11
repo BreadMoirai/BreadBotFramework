@@ -1,9 +1,9 @@
-package com.github.breadmoirai.bot.framework.arg.impl;
+package com.github.breadmoirai.bot.framework.command.arg.impl;
 
-import com.github.breadmoirai.bot.framework.arg.ArgumentMapper;
-import com.github.breadmoirai.bot.framework.arg.CommandParameter;
-import com.github.breadmoirai.bot.framework.arg.CommandArgument;
-import com.github.breadmoirai.bot.framework.arg.CommandArgumentList;
+import com.github.breadmoirai.bot.framework.command.arg.ArgumentMapper;
+import com.github.breadmoirai.bot.framework.command.arg.CommandArgument;
+import com.github.breadmoirai.bot.framework.command.arg.CommandArgumentList;
+import com.github.breadmoirai.bot.framework.command.arg.CommandParameter;
 import com.github.breadmoirai.bot.framework.event.CommandEvent;
 import gnu.trove.set.TIntSet;
 

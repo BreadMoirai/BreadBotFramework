@@ -12,19 +12,31 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 */
-package com.github.breadmoirai.bot.framework.arg.impl;
+package com.github.breadmoirai.bot.framework.command.builder;
 
-import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.TextChannel;
+import com.github.breadmoirai.bot.framework.command.impl.CommandHandle;
 
-public class InvalidUserArgument extends InvalidMentionArgument {
-    public InvalidUserArgument(JDA jda, Guild guild, TextChannel channel, String s, long id) {
-        super(jda, guild, channel, s, id);
+import java.util.function.Consumer;
+
+public class CommandMethodHandleBuilder implements CommandHandleBuilder {
+
+
+    @Override
+    public String getName() {
+        return null;
     }
 
     @Override
-    public boolean isUser() {
-        return true;
+    public String[] getKeys() {
+        return null;
+    }
+
+    @Override
+    public CommandHandle build() {
+        return null;
+    }
+
+    public void configure(Consumer<CommandMethodHandleBuilder> consumer) {
+        consumer.accept(this);
     }
 }

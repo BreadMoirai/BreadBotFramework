@@ -16,8 +16,8 @@ package com.github.breadmoirai.bot.framework.command.impl;
 
 import com.github.breadmoirai.bot.framework.Response;
 import com.github.breadmoirai.bot.framework.SamuraiClient;
-import com.github.breadmoirai.bot.framework.arg.CommandArgumentList;
 import com.github.breadmoirai.bot.framework.command.Command;
+import com.github.breadmoirai.bot.framework.command.arg.CommandArgumentList;
 import com.github.breadmoirai.bot.framework.event.CommandEvent;
 
 import java.lang.invoke.MethodHandle;

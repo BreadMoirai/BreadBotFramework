@@ -1,6 +1,5 @@
-package com.github.breadmoirai.bot.framework.arg.impl;
+package com.github.breadmoirai.bot.framework.command.arg.impl;
 
-import com.github.breadmoirai.bot.framework.arg.impl.MentionArgument;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Emote;
 import net.dv8tion.jda.core.entities.Guild;
