@@ -1,6 +1,9 @@
 package com.github.breadmoirai.bot.framework.command;
 
-public class CommandPreprocessor {
+import com.github.breadmoirai.bot.framework.command.impl.CommandHandle;
+import com.github.breadmoirai.bot.framework.event.CommandEvent;
+
+public class CommandPreprocessor implements CommandPreprocessorFunction {
     private final String identifier;
     private final CommandPreprocessorFunction function;
 
@@ -15,5 +18,10 @@ public class CommandPreprocessor {
 
     public CommandPreprocessorFunction getFunction() {
         return function;
+    }
+
+    @Override
+    public void process(Object commandObj, CommandHandle targetHandle, CommandEvent event, CommandProcessorStack processQueue) {
+        getFunction().process(commandObj, targetHandle, event, processQueue);
     }
 }

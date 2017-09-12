@@ -6,15 +6,19 @@ import com.github.breadmoirai.bot.framework.event.CommandEvent;
 import java.util.ArrayDeque;
 import java.util.Collection;
 
-public class CommandProcessQueue extends ArrayDeque<CommandPreprocessor> {
+/**
+ * This is an ArrayDeque. Intended to be used as a stack. Generally the only important method is {@link #runNext()}
+ */
+public class CommandProcessorStack extends ArrayDeque<CommandPreprocessor> {
 
+    private final ArrayDeque<CommandPreprocessor> stack;
     private final Object object;
     private final CommandHandle targetHandle;
     private final CommandEvent event;
     private final Runnable onEnd;
 
-    public CommandProcessQueue(Object object, CommandHandle targetHandle, CommandEvent event, Collection<CommandPreprocessor> preprocessors, Runnable onEnd) {
-        super(preprocessors);
+    public CommandProcessorStack(Object object, CommandHandle targetHandle, CommandEvent event, Collection<CommandPreprocessor> preprocessors, Runnable onEnd) {
+        stack = new ArrayDeque<>(preprocessors);
         this.object = object;
         this.targetHandle = targetHandle;
         this.event = event;
@@ -33,9 +37,12 @@ public class CommandProcessQueue extends ArrayDeque<CommandPreprocessor> {
         return event;
     }
 
+    /**
+     * It is generally recommended to use this method to continue operation. Calling this method
+     */
     public void runNext() {
         if (!this.isEmpty())
-            this.pop().getFunction().process(object, targetHandle, event, this);
+            this.pop().process(object, targetHandle, event, this);
         else {
             onEnd.run();
         }
