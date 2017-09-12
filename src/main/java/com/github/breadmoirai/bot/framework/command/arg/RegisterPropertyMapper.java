@@ -15,18 +15,14 @@
  */
 package com.github.breadmoirai.bot.framework.command.arg;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-import java.util.function.Supplier;
+import java.lang.annotation.*;
+import java.util.function.Function;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.ANNOTATION_TYPE)
-public @interface PropertySupplier {
+public @interface RegisterPropertyMapper {
 
-    Class<? extends Supplier<?>> supplier();
+    Class<? extends Function<? extends Annotation, ?>> mapper();
 
     Class<?> type() default Object.class;
-
 }

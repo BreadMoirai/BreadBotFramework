@@ -14,9 +14,12 @@
 */
 package com.github.breadmoirai.bot.framework.command;
 
+import com.github.breadmoirai.bot.framework.command.arg.RegisterPropertyMapper;
 import org.jetbrains.annotations.NotNull;
 
+import java.lang.annotation.Annotation;
 import java.util.*;
+import java.util.function.Function;
 
 /**
  * A builder for a {@link com.github.breadmoirai.bot.framework.command.CommandPropertyMap}. This map can inherit values from another map.
@@ -121,5 +124,46 @@ public class CommandPropertyMapBuilder implements Iterable<Object> {
 
     public CommandPropertyMap build() {
         return new CommandPropertyMap(defaultProperties, properties);
+    }
+
+    public CommandPropertyMapBuilder putAnnotations(Annotation[] annotations) {
+        for (Annotation annotation : annotations) {
+            final RegisterPropertyMapper propertyMapper = annotation.getClass().getAnnotation(RegisterPropertyMapper.class);
+            if (propertyMapper != null) {
+                final Class<? extends Function<? extends Annotation, ?>> mapper = propertyMapper.mapper();
+                try {
+                    final Function<? extends Annotation, ?> function = mapper.newInstance();
+                    final Object o;
+                    try {
+                        o = applyAnnotationMapper(function, annotation);
+                    } catch (ClassCastException e) {
+                        throw new RuntimeException("The Function Class specified by @RegisterPropertyMapper annotated to " + annotation.getClass().getName() + " is of the wrong type. The function should have the generic parameters <" + annotation.getClass().getName() + ", ?>.", e);
+                    }
+
+                    final Class<?> type = propertyMapper.type();
+                    if (type != Object.class)
+                        try {
+                            putSupertypedProperty(type, o);
+                        } catch (ClassCastException e) {
+                            throw new RuntimeException("The parameter \"type\" specified by @RegisterPropertyMapper annotated to " + annotation.getClass().getName() + " is of the wrong type. The type should be a supertype of " + o.getClass(), e);
+                        }
+                    else
+                        putProperty(o);
+                } catch (InstantiationException | IllegalAccessException e) {
+                    throw new RuntimeException("Could not instantiate property mapper " + mapper.getName(), e);
+                }
+            } else putProperty(annotation);
+        }
+        return this;
+    }
+
+    private <T extends Annotation> Object applyAnnotationMapper(Function<T, ?> function, Annotation annotation) {
+        @SuppressWarnings("unchecked") final T cast = (T) annotation;
+        return function.apply(cast);
+    }
+
+    private <T> void putSupertypedProperty(Class<? super T> type, Object obj) {
+        @SuppressWarnings("unchecked") final T cast = (T) obj;
+        putProperty(type, cast);
     }
 }
