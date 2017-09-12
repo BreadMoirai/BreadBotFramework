@@ -74,6 +74,11 @@ public class CommandPropertyMapBuilder implements Iterable<Object> {
         return this;
     }
 
+    public CommandPropertyMapBuilder clear() {
+        properties.clear();
+        return this;
+    }
+
     /**
      * Returns a read-only unmodifiable {@link java.util.Set} view of the mappings contained in this map.
      *
