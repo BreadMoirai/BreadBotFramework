@@ -23,7 +23,7 @@ import java.util.*;
  */
 public class CommandPropertyMapBuilder implements Iterable<Object> {
 
-    private final CommandPropertyMap defaultProperties;
+    private CommandPropertyMap defaultProperties;
     private final Map<Class<?>, Object> properties;
 
     public CommandPropertyMapBuilder(CommandPropertyMap base) {
@@ -63,6 +63,11 @@ public class CommandPropertyMapBuilder implements Iterable<Object> {
 
     public CommandPropertyMapBuilder putProperty(Object propertyObj) {
         properties.put(propertyObj.getClass(), propertyObj);
+        return this;
+    }
+
+    public CommandPropertyMapBuilder setDefaultProperties(CommandPropertyMap defaultProperties) {
+        this.defaultProperties = defaultProperties;
         return this;
     }
 

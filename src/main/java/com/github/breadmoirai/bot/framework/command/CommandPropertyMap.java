@@ -32,15 +32,6 @@ public class CommandPropertyMap implements Iterable<Object> {
         this.properties = properties;
     }
 
-    public CommandPropertyMap(CommandPropertyMap base) {
-        defaultProperties = base;
-        properties = new HashMap<>();
-    }
-
-    public CommandPropertyMap() {
-        this(null);
-    }
-
     public boolean containsProperty(Class<?> propertyType) {
         return (properties.containsKey(propertyType) || defaultProperties != null) && defaultProperties.containsProperty(propertyType);
     }
