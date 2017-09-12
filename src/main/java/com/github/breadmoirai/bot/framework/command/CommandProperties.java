@@ -37,6 +37,14 @@ public class CommandProperties {
         for (Annotation a : p.getAnnotations()) {
             map.putProperty(a);
         }
+        final String name = p.getName();
+        final int i = name.lastIndexOf('.');
+        if (i != -1) {
+            final String parentPackageName = name.substring(0, i);
+            final Package aPackage = Package.getPackage(parentPackageName);
+            if (aPackage != null)
+                map.setDefaultProperties(getPropertiesForPackage(aPackage));
+        }
         return map.build();
     }
 
