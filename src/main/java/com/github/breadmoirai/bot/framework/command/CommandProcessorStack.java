@@ -11,14 +11,12 @@ import java.util.Collection;
  */
 public class CommandProcessorStack extends ArrayDeque<CommandPreprocessor> {
 
-    private final ArrayDeque<CommandPreprocessor> stack;
     private final Object object;
     private final CommandHandle targetHandle;
     private final CommandEvent event;
     private final Runnable onEnd;
 
     public CommandProcessorStack(Object object, CommandHandle targetHandle, CommandEvent event, Collection<CommandPreprocessor> preprocessors, Runnable onEnd) {
-        stack = new ArrayDeque<>(preprocessors);
         this.object = object;
         this.targetHandle = targetHandle;
         this.event = event;
@@ -38,7 +36,7 @@ public class CommandProcessorStack extends ArrayDeque<CommandPreprocessor> {
     }
 
     /**
-     * It is generally recommended to use this method to continue operation. Calling this method
+     * It is generally recommended to use this method to continue operation. Calling this method when this stack is empty will run the command.
      */
     public void runNext() {
         if (!this.isEmpty())

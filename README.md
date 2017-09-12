@@ -198,7 +198,7 @@ public class CatDogCommand extends ModuleMultiCommand<CatDogModule> {
 ```
 Note that with any of the *Multi* Commands, The return type should be either void or castable to Response.
 
-This is a MultiSubCommand where there is a primary key affixed to the class and secondary keys affixed to the methods. As such, this command is triggered by `!whatgoes meow` or `!whatgoes woof`
+This is a MultiSubCommand where there is a primary keys affixed to the class and secondary keys affixed to the methods. As such, this command is triggered by `!whatgoes meow` or `!whatgoes woof`
 ```java
 @Key("whatgoes")
 public class CatDogCommand extends ModuleMultiSubCommand<CatDogModule> {

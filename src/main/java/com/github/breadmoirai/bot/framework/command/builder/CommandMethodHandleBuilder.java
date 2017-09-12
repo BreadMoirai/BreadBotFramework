@@ -16,10 +16,15 @@ package com.github.breadmoirai.bot.framework.command.builder;
 
 import com.github.breadmoirai.bot.framework.command.impl.CommandHandle;
 
+import java.lang.reflect.Method;
 import java.util.function.Consumer;
 
 public class CommandMethodHandleBuilder implements CommandHandleBuilder {
 
+
+    public CommandMethodHandleBuilder(Method method) {
+
+    }
 
     @Override
     public String getName() {

@@ -1,21 +1,31 @@
 package com.github.breadmoirai.bot.framework.command.builder;
 
 import com.github.breadmoirai.bot.framework.command.CommandPropertyMap;
+import com.github.breadmoirai.bot.framework.command.impl.CommandHandle;
 import com.github.breadmoirai.bot.framework.error.NoSuchCommandException;
+import com.github.breadmoirai.bot.framework.event.CommandEvent;
 
-import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class CommandBuilder {
+public class CommandBuilder implements CommandHandleBuilder {
 
-    private String key;
+    private String name;
+    private String[] keys;
     private List<CommandHandleBuilder> handleBuilders;
     private CommandPropertyMap properties;
     private boolean isPersistent;
 
     public CommandBuilder(Class<?> commandClass) {
-        final Annotation[] annotations = commandClass.getPackage().getAnnotations();
+        this.name = commandClass.getName();
+        handleBuilders = new ArrayList<>();
+        Arrays.stream(commandClass.getMethods())
+                .filter(method -> method.getParameterCount() > 0)
+                .filter(method -> method.getParameterTypes()[0] == CommandEvent.class)
+                .map(CommandMethodHandleBuilder::new)
+                .forEach(handleBuilders::add);
 
     }
 
@@ -24,13 +34,13 @@ public class CommandBuilder {
     }
 
     /**
-     * Sets the key of this command. When the key is set to {@code null}, if the provided class/object has multiple methods/classes, each one will be registered with their own key.
+     * Sets the keys of this command. When the keys is set to {@code null}, if the provided class/object has multiple methods/classes, each one will be registered with their own keys.
      *
-     * @param key a string. no spaces plz.
+     * @param keys a var-arg of String. no spaces plz.
      * @return this obj
      */
-    public CommandBuilder setKey(String key) {
-        this.key = key;
+    public CommandBuilder setKeys(String... keys) {
+        this.keys = keys;
         return this;
     }
 
@@ -80,5 +90,25 @@ public class CommandBuilder {
                 .orElseThrow(() -> new NoSuchCommandException(className))
                 .configure(consumer);
         return this;
+    }
+
+    public CommandBuilder setName(String name) {
+        this.name = name;
+        return this;
+    }
+
+    @Override
+    public String getName() {
+        return this.name;
+    }
+
+    @Override
+    public String[] getKeys() {
+        return this.keys == null ? handleBuilders.stream().map(CommandHandleBuilder::getKeys).flatMap(Arrays::stream).toArray(String[]::new) : keys;
+    }
+
+    @Override
+    public CommandHandle build() {
+        return null;
     }
 }
