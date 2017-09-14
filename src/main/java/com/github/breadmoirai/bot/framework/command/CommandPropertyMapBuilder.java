@@ -20,17 +20,18 @@ import org.jetbrains.annotations.NotNull;
 import java.lang.annotation.Annotation;
 import java.util.*;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * A builder for a {@link com.github.breadmoirai.bot.framework.command.CommandPropertyMap}. This map can inherit values from another map.
  */
 public class CommandPropertyMapBuilder implements Iterable<Object> {
 
-    private CommandPropertyMap defaultProperties;
+    private Supplier<CommandPropertyMap> defaultProperties;
     private final Map<Class<?>, Object> properties;
 
     public CommandPropertyMapBuilder(CommandPropertyMap base) {
-        defaultProperties = base;
+        defaultProperties = () -> base;
         properties = new HashMap<>();
     }
 
@@ -53,7 +54,7 @@ public class CommandPropertyMapBuilder implements Iterable<Object> {
         final Object obj = properties.get(propertyType);
         if (obj == null) {
             if (defaultProperties != null)
-                return defaultProperties.getProperty(propertyType);
+                return defaultProperties.get().getProperty(propertyType);
             else return null;
         }
         return propertyType.cast(obj);
@@ -70,9 +71,15 @@ public class CommandPropertyMapBuilder implements Iterable<Object> {
     }
 
     public CommandPropertyMapBuilder setDefaultProperties(CommandPropertyMap defaultProperties) {
-        this.defaultProperties = defaultProperties;
+        this.defaultProperties = () -> defaultProperties;
         return this;
     }
+
+    public CommandPropertyMapBuilder setDefaultProperties(CommandPropertyMapBuilder defaultProperties) {
+        this.defaultProperties = defaultProperties::build;
+        return this;
+    }
+
 
     public CommandPropertyMapBuilder clear() {
         properties.clear();
@@ -128,7 +135,7 @@ public class CommandPropertyMapBuilder implements Iterable<Object> {
     }
 
     public CommandPropertyMap build() {
-        return new CommandPropertyMap(defaultProperties, properties);
+        return new CommandPropertyMap(defaultProperties.get(), properties);
     }
 
     public CommandPropertyMapBuilder putAnnotations(Annotation[] annotations) {
