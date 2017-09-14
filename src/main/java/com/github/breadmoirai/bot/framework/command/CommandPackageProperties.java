@@ -18,18 +18,20 @@ import java.lang.annotation.Annotation;
 import java.util.HashMap;
 import java.util.Map;
 
-public class CommandProperties {
+public class CommandPackageProperties {
 
     /**
      * A private constructor for a static class.
      */
-    private CommandProperties() {
+    private CommandPackageProperties() {
     }
+
+    //packages
 
     private static Map<Package, CommandPropertyMap> packageMap = new HashMap<>();
 
     public static CommandPropertyMap getPropertiesForPackage(Package p) {
-        return packageMap.computeIfAbsent(p, CommandProperties::createPropertiesForPackage);
+        return packageMap.computeIfAbsent(p, CommandPackageProperties::createPropertiesForPackage);
     }
 
     private static CommandPropertyMap createPropertiesForPackage(Package p) {
@@ -48,18 +50,4 @@ public class CommandProperties {
         return map.build();
     }
 
-    /**
-     * Returns true if the map passed contains all the specified properties.
-     *
-     * @param map        a {@link com.github.breadmoirai.bot.framework.command.CommandPropertyMap}
-     * @param properties a var-arg or array of Class<?> propertyTypes.
-     * @return {@code true} if all the specified properties have a mapping in the map.
-     */
-    private static boolean hasProperties(CommandPropertyMap map, Class<?>... properties) {
-        for (Class<?> property : properties) {
-            if (!map.containsProperty(property))
-                return false;
-        }
-        return true;
-    }
 }
