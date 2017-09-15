@@ -14,15 +14,23 @@
 */
 package com.github.breadmoirai.bot.framework.command.impl;
 
+import com.github.breadmoirai.bot.framework.command.CommandPropertyMap;
 import com.github.breadmoirai.bot.framework.event.CommandEvent;
+import com.github.breadmoirai.bot.util.EventStringIterator;
+
+import java.util.Iterator;
 
 public interface CommandHandle {
 
-    default boolean execute(CommandEvent event) throws Throwable {
-        return execute(null, event, 0);
+    String getName();
+
+    CommandPropertyMap getPropertyMap();
+
+    default boolean execute(CommandEvent event) {
+        return execute(null, event, new EventStringIterator(event));
     }
 
-    boolean execute(Object parent, CommandEvent event, int subKey) throws Throwable;
+    boolean execute(Object parent, CommandEvent event, Iterator<String> keyItr);
 
     String[] getKeys();
 }

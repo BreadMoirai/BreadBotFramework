@@ -18,4 +18,8 @@ public class CommandInitializationException extends RuntimeException {
     public CommandInitializationException(String message) {
         super(message);
     }
+
+    public CommandInitializationException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }
