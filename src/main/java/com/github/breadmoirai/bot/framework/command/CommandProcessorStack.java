@@ -15,12 +15,14 @@ public class CommandProcessorStack extends ArrayDeque<CommandPreprocessor> {
     private final CommandHandle targetHandle;
     private final CommandEvent event;
     private final Runnable onEnd;
+    private boolean ranEnd;
 
     public CommandProcessorStack(Object object, CommandHandle targetHandle, CommandEvent event, Collection<CommandPreprocessor> preprocessors, Runnable onEnd) {
         this.object = object;
         this.targetHandle = targetHandle;
         this.event = event;
         this.onEnd = onEnd;
+        this.ranEnd = false;
     }
 
     public Object getCommandObject() {
@@ -43,6 +45,16 @@ public class CommandProcessorStack extends ArrayDeque<CommandPreprocessor> {
             this.pop().process(object, targetHandle, event, this);
         else {
             onEnd.run();
+            ranEnd = true;
         }
+    }
+
+    /**
+     * Returns {@code true} if the command has been executed.
+     *
+     * @return If you're calling this from a preprocessor, it will return {@code false}
+     */
+    public boolean result() {
+        return ranEnd;
     }
 }
