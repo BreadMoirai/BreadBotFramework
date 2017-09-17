@@ -3,17 +3,18 @@ package com.github.breadmoirai.bot.framework.command.arg;
 import org.jetbrains.annotations.Contract;
 
 import java.util.Optional;
+import java.util.function.BiFunction;
 
 /**
  * This class provided behavior to map a {@link com.github.breadmoirai.bot.framework.command.arg.CommandArgument} to a specified Type.
  * @param <T> the type to map to.
  */
 @FunctionalInterface
-public interface ArgumentMapper<T> {
+public interface ArgumentTypeMapper<T> extends BiFunction<CommandArgument, Integer, Optional<T>> {
 
-    ArgumentMapper<Void> VOID_MAPPER = (arg, flags) -> Optional.empty();
+    ArgumentTypeMapper<Void> VOID_MAPPER = (arg, flags) -> Optional.empty();
 
-    static <R> ArgumentMapper<R> getEmptyMapper(Class<R> type) {
+    static <R> ArgumentTypeMapper<R> getEmptyMapper(Class<R> type) {
         return (arg, flags) -> Optional.empty();
     }
 
@@ -29,4 +30,9 @@ public interface ArgumentMapper<T> {
     @Contract("_, _ -> !null")
     Optional<T> map(CommandArgument arg, int flags);
 
+
+    @Override
+    default Optional<T> apply(CommandArgument commandArgument, Integer integer) {
+        return map(commandArgument, integer);
+    }
 }

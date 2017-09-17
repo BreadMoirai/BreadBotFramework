@@ -14,20 +14,14 @@
 */
 package com.github.breadmoirai.bot.framework.command.arg;
 
-import java.util.Optional;
-import java.util.function.Function;
+import java.util.function.Predicate;
 
-/**
- * This interface ignores flags.
- *
- * @param <T> the Type
- *
- * @see com.github.breadmoirai.bot.framework.command.arg.impl.ArgumentTypeSimpleImpl
- */
-public interface ArgumentMapperSimple<T> extends ArgumentMapper<T>, Function<CommandArgument, Optional<T>> {
+@FunctionalInterface
+public interface ArgumentTypePredicate extends Predicate<CommandArgument> {
 
-    @Override
-    default Optional<T> map(CommandArgument arg, int flags) {
-        return apply(arg);
+    boolean test(CommandArgument arg, int flags);
+
+    default boolean test(CommandArgument arg) {
+        return test(arg, 0);
     }
 }

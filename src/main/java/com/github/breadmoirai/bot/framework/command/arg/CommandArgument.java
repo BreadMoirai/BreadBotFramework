@@ -124,6 +124,20 @@ public interface CommandArgument {
     /**
      * Invocation is exactly the same as:
      * <pre><code>
+     *     this.{@link CommandArgument#getArgument() getArgument()}.{@link java.lang.String#matches(String) matches}(regex)
+     * </code></pre>
+     *
+     * @param regex the regular expression to which this string is to be matched
+     * @return {@code true} if, and only if, this string matches the
+     * given regular expression
+     */
+    default boolean matches(String regex, int flags) {
+        return Pattern.compile(regex, flags).matcher(getArgument()).matches();
+    }
+
+    /**
+     * Invocation is exactly the same as:
+     * <pre><code>
      *     pattern.{@link Pattern#matcher(java.lang.CharSequence) matcher}(this.{@link CommandArgument#getArgument() getArgument()}).{@link java.util.regex.Matcher#matches() matches()}
      * </code></pre>
      *
@@ -261,6 +275,20 @@ public interface CommandArgument {
         String s = getArgument();
         s = Arguments.stripHexPrefix(s);
         return Integer.parseInt(s, 16);
+    }
+
+    /**
+     * Please refer to {@link com.github.breadmoirai.bot.framework.event.Arguments#isBoolean}
+     *
+     * @return {@code true} if this can be parsed to a boolean. {@code false} otherwise.
+     * @see Arguments#isBoolean(String)
+     */
+    default boolean isBoolean() {
+        return Arguments.isBoolean(getArgument());
+    }
+
+    default boolean parseBoolean() {
+        return Arguments.parseBoolean(getArgument());
     }
 
     /**

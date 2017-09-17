@@ -14,11 +14,12 @@
 */
 package com.github.breadmoirai.bot.framework.command.arg;
 
+import com.github.breadmoirai.bot.framework.command.CommandParameter;
 import com.github.breadmoirai.bot.framework.event.CommandEvent;
 
-@FunctionalInterface
-public interface NullArgumentConsumer {
+import java.util.function.BiConsumer;
 
-    void accept(CommandEvent event, CommandParameter parameter);
+@FunctionalInterface
+public interface NullArgumentConsumer extends BiConsumer<CommandEvent, CommandParameter> {
 
 }

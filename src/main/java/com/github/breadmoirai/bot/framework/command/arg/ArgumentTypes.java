@@ -14,10 +14,10 @@
 */
 package com.github.breadmoirai.bot.framework.command.arg;
 
-import com.github.breadmoirai.bot.framework.command.arg.impl.ArgumentTypeSimpleImpl;
 import com.github.breadmoirai.bot.framework.event.Arguments;
 import com.github.breadmoirai.bot.util.Emoji;
 import net.dv8tion.jda.core.entities.*;
+import net.dv8tion.jda.core.utils.tuple.Pair;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -44,30 +44,40 @@ public final class ArgumentTypes {
     public static final Class<Emote> EMOTE = Emote.class;
     public static final Class<Emoji> EMOJI = Emoji.class;
 
-    private static final Map<Class<?>, ArgumentMapper<?>> map;
+    private static final Map<Class<?>, Pair<ArgumentTypePredicate, ArgumentTypeMapper<?>>> map;
 
     static {
         map = new HashMap<>();
 
-        final ArgumentMapper<Integer> intType = (arg, flags) -> {
-            final boolean hex = ArgumentFlags.hasFlag(ArgumentFlags.HEX, flags);
-            if (hex && arg.isHex()) {
+
+        final ArgumentTypePredicate intPredicate = (arg, flags) -> {
+            final boolean hex = ArgumentFlags.hasFlag(flags, ArgumentFlags.HEX);
+            return hex ? arg.isHex() : arg.isInteger();
+        };
+        final ArgumentTypeMapper<Integer> intType = (arg, flags) -> {
+            final boolean hex = ArgumentFlags.hasFlag(flags, ArgumentFlags.HEX);
+            if (hex) {
                 try {
                     return Optional.of(Integer.parseInt(Arguments.stripHexPrefix(arg.getArgument()), 16));
                 } catch (NumberFormatException ignored) {
-
+                    return Optional.empty();
                 }
-            } else if (arg.isInteger()) {
+            } else {
                 return Optional.of(arg.parseInt());
             }
-            return Optional.empty();
         };
-        map.put(INTEGER, intType);
-        map.put(Integer.class, intType);
+        final Pair<ArgumentTypePredicate, ArgumentTypeMapper<?>> intPair = Pair.of(intPredicate, intType);
+        map.put(INTEGER, intPair);
+        map.put(Integer.class, intPair);
 
-        final ArgumentMapper<Long> longType = (arg, flags) -> {
-            final boolean hex = ArgumentFlags.hasFlag(ArgumentFlags.HEX, flags);
-            if (hex && arg.isHex()) {
+
+        final ArgumentTypePredicate longPredicate = (arg, flags) -> {
+            final boolean hex = ArgumentFlags.hasFlag(flags, ArgumentFlags.HEX);
+            return hex ? arg.isHex() : arg.isLong();
+        };
+        final ArgumentTypeMapper<Long> longType = (arg, flags) -> {
+            final boolean hex = ArgumentFlags.hasFlag(flags, ArgumentFlags.HEX);
+            if (hex) {
                 try {
                     return Optional.of(Long.parseLong(Arguments.stripHexPrefix(arg.getArgument()), 16));
                 } catch (NumberFormatException ignored) {
@@ -78,66 +88,60 @@ public final class ArgumentTypes {
             }
             return Optional.empty();
         };
-        map.put(LONG, longType);
-        map.put(Long.class, longType);
+        final Pair<ArgumentTypePredicate, ArgumentTypeMapper<?>> longPair = Pair.of(longPredicate, longType);
+        map.put(LONG, longPair);
+        map.put(Long.class, longPair);
 
-        final ArgumentMapper<Float> floatType = new ArgumentTypeSimpleImpl<>(CommandArgument::isFloat, CommandArgument::parseFloat);
-        map.put(FLOAT, floatType);
-        map.put(Float.class, floatType);
+        registerArgumentMapperSimple(FLOAT, CommandArgument::isFloat, CommandArgument::parseFloat);
+        registerArgumentMapperSimple(Float.class, CommandArgument::isFloat, CommandArgument::parseFloat);
 
-        final ArgumentMapper<Double> doubleType = new ArgumentTypeSimpleImpl<>(CommandArgument::isFloat, CommandArgument::parseDouble);
-        map.put(DOUBLE, doubleType);
-        map.put(Double.class, doubleType);
+        registerArgumentMapperSimple(DOUBLE, CommandArgument::isFloat, CommandArgument::parseDouble);
+        registerArgumentMapperSimple(Double.class, CommandArgument::isFloat, CommandArgument::parseDouble);
 
-        final ArgumentMapper<Boolean> boolType = new ArgumentTypeSimpleImpl<>(commandArgument -> {
-            final String s = commandArgument.getArgument();
-            return s.equals("true") || s.equals("false");
-        }, commandArgument -> {
-            final String s = commandArgument.getArgument();
-            return s.equals("true");
-        });
-        map.put(BOOLEAN, boolType);
-        map.put(Boolean.class, boolType);
+
+        registerArgumentMapperSimple(BOOLEAN, CommandArgument::isBoolean, CommandArgument::parseBoolean);
+        registerArgumentMapperSimple(Boolean.class, CommandArgument::isBoolean, CommandArgument::parseBoolean);
 
         registerArgumentMapper(RANGE, (arg, flags) -> {
-            if ((ArgumentFlags.isStrict(flags) && arg.isInteger())
-                    || (arg.isRange() || arg.isInteger())) {
-                return Optional.of(arg.parseRange());
-            }
-            return Optional.empty();
+            if (ArgumentFlags.isStrict(flags)) {
+                return arg.isRange();
+            } else return arg.isInteger() || arg.isRange();
+        }, (arg, flags) -> {
+            if (ArgumentFlags.isStrict(flags)) {
+                return arg.isNumeric() ? Optional.empty() : Optional.of(arg.parseRange());
+            } else return Optional.of(arg.parseRange());
         });
 
-        registerArgumentMapper(USER, (arg, flags) -> {
+        registerArgumentMapper(USER, null, (arg, flags) -> {
             if (ArgumentFlags.isStrict(flags)) {
-                return arg.isValidUser() ? Optional.of(arg.getUser()) : Optional.empty();
+                if (arg.isValidUser()) return Optional.of(arg.getUser());
+                else return Optional.empty();
             }
             if (arg.isLong()) {
                 long l = arg.parseLong();
                 User user = arg.getJDA().getUserById(l);
-                if (user != null) {
-                    return Optional.of(user);
-                }
+                return Optional.ofNullable(user);
             }
             return arg.findMember().map(Member::getUser);
         });
 
-        registerArgumentMapper(MEMBER, (arg, flags) -> {
+        registerArgumentMapper(MEMBER, null, (arg, flags) -> {
             if (ArgumentFlags.isStrict(flags)) {
-                return arg.isValidMember() ? Optional.of(arg.getMember()) : Optional.empty();
+                if (arg.isValidMember()) return Optional.of(arg.getMember());
+                else return Optional.empty();
             }
             if (arg.isLong()) {
                 long l = arg.parseLong();
                 Member member = arg.getGuild().getMemberById(l);
-                if (member != null) {
-                    return Optional.of(member);
-                }
+                return Optional.ofNullable(member);
             }
             return arg.findMember();
         });
 
-        registerArgumentMapper(ROLE, (arg, flags) -> {
+        registerArgumentMapper(ROLE, null, (arg, flags) -> {
             if (ArgumentFlags.isStrict(flags)) {
-                return arg.isValidRole() ? Optional.of(arg.getRole()) : Optional.empty();
+                if (arg.isValidRole()) return Optional.of(arg.getRole());
+                else return Optional.empty();
             }
             if (arg.isLong()) {
                 long l = arg.parseLong();
@@ -149,9 +153,10 @@ public final class ArgumentTypes {
             return arg.findRole();
         });
 
-        registerArgumentMapper(TEXTCHANNEL, (arg, flags) -> {
+        registerArgumentMapper(TEXTCHANNEL, null, (arg, flags) -> {
             if (ArgumentFlags.isStrict(flags)) {
-                return arg.isValidTextChannel() ? Optional.of(arg.getTextChannel()) : Optional.empty();
+                if (arg.isValidTextChannel()) return Optional.of(arg.getTextChannel());
+                else return Optional.empty();
             }
             if (arg.isLong()) {
                 long l = arg.parseLong();
@@ -163,9 +168,9 @@ public final class ArgumentTypes {
             return arg.findTextChannel();
         });
 
-        registerArgumentMapper(EMOTE, (arg, flags) -> arg.isEmote() ? Optional.of(arg.getEmote()) : Optional.empty());
+        registerArgumentMapperSimple(EMOTE, CommandArgument::isEmote, CommandArgument::getEmote);
 
-        registerArgumentMapper(EMOJI, (arg, flags) -> arg.isEmoji() ? Optional.of(arg.getEmoji()) : Optional.empty());
+        registerArgumentMapperSimple(EMOJI, CommandArgument::isEmoji, CommandArgument::getEmoji);
     }
 
     /**
@@ -175,21 +180,23 @@ public final class ArgumentTypes {
      * @param mapper the mapper
      * @param <T>    the type
      */
-    public static <T> void registerArgumentMapper(Class<T> type, ArgumentMapper<T> mapper) {
-        map.put(type, mapper);
+    public static <T> void registerArgumentMapper(Class<T> type, ArgumentTypePredicate predicate, ArgumentTypeMapper<T> mapper) {
+        map.put(type, Pair.of(predicate, mapper));
     }
 
 
     /**
-     * This ignores flags. Use {@link com.github.breadmoirai.bot.framework.command.arg.ArgumentTypes#registerArgumentMapper(java.lang.Class, com.github.breadmoirai.bot.framework.command.arg.ArgumentMapper)} otherwise.
+     * This ignores flags. Use {@link com.github.breadmoirai.bot.framework.command.arg.ArgumentTypes#registerArgumentMapper} otherwise.
      *
      * @param type      The type class
-     * @param isType    predicate to test if the argument can be parsed to the type provided.
-     * @param getAsType A function to actually convert the argument to the type provided.
+     * @param isType    predicate to test if the argument can be parsed to the type provided. This param can be left {@code null} if the complexity is close to {@code getAsType.apply(arg) != null}
+     * @param getAsType A function to convert the argument to the type provided.
      * @param <T>       The type
      */
-    public static <T> void registerArgumentMapper(Class<T> type, Predicate<CommandArgument> isType, Function<CommandArgument, T> getAsType) {
-        registerArgumentMapper(type, new ArgumentTypeSimpleImpl<>(isType, getAsType));
+    public static <T> void registerArgumentMapperSimple(Class<T> type, Predicate<CommandArgument> isType, Function<CommandArgument, T> getAsType) {
+        final ArgumentTypePredicate l = (arg, flags) -> isType.test(arg);
+        final ArgumentTypeMapper<T> r = (arg, flags) -> Optional.ofNullable(getAsType.apply(arg));
+        registerArgumentMapper(type, l, r);
     }
 
     /**
@@ -203,7 +210,15 @@ public final class ArgumentTypes {
      * @return an Optional containing the result if successful. Otherwise empty.
      */
     public static <T> Optional<T> getAsType(Class<T> type, CommandArgument arg, int flags) {
-        return getMapper(type).map(arg, flags);
+        final Pair<ArgumentTypePredicate, ArgumentTypeMapper<T>> pair = getPredicateMapper(type);
+        if (pair == null) return Optional.empty();
+        final ArgumentTypePredicate predicate = pair.getLeft();
+        if (predicate != null && predicate.test(arg, flags)
+                || predicate == null) {
+            final ArgumentTypeMapper<T> mapper = pair.getRight();
+            return mapper.map(arg, flags);
+        }
+        return Optional.empty();
     }
 
     /**
@@ -220,19 +235,27 @@ public final class ArgumentTypes {
     }
 
     /**
-     * Implemented as
+     * Checks if the passed arg is
      * <pre><code>
      *     {@link com.github.breadmoirai.bot.framework.command.arg.ArgumentTypes#getAsType(java.lang.Class, com.github.breadmoirai.bot.framework.command.arg.CommandArgument, int) getAsType(type, arg, flags)}.isPresent();
      * </code></pre>
      */
     public static boolean isOfType(Class<?> type, CommandArgument arg, int flags) {
-        return getAsType(type, arg, flags).isPresent();
+        final Pair<ArgumentTypePredicate, ? extends ArgumentTypeMapper<?>> pair = getPredicateMapper(type);
+        if (pair == null) {
+            return false;
+        }
+        final ArgumentTypePredicate tester = pair.getLeft();
+        if (tester != null) {
+            return tester.test(arg, flags);
+        }
+        return pair.getRight().map(arg, flags).isPresent();
     }
 
     /**
      * Implemented as
      * <pre><code>
-     *     {@link com.github.breadmoirai.bot.framework.command.arg.ArgumentTypes#getAsType(java.lang.Class, com.github.breadmoirai.bot.framework.command.arg.CommandArgument) getAsType(type, arg, flags)}.isPresent();
+     *     {@link com.github.breadmoirai.bot.framework.command.arg.ArgumentTypes#isOfType(java.lang.Class, com.github.breadmoirai.bot.framework.command.arg.CommandArgument, int) isOfType(type, arg, 0)}
      * </code></pre>
      */
     public static boolean isOfType(Class<?> type, CommandArgument arg) {
@@ -240,8 +263,18 @@ public final class ArgumentTypes {
     }
 
 
-    public static <T> ArgumentMapper<T> getMapper(Class<T> type) {
-        //noinspection unchecked
-        return (ArgumentMapper<T>) map.getOrDefault(type, ArgumentMapper.getEmptyMapper(type));
+    /**
+     * Returns the predicate mapper pair registered if found.
+     *
+     * @param type the class of the type as it was registered or one of the default types.
+     * @param <T>  the type
+     * @return a {@link net.dv8tion.jda.core.utils.tuple.Pair} if found. else {@code null}. If the pair is found, The {@link com.github.breadmoirai.bot.framework.command.arg.ArgumentTypePredicate} of the pair may be {@code null}, but the {@link ArgumentTypeMapper} is always {@code notnull}.
+     */
+    public static <T> Pair<ArgumentTypePredicate, ArgumentTypeMapper<T>> getPredicateMapper(Class<T> type) {
+        final Pair<?, ?> pair = map.get(type);
+        if (pair != null) {
+            //noinspection unchecked
+            return (Pair<ArgumentTypePredicate, ArgumentTypeMapper<T>>) pair;
+        } else return null;
     }
 }

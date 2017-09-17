@@ -24,6 +24,6 @@ import java.lang.annotation.Target;
 @Target({ElementType.TYPE, ElementType.PARAMETER, ElementType.PACKAGE, ElementType.METHOD})
 public @interface RegisterArgumentMapper {
 
-    Class<ArgumentMapper<?>>[] mapper() default {};
+    Class<ArgumentTypeMapper<?>>[] mapper() default {};
 
 }

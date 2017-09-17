@@ -112,6 +112,16 @@ public class MentionArgument implements CommandArgument {
     }
 
     @Override
+    public boolean isBoolean() {
+        return false;
+    }
+
+    @Override
+    public boolean parseBoolean() {
+        throw new NumberFormatException(arg);
+    }
+
+    @Override
     public boolean isUser() {
         return false;
     }

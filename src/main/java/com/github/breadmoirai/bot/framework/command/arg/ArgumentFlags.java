@@ -8,7 +8,7 @@ import gnu.trove.map.hash.TObjectIntHashMap;
  */
 public final class ArgumentFlags {
     /**
-     * Signifies that the {@link com.github.breadmoirai.bot.framework.command.arg.ArgumentMapper} should do everything it can to map to it's type. This has no effect on numeric types.
+     * Signifies that the {@link ArgumentTypeMapper} should do everything it can to map to it's type. This has no effect on numeric types.
      */
     public static final String STRICT = "strict";
     /**
@@ -65,17 +65,24 @@ public final class ArgumentFlags {
      * @return {@code true} if the flag indicates to use a Strict Strategy.
      */
     public static boolean isStrict(int flags) {
-        return hasFlag(STRICT, flags);
+        return hasFlag(flags, STRICT);
     }
 
     /**
      * checks if the provided {@code int} value contains the specified flag.
-     * @param flagName the name of the flag.
      * @param flags the flag value to test.
+     * @param flagName the name of the flag.
      * @return {@code true} if the value contains the specified flag, otherwise {@code false}. If the given {@code flagName} is not registered, {@code false} will be returned.
      */
-    public static boolean hasFlag(String flagName, int flags) {
+    public static boolean hasFlag(int flags, String flagName) {
         return (getFlag(flagName) & flags) != 0;
+    }
+
+    public static boolean hasFlags(int flags, String... flagNames) {
+        for (String flagName : flagNames) {
+            if (!hasFlag(flags, flagName)) return false;
+        }
+        return true;
     }
 
     /**
