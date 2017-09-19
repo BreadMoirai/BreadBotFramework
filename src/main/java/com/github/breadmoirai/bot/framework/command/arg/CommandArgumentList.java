@@ -1,10 +1,10 @@
 package com.github.breadmoirai.bot.framework.command.arg;
 
+import com.github.breadmoirai.bot.framework.event.CommandEvent;
 import com.github.breadmoirai.bot.util.Emoji;
 import gnu.trove.impl.Constants;
 import gnu.trove.map.TObjectIntMap;
 import gnu.trove.map.hash.TObjectIntHashMap;
-import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.*;
 
 import java.util.*;
@@ -18,40 +18,22 @@ import java.util.stream.StreamSupport;
 public class CommandArgumentList extends AbstractList<CommandArgument> {
 
     final private CommandArgument[] arguments;
-    private final JDA jda;
-    private final Guild guild;
-    private final TextChannel channel;
+    private final CommandEvent event;
 
-    public CommandArgumentList(String[] strings, JDA jda, Guild guild, TextChannel channel) {
+    public CommandArgumentList(String[] strings, CommandEvent event) {
         this.arguments = new CommandArgument[strings.length];
-        this.jda = jda;
-        this.guild = guild;
-        this.channel = channel;
-        CommandArgumentFactory factory = new CommandArgumentFactory(jda, guild, channel);
+        this.event = event;
+        CommandArgumentFactory factory = new CommandArgumentFactory(event.getJDA(), event.getGuild(), event.getChannel());
         Arrays.parallelSetAll(arguments, value -> factory.parse(strings[value]));
     }
 
-    public CommandArgumentList(String[] strings, TextChannel channel) {
-        this(strings, channel.getJDA(), channel.getGuild(), channel);
-    }
-
-    public CommandArgumentList(CommandArgument[] arguments, JDA jda, Guild guild, TextChannel channel) {
+    public CommandArgumentList(CommandArgument[] arguments, CommandEvent event) {
         this.arguments = arguments;
-        this.jda = jda;
-        this.guild = guild;
-        this.channel = channel;
+        this.event = event;
     }
 
-    public JDA getJDA() {
-        return jda;
-    }
-
-    public Guild getGuild() {
-        return guild;
-    }
-
-    public TextChannel getChannel() {
-        return channel;
+    public CommandEvent getEvent() {
+        return event;
     }
 
     /**

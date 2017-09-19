@@ -1,8 +1,6 @@
 package com.github.breadmoirai.bot.framework.command.arg.impl;
 
-import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.TextChannel;
+import com.github.breadmoirai.bot.framework.event.CommandEvent;
 import net.dv8tion.jda.core.entities.User;
 import org.jetbrains.annotations.NotNull;
 
@@ -10,8 +8,8 @@ public class UserArgument extends MentionArgument {
 
     private final User user;
 
-    public UserArgument(JDA jda, Guild guild, TextChannel channel, String arg, User user) {
-        super(jda, guild, channel, arg);
+    public UserArgument(CommandEvent event, String arg, User user) {
+        super(event, arg);
         this.user = user;
     }
 

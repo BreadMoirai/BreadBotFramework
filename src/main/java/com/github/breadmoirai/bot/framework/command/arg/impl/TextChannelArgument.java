@@ -1,7 +1,6 @@
 package com.github.breadmoirai.bot.framework.command.arg.impl;
 
-import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.Guild;
+import com.github.breadmoirai.bot.framework.event.CommandEvent;
 import net.dv8tion.jda.core.entities.TextChannel;
 import org.jetbrains.annotations.NotNull;
 
@@ -10,11 +9,12 @@ import java.util.List;
 import java.util.Optional;
 
 public class TextChannelArgument extends MentionArgument {
+
     private final TextChannel channel;
 
-    public TextChannelArgument(JDA jda, Guild guild, TextChannel textChannel, String arg, TextChannel channel) {
-        super(jda, guild, textChannel, arg);
-        this.channel = channel;
+    public TextChannelArgument(CommandEvent event, String s, TextChannel textChannel) {
+        super(event, s);
+        this.channel = textChannel;
     }
 
     @Override

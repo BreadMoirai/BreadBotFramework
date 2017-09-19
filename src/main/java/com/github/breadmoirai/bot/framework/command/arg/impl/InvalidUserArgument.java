@@ -14,13 +14,12 @@
 */
 package com.github.breadmoirai.bot.framework.command.arg.impl;
 
-import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.TextChannel;
+import com.github.breadmoirai.bot.framework.event.CommandEvent;
 
 public class InvalidUserArgument extends InvalidMentionArgument {
-    public InvalidUserArgument(JDA jda, Guild guild, TextChannel channel, String s, long id) {
-        super(jda, guild, channel, s, id);
+
+    public InvalidUserArgument(CommandEvent event, String s, long idLong) {
+        super(event, s, idLong);
     }
 
     @Override

@@ -1,9 +1,7 @@
 package com.github.breadmoirai.bot.framework.command.arg.impl;
 
-import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.Guild;
+import com.github.breadmoirai.bot.framework.event.CommandEvent;
 import net.dv8tion.jda.core.entities.Role;
-import net.dv8tion.jda.core.entities.TextChannel;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
@@ -14,8 +12,8 @@ public class RoleArgument extends MentionArgument {
 
     private final Role role;
 
-    public RoleArgument(JDA jda, Guild guild, TextChannel channel, String arg, Role role) {
-        super(jda, guild, channel, arg);
+    public RoleArgument(CommandEvent event, String s, Role role) {
+        super(event, s);
         this.role = role;
     }
 

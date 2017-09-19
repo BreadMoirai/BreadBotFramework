@@ -3,6 +3,7 @@ package com.github.breadmoirai.bot.framework.event;
 import com.github.breadmoirai.bot.util.DiscordPatterns;
 import org.jetbrains.annotations.Contract;
 
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.IntStream;
 
@@ -236,5 +237,27 @@ public class Arguments {
             return s.substring(2);
         }
         return s;
+    }
+
+    public static Pattern boolPattern = Pattern.compile("(true|yes|on)|(false|no|off)", Pattern.CASE_INSENSITIVE);
+
+
+    /**
+     * Checks if the String passed matches the following regex
+     * <pre><code>
+     * {@link java.util.regex.Pattern}.{@link java.util.regex.Pattern#compile(java.lang.String, int)}("(true|yes|on)|(false|no|off)", {@link java.util.regex.Pattern#CASE_INSENSITIVE Pattern.CASE_INSENSITIVE});
+     * </code></pre>
+     * This can be changed by assigning a different value to {@code Arguments.boolPattern}.
+     *
+     * @param argument a String for which to test for
+     * @return {@code true} if the string can be parsed into a boolean.
+     */
+    public static boolean isBoolean(String argument) {
+        return boolPattern.matcher(argument).matches();
+    }
+
+    public static boolean parseBoolean(String argument) {
+        final Matcher matcher = boolPattern.matcher(argument);
+        return matcher.matches() && matcher.group(1) != null;
     }
 }

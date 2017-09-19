@@ -15,8 +15,8 @@
 package com.github.breadmoirai.bot.framework.command.arg;
 
 import com.github.breadmoirai.bot.framework.event.Arguments;
+import com.github.breadmoirai.bot.framework.event.CommandEvent;
 import com.github.breadmoirai.bot.util.Emoji;
-import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.*;
 import org.jetbrains.annotations.NotNull;
 
@@ -31,33 +31,19 @@ import java.util.stream.IntStream;
 public interface CommandArgument {
 
     /**
-     * This is a getter method.
+     * Gets the CommandEvent for this argument.
+     *
+     * @return a {@link com.github.breadmoirai.bot.framework.event.CommandEvent}
+     */
+    CommandEvent getEvent();
+
+    /**
+     * Returns the backing string of this argument in it's original form.
      *
      * @return The underlying string for this argument.
      */
     String getArgument();
 
-    /**
-     * This is a getter method.
-     *
-     * @return the {@link net.dv8tion.jda.core.JDA} instance.
-     */
-    JDA getJDA();
-
-    /**
-     * This is a getter method.
-     *
-     * @return The {@link net.dv8tion.jda.core.entities.Guild} this argument was sent in.
-     */
-    Guild getGuild();
-
-    /**
-     * This is a getter method.
-     *
-     * @return The channel this argument was sent in.
-     * @see com.github.breadmoirai.bot.framework.command.arg.CommandArgument#getTextChannel
-     */
-    TextChannel getChannel();
 
     /**
      * If this method returns {@code true}, that means this argument has been eagerly evaluated to a mention. This argument would be of type

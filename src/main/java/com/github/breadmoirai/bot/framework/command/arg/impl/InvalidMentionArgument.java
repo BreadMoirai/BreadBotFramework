@@ -14,9 +14,7 @@
 */
 package com.github.breadmoirai.bot.framework.command.arg.impl;
 
-import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.TextChannel;
+import com.github.breadmoirai.bot.framework.event.CommandEvent;
 
 /**
  * If this argument is a mention but not a valid mention.
@@ -27,8 +25,8 @@ import net.dv8tion.jda.core.entities.TextChannel;
 public class InvalidMentionArgument extends MentionArgument {
     private final long id;
 
-    public InvalidMentionArgument(JDA jda, Guild guild, TextChannel channel, String s, long id) {
-        super(jda, guild, channel, s);
+    public InvalidMentionArgument(CommandEvent event, String s, long id) {
+        super(event, s);
         this.id = id;
     }
 

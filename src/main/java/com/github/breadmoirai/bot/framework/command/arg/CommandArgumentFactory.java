@@ -2,6 +2,7 @@ package com.github.breadmoirai.bot.framework.command.arg;
 
 import com.github.breadmoirai.bot.framework.command.arg.impl.*;
 import com.github.breadmoirai.bot.framework.event.Arguments;
+import com.github.breadmoirai.bot.framework.event.CommandEvent;
 import com.github.breadmoirai.bot.util.Emoji;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.*;
@@ -10,14 +11,17 @@ import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import org.jetbrains.annotations.Nullable;
 
 public class CommandArgumentFactory {
+    private final CommandEvent event;
     private final JDA jda;
     private final Guild guild;
     private final TextChannel channel;
 
-    public CommandArgumentFactory(JDA jda, Guild guild, TextChannel channel) {
-        this.jda = jda;
-        this.guild = guild;
-        this.channel = channel;
+
+    private CommandArgumentFactory(CommandEvent event) {
+        this.event = event;
+        this.jda = event.getJDA();
+        this.guild = event.getGuild();
+        this.channel = event.getChannel();
     }
 
     public CommandArgument parse(final String s) {
@@ -34,8 +38,8 @@ public class CommandArgumentFactory {
                                 long idLong = Long.parseLong(roleId);
                                 Role role = guild.getRoleById(idLong);
                                 if (role != null)
-                                    return new RoleArgument(jda, guild, channel, s, role);
-                                return new InvalidRoleArgument(jda, guild, channel, s, idLong);
+                                    return new RoleArgument(event, s, role);
+                                return new InvalidRoleArgument(event, s, idLong);
                             } else break;
                         case '!':
                             i++;
@@ -45,11 +49,11 @@ public class CommandArgumentFactory {
                                 long idLong = Long.parseLong(userId);
                                 Member member = guild.getMemberById(idLong);
                                 if (member != null)
-                                    return new MemberArgument(jda, guild, channel, s, member);
+                                    return new MemberArgument(event, s, member);
                                 User user = jda.getUserById(idLong);
                                 if (user != null)
-                                    return new UserArgument(jda, guild, channel, s, user);
-                                return new InvalidUserArgument(jda, guild, channel, s, idLong);
+                                    return new UserArgument(event, s, user);
+                                return new InvalidUserArgument(event, s, idLong);
                             }
                     }
                 }
@@ -60,8 +64,8 @@ public class CommandArgumentFactory {
                         long idLong = Long.parseLong(channelId);
                         TextChannel textChannel = guild.getTextChannelById(idLong);
                         if (textChannel != null)
-                            return new TextChannelArgument(jda, guild, channel, s, textChannel);
-                        return new InvalidTextChannelArgument(jda, guild, channel, s, idLong);
+                            return new TextChannelArgument(event, s, textChannel);
+                        return new InvalidTextChannelArgument(event, s, idLong);
                     }
                 }
                 break;
@@ -79,14 +83,14 @@ public class CommandArgumentFactory {
                             emoteImpl.setName(name);
                             jdaEmote = emoteImpl;
                         }
-                        return new EmoteArgument(jda, guild, channel, s, jdaEmote);
+                        return new EmoteArgument(event, s, jdaEmote);
                     }
                 }
             }
         }
         CommandArgument x = tryEmoji(s);
         if (x != null) return x;
-        return new GenericCommandArgument(jda, guild, channel, s);
+        return new GenericCommandArgument(event, s);
     }
 
     @Nullable
@@ -104,14 +108,14 @@ public class CommandArgumentFactory {
                 return null;
         } else if (s.length() == 1) {
             char c = s.charAt(0);
-            if (c == '\u00A9') return new EmojiArgument(jda, guild, channel, s, Emoji.COPYRIGHT);
-            else if (c == '\u00AE') return new EmojiArgument(jda, guild, channel, s, Emoji.REGISTERED);
+            if (c == '\u00A9') return new EmojiArgument(event, s, Emoji.COPYRIGHT);
+            else if (c == '\u00AE') return new EmojiArgument(event, s, Emoji.REGISTERED);
             else if (c < '\u203C' || c > '\u3299') return null;
 
         }
         Emoji emoji = Emoji.find(s);
         if (emoji != null) {
-            return new EmojiArgument(jda, guild, channel, s, emoji);
+            return new EmojiArgument(event, s, emoji);
         }
         return null;
     }

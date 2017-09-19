@@ -1,8 +1,8 @@
 package com.github.breadmoirai.bot.framework.command.arg.impl;
 
 import com.github.breadmoirai.bot.framework.command.arg.CommandArgument;
+import com.github.breadmoirai.bot.framework.event.CommandEvent;
 import com.github.breadmoirai.bot.util.Emoji;
-import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.*;
 import org.jetbrains.annotations.NotNull;
 
@@ -13,36 +13,22 @@ import java.util.stream.IntStream;
 
 public class MentionArgument implements CommandArgument {
 
-    private final JDA jda;
-    private final Guild guild;
-    private final TextChannel channel;
+    private final CommandEvent event;
     private final String arg;
 
-    public MentionArgument(JDA jda, Guild guild, TextChannel channel, String arg) {
-        this.jda = jda;
-        this.guild = guild;
-        this.channel = channel;
+    public MentionArgument(CommandEvent event, String arg) {
+        this.event = event;
         this.arg = arg;
+    }
+
+    @Override
+    public CommandEvent getEvent() {
+        return event;
     }
 
     @Override
     public String getArgument() {
         return arg;
-    }
-
-    @Override
-    public JDA getJDA() {
-        return jda;
-    }
-
-    @Override
-    public Guild getGuild() {
-        return guild;
-    }
-
-    @Override
-    public TextChannel getChannel() {
-        return channel;
     }
 
     @Override

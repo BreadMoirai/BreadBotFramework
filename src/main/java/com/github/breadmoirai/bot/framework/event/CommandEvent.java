@@ -250,7 +250,7 @@ public abstract class CommandEvent extends Event {
     public synchronized CommandArgumentList getArguments(int limit) {
         if (!hasContent()) {
             if (argumentList == null) {
-                argumentList = new CommandArgumentList(new String[]{}, getChannel());
+                argumentList = new CommandArgumentList(new String[]{}, this);
             }
             return argumentList;
         }
@@ -313,7 +313,7 @@ public abstract class CommandEvent extends Event {
                 .filter(s -> !s.isEmpty())
                 .map(String::toLowerCase)
                 .toArray(String[]::new);
-        return new CommandArgumentList(strings, getChannel());
+        return new CommandArgumentList(strings, this);
     }
 
     /**

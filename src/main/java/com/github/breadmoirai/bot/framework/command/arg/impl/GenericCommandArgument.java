@@ -1,8 +1,11 @@
 package com.github.breadmoirai.bot.framework.command.arg.impl;
 
 import com.github.breadmoirai.bot.framework.command.arg.CommandArgument;
-import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.*;
+import com.github.breadmoirai.bot.framework.event.CommandEvent;
+import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.Role;
+import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.entities.VoiceChannel;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -12,37 +15,23 @@ import java.util.stream.Stream;
 
 public class GenericCommandArgument implements CommandArgument {
 
-    private final JDA jda;
-    private final Guild guild;
-    private final TextChannel channel;
+    private final CommandEvent event;
 
     private final String arg;
 
-    public GenericCommandArgument(JDA jda, Guild guild, TextChannel channel, String arg) {
-        this.jda = jda;
-        this.guild = guild;
-        this.channel = channel;
+    public GenericCommandArgument(CommandEvent event, String arg) {
+        this.event = event;
         this.arg = arg;
+    }
+
+    @Override
+    public CommandEvent getEvent() {
+        return event;
     }
 
     @Override
     public String getArgument() {
         return arg;
-    }
-
-    @Override
-    public JDA getJDA() {
-        return jda;
-    }
-
-    @Override
-    public Guild getGuild() {
-        return guild;
-    }
-
-    @Override
-    public TextChannel getChannel() {
-        return channel;
     }
 
     @Override
@@ -84,7 +73,7 @@ public class GenericCommandArgument implements CommandArgument {
 
     private Stream<Member> memberStream() {
         final String arg = this.getArgument().toLowerCase();
-        List<Member> members = getGuild().getMembers();
+        List<Member> members = getEvent().getGuild().getMembers();
         Stream<Member> startsWith = members.stream().filter(member -> member.getEffectiveName().toLowerCase().startsWith(arg));
         Stream<Member> contains = members.stream().filter(member -> member.getEffectiveName().toLowerCase().contains(arg));
         Stream<Member> userContains = members.stream().filter(member -> member.getNickname() != null && member.getUser().getName().toLowerCase().contains(arg));
@@ -117,7 +106,7 @@ public class GenericCommandArgument implements CommandArgument {
 
     private Stream<Role> roleStream() {
         final String arg = getArgument().toLowerCase();
-        List<Role> roles = getGuild().getRoles();
+        List<Role> roles = getEvent().getGuild().getRoles();
         Stream<Role> exact = roles.stream().filter(role -> role.getName().equalsIgnoreCase(arg));
         Stream<Role> contains = roles.stream().filter(role -> role.getName().toLowerCase().contains(arg));
         return Stream.concat(exact, contains);
@@ -137,7 +126,7 @@ public class GenericCommandArgument implements CommandArgument {
 
     private Stream<TextChannel> textChannelStream() {
         final String arg = getArgument().toLowerCase();
-        List<TextChannel> channels = getGuild().getTextChannels();
+        List<TextChannel> channels = getEvent().getGuild().getTextChannels();
         Stream<TextChannel> exact = channels.stream().filter(channel -> channel.getName().equalsIgnoreCase(arg));
         Stream<TextChannel> contains = channels.stream().filter(channel -> channel.getName().toLowerCase().contains(arg));
         return Stream.concat(exact, contains);
@@ -167,17 +156,10 @@ public class GenericCommandArgument implements CommandArgument {
 
     private Stream<VoiceChannel> voiceChannelStream() {
         final String arg = getArgument().toLowerCase();
-        List<VoiceChannel> channels = getGuild().getVoiceChannels();
+        List<VoiceChannel> channels = getEvent().getGuild().getVoiceChannels();
         Stream<VoiceChannel> exact = channels.stream().filter(channel -> channel.getName().equalsIgnoreCase(arg));
         Stream<VoiceChannel> contains = channels.stream().filter(channel -> channel.getName().toLowerCase().contains(arg));
         return Stream.concat(exact, contains);
-    }
-
-    @Override
-    public int hashCode() {
-        int result = channel != null ? channel.hashCode() : 0;
-        result = 31 * result + arg.hashCode();
-        return result;
     }
 
     @Override
@@ -187,8 +169,15 @@ public class GenericCommandArgument implements CommandArgument {
 
         GenericCommandArgument that = (GenericCommandArgument) o;
 
-        if (channel != null ? !channel.equals(that.channel) : that.channel != null) return false;
-        return arg.equals(that.arg);
+        if (event != null ? !event.equals(that.event) : that.event != null) return false;
+        return arg != null ? arg.equals(that.arg) : that.arg == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = event != null ? event.hashCode() : 0;
+        result = 31 * result + (arg != null ? arg.hashCode() : 0);
+        return result;
     }
 
     @Override

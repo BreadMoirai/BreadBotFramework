@@ -1,17 +1,15 @@
 package com.github.breadmoirai.bot.framework.command.arg.impl;
 
-import net.dv8tion.jda.core.JDA;
+import com.github.breadmoirai.bot.framework.event.CommandEvent;
 import net.dv8tion.jda.core.entities.Emote;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.TextChannel;
 import org.jetbrains.annotations.NotNull;
 
 public class EmoteArgument extends MentionArgument {
 
     private final Emote emote;
 
-    public EmoteArgument(JDA jda, Guild guild, TextChannel channel, String s, Emote emote) {
-        super(jda, guild, channel, s);
+    public EmoteArgument(CommandEvent event, String s, Emote emote) {
+        super(event, s);
         this.emote = emote;
     }
 
