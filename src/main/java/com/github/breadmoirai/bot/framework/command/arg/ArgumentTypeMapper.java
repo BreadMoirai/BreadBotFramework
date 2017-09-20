@@ -19,7 +19,7 @@ public interface ArgumentTypeMapper<T> extends BiFunction<CommandArgument, Integ
     }
 
     /**
-     * Maps the {@link com.github.breadmoirai.bot.framework.command.arg.CommandArgument} to this given type.
+     * Maps / Parses the {@link com.github.breadmoirai.bot.framework.command.arg.CommandArgument} to this given type.
      * This method should never return a null value.
      *
      * @param arg The {@link com.github.breadmoirai.bot.framework.command.arg.CommandArgument} to be mapped.

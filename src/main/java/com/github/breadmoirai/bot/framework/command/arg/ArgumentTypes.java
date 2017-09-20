@@ -14,11 +14,14 @@
 */
 package com.github.breadmoirai.bot.framework.command.arg;
 
+import com.github.breadmoirai.bot.framework.command.impl.DateTimeMapper;
+import com.github.breadmoirai.bot.framework.command.impl.DurationMapper;
 import com.github.breadmoirai.bot.framework.event.Arguments;
 import com.github.breadmoirai.bot.util.Emoji;
 import net.dv8tion.jda.core.entities.*;
-import net.dv8tion.jda.core.utils.tuple.Pair;
 
+import java.time.Duration;
+import java.time.OffsetDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -44,7 +47,7 @@ public final class ArgumentTypes {
     public static final Class<Emote> EMOTE = Emote.class;
     public static final Class<Emoji> EMOJI = Emoji.class;
 
-    private static final Map<Class<?>, Pair<ArgumentTypePredicate, ArgumentTypeMapper<?>>> map;
+    private static final Map<Class<?>, ArgumentParser<?>> map;
 
     static {
         map = new HashMap<>();
@@ -66,16 +69,15 @@ public final class ArgumentTypes {
                 return Optional.of(arg.parseInt());
             }
         };
-        final Pair<ArgumentTypePredicate, ArgumentTypeMapper<?>> intPair = Pair.of(intPredicate, intType);
-        map.put(INTEGER, intPair);
-        map.put(Integer.class, intPair);
+        final ArgumentParser<Integer> intParser = new ArgumentParser<>(intPredicate, intType);
+        map.put(INTEGER, intParser);
+        map.put(Integer.class, intParser);
 
 
-        final ArgumentTypePredicate longPredicate = (arg, flags) -> {
+        final ArgumentParser<Long> longParser = new ArgumentParser<>((arg, flags) -> {
             final boolean hex = ArgumentFlags.hasFlag(flags, ArgumentFlags.HEX);
             return hex ? arg.isHex() : arg.isLong();
-        };
-        final ArgumentTypeMapper<Long> longType = (arg, flags) -> {
+        }, (arg, flags) -> {
             final boolean hex = ArgumentFlags.hasFlag(flags, ArgumentFlags.HEX);
             if (hex) {
                 try {
@@ -87,10 +89,9 @@ public final class ArgumentTypes {
                 return Optional.of(arg.parseLong());
             }
             return Optional.empty();
-        };
-        final Pair<ArgumentTypePredicate, ArgumentTypeMapper<?>> longPair = Pair.of(longPredicate, longType);
-        map.put(LONG, longPair);
-        map.put(Long.class, longPair);
+        });
+        map.put(LONG, longParser);
+        map.put(Long.class, longParser);
 
         registerArgumentMapperSimple(FLOAT, CommandArgument::isFloat, CommandArgument::parseFloat);
         registerArgumentMapperSimple(Float.class, CommandArgument::isFloat, CommandArgument::parseFloat);
@@ -171,6 +172,11 @@ public final class ArgumentTypes {
         registerArgumentMapperSimple(EMOTE, CommandArgument::isEmote, CommandArgument::getEmote);
 
         registerArgumentMapperSimple(EMOJI, CommandArgument::isEmoji, CommandArgument::getEmoji);
+
+        registerArgumentMapperSimple(Duration.class, null, new DurationMapper());
+
+        registerArgumentMapperSimple(OffsetDateTime.class, null, new DateTimeMapper());
+
     }
 
     /**
@@ -180,8 +186,9 @@ public final class ArgumentTypes {
      * @param mapper the mapper
      * @param <T>    the type
      */
+
     public static <T> void registerArgumentMapper(Class<T> type, ArgumentTypePredicate predicate, ArgumentTypeMapper<T> mapper) {
-        map.put(type, Pair.of(predicate, mapper));
+        map.put(type, new ArgumentParser<>(predicate, mapper));
     }
 
 
@@ -210,15 +217,9 @@ public final class ArgumentTypes {
      * @return an Optional containing the result if successful. Otherwise empty.
      */
     public static <T> Optional<T> getAsType(Class<T> type, CommandArgument arg, int flags) {
-        final Pair<ArgumentTypePredicate, ArgumentTypeMapper<T>> pair = getPredicateMapper(type);
-        if (pair == null) return Optional.empty();
-        final ArgumentTypePredicate predicate = pair.getLeft();
-        if (predicate != null && predicate.test(arg, flags)
-                || predicate == null) {
-            final ArgumentTypeMapper<T> mapper = pair.getRight();
-            return mapper.map(arg, flags);
-        }
-        return Optional.empty();
+        final ArgumentParser<T> parser = getParser(type);
+        if (parser == null) return Optional.empty();
+        return parser.parse(arg, flags);
     }
 
     /**
@@ -241,15 +242,11 @@ public final class ArgumentTypes {
      * </code></pre>
      */
     public static boolean isOfType(Class<?> type, CommandArgument arg, int flags) {
-        final Pair<ArgumentTypePredicate, ? extends ArgumentTypeMapper<?>> pair = getPredicateMapper(type);
-        if (pair == null) {
+        final ArgumentParser<?> parser = getParser(type);
+        if (parser == null) {
             return false;
         }
-        final ArgumentTypePredicate tester = pair.getLeft();
-        if (tester != null) {
-            return tester.test(arg, flags);
-        }
-        return pair.getRight().map(arg, flags).isPresent();
+        return parser.test(arg, flags);
     }
 
     /**
@@ -270,11 +267,13 @@ public final class ArgumentTypes {
      * @param <T>  the type
      * @return a {@link net.dv8tion.jda.core.utils.tuple.Pair} if found. else {@code null}. If the pair is found, The {@link com.github.breadmoirai.bot.framework.command.arg.ArgumentTypePredicate} of the pair may be {@code null}, but the {@link ArgumentTypeMapper} is always {@code notnull}.
      */
-    public static <T> Pair<ArgumentTypePredicate, ArgumentTypeMapper<T>> getPredicateMapper(Class<T> type) {
-        final Pair<?, ?> pair = map.get(type);
+    public static <T> ArgumentParser<T> getParser(Class<T> type) {
+        final ArgumentParser<?> pair = map.get(type);
         if (pair != null) {
             //noinspection unchecked
-            return (Pair<ArgumentTypePredicate, ArgumentTypeMapper<T>>) pair;
+            return (ArgumentParser<T>) pair;
         } else return null;
     }
+
+
 }
