@@ -17,7 +17,7 @@ package com.github.breadmoirai.bot.framework.impl;
 
 import com.github.breadmoirai.bot.framework.CommandEngine;
 import com.github.breadmoirai.bot.framework.IModule;
-import com.github.breadmoirai.bot.framework.command.ICommand;
+import com.github.breadmoirai.bot.framework.command.CommandHandle;
 import com.github.breadmoirai.bot.framework.event.CommandEvent;
 import com.github.breadmoirai.bot.framework.event.impl.HelpEvent;
 import net.dv8tion.jda.core.utils.SimpleLog;
@@ -29,9 +29,9 @@ public class CommandEngineImpl implements CommandEngine {
 
     public static final SimpleLog LOG = SimpleLog.getLog("CommandEngine");
 
-    private final Map<String, ICommand> commandMap;
+    private final Map<String, CommandHandle> commandMap;
 
-    public CommandEngineImpl(List<IModule> modules, Map<String, ICommand> commandMap) {
+    public CommandEngineImpl(List<IModule> modules, Map<String, CommandHandle> commandMap) {
         this.commandMap = commandMap;
     }
 
@@ -44,7 +44,7 @@ public class CommandEngineImpl implements CommandEngine {
                 return;
             }
         }
-        ICommand command;
+        CommandHandle command;
         final String key = event.getKey().toLowerCase();
         command = commandMap.get(key);
         if (command != null) {

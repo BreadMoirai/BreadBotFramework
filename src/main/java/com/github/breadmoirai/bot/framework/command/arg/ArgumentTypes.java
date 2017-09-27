@@ -120,7 +120,7 @@ public final class ArgumentTypes {
             }
             if (arg.isLong()) {
                 long l = arg.parseLong();
-                User user = arg.getJDA().getUserById(l);
+                User user = arg.getEvent().getJDA().getUserById(l);
                 return Optional.ofNullable(user);
             }
             return arg.findMember().map(Member::getUser);
@@ -133,7 +133,7 @@ public final class ArgumentTypes {
             }
             if (arg.isLong()) {
                 long l = arg.parseLong();
-                Member member = arg.getGuild().getMemberById(l);
+                Member member = arg.getEvent().getGuild().getMemberById(l);
                 return Optional.ofNullable(member);
             }
             return arg.findMember();
@@ -146,7 +146,7 @@ public final class ArgumentTypes {
             }
             if (arg.isLong()) {
                 long l = arg.parseLong();
-                Role role = arg.getGuild().getRoleById(l);
+                Role role = arg.getEvent().getGuild().getRoleById(l);
                 if (role != null) {
                     return Optional.of(role);
                 }
@@ -161,7 +161,7 @@ public final class ArgumentTypes {
             }
             if (arg.isLong()) {
                 long l = arg.parseLong();
-                TextChannel channel = arg.getJDA().getTextChannelById(l);
+                TextChannel channel = arg.getEvent().getJDA().getTextChannelById(l);
                 if (channel != null) {
                     return Optional.of(channel);
                 }
@@ -265,7 +265,7 @@ public final class ArgumentTypes {
      *
      * @param type the class of the type as it was registered or one of the default types.
      * @param <T>  the type
-     * @return a {@link net.dv8tion.jda.core.utils.tuple.Pair} if found. else {@code null}. If the pair is found, The {@link com.github.breadmoirai.bot.framework.command.arg.ArgumentTypePredicate} of the pair may be {@code null}, but the {@link ArgumentTypeMapper} is always {@code notnull}.
+     * @return an ArgumentParser if found. Else {@code null}.
      */
     public static <T> ArgumentParser<T> getParser(Class<T> type) {
         final ArgumentParser<?> pair = map.get(type);

@@ -14,6 +14,7 @@
 */
 package com.github.breadmoirai.bot.framework.command.impl;
 
+import com.github.breadmoirai.bot.framework.command.CommandHandle;
 import com.github.breadmoirai.bot.framework.command.CommandPreprocessor;
 import com.github.breadmoirai.bot.framework.command.CommandProcessorStack;
 import com.github.breadmoirai.bot.framework.command.CommandPropertyMap;
@@ -57,7 +58,7 @@ public class InnerCommandImpl implements CommandHandle {
     }
 
     @Override
-    public boolean execute(Object parent, CommandEvent event, Iterator<String> keyIterator) {
+    public boolean handle(Object parent, CommandEvent event, Iterator<String> keyIterator) {
         final Object commandObj;
         try {
             commandObj = constructor.invoke(parent);
@@ -69,14 +70,14 @@ public class InnerCommandImpl implements CommandHandle {
             final String next = keyIterator.next().toLowerCase();
             final CommandHandle commandHandle = handleMap.get(next);
             if (commandHandle != null) {
-                final CommandProcessorStack commandPreprocessors = new CommandProcessorStack(commandObj, commandHandle, event, preprocessorList, () -> commandHandle.execute(commandObj, event, keyIterator));
+                final CommandProcessorStack commandPreprocessors = new CommandProcessorStack(commandObj, commandHandle, event, preprocessorList, () -> commandHandle.handle(commandObj, event, keyIterator));
                 commandPreprocessors.runNext();
                 return commandPreprocessors.result();
             }
         }
         final CommandHandle defaultHandle = handleMap.get("");
         if (defaultHandle != null) {
-            final CommandProcessorStack commandPreprocessors = new CommandProcessorStack(commandObj, defaultHandle, event, preprocessorList, () -> defaultHandle.execute(commandObj, event, null));
+            final CommandProcessorStack commandPreprocessors = new CommandProcessorStack(commandObj, defaultHandle, event, preprocessorList, () -> defaultHandle.handle(commandObj, event, null));
             commandPreprocessors.runNext();
             return commandPreprocessors.result();
         }
@@ -86,5 +87,10 @@ public class InnerCommandImpl implements CommandHandle {
     @Override
     public String[] getKeys() {
         return keys;
+    }
+
+    @Override
+    public String[] getHandleKeys() {
+        return handleMap.keySet().toArray(new String[0]);
     }
 }

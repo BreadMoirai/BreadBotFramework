@@ -17,7 +17,7 @@ public class CommandArgumentFactory {
     private final TextChannel channel;
 
 
-    private CommandArgumentFactory(CommandEvent event) {
+    CommandArgumentFactory(CommandEvent event) {
         this.event = event;
         this.jda = event.getJDA();
         this.guild = event.getGuild();

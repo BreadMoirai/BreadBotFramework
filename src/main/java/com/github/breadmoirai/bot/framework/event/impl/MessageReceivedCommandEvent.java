@@ -15,7 +15,7 @@
  */
 package com.github.breadmoirai.bot.framework.event.impl;
 
-import com.github.breadmoirai.bot.framework.SamuraiClient;
+import com.github.breadmoirai.bot.framework.CommandClient;
 import com.github.breadmoirai.bot.framework.event.CommandEvent;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.*;
@@ -35,7 +35,7 @@ public class MessageReceivedCommandEvent extends CommandEvent {
     private String key;
     private String content;
 
-    MessageReceivedCommandEvent(SamuraiClient client, GenericGuildMessageEvent event, Message message, String prefix, String key, String content) {
+    MessageReceivedCommandEvent(CommandClient client, GenericGuildMessageEvent event, Message message, String prefix, String key, String content) {
         super(event.getJDA(), event.getResponseNumber(), client);
         this.event = event;
         this.message = message;

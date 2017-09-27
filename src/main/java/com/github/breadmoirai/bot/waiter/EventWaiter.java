@@ -76,7 +76,7 @@ public class EventWaiter implements EventListener {
      * returns {@code true} when tested with the provided {@link java.util.function.Predicate Predicate}.
      *
      * <p>When this occurs, the provided {@link java.util.function.Consumer Consumer} will accept and
-     * execute using the same Event.
+     * handle using the same Event.
      *
      * @param  <T>
      *         The type of Event to wait for
@@ -97,7 +97,7 @@ public class EventWaiter implements EventListener {
      * <p>Once started, there are two possible outcomes:
      * <ul>
      *     <li>The correct Event occurs within the time alloted, and the provided
-     *     {@link java.util.function.Consumer Consumer} will accept and execute using the same Event.</li>
+     *     {@link java.util.function.Consumer Consumer} will accept and handle using the same Event.</li>
      *
      *     <li>The time limit is elapsed and the provided {@link java.lang.Runnable} is executed.</li>
      * </ul>

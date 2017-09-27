@@ -15,7 +15,6 @@
 package com.github.breadmoirai.bot.framework.command.builder;
 
 import com.github.breadmoirai.bot.framework.command.*;
-import com.github.breadmoirai.bot.framework.command.impl.CommandHandle;
 import com.github.breadmoirai.bot.framework.command.impl.InnerCommandImpl;
 import com.github.breadmoirai.bot.framework.error.NoSuchCommandException;
 import com.github.breadmoirai.bot.framework.event.CommandEvent;

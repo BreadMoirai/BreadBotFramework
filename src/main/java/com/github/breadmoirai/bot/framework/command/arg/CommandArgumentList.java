@@ -23,7 +23,7 @@ public class CommandArgumentList extends AbstractList<CommandArgument> {
     public CommandArgumentList(String[] strings, CommandEvent event) {
         this.arguments = new CommandArgument[strings.length];
         this.event = event;
-        CommandArgumentFactory factory = new CommandArgumentFactory(event.getJDA(), event.getGuild(), event.getChannel());
+        CommandArgumentFactory factory = new CommandArgumentFactory(event);
         Arrays.parallelSetAll(arguments, value -> factory.parse(strings[value]));
     }
 

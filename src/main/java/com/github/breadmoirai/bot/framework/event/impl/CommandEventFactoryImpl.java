@@ -15,10 +15,10 @@
  */
 package com.github.breadmoirai.bot.framework.event.impl;
 
-import com.github.breadmoirai.bot.framework.SamuraiClient;
+import com.github.breadmoirai.bot.framework.CommandClient;
+import com.github.breadmoirai.bot.framework.CommandEngineBuilder;
 import com.github.breadmoirai.bot.framework.event.CommandEvent;
 import com.github.breadmoirai.bot.framework.event.ICommandEventFactory;
-import com.github.breadmoirai.bot.framework.impl.CommandEngineBuilder;
 import com.github.breadmoirai.bot.modules.prefix.IPrefixModule;
 import com.github.breadmoirai.bot.util.DiscordPatterns;
 import net.dv8tion.jda.core.entities.Message;
@@ -39,7 +39,7 @@ public class CommandEventFactoryImpl implements ICommandEventFactory {
     }
 
     @Override
-    public CommandEvent createEvent(GenericGuildMessageEvent event, Message message, SamuraiClient client) {
+    public CommandEvent createEvent(GenericGuildMessageEvent event, Message message, CommandClient client) {
         String prefix = prefixModule.getPrefix(event.getGuild().getIdLong());
         String contentRaw = message.getRawContent();
         final Matcher matcher = DiscordPatterns.USER_MENTION_PREFIX.matcher(contentRaw);
@@ -56,7 +56,7 @@ public class CommandEventFactoryImpl implements ICommandEventFactory {
     }
 
     @NotNull
-    private CommandEvent parseContent(GenericGuildMessageEvent event, Message message, SamuraiClient client, String prefix, String contentRaw) {
+    private CommandEvent parseContent(GenericGuildMessageEvent event, Message message, CommandClient client, String prefix, String contentRaw) {
         final String[] split = DiscordPatterns.WHITE_SPACE.split(contentRaw, 2);
         final String key = split[0];
         final String content = split.length > 1 ? split[1].trim() : null;

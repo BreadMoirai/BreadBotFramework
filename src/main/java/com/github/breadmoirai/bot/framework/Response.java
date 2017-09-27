@@ -15,8 +15,8 @@
  */
 package com.github.breadmoirai.bot.framework;
 
-import com.github.breadmoirai.bot.framework.response.simple.EditResponse;
 import com.github.breadmoirai.bot.framework.event.CommandEvent;
+import com.github.breadmoirai.bot.framework.response.simple.EditResponse;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.requests.RestAction;
@@ -43,7 +43,7 @@ public abstract class Response implements Serializable {
     }
 
 
-    private transient SamuraiClient client;
+    private transient CommandClient client;
 
     private long authorId, messageId, channelId, guildId;
 
@@ -64,11 +64,11 @@ public abstract class Response implements Serializable {
         channel.sendMessage(message).queue(onSend, this::onFailure);
     }
 
-    public final SamuraiClient getClient() {
+    public final CommandClient getClient() {
         return client;
     }
 
-    public final void setClient(SamuraiClient client) {
+    public final void setClient(CommandClient client) {
         this.client = client;
     }
 
@@ -158,14 +158,14 @@ public abstract class Response implements Serializable {
 
 
     /**
-     * @see Response#base(long, long, long, long, SamuraiClient)
+     * @see Response#base(long, long, long, long, CommandClient)
      */
     public void base(CommandEvent target) {
         base(target.getAuthorId(), target.getChannelId(), target.getGuildId(), target.getMessageId(), target.getClient());
     }
 
     /**
-     * @see Response#base(long, long, long, long, SamuraiClient)
+     * @see Response#base(long, long, long, long, CommandClient)
      */
     public void base(Response target) {
         base(target.getAuthorId(), target.getChannelId(), target.getGuildId(), target.getMessageId(), target.getClient());
@@ -180,7 +180,7 @@ public abstract class Response implements Serializable {
      * @param messageId id of the message, required for reactionResponses, otherwise is automatically adjusted to the id of the message sent by this response.
      * @param client the client. particularity important.
      */
-    public void base(long authorId, long channelId, long guildId, long messageId, SamuraiClient client) {
+    public void base(long authorId, long channelId, long guildId, long messageId, CommandClient client) {
         if (getAuthorId() == 0 && authorId != 0) {
             setAuthorId(authorId);
         }

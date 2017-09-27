@@ -12,17 +12,12 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 */
-package com.github.breadmoirai.bot.framework.event.impl;
+package com.github.breadmoirai.bot.framework.error;
 
-import com.github.breadmoirai.bot.framework.CommandClient;
-import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.events.message.guild.GenericGuildMessageEvent;
+public class MissingTypeMapperException extends CommandInitializationException {
 
-/**
- * Marker class for help events.
- */
-public class HelpEvent extends MessageReceivedCommandEvent {
-    HelpEvent(CommandClient client, GenericGuildMessageEvent event, Message message, String prefix, String key, String content) {
-        super(client, event, message, prefix, key, content);
+    public MissingTypeMapperException(String methodName, String paramName) {
+        super("Command Parameter: \"" + paramName + "\" in method \"" + methodName + "\" does not have a type mapper registered.");
     }
+
 }

@@ -15,16 +15,15 @@
  */
 package com.github.breadmoirai.bot.modules.admin;
 
-import com.github.breadmoirai.bot.framework.event.CommandEvent;
 import com.github.breadmoirai.bot.framework.command.Command;
-import com.github.breadmoirai.bot.framework.command.ModuleCommand;
+import com.github.breadmoirai.bot.framework.event.CommandEvent;
 import net.dv8tion.jda.core.entities.Member;
 
 import java.util.stream.Collectors;
 
-@Command("admin")
-public class AdminCommand extends ModuleCommand<IAdminModule> {
-    @Override
+@Command
+public class AdminCommand {
+
     public void execute(CommandEvent event, IAdminModule module) {
         event.reply("**Administrative Members:** " + event.getGuild().getMembers().stream().filter(module::isAdmin).map(Member::getEffectiveName).collect(Collectors.joining(", ")));
     }

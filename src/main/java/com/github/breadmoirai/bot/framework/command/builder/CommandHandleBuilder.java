@@ -15,7 +15,6 @@
 package com.github.breadmoirai.bot.framework.command.builder;
 
 import com.github.breadmoirai.bot.framework.command.*;
-import com.github.breadmoirai.bot.framework.command.impl.CommandHandle;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +22,7 @@ import java.util.List;
 public abstract class CommandHandleBuilder {
 
     private String name;
+    String[] keys;
     private CommandPropertyMapBuilder propertyBuilder;
     private List<CommandPreprocessor> preprocessorList;
 
@@ -41,7 +41,14 @@ public abstract class CommandHandleBuilder {
         return this;
     }
 
-    public abstract String[] getKeys();
+    public CommandHandleBuilder setKeys(String... keys) {
+        this.keys = keys;
+        return this;
+    }
+
+    public String[] getKeys() {
+        return keys;
+    }
 
     public abstract CommandHandle build();
 

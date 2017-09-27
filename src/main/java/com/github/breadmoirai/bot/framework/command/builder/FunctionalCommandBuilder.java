@@ -12,24 +12,25 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 */
-package com.github.breadmoirai.bot.framework.command;
+package com.github.breadmoirai.bot.framework.command.builder;
 
+import com.github.breadmoirai.bot.framework.command.CommandHandle;
+import com.github.breadmoirai.bot.framework.command.impl.FunctionalCommandImpl;
 import com.github.breadmoirai.bot.framework.event.CommandEvent;
 
-import java.util.function.Predicate;
+import java.util.function.Consumer;
 
-@FunctionalInterface
-public interface CommandPreprocessorPredicate extends CommandPreprocessorFunction, Predicate<CommandEvent> {
+public class FunctionalCommandBuilder extends CommandHandleBuilder {
 
-    @Override
-    default void process(Object commandObj, CommandHandle targetHandle, CommandEvent event, CommandProcessorStack processQueue) {
-        if (test(event)) {
-            processQueue.runNext();
-        }
+    private final Consumer<CommandEvent> function;
+
+    public FunctionalCommandBuilder(String name, Consumer<CommandEvent> function) {
+        super(name);
+        this.function = function;
     }
 
     @Override
-    boolean test(CommandEvent event);
-
-
+    public CommandHandle build() {
+        return new FunctionalCommandImpl(getName(), getKeys(), getPropertyBuilder().build(), function);
+    }
 }

@@ -31,6 +31,7 @@ public class CommandPackageProperties {
     private static Map<Package, CommandPropertyMap> packageMap = new HashMap<>();
 
     public static CommandPropertyMap getPropertiesForPackage(Package p) {
+        if (p == null) return null;
         return packageMap.computeIfAbsent(p, CommandPackageProperties::createPropertiesForPackage);
     }
 

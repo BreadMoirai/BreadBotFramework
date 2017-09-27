@@ -16,8 +16,8 @@
 package com.github.breadmoirai.bot.framework.impl;
 
 import com.github.breadmoirai.bot.framework.CommandEngine;
+import com.github.breadmoirai.bot.framework.CommandEngineBuilder;
 import com.github.breadmoirai.bot.framework.IModule;
-import com.github.breadmoirai.bot.framework.SamuraiClient;
 import com.github.breadmoirai.bot.framework.event.CommandEvent;
 import com.github.breadmoirai.bot.framework.event.ICommandEventFactory;
 import net.dv8tion.jda.core.JDA;
@@ -35,26 +35,24 @@ import java.lang.reflect.Type;
 import java.util.*;
 import java.util.function.Predicate;
 
-public class SamuraiClientImpl implements SamuraiClient {
+public class CommandClientImpl implements com.github.breadmoirai.bot.framework.CommandClient {
 
     private JDA jda;
 
-    private final IEventManager eventManager;
     private final ICommandEventFactory eventFactory;
     private final CommandEngine commandEngine;
     private final List<IModule> modules;
     private final Map<Type, IModule> moduleTypeMap;
 
-    public SamuraiClientImpl(List<IModule> modules, IEventManager eventManager, ICommandEventFactory eventFactory, CommandEngineBuilder engineBuilder) {
+    public CommandClientImpl(List<IModule> modules, IEventManager eventManager, ICommandEventFactory eventFactory, CommandEngineBuilder engineBuilder) {
         this.modules = Collections.unmodifiableList(modules);
         modules.forEach(module -> module.init(engineBuilder, this));
-        eventManager.register(this.new SamuraiEventListener(engineBuilder.getPreProcessPredicate()));
+        eventManager.register(this.new SamuraiEventListener(eventManager, engineBuilder.getPreProcessPredicate()));
 
         if (eventManager instanceof InterfacedEventManager)
             modules.stream().filter(net.dv8tion.jda.core.hooks.EventListener.class::isInstance).forEach(eventManager::register);
         else
             modules.forEach(eventManager::register);
-        this.eventManager = eventManager;
         this.eventFactory = eventFactory;
         this.commandEngine = engineBuilder.build();
 
@@ -144,39 +142,37 @@ public class SamuraiClientImpl implements SamuraiClient {
 
     private class SamuraiEventListener extends ListenerAdapter {
 
+        private final IEventManager eventManager;
         private final Predicate<Message> preProcessPredicate;
 
-        SamuraiEventListener(Predicate<Message> preProcessPredicate) {
+        SamuraiEventListener(IEventManager eventManager, Predicate<Message> preProcessPredicate) {
+            this.eventManager = eventManager;
             this.preProcessPredicate = preProcessPredicate == null ? message -> true : preProcessPredicate;
         }
 
         @SubscribeEvent
         @Override
         public void onReady(ReadyEvent event) {
-            SamuraiClientImpl.this.jda = event.getJDA();
+            CommandClientImpl.this.jda = event.getJDA();
         }
 
         @SubscribeEvent
         @Override
         public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
-            System.out.println("received");
             onGuildMessageEvent(event, event.getMessage());
         }
 
         @SubscribeEvent
         @Override
         public void onGuildMessageUpdate(GuildMessageUpdateEvent event) {
-
             if (event.getMessage().isPinned()) return;
-            System.out.println("updated");
             onGuildMessageEvent(event, event.getMessage());
         }
 
 
         private void onGuildMessageEvent(GenericGuildMessageEvent event, Message message) {
-            System.out.println("generic");
             if (preProcessPredicate.test(message)) {
-                final CommandEvent commandEvent = eventFactory.createEvent(event, message, SamuraiClientImpl.this);
+                final CommandEvent commandEvent = eventFactory.createEvent(event, message, CommandClientImpl.this);
                 if (commandEvent != null) {
                     commandEngine.handle(commandEvent);
                     eventManager.handle(commandEvent);

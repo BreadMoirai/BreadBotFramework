@@ -14,10 +14,8 @@
 */
 package com.github.breadmoirai.bot.framework.command.builder;
 
-import com.github.breadmoirai.bot.framework.command.CommandPreprocessor;
-import com.github.breadmoirai.bot.framework.command.CommandPreprocessorFunction;
-import com.github.breadmoirai.bot.framework.command.CommandPreprocessorPredicate;
-import com.github.breadmoirai.bot.framework.command.impl.CommandHandle;
+import com.github.breadmoirai.bot.framework.command.*;
+import com.github.breadmoirai.bot.framework.command.impl.CommandMethodImpl;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -28,23 +26,43 @@ import java.util.function.Consumer;
 public class CommandMethodBuilder extends CommandHandleBuilder {
 
     private final List<CommandParameterBuilder> parameterBuilderList;
+    private final Method method;
 
     public CommandMethodBuilder(Method method) {
         super(method.getName());
+        this.method = method;
         parameterBuilderList = new ArrayList<>();
         Arrays.stream(method.getParameters())
-                .map(CommandParameterBuilder::new)
+                .map(CommandParameterBuilder::builder)
+                .peek(cpb -> {
+                    if (cpb instanceof CommandParameterBuilderImpl) {
+                        ((CommandParameterBuilderImpl) cpb).setMethodName(getName());
+                    }
+                })
                 .forEachOrdered(parameterBuilderList::add);
-    }
-
-    @Override
-    public String[] getKeys() {
-        return new String[0];
+        final Command property = getPropertyBuilder().getProperty(Command.class);
+        if (property != null) {
+            final String[] value = property.value();
+            if (value.length != 0) {
+                setKeys(value);
+            }
+        }
+        if (getKeys() == null || getKeys().length == 0)
+            setKeys(method.getName().toLowerCase());
     }
 
     @Override
     public CommandHandle build() {
-        return null;
+        List<CommandParameter> list = new ArrayList<>();
+        for (CommandParameterBuilder commandParameterBuilder : parameterBuilderList) {
+            CommandParameter build = commandParameterBuilder.build();
+            list.add(build);
+        }
+        try {
+            return new CommandMethodImpl(method, list.toArray(new CommandParameter[0]), getPropertyBuilder().build(), getPreprocessorList(), getKeys());
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public CommandMethodBuilder configure(Consumer<CommandMethodBuilder> configurator) {
@@ -61,6 +79,12 @@ public class CommandMethodBuilder extends CommandHandleBuilder {
     public CommandMethodBuilder setName(String name) {
         super.setName(name);
         return this;
+    }
+
+    @Override
+    public CommandMethodBuilder setKeys(String... keys) {
+        super.setKeys(keys);
+        return null;
     }
 
     @Override

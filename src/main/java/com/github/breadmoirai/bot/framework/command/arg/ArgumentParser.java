@@ -32,7 +32,7 @@ public class ArgumentParser<T> implements ArgumentTypeMapper<T>, ArgumentTypePre
 
     @Override
     public Optional<T> map(CommandArgument arg, int flags) {
-        return mapper.map(arg, flags);
+        return parse(arg, flags);
     }
 
     @Override
@@ -60,4 +60,11 @@ public class ArgumentParser<T> implements ArgumentTypeMapper<T>, ArgumentTypePre
         return map(arg, flags);
     }
 
+    public ArgumentTypePredicate getPredicate() {
+        return predicate;
+    }
+
+    public ArgumentTypeMapper<T> getMapper() {
+        return mapper;
+    }
 }

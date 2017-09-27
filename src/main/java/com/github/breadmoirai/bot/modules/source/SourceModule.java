@@ -15,8 +15,8 @@
  */
 package com.github.breadmoirai.bot.modules.source;
 
-import com.github.breadmoirai.bot.framework.SamuraiClient;
-import com.github.breadmoirai.bot.framework.impl.CommandEngineBuilder;
+import com.github.breadmoirai.bot.framework.CommandClient;
+import com.github.breadmoirai.bot.framework.CommandEngineBuilder;
 import com.github.breadmoirai.bot.framework.IModule;
 
 public class SourceModule implements IModule {
@@ -28,7 +28,7 @@ public class SourceModule implements IModule {
     }
 
     @Override
-    public void init(CommandEngineBuilder config, SamuraiClient client) {
+    public void init(CommandEngineBuilder config, CommandClient client) {
 //        config.addPostProcessPredicate(command -> {
 //            if (command.isMarkedWith(SourceGuild.class)) {
 //                long value = command.getClass().getAnnotation(SourceGuild.class).value();

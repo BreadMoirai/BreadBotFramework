@@ -75,7 +75,7 @@ public class CommandPreprocessors {
     }
 
     /**
-     * Will add associated preprocessors to the passed {@link com.github.breadmoirai.bot.framework.command.builder.CommandHandleBuilder} according to it's properties sorted by it's identifier priority as set in {@code #setPreprocessorPriority}
+     * Will add associated preprocessors to the passed {@link CommandHandleBuilder} according to it's properties sorted by it's identifier priority as set in {@code #setPreprocessorPriority}
      *
      * @param handleBuilder A CommandHandleBuilder of a top-level class, an inner class, or a method.
      */

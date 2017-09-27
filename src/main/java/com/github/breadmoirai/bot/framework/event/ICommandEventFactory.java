@@ -15,7 +15,7 @@
  */
 package com.github.breadmoirai.bot.framework.event;
 
-import com.github.breadmoirai.bot.framework.SamuraiClient;
+import com.github.breadmoirai.bot.framework.CommandClient;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.events.message.guild.GenericGuildMessageEvent;
 
@@ -24,5 +24,5 @@ import net.dv8tion.jda.core.events.message.guild.GenericGuildMessageEvent;
  */
 public interface ICommandEventFactory {
 
-    CommandEvent createEvent(GenericGuildMessageEvent event, Message message, SamuraiClient client);
+    CommandEvent createEvent(GenericGuildMessageEvent event, Message message, CommandClient client);
 }

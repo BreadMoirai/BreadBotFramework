@@ -30,7 +30,13 @@ public interface ArgumentTypeMapper<T> extends BiFunction<CommandArgument, Integ
     @Contract("_, _ -> !null")
     Optional<T> map(CommandArgument arg, int flags);
 
-
+    /**
+     * functional version of this obj
+     *
+     * @param commandArgument
+     * @param integer
+     * @return
+     */
     @Override
     default Optional<T> apply(CommandArgument commandArgument, Integer integer) {
         return map(commandArgument, integer);

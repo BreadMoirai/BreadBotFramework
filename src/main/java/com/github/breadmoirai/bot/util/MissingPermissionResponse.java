@@ -52,7 +52,7 @@ public class MissingPermissionResponse extends Response {
                 messageBuilder.append(((TextChannel) channel).getAsMention());
             else messageBuilder.append("**").append(channel.getName()).append("**");
         }
-        messageBuilder.append(" to execute\n```diff");
+        messageBuilder.append(" to handle\n```diff");
         Arrays.stream(permissionsRequired).map(permission -> (permissionsFound.contains(permission) ? "\n+ " : "\n- ") + permission.getName()).sorted(Comparator.comparingInt(s -> s.codePointAt(0))).forEachOrdered(messageBuilder::append);
         messageBuilder.append("\n```");
         return messageBuilder.build();

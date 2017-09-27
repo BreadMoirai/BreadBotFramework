@@ -15,8 +15,8 @@
  */
 package com.github.breadmoirai.bot.framework.response.menu;
 
+import com.github.breadmoirai.bot.framework.CommandClient;
 import com.github.breadmoirai.bot.framework.event.CommandEvent;
-import com.github.breadmoirai.bot.framework.SamuraiClient;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.entities.Message;
@@ -29,7 +29,7 @@ public abstract class MenuBuilder {
     private long channelId;
     private long guildId;
     private long messageId;
-    private SamuraiClient client;
+    private CommandClient client;
 
     public ResponseMenu buildResponse(Consumer<EmbedBuilder> embedCustomizer) {
         final EmbedBuilder eb = new EmbedBuilder();
@@ -70,7 +70,7 @@ public abstract class MenuBuilder {
         final long channelId = event.getChannelId();
         final long guildId = event.getGuildId();
         final long messageId = event.getMessageId();
-        final SamuraiClient client = event.getClient();
+        final CommandClient client = event.getClient();
         setAuthorId(authorId);
         setChannelId(channelId);
         setGuildId(guildId);
@@ -94,7 +94,7 @@ public abstract class MenuBuilder {
         this.messageId = messageId;
     }
 
-    public void setClient(SamuraiClient client) {
+    public void setClient(CommandClient client) {
         this.client = client;
     }
 }

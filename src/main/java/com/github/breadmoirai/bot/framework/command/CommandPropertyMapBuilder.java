@@ -15,23 +15,23 @@
 package com.github.breadmoirai.bot.framework.command;
 
 import com.github.breadmoirai.bot.framework.command.arg.RegisterPropertyMapper;
+import com.github.breadmoirai.bot.framework.command.impl.CommandPropertyMapImpl;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.annotation.Annotation;
 import java.util.*;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 /**
  * A builder for a {@link com.github.breadmoirai.bot.framework.command.CommandPropertyMap}. This map can inherit values from another map.
  */
-public class CommandPropertyMapBuilder implements Iterable<Object> {
+public class CommandPropertyMapBuilder implements Iterable<Object>, CommandPropertyMap {
 
-    private Supplier<CommandPropertyMap> defaultProperties;
+    private CommandPropertyMap defaultProperties;
     private final Map<Class<?>, Object> properties;
 
     public CommandPropertyMapBuilder(CommandPropertyMap base) {
-        defaultProperties = () -> base;
+        defaultProperties = base;
         properties = new HashMap<>();
     }
 
@@ -54,7 +54,7 @@ public class CommandPropertyMapBuilder implements Iterable<Object> {
         final Object obj = properties.get(propertyType);
         if (obj == null) {
             if (defaultProperties != null)
-                return defaultProperties.get().getProperty(propertyType);
+                return defaultProperties.getProperty(propertyType);
             else return null;
         }
         return propertyType.cast(obj);
@@ -71,12 +71,12 @@ public class CommandPropertyMapBuilder implements Iterable<Object> {
     }
 
     public CommandPropertyMapBuilder setDefaultProperties(CommandPropertyMap defaultProperties) {
-        this.defaultProperties = () -> defaultProperties;
+        this.defaultProperties = defaultProperties;
         return this;
     }
 
     public CommandPropertyMapBuilder setDefaultProperties(CommandPropertyMapBuilder defaultProperties) {
-        this.defaultProperties = defaultProperties::build;
+        this.defaultProperties = defaultProperties;
         return this;
     }
 
@@ -102,6 +102,11 @@ public class CommandPropertyMapBuilder implements Iterable<Object> {
      */
     public Collection<Object> values() {
         return Collections.unmodifiableCollection(properties.values());
+    }
+
+    @Override
+    public CommandPropertyMap getDefaultProperties() {
+        return defaultProperties;
     }
 
     @Override
@@ -135,7 +140,13 @@ public class CommandPropertyMapBuilder implements Iterable<Object> {
     }
 
     public CommandPropertyMap build() {
-        return new CommandPropertyMap(defaultProperties.get(), properties);
+        final CommandPropertyMap defaultProperties;
+        if (this.defaultProperties instanceof CommandPropertyMapBuilder) {
+            defaultProperties = ((CommandPropertyMapBuilder) this.defaultProperties).build();
+        } else {
+            defaultProperties = this.defaultProperties;
+        }
+        return new CommandPropertyMapImpl(defaultProperties, properties);
     }
 
     public CommandPropertyMapBuilder putAnnotations(Annotation[] annotations) {
@@ -155,9 +166,9 @@ public class CommandPropertyMapBuilder implements Iterable<Object> {
                     final Class<?> type = propertyMapper.type();
                     if (type != Object.class)
                         try {
-                            putSupertypedProperty(type, o);
+                            putSupertypedProperty(type, o.getClass(), o);
                         } catch (ClassCastException e) {
-                            throw new RuntimeException("The parameter \"type\" specified by @RegisterPropertyMapper annotated to " + annotation.getClass().getName() + " is of the wrong type. The type should be a supertype of " + o.getClass(), e);
+                            throw new RuntimeException("The parameter \"type\" specified by @RegisterPropertyMapper annotated to " + annotation.getClass().getName() + " is of the wrong type. The type should be a supertype of " + o.getClass());
                         }
                     else
                         putProperty(o);
@@ -174,8 +185,11 @@ public class CommandPropertyMapBuilder implements Iterable<Object> {
         return function.apply(cast);
     }
 
-    private <T> void putSupertypedProperty(Class<? super T> type, Object obj) {
-        @SuppressWarnings("unchecked") final T cast = (T) obj;
-        putProperty(type, cast);
+    private <T> void putSupertypedProperty(Class<T> type, Class<?> objClass, Object obj) {
+        if (type.isAssignableFrom(objClass)) {
+            putProperty(type, type.cast(obj));
+        } else {
+            throw new ClassCastException();
+        }
     }
 }

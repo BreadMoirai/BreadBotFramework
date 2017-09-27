@@ -12,17 +12,17 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 */
-package com.github.breadmoirai.bot.framework.event.impl;
 
-import com.github.breadmoirai.bot.framework.CommandClient;
-import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.events.message.guild.GenericGuildMessageEvent;
+import com.github.breadmoirai.bot.framework.command.Command;
+import com.github.breadmoirai.bot.framework.event.CommandEvent;
 
-/**
- * Marker class for help events.
- */
-public class HelpEvent extends MessageReceivedCommandEvent {
-    HelpEvent(CommandClient client, GenericGuildMessageEvent event, Message message, String prefix, String key, String content) {
-        super(client, event, message, prefix, key, content);
+public class PingCommand {
+
+    public PingCommand() {
+    }
+
+    @Command({"ping"})
+    public void ping(CommandEvent event) {
+        event.reply("pong");
     }
 }

@@ -16,14 +16,13 @@
 package com.github.breadmoirai.bot.modules.prefix;
 
 import com.github.breadmoirai.bot.framework.command.Command;
-import com.github.breadmoirai.bot.framework.command.ModuleCommand;
 import com.github.breadmoirai.bot.framework.event.CommandEvent;
 
 @Command
-public class PrefixCommand extends ModuleCommand<IPrefixModule> {
+public class PrefixCommand {
 
 //    @Override
-//    public void execute(CommandEvent event, DynamicPrefixModule module) {
+//    public void handle(CommandEvent event, DynamicPrefixModule module) {
 //        if (event.hasContent()) {
 //            final String content = event.getContent();
 //            if (DiscordPatterns.WHITE_SPACE.matcher(content).find()) {
@@ -41,7 +40,6 @@ public class PrefixCommand extends ModuleCommand<IPrefixModule> {
 //        event.replyFormat("The current prefix is `%s`", module.getPrefix(event.getGuildId()));
 //    }
 
-    @Override
     public void execute(CommandEvent event, IPrefixModule module) {
         event.replyFormat("The current prefix is `%s`", module.getPrefix(event.getGuildId()));
     }

@@ -12,25 +12,29 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 */
-package com.github.breadmoirai.bot.framework.command.impl;
+package com.github.breadmoirai.bot.framework.command;
 
-import com.github.breadmoirai.bot.framework.command.CommandPropertyMap;
 import com.github.breadmoirai.bot.framework.event.CommandEvent;
 import com.github.breadmoirai.bot.util.EventStringIterator;
 
 import java.util.Iterator;
 
+/**
+ * for methods
+ */
 public interface CommandHandle {
 
     String getName();
 
     CommandPropertyMap getPropertyMap();
 
-    default boolean execute(CommandEvent event) {
-        return execute(null, event, new EventStringIterator(event));
+    default boolean handle(CommandEvent event) {
+        return handle(null, event, new EventStringIterator(event));
     }
 
-    boolean execute(Object parent, CommandEvent event, Iterator<String> keyItr);
+    boolean handle(Object parent, CommandEvent event, Iterator<String> keyItr);
 
     String[] getKeys();
+
+    String[] getHandleKeys();
 }

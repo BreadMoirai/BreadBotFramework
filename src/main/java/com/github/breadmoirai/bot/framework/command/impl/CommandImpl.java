@@ -14,6 +14,7 @@
 */
 package com.github.breadmoirai.bot.framework.command.impl;
 
+import com.github.breadmoirai.bot.framework.command.CommandHandle;
 import com.github.breadmoirai.bot.framework.command.CommandPreprocessor;
 import com.github.breadmoirai.bot.framework.command.CommandProcessorStack;
 import com.github.breadmoirai.bot.framework.command.CommandPropertyMap;
@@ -57,7 +58,7 @@ public class CommandImpl implements CommandHandle {
     }
 
     @Override
-    public boolean execute(Object parent, CommandEvent event, Iterator<String> keyItr) {
+    public boolean handle(Object parent, CommandEvent event, Iterator<String> keyItr) {
         final Object commandObj = supplier.get();
         if (commandObj == null) return false;
         final CommandHandle targetHandle;
@@ -77,7 +78,7 @@ public class CommandImpl implements CommandHandle {
             }
         }
         if (targetHandle != null) {
-            final Runnable executeHandle = () -> targetHandle.execute(commandObj, event, keyItr);
+            final Runnable executeHandle = () -> targetHandle.handle(commandObj, event, keyItr);
             new CommandProcessorStack(commandObj, targetHandle, event, preprocessorList, executeHandle).runNext();
             return true;
         }
@@ -86,8 +87,12 @@ public class CommandImpl implements CommandHandle {
 
     @Override
     public String[] getKeys() {
-        if (keys != null) return keys;
-        else return handleMap.keySet().toArray(new String[0]);
+        return keys;
+    }
+
+    @Override
+    public String[] getHandleKeys() {
+        return handleMap.keySet().toArray(new String[0]);
     }
 
     @Override

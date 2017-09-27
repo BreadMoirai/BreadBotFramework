@@ -1,7 +1,6 @@
 package com.github.breadmoirai.bot.framework.command.builder;
 
 import com.github.breadmoirai.bot.framework.command.*;
-import com.github.breadmoirai.bot.framework.command.impl.CommandHandle;
 import com.github.breadmoirai.bot.framework.command.impl.CommandImpl;
 import com.github.breadmoirai.bot.framework.error.CommandInitializationException;
 import com.github.breadmoirai.bot.framework.error.NoSuchCommandException;
@@ -21,7 +20,6 @@ import java.util.function.Supplier;
 
 public class CommandBuilder extends CommandHandleBuilder {
 
-    private String[] keys;
     private List<CommandHandleBuilder> handleBuilders;
     private boolean isPersistent = false;
     private final Class<?> commandClass;
@@ -55,6 +53,21 @@ public class CommandBuilder extends CommandHandleBuilder {
                     .filter(method -> !Modifier.isStatic(method.getModifiers()))
                     .map(CommandMethodBuilder::new)
                     .peek(cmhb -> cmhb.getPropertyBuilder().setDefaultProperties(getPropertyBuilder()))
+                    .peek(cmhb -> {
+                        if (getPropertyBuilder().containsProperty(Command.class)) {
+                            final Command property = getPropertyBuilder().getProperty(Command.class);
+                            if (property.value().length != 0) {
+                                cmhb.setKeys(property.value());
+                                return;
+                            }
+                        }
+                        final String simpleName = commandClass.getSimpleName().toLowerCase();
+                        if (simpleName.endsWith("command")) {
+                            cmhb.setKeys(simpleName.substring(0, simpleName.length() - 7));
+                        } else {
+                            cmhb.setKeys(simpleName);
+                        }
+                    })
                     .forEach(handleBuilders::add);
         }
     }
@@ -64,14 +77,19 @@ public class CommandBuilder extends CommandHandleBuilder {
         obj = commandObj;
     }
 
+    public Class<?> getCommandClass() {
+        return commandClass;
+    }
+
     /**
      * Sets the keys of this command. When the keys is set to {@code null}, if the provided class/object has multiple methods/classes, each one will be registered with their own keys.
      *
      * @param keys a var-arg of String. no spaces plz.
      * @return this obj
      */
+    @Override
     public CommandBuilder setKeys(String... keys) {
-        this.keys = keys;
+        super.setKeys(keys);
         return this;
     }
 
@@ -126,7 +144,7 @@ public class CommandBuilder extends CommandHandleBuilder {
 
     @Override
     public String[] getKeys() {
-        return this.keys == null ? handleBuilders.stream().map(CommandHandleBuilder::getKeys).flatMap(Arrays::stream).toArray(String[]::new) : keys;
+        return super.getKeys() == null ? handleBuilders.stream().map(CommandHandleBuilder::getKeys).flatMap(Arrays::stream).toArray(String[]::new) : super.getKeys();
     }
 
     @Override
@@ -157,7 +175,7 @@ public class CommandBuilder extends CommandHandleBuilder {
             }
         }
         final CommandPropertyMap propertyMap = getPropertyBuilder().build();
-        final String[] keys = getKeys();
+        final String[] keys = super.getKeys();
         final List<CommandPreprocessor> preprocessorList = getPreprocessorList();
         final Supplier<Object> supplier;
         if (isPersistent) {
@@ -182,8 +200,10 @@ public class CommandBuilder extends CommandHandleBuilder {
                         return null;
                     }
                 };
-            } catch (NoSuchMethodException | IllegalAccessException e) {
+            } catch (NoSuchMethodException e) {
                 throw new CommandInitializationException("Class " + commandClass.getName() + " is missing a no-arg public constructor.");
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
             }
         }
 

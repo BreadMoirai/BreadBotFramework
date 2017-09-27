@@ -1,34 +1,43 @@
+/*    Copyright 2017 Ton Ly
+ 
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+ 
+      http://www.apache.org/licenses/LICENSE-2.0
+ 
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+*/
 package com.github.breadmoirai.bot.framework.command.builder;
 
-import com.github.breadmoirai.bot.framework.command.arg.ArgumentMapper;
-import com.github.breadmoirai.bot.framework.command.arg.ArgumentTypes;
-import com.github.breadmoirai.bot.framework.command.arg.CommandParameter;
-import com.github.breadmoirai.bot.framework.command.arg.impl.ArgumentParameterImpl;
+import com.github.breadmoirai.bot.framework.IModule;
+import com.github.breadmoirai.bot.framework.command.CommandParameter;
+import com.github.breadmoirai.bot.framework.command.CommandParameterFunctionImpl;
+import com.github.breadmoirai.bot.framework.command.arg.ArgumentTypeMapper;
+import com.github.breadmoirai.bot.framework.command.arg.ArgumentTypePredicate;
 import com.github.breadmoirai.bot.framework.event.CommandEvent;
 
+import java.lang.reflect.Parameter;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
-public class CommandParameterBuilder {
-    private String methodName, paramName;
-    private Class<?> intendedType;
-    private int flags = 0;
-    private int[] indexes = null;
-    private Class<?> type;
-    private ArgumentMapper<?> mapper;
-    private boolean mustBePresent = false;
-    private BiConsumer<CommandEvent, CommandParameter> onParamNotFound = null;
+public interface CommandParameterBuilder {
 
-    /**
-     * Sets the name of this parameters method. Primarily used for debugging.
-     * This should already be set.
-     *
-     * @param methodName the name of the method.
-     * @return this obj.
-     */
-    public CommandParameterBuilder setMethodName(String methodName) {
-        this.methodName = methodName;
-        return this;
+    public static CommandParameterBuilder builder(Parameter parameter) {
+        final Class<?> type = parameter.getType();
+        if (type == CommandEvent.class) {
+            return new CommandParameterBuilderSpecificImpl("This parameter of type CommandEvent is inconfigurable", () -> new CommandParameterFunctionImpl((commandArguments, commandParser) -> commandParser.getEvent()));
+        } else if (IModule.class.isAssignableFrom(type)) {
+            return new CommandParameterBuilderSpecificImpl("This parameter of type " + type.getSimpleName() + " is inconfigurable", () -> new CommandParameterFunctionImpl((commandArguments, commandParser) -> commandParser.getEvent().getClient().getModule(type)));
+        } else {
+            return new CommandParameterBuilderImpl(parameter);
+        }
     }
+
 
     /**
      * Sets the name of this parameter. Primarily used for debugging.
@@ -37,98 +46,62 @@ public class CommandParameterBuilder {
      * @param paramName the name of the parameter.
      * @return this obj.
      */
-    public CommandParameterBuilder setName(String paramName) {
-        this.paramName = paramName;
-        return this;
-    }
+    CommandParameterBuilder setName(String paramName);
 
     /**
-     * Sets the actual type of the parameter. This also determines the search criteria for this parameter. If this is not set, it will be the same as the base type.
-     * The argument passed should be of one of the following types
-     * <ul>
-     *     <li>Base Type</li>
-     *         <p> - if the index is not set, it will be the first argument that matches the BaseType.
-     *     <li>{@link com.github.breadmoirai.bot.framework.command.arg.CommandArgument CommandArgument.class}</li>
-     *         <p> - if the index is not set, it will be the first argument that matches the BaseType.
-     *         <p> - if the argument passed to this parameter is {@code not-null},
-     *     it is guaranteed that <code>{@link com.github.breadmoirai.bot.framework.command.arg.CommandArgument arg}.{@link com.github.breadmoirai.bot.framework.command.arg.CommandArgument#getAsType(Class) getAsType}(baseType).{@link java.util.Optional#isPresent() isPresent()}</code> returns {@code true}.
-     *     <li>List.class</li>
-     * </ul>
-     *
-     * @param intendedType
-     *
-     * @return
-     */
-    public CommandParameterBuilder setIntendedType(Class<?> intendedType) {
-        this.intendedType = intendedType;
-        return this;
-
-    }
-
-    /**
-     * Sets the flags to be passed to the {@link com.github.breadmoirai.bot.framework.command.arg.ArgumentMapper}
+     * Sets the flags to be passed to the {@link ArgumentTypeMapper}
      *
      * @param flags
      */
-    public CommandParameterBuilder setFlags(int flags) {
-        this.flags = flags;
-        return this;
-    }
+    CommandParameterBuilder setFlags(int flags);
 
     /**
-     * Setting this value indicates that this {@link com.github.breadmoirai.bot.framework.command.arg.CommandParameter} should only map the {@link com.github.breadmoirai.bot.framework.command.arg.CommandArgument} at the specified index.
-     * If multiple indexes are passed, this will combine the specified indexes into a single argument and attempt to map from that.
+     * If the index is known, the parser will only attempt to map the argument at the specified position.
+     * If number of arguments is less than the index  The default value of {@code -1}
      *
-     * @param indexes index of the argument beginning at 0.
+     * @param index
+     *
+     * @return
      */
-    public CommandParameterBuilder setIndex(int[] indexes) {
-        this.indexes = indexes;
-        return this;
-    }
+    CommandParameterBuilderImpl setIndex(int index);
+
+    /**
+     * Sets the width of the argument, how many tokens the parse should consume.
+     *
+     * @param width
+     * @return
+     */
+    CommandParameterBuilderImpl setWidth(int width);
 
     /**
      * Sets the intended base type of the method. \\todo make a wiki
      *
      * @param type the Class of the argument.
      */
-    public <T> CommandParameterBuilder setBaseType(Class<T> type) {
-        return setBaseType(type, ArgumentTypes.getMapper(type));
-    }
+    <T> CommandParameterBuilder setBaseType(Class<T> type);
 
     /**
-     * Sets the {@link com.github.breadmoirai.bot.framework.command.arg.ArgumentMapper} to be used in mapping the {@link CommandParameter}.
-     * If an {@link com.github.breadmoirai.bot.framework.command.arg.ArgumentMapper} is registered in {@link com.github.breadmoirai.bot.framework.command.arg.ArgumentTypes}, it will not be used.
-     * The provided {@link com.github.breadmoirai.bot.framework.command.arg.ArgumentMapper} will not be registered with {@link com.github.breadmoirai.bot.framework.command.arg.ArgumentTypes}.
+     * Sets the {@link ArgumentTypeMapper} to be used in mapping the {@link CommandParameter}.
+     * If an {@link ArgumentTypeMapper} is registered in {@link com.github.breadmoirai.bot.framework.command.arg.ArgumentTypes}, it will not be used.
+     * The provided {@link ArgumentTypeMapper} will not be registered with {@link com.github.breadmoirai.bot.framework.command.arg.ArgumentTypes}.
      * It is generally recommended to prefer using different {@link com.github.breadmoirai.bot.framework.command.arg.ArgumentFlags flags} on custom types to indicate that the {@link com.github.breadmoirai.bot.framework.command.arg.CommandArgument} should be mapped differently.
      *
-     * @param mapper a public class that implements {@link com.github.breadmoirai.bot.framework.command.arg.ArgumentMapper} and contains a no-args public constructor.
+     * @param mapper a public class that implements {@link ArgumentTypeMapper} and contains a no-args public constructor.
      */
-    public <T> CommandParameterBuilder setBaseType(Class<T> type, ArgumentMapper<T> mapper) {
-        this.type = type;
-        this.mapper = mapper;
-        return this;
+    default <T> CommandParameterBuilder setBaseType(Class<T> type, ArgumentTypeMapper<T> mapper) {
+        return setBaseType(type, null, mapper);
     }
+
+    <T> CommandParameterBuilder setBaseType(Class<T> type, ArgumentTypePredicate predicate, ArgumentTypeMapper<T> mapper);
 
     /**
      * @param mustBePresent {@code true} if the argument must be present. Otherwise an error message will be sent to the user with the default error or
      */
-    public CommandParameterBuilder setOptional(boolean mustBePresent) {
-        this.mustBePresent = mustBePresent;
-        return this;
-    }
+    CommandParameterBuilder setOptional(boolean mustBePresent);
 
-    public CommandParameterBuilder setOnParamNotFound(BiConsumer<CommandEvent, CommandParameter> onParamNotFound) {
-        this.onParamNotFound = onParamNotFound;
-        return this;
-    }
+    CommandParameterBuilder setOnParamNotFound(BiConsumer<CommandEvent, CommandParameter> onParamNotFound);
 
-    public ArgumentParameterImpl createCommandArgumentParameter() {
-        if (mapper == null) mapper = ArgumentTypes.getMapper(type);
-        return new ArgumentParameterImpl(type, intendedType, flags, indexes, mapper, mustBePresent, onParamNotFound);
-    }
+    CommandParameterBuilder configure(Consumer<CommandParameterBuilder> configurator);
 
-
-
-
-
+    CommandParameter build();
 }

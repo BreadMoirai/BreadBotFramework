@@ -15,8 +15,8 @@
  */
 package com.github.breadmoirai.bot.framework.event;
 
+import com.github.breadmoirai.bot.framework.CommandClient;
 import com.github.breadmoirai.bot.framework.Response;
-import com.github.breadmoirai.bot.framework.SamuraiClient;
 import com.github.breadmoirai.bot.framework.command.arg.CommandArgument;
 import com.github.breadmoirai.bot.framework.command.arg.CommandArgumentList;
 import com.github.breadmoirai.bot.framework.response.menu.PromptBuilder;
@@ -57,15 +57,15 @@ public abstract class CommandEvent extends Event {
         DEFAULT_LIMIT = limit;
     }
 
-    private final SamuraiClient client;
+    private final CommandClient client;
     private List<String> args;
 
-    public CommandEvent(JDA api, long responseNumber, SamuraiClient client) {
+    public CommandEvent(JDA api, long responseNumber, CommandClient client) {
         super(api, responseNumber);
         this.client = client;
     }
 
-    public SamuraiClient getClient() {
+    public CommandClient getClient() {
         return client;
     }
 

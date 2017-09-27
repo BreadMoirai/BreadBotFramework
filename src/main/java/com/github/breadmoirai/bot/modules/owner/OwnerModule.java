@@ -15,9 +15,9 @@
  */
 package com.github.breadmoirai.bot.modules.owner;
 
+import com.github.breadmoirai.bot.framework.CommandClient;
+import com.github.breadmoirai.bot.framework.CommandEngineBuilder;
 import com.github.breadmoirai.bot.framework.IModule;
-import com.github.breadmoirai.bot.framework.SamuraiClient;
-import com.github.breadmoirai.bot.framework.impl.CommandEngineBuilder;
 import net.dv8tion.jda.core.entities.User;
 
 /**
@@ -35,7 +35,7 @@ public class OwnerModule implements IModule {
     }
 
     @Override
-    public void init(CommandEngineBuilder config, SamuraiClient client) {
+    public void init(CommandEngineBuilder config, CommandClient client) {
 //        config.addPostProcessPredicate(command -> !command.isMarkedWith(Owner.class) || isOwner(command.getEvent().getAuthor()));
     }
 

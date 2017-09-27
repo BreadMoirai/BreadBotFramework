@@ -15,7 +15,6 @@
  */
 package com.github.breadmoirai.bot.framework;
 
-import com.github.breadmoirai.bot.framework.impl.CommandEngineBuilder;
 import com.github.breadmoirai.bot.framework.event.CommandEvent;
 import org.json.JSONObject;
 
@@ -25,7 +24,7 @@ public interface IModule {
         return this.getClass().getSimpleName();
     }
 
-    void init(CommandEngineBuilder engineBuilder, SamuraiClient client);
+    void init(CommandEngineBuilder engineBuilder, CommandClient client);
 
     default void onHelpEvent(CommandEvent event) {
         event.reply("This is not the help you are looking for");
