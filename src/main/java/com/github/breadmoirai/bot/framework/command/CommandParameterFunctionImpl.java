@@ -14,8 +14,6 @@
 */
 package com.github.breadmoirai.bot.framework.command;
 
-import com.github.breadmoirai.bot.framework.command.arg.CommandArgumentList;
-
 import java.util.function.BiFunction;
 
 public class CommandParameterFunctionImpl implements CommandParameter {

@@ -17,8 +17,8 @@ package com.github.breadmoirai.bot.framework.event;
 
 import com.github.breadmoirai.bot.framework.CommandClient;
 import com.github.breadmoirai.bot.framework.Response;
-import com.github.breadmoirai.bot.framework.command.arg.CommandArgument;
-import com.github.breadmoirai.bot.framework.command.arg.CommandArgumentList;
+import com.github.breadmoirai.bot.framework.command.CommandArgumentList;
+import com.github.breadmoirai.bot.framework.command.parser.CommandArgument;
 import com.github.breadmoirai.bot.framework.response.menu.PromptBuilder;
 import com.github.breadmoirai.bot.framework.response.menu.ReactionMenuBuilder;
 import com.github.breadmoirai.bot.framework.response.simple.EmbedResponse;
@@ -218,7 +218,7 @@ public abstract class CommandEvent extends Event {
     }
 
     /**
-     * retrieves a {@link com.github.breadmoirai.bot.framework.command.arg.CommandArgument} from the {@link com.github.breadmoirai.bot.framework.command.arg.CommandArgumentList} returned by {@link com.github.breadmoirai.bot.framework.event.CommandEvent#getArguments()}
+     * retrieves a {@link com.github.breadmoirai.bot.framework.command.parser.CommandArgument} from the {@link CommandArgumentList} returned by {@link com.github.breadmoirai.bot.framework.event.CommandEvent#getArguments()}
      *
      * @param index the index of the argument starting at 0. This does not include the key.
      * @return the non-null CommandArgument
@@ -269,7 +269,7 @@ public abstract class CommandEvent extends Event {
      * @param regex the regex to split on
      * @param limit the split limit
      *
-     * @return a new {@link com.github.breadmoirai.bot.framework.command.arg.CommandArgumentList}.
+     * @return a new {@link CommandArgumentList}.
      *
      * @see java.util.regex.Pattern#split(java.lang.CharSequence, int)
      */
@@ -284,7 +284,7 @@ public abstract class CommandEvent extends Event {
      *
      * @param limit the split limit
      *
-     * @return a new {@link com.github.breadmoirai.bot.framework.command.arg.CommandArgumentList}.
+     * @return a new {@link CommandArgumentList}.
      *
      * @see java.util.regex.Pattern#split(java.lang.CharSequence, int)
      * @see com.github.breadmoirai.bot.util.DiscordPatterns#ARGUMENT_SPLITTER
@@ -300,7 +300,7 @@ public abstract class CommandEvent extends Event {
      * @param splitter the pattern to split on
      * @param limit the split limit
      *
-     * @return a new {@link com.github.breadmoirai.bot.framework.command.arg.CommandArgumentList}.
+     * @return a new {@link CommandArgumentList}.
      *
      * @see java.util.regex.Pattern#split(java.lang.CharSequence, int)
      */

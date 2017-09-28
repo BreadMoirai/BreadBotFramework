@@ -15,8 +15,8 @@
 package com.github.breadmoirai.bot.framework.command.builder;
 
 import com.github.breadmoirai.bot.framework.command.CommandParameter;
-import com.github.breadmoirai.bot.framework.command.arg.ArgumentTypeMapper;
-import com.github.breadmoirai.bot.framework.command.arg.ArgumentTypePredicate;
+import com.github.breadmoirai.bot.framework.command.parser.ArgumentTypeMapper;
+import com.github.breadmoirai.bot.framework.command.parser.ArgumentTypePredicate;
 import com.github.breadmoirai.bot.framework.event.CommandEvent;
 
 import java.util.function.BiConsumer;

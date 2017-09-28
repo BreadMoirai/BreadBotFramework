@@ -12,33 +12,18 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 */
-package com.github.breadmoirai.bot.util;
+package com.github.breadmoirai.bot.framework.command.parser.impl;
 
-import com.github.breadmoirai.bot.framework.command.parser.CommandArgument;
 import com.github.breadmoirai.bot.framework.event.CommandEvent;
 
-import java.util.Iterator;
+public class InvalidTextChannelArgument extends InvalidMentionArgument {
 
-public class EventStringIterator implements Iterator<String> {
-    private final Iterator<CommandArgument> base;
-
-    public EventStringIterator(CommandEvent event) {
-        this.base = event.getArguments().iterator();
+    public InvalidTextChannelArgument(CommandEvent event, String s, long idLong) {
+        super(event, s, idLong);
     }
 
     @Override
-    public boolean hasNext() {
-        return base.hasNext();
+    public boolean isTextChannel() {
+        return true;
     }
-
-    @Override
-    public String next() {
-        return base.next().getArgument();
-    }
-
-    @Override
-    public void remove() {
-        base.remove();
-    }
-
 }

@@ -14,7 +14,6 @@
 */
 package com.github.breadmoirai.bot.framework.command;
 
-import com.github.breadmoirai.bot.framework.command.arg.CommandArgumentList;
 import com.github.breadmoirai.bot.framework.event.CommandEvent;
 import gnu.trove.TIntCollection;
 import gnu.trove.set.TIntSet;

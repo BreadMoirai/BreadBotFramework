@@ -12,33 +12,14 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 */
-package com.github.breadmoirai.bot.util;
+package com.github.breadmoirai.bot.framework.command.parser;
 
-import com.github.breadmoirai.bot.framework.command.parser.CommandArgument;
+import com.github.breadmoirai.bot.framework.command.CommandParameter;
 import com.github.breadmoirai.bot.framework.event.CommandEvent;
 
-import java.util.Iterator;
+import java.util.function.BiConsumer;
 
-public class EventStringIterator implements Iterator<String> {
-    private final Iterator<CommandArgument> base;
-
-    public EventStringIterator(CommandEvent event) {
-        this.base = event.getArguments().iterator();
-    }
-
-    @Override
-    public boolean hasNext() {
-        return base.hasNext();
-    }
-
-    @Override
-    public String next() {
-        return base.next().getArgument();
-    }
-
-    @Override
-    public void remove() {
-        base.remove();
-    }
+@FunctionalInterface
+public interface NullArgumentConsumer extends BiConsumer<CommandEvent, CommandParameter> {
 
 }

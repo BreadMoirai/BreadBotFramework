@@ -1,11 +1,11 @@
 package com.github.breadmoirai.bot.framework.command.impl;
 
+import com.github.breadmoirai.bot.framework.command.CommandArgumentList;
 import com.github.breadmoirai.bot.framework.command.CommandParameter;
 import com.github.breadmoirai.bot.framework.command.CommandParser;
-import com.github.breadmoirai.bot.framework.command.arg.ArgumentTypeMapper;
-import com.github.breadmoirai.bot.framework.command.arg.CommandArgument;
-import com.github.breadmoirai.bot.framework.command.arg.CommandArgumentList;
-import com.github.breadmoirai.bot.framework.command.arg.impl.GenericCommandArgument;
+import com.github.breadmoirai.bot.framework.command.parser.ArgumentTypeMapper;
+import com.github.breadmoirai.bot.framework.command.parser.CommandArgument;
+import com.github.breadmoirai.bot.framework.command.parser.impl.GenericCommandArgument;
 import com.github.breadmoirai.bot.framework.event.CommandEvent;
 
 import java.util.Optional;

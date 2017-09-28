@@ -1,9 +1,9 @@
 package com.github.breadmoirai.bot.framework.command.builder;
 
 import com.github.breadmoirai.bot.framework.command.CommandParameter;
-import com.github.breadmoirai.bot.framework.command.arg.*;
 import com.github.breadmoirai.bot.framework.command.impl.CommandParameterCollectionImpl;
 import com.github.breadmoirai.bot.framework.command.impl.CommandParameterImpl;
+import com.github.breadmoirai.bot.framework.command.parser.*;
 import com.github.breadmoirai.bot.framework.error.MissingTypeMapperException;
 import com.github.breadmoirai.bot.framework.event.CommandEvent;
 

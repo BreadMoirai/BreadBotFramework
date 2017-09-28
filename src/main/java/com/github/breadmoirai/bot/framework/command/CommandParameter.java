@@ -1,7 +1,5 @@
 package com.github.breadmoirai.bot.framework.command;
 
-import com.github.breadmoirai.bot.framework.command.arg.CommandArgumentList;
-
 public interface CommandParameter {
 
     Object map(CommandArgumentList list, CommandParser set);

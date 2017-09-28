@@ -14,8 +14,8 @@
 */
 package com.github.breadmoirai.bot.framework.command;
 
-import com.github.breadmoirai.bot.framework.command.arg.RegisterPropertyMapper;
 import com.github.breadmoirai.bot.framework.command.impl.CommandPropertyMapImpl;
+import com.github.breadmoirai.bot.framework.command.parser.RegisterPropertyMapper;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.annotation.Annotation;
