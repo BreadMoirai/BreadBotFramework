@@ -16,6 +16,7 @@ package com.github.breadmoirai.bot.framework.command.builder;
 
 import com.github.breadmoirai.bot.framework.command.*;
 
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,10 +27,11 @@ public abstract class CommandHandleBuilder {
     private CommandPropertyMapBuilder propertyBuilder;
     private List<CommandPreprocessor> preprocessorList;
 
-    public CommandHandleBuilder(String name) {
+    public CommandHandleBuilder(String name, CommandPropertyMap map, Annotation[] annotations) {
         this.name = name;
-        propertyBuilder = new CommandPropertyMapBuilder();
+        propertyBuilder = new CommandPropertyMapBuilder(map);
         preprocessorList = new ArrayList<>();
+        propertyBuilder.putAnnotations(annotations);
     }
 
     public String getName() {

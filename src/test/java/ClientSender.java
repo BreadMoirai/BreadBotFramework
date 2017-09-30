@@ -14,36 +14,20 @@
 */
 
 import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.TextChannel;
-import net.dv8tion.jda.core.events.Event;
-import net.dv8tion.jda.core.hooks.EventListener;
 
-public class TestClient implements EventListener {
+public class ClientSender {
 
-    private final int timeout = 25;
+    private final JDA api;
     private final long channelId;
-    private JDA api;
 
-    private long lastMessage;
 
-    public TestClient(long channelId) {
+    public ClientSender(JDA clientApi, long channelId) {
+        this.api = clientApi;
         this.channelId = channelId;
     }
 
-    @Override
-    public void onEvent(Event event) {
-        api = event.getJDA();
-    }
-
-
     public void sendMessage(String message) {
-        final TextChannel channel = api.getTextChannelById(channelId);
-        final Message complete = channel.sendMessage(message).complete();
-        lastMessage = complete.getIdLong();
+        api.getTextChannelById(channelId).sendMessage(message).queue();
     }
 
-    public long getLastMessage() {
-        return lastMessage;
-    }
 }

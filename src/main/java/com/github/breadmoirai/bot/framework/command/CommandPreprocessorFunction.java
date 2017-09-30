@@ -16,6 +16,11 @@ package com.github.breadmoirai.bot.framework.command;
 
 import com.github.breadmoirai.bot.framework.event.CommandEvent;
 
+/**
+ * This functional interface is ran before the command is executed.
+ * <p>
+ * <b>{@link com.github.breadmoirai.bot.framework.command.CommandPreprocessorFunction#process REFER HERE}</b>
+ */
 @FunctionalInterface
 public interface CommandPreprocessorFunction {
 
@@ -26,8 +31,8 @@ public interface CommandPreprocessorFunction {
      * @param commandObj   The command object that will be used to call the commandHandle.
      * @param targetHandle The targetHandle. This is whatever the annotation was attached to.
      * @param event        the event that triggered things
-     * @param processQueue A queue of Runnables that represent any other preprocessors and the last element being the command itself. Failure to call {@code processQueue.continue()}  will result in the command not being activated.
+     * @param processorStack A queue of Runnables that represent any other preprocessors and the last element being the command itself. Failure to call {@code processQueue.continue()}  will result in the command not being activated.
      */
-    void process(Object commandObj, CommandHandle targetHandle, CommandEvent event, CommandProcessorStack processQueue);
+    void process(Object commandObj, CommandHandle targetHandle, CommandEvent event, CommandProcessorStack processorStack);
 
 }

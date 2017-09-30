@@ -17,9 +17,8 @@ package com.github.breadmoirai.bot.framework.command.builder;
 import com.github.breadmoirai.bot.framework.command.CommandParameter;
 import com.github.breadmoirai.bot.framework.command.parser.ArgumentTypeMapper;
 import com.github.breadmoirai.bot.framework.command.parser.ArgumentTypePredicate;
-import com.github.breadmoirai.bot.framework.event.CommandEvent;
+import com.github.breadmoirai.bot.framework.command.parser.NullArgumentConsumer;
 
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -44,12 +43,12 @@ public class CommandParameterBuilderSpecificImpl implements CommandParameterBuil
     }
 
     @Override
-    public CommandParameterBuilderImpl setIndex(int index) {
+    public CommandParameterBuilder setIndex(int index) {
         throw new UnsupportedOperationException(error);
     }
 
     @Override
-    public CommandParameterBuilderImpl setWidth(int width) {
+    public CommandParameterBuilder setWidth(int width) {
         throw new UnsupportedOperationException(error);
     }
 
@@ -74,7 +73,7 @@ public class CommandParameterBuilderSpecificImpl implements CommandParameterBuil
     }
 
     @Override
-    public CommandParameterBuilder setOnParamNotFound(BiConsumer<CommandEvent, CommandParameter> onParamNotFound) {
+    public CommandParameterBuilder setOnParamNotFound(NullArgumentConsumer onParamNotFound) {
         throw new UnsupportedOperationException(error);
     }
 

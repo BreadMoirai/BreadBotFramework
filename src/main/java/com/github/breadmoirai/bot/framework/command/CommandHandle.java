@@ -17,10 +17,12 @@ package com.github.breadmoirai.bot.framework.command;
 import com.github.breadmoirai.bot.framework.event.CommandEvent;
 import com.github.breadmoirai.bot.util.EventStringIterator;
 
+import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 /**
- * for methods
+ * Is a Command. May be a top-level class, an inner class, or a method.
  */
 public interface CommandHandle {
 
@@ -36,5 +38,18 @@ public interface CommandHandle {
 
     String[] getKeys();
 
-    String[] getHandleKeys();
+    /**
+     * This is only applicable to top level command classes that do not have their own defined key but rather uses the keys of their method/inner class handles.
+     *
+     * @return A String array.
+     */
+    default String[] getEffectiveKeys() {
+        return getKeys();
+    }
+
+    Collection<CommandHandle> getHandles();
+
+    default List<CommandPreprocessor> getPreprocessors() {
+        return null;
+    }
 }

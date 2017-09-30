@@ -32,6 +32,8 @@ import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.hooks.AnnotatedEventManager;
 import net.dv8tion.jda.core.hooks.IEventManager;
 import net.dv8tion.jda.core.hooks.InterfacedEventManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -42,9 +44,11 @@ import java.util.function.Predicate;
 
 public class CommandClientBuilder {
 
+    private static final Logger LOG = LoggerFactory.getLogger("CommandClient");
     private List<IModule> modules;
     private ICommandEventFactory commandEventFactory;
     private Consumer<CommandEngineBuilder> commandEngineModifier;
+    private CommandClient client;
 
     public CommandClientBuilder() {
         modules = new ArrayList<>();
@@ -193,8 +197,19 @@ public class CommandClientBuilder {
         if (!commandEngineBuilder.hasModule(IPrefixModule.class)) modules.add(new DefaultPrefixModule("!"));
         if (commandEventFactory == null) commandEventFactory = new CommandEventFactoryImpl(commandEngineBuilder);
         commandEngineModifier.accept(commandEngineBuilder);
-        new CommandClientImpl(modules, eventManager, commandEventFactory, commandEngineBuilder);
+        this.client = new CommandClientImpl(modules, eventManager, commandEventFactory, commandEngineBuilder);
+        LOG.info("Top Level Commands registered: " + client.getCommandEngine().getCommandMap().values().size() + ".");
+        LOG.info("CommandClient Initialized.");
         return eventManager;
+    }
+
+    /**
+     * Returns the client if it has been built. otherwise returns {@code null}
+     *
+     * @return A CommandClient.
+     */
+    public CommandClient getClient() {
+        return client;
     }
 
 

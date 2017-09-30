@@ -28,17 +28,13 @@ public class CommandMethodBuilder extends CommandHandleBuilder {
     private final List<CommandParameterBuilder> parameterBuilderList;
     private final Method method;
 
-    public CommandMethodBuilder(Method method) {
-        super(method.getName());
+    public CommandMethodBuilder(Method method, CommandPropertyMap map) {
+        super(method.getName(), map, method.getAnnotations());
         this.method = method;
         parameterBuilderList = new ArrayList<>();
+        final CommandParameterBuilder.Factory factory = new CommandParameterBuilder.Factory(map, method.getName());
         Arrays.stream(method.getParameters())
-                .map(CommandParameterBuilder::builder)
-                .peek(cpb -> {
-                    if (cpb instanceof CommandParameterBuilderImpl) {
-                        ((CommandParameterBuilderImpl) cpb).setMethodName(getName());
-                    }
-                })
+                .map(factory::builder)
                 .forEachOrdered(parameterBuilderList::add);
         final Command property = getPropertyBuilder().getProperty(Command.class);
         if (property != null) {
@@ -84,7 +80,7 @@ public class CommandMethodBuilder extends CommandHandleBuilder {
     @Override
     public CommandMethodBuilder setKeys(String... keys) {
         super.setKeys(keys);
-        return null;
+        return this;
     }
 
     @Override

@@ -57,7 +57,7 @@ public class CommandParameterImpl implements CommandParameter {
                 int j;
                 for (j = i; j < list.size(); j++) {
                     if (set.contains(j)) break;
-                    sj.add(list.get(i).getArgument());
+                    sj.add(list.get(j).getArgument());
                 }
                 indexes = IntStream.range(i, j).toArray();
                 commandArgument = new GenericCommandArgument(set.getEvent(), sj.toString());
@@ -72,7 +72,7 @@ public class CommandParameterImpl implements CommandParameter {
             final Optional<?> o = mapper.map(commandArgument, flags);
             if (o.isPresent()) {
                 set.addAll(indexes);
-                return o;
+                return o.get();
             }
         }
 

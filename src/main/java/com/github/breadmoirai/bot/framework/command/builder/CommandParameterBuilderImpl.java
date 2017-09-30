@@ -1,6 +1,8 @@
 package com.github.breadmoirai.bot.framework.command.builder;
 
 import com.github.breadmoirai.bot.framework.command.CommandParameter;
+import com.github.breadmoirai.bot.framework.command.CommandPropertyMap;
+import com.github.breadmoirai.bot.framework.command.CommandPropertyMapBuilder;
 import com.github.breadmoirai.bot.framework.command.impl.CommandParameterCollectionImpl;
 import com.github.breadmoirai.bot.framework.command.impl.CommandParameterImpl;
 import com.github.breadmoirai.bot.framework.command.parser.*;
@@ -19,7 +21,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class CommandParameterBuilderImpl implements CommandParameterBuilder {
-    private String methodName, paramName;
+    private String methodName;
+    private final CommandPropertyMapBuilder map;
+    private String paramName;
     private final Class<?> paramType;
     private Function<Class<?>, Collector<?, ?, ?>> collectorSupplier;
     private int flags = 0, index = -1, width = 1;
@@ -29,9 +33,12 @@ public class CommandParameterBuilderImpl implements CommandParameterBuilder {
     private boolean contiguous = true;
     private BiConsumer<CommandEvent, CommandParameter> onParamNotFound = null;
 
-    public CommandParameterBuilderImpl(Parameter parameter) {
+    public CommandParameterBuilderImpl(Parameter parameter, String methodName, CommandPropertyMap map) {
+        this.map = new CommandPropertyMapBuilder(map);
+        this.map.putAnnotations(parameter.getAnnotations());
         paramName = parameter.getName();
         paramType = parameter.getType();
+        this.methodName = methodName;
         if (paramType == List.class) {
             collectorSupplier = getToList();
             setActualTypeParameter(parameter);
@@ -44,6 +51,13 @@ public class CommandParameterBuilderImpl implements CommandParameterBuilder {
             type = paramType;
         }
         parser = ArgumentTypes.getParser(type);
+
+        final Width width = this.map.getProperty(Width.class);
+        if (width != null) setWidth(width.value());
+        final Index index = this.map.getProperty(Index.class);
+        if (index != null) setIndex(index.value());
+        final Flags flags = this.map.getProperty(Flags.class);
+        if (flags != null) setFlags(flags.value());
     }
 
     private void setActualTypeParameter(Parameter parameter) {
@@ -136,7 +150,7 @@ public class CommandParameterBuilderImpl implements CommandParameterBuilder {
     }
 
     @Override
-    public CommandParameterBuilder setOnParamNotFound(BiConsumer<CommandEvent, CommandParameter> onParamNotFound) {
+    public CommandParameterBuilder setOnParamNotFound(NullArgumentConsumer onParamNotFound) {
         this.onParamNotFound = onParamNotFound;
         return this;
     }

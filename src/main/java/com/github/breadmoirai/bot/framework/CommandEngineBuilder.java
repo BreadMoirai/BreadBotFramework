@@ -56,6 +56,7 @@ public class CommandEngineBuilder {
 
     private void addCommandBuilder(CommandHandleBuilder builder) {
         commandBuilderList.add(builder);
+        LOG.info("Registered Command \"" + builder.getName() + "\" with " + Arrays.toString(builder.getKeys()) + ".");
     }
 
     public CommandEngineBuilder registerCommand(String name, Consumer<CommandEvent> commandFunction, String... keys) {
@@ -90,6 +91,7 @@ public class CommandEngineBuilder {
     }
 
     public CommandEngineBuilder registerCommand(Class<?> commandClass, Consumer<CommandBuilder> configurator) {
+
         final CommandBuilder commandBuilder = new CommandBuilder(commandClass);
         configurator.accept(commandBuilder);
         addCommandBuilder(commandBuilder);
@@ -154,7 +156,7 @@ public class CommandEngineBuilder {
     public CommandEngine build() {
         final HashMap<String, CommandHandle> commandMap = new HashMap<>();
         commandBuilderList.stream().map(CommandHandleBuilder::build).forEach(commandExecutor -> {
-            final String[] keys = commandExecutor.getHandleKeys();
+            final String[] keys = commandExecutor.getEffectiveKeys();
             if (keys == null || keys.length == 0) {
                 throw new RuntimeException("No keys defined for " + commandExecutor.getName());
             }

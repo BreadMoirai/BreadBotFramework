@@ -26,10 +26,8 @@ public class CommandBuilder extends CommandHandleBuilder {
     private Object obj;
 
     public CommandBuilder(Class<?> commandClass) {
-        super(commandClass.getSimpleName());
+        super(commandClass.getSimpleName(), CommandPackageProperties.getPropertiesForPackage(commandClass.getPackage()), commandClass.getAnnotations());
         this.commandClass = commandClass;
-        getPropertyBuilder().setDefaultProperties(CommandPackageProperties.getPropertiesForPackage(commandClass.getPackage()));
-        getPropertyBuilder().putAnnotations(commandClass.getAnnotations());
 
         handleBuilders = new ArrayList<>();
         Arrays.stream(commandClass.getMethods())
@@ -37,22 +35,19 @@ public class CommandBuilder extends CommandHandleBuilder {
                 .filter(method -> method.getParameterTypes()[0] == CommandEvent.class)
                 .filter(method -> method.isAnnotationPresent(Command.class))
                 .filter(method -> !Modifier.isStatic(method.getModifiers()))
-                .map(CommandMethodBuilder::new)
-                .peek(commandMethodHandleBuilder -> commandMethodHandleBuilder.getPropertyBuilder().setDefaultProperties(getPropertyBuilder()))
+                .map(method -> new CommandMethodBuilder(method, getPropertyBuilder()))
                 .forEach(handleBuilders::add);
         Arrays.stream(commandClass.getClasses())
                 .filter(aClass -> aClass.isAnnotationPresent(Command.class))
-                .filter(method -> !Modifier.isStatic(method.getModifiers()))
-                .map(InnerCommandBuilder::new)
-                .peek(cchb -> cchb.getPropertyBuilder().setDefaultProperties(getPropertyBuilder()))
+                .filter(aClass -> !Modifier.isStatic(aClass.getModifiers()))
+                .map(aClass -> new InnerCommandBuilder(aClass, getPropertyBuilder()))
                 .forEach(handleBuilders::add);
         if (handleBuilders.isEmpty()) {
             Arrays.stream(commandClass.getMethods())
                     .filter(method -> method.getParameterCount() > 0)
                     .filter(method -> method.getParameterTypes()[0] == CommandEvent.class)
                     .filter(method -> !Modifier.isStatic(method.getModifiers()))
-                    .map(CommandMethodBuilder::new)
-                    .peek(cmhb -> cmhb.getPropertyBuilder().setDefaultProperties(getPropertyBuilder()))
+                    .map(method -> new CommandMethodBuilder(method, getPropertyBuilder()))
                     .peek(cmhb -> {
                         if (getPropertyBuilder().containsProperty(Command.class)) {
                             final Command property = getPropertyBuilder().getProperty(Command.class);
@@ -170,7 +165,8 @@ public class CommandBuilder extends CommandHandleBuilder {
         final HashMap<String, CommandHandle> handleMap = new HashMap<>();
         for (CommandHandleBuilder handleBuilder : handleBuilders) {
             final CommandHandle handle = handleBuilder.build();
-            for (String key : handle.getKeys()) {
+            final String[] keys = handle.getKeys();
+            for (String key : keys) {
                 handleMap.put(key, handle);
             }
         }

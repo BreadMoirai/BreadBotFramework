@@ -1,6 +1,6 @@
 package com.github.breadmoirai.bot.framework.command.parser;
 
-import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 import java.util.function.BiFunction;
@@ -27,7 +27,7 @@ public interface ArgumentTypeMapper<T> extends BiFunction<CommandArgument, Integ
      *
      * @return {@code !null} value. Must be wrapped in an {@link java.util.Optional}
      */
-    @Contract("_, _ -> !null")
+    @NotNull
     Optional<T> map(CommandArgument arg, int flags);
 
     /**

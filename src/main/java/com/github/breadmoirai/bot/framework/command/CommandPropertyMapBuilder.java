@@ -66,7 +66,12 @@ public class CommandPropertyMapBuilder implements Iterable<Object>, CommandPrope
     }
 
     public CommandPropertyMapBuilder putProperty(Object propertyObj) {
-        properties.put(propertyObj.getClass(), propertyObj);
+        if (propertyObj instanceof Annotation) {
+            final Class<? extends Annotation> aClass = ((Annotation) propertyObj).annotationType();
+            properties.put(aClass, propertyObj);
+        } else {
+            properties.put(propertyObj.getClass(), propertyObj);
+        }
         return this;
     }
 

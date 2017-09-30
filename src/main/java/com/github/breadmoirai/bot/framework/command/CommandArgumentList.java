@@ -20,7 +20,7 @@ import java.util.stream.StreamSupport;
  */
 public class CommandArgumentList extends AbstractList<CommandArgument> {
 
-    final private CommandArgument[] arguments;
+    private final CommandArgument[] arguments;
     private final CommandEvent event;
 
     public CommandArgumentList(String[] strings, CommandEvent event) {

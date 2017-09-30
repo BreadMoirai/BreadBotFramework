@@ -22,6 +22,7 @@ import com.github.breadmoirai.bot.framework.event.CommandEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -91,12 +92,22 @@ public class CommandImpl implements CommandHandle {
     }
 
     @Override
-    public String[] getHandleKeys() {
-        return handleMap.keySet().toArray(new String[0]);
+    public String[] getEffectiveKeys() {
+        return keys == null ? handleMap.keySet().toArray(new String[0]) : keys;
+    }
+
+    @Override
+    public Collection<CommandHandle> getHandles() {
+        return handleMap.values();
     }
 
     @Override
     public String toString() {
         return "CommandImpl[" + name + "]";
+    }
+
+    @Override
+    public List<CommandPreprocessor> getPreprocessors() {
+        return preprocessorList;
     }
 }

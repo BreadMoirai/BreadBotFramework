@@ -177,6 +177,7 @@ public final class ArgumentTypes {
 
         registerArgumentMapperSimple(OffsetDateTime.class, null, new DateTimeMapper());
 
+        registerArgumentMapperSimple(String.class, null, CommandArgument::getArgument);
     }
 
     /**
@@ -201,7 +202,7 @@ public final class ArgumentTypes {
      * @param <T>       The type
      */
     public static <T> void registerArgumentMapperSimple(Class<T> type, Predicate<CommandArgument> isType, Function<CommandArgument, T> getAsType) {
-        final ArgumentTypePredicate l = (arg, flags) -> isType.test(arg);
+        final ArgumentTypePredicate l = isType == null ? null : (arg, flags) -> isType.test(arg);
         final ArgumentTypeMapper<T> r = (arg, flags) -> Optional.ofNullable(getAsType.apply(arg));
         registerArgumentMapper(type, l, r);
     }

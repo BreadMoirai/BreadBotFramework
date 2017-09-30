@@ -60,4 +60,10 @@ public class CommandEngineImpl implements CommandEngine {
     public boolean hasCommand(String key) {
         return commandMap.containsKey(key);
     }
+
+    @Override
+    public Map<String, CommandHandle> getCommandMap() {
+        return commandMap;
+    }
+
 }

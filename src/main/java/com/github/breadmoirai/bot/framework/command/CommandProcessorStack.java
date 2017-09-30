@@ -7,6 +7,7 @@ import java.util.Collection;
 
 /**
  * This is an ArrayDeque. Intended to be used as a stack. Generally the only important method is {@link #runNext()}
+ * Failure to call runNext within a method will stop command execution.
  */
 public class CommandProcessorStack extends ArrayDeque<CommandPreprocessor> {
 
@@ -17,6 +18,7 @@ public class CommandProcessorStack extends ArrayDeque<CommandPreprocessor> {
     private boolean ranEnd;
 
     public CommandProcessorStack(Object object, CommandHandle targetHandle, CommandEvent event, Collection<CommandPreprocessor> preprocessors, Runnable onEnd) {
+        super(preprocessors);
         this.object = object;
         this.targetHandle = targetHandle;
         this.event = event;

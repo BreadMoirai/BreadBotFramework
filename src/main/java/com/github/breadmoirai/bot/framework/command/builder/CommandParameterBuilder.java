@@ -17,26 +17,17 @@ package com.github.breadmoirai.bot.framework.command.builder;
 import com.github.breadmoirai.bot.framework.IModule;
 import com.github.breadmoirai.bot.framework.command.CommandParameter;
 import com.github.breadmoirai.bot.framework.command.CommandParameterFunctionImpl;
+import com.github.breadmoirai.bot.framework.command.CommandPropertyMap;
 import com.github.breadmoirai.bot.framework.command.parser.ArgumentTypeMapper;
 import com.github.breadmoirai.bot.framework.command.parser.ArgumentTypePredicate;
+import com.github.breadmoirai.bot.framework.command.parser.NullArgumentConsumer;
 import com.github.breadmoirai.bot.framework.event.CommandEvent;
 
 import java.lang.reflect.Parameter;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public interface CommandParameterBuilder {
 
-    public static CommandParameterBuilder builder(Parameter parameter) {
-        final Class<?> type = parameter.getType();
-        if (type == CommandEvent.class) {
-            return new CommandParameterBuilderSpecificImpl("This parameter of type CommandEvent is inconfigurable", () -> new CommandParameterFunctionImpl((commandArguments, commandParser) -> commandParser.getEvent()));
-        } else if (IModule.class.isAssignableFrom(type)) {
-            return new CommandParameterBuilderSpecificImpl("This parameter of type " + type.getSimpleName() + " is inconfigurable", () -> new CommandParameterFunctionImpl((commandArguments, commandParser) -> commandParser.getEvent().getClient().getModule(type)));
-        } else {
-            return new CommandParameterBuilderImpl(parameter);
-        }
-    }
 
 
     /**
@@ -63,7 +54,7 @@ public interface CommandParameterBuilder {
      *
      * @return
      */
-    CommandParameterBuilderImpl setIndex(int index);
+    CommandParameterBuilder setIndex(int index);
 
     /**
      * Sets the width of the argument, how many tokens the parse should consume.
@@ -71,7 +62,7 @@ public interface CommandParameterBuilder {
      * @param width
      * @return
      */
-    CommandParameterBuilderImpl setWidth(int width);
+    CommandParameterBuilder setWidth(int width);
 
     /**
      * Sets the intended base type of the method. \\todo make a wiki
@@ -99,9 +90,30 @@ public interface CommandParameterBuilder {
      */
     CommandParameterBuilder setOptional(boolean mustBePresent);
 
-    CommandParameterBuilder setOnParamNotFound(BiConsumer<CommandEvent, CommandParameter> onParamNotFound);
+    CommandParameterBuilder setOnParamNotFound(NullArgumentConsumer onParamNotFound);
 
     CommandParameterBuilder configure(Consumer<CommandParameterBuilder> configurator);
 
     CommandParameter build();
+
+    static class Factory {
+        private final CommandPropertyMap map;
+        private final String methodName;
+
+        public Factory(CommandPropertyMap map, String methodName) {
+            this.map = map;
+            this.methodName = methodName;
+        }
+
+        public CommandParameterBuilder builder(Parameter parameter) {
+            final Class<?> type = parameter.getType();
+            if (type == CommandEvent.class) {
+                return new CommandParameterBuilderSpecificImpl("This parameter of type CommandEvent is inconfigurable", () -> new CommandParameterFunctionImpl((commandArguments, commandParser) -> commandParser.getEvent()));
+            } else if (IModule.class.isAssignableFrom(type)) {
+                return new CommandParameterBuilderSpecificImpl("This parameter of type " + type.getSimpleName() + " is inconfigurable", () -> new CommandParameterFunctionImpl((commandArguments, commandParser) -> commandParser.getEvent().getClient().getModule(type)));
+            } else {
+                return new CommandParameterBuilderImpl(parameter, methodName, map);
+            }
+        }
+    }
 }

@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 
 public class AmbiguousCommandMethod extends CommandInitializationException {
     public AmbiguousCommandMethod(Class<?> command, List<Method> methods) {
-        super(String.format("Command Class: %s does not explicitly mark any methods as a command.\n\tCandidate Methods: %s",
+        super(String.format("Command Class: %s does not explicitly mark any methods as a command.%n\tCandidate Methods: %s",
                 command.getName(),
                 methods.stream()
                         .map(method -> String.format("%s(%s)",

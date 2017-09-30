@@ -23,4 +23,27 @@ public class CommandPreprocessor implements CommandPreprocessorFunction {
     public void process(Object commandObj, CommandHandle targetHandle, CommandEvent event, CommandProcessorStack processQueue) {
         getFunction().process(commandObj, targetHandle, event, processQueue);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        CommandPreprocessor that = (CommandPreprocessor) o;
+
+        if (identifier != null ? !identifier.equals(that.identifier) : that.identifier != null) return false;
+        return function != null ? function.equals(that.function) : that.function == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = identifier != null ? identifier.hashCode() : 0;
+        result = 31 * result + (function != null ? function.hashCode() : 0);
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "CommandPreprocessor[" + identifier + ']';
+    }
 }

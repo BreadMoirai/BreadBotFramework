@@ -37,10 +37,9 @@ public class InnerCommandBuilder extends CommandHandleBuilder {
     private List<CommandHandleBuilder> handleBuilders;
     private final Class<?> innerClass;
 
-    public InnerCommandBuilder(Class<?> innerClass) {
-        super(innerClass.getSimpleName());
+    public InnerCommandBuilder(Class<?> innerClass, CommandPropertyMap map) {
+        super(innerClass.getSimpleName(), map, innerClass.getAnnotations());
         this.innerClass = innerClass;
-        getPropertyBuilder().putAnnotations(innerClass.getAnnotations());
 
         handleBuilders = new ArrayList<>();
         Arrays.stream(innerClass.getMethods())
@@ -48,12 +47,12 @@ public class InnerCommandBuilder extends CommandHandleBuilder {
                 .filter(method -> method.getParameterTypes()[0] == CommandEvent.class)
                 .filter(method -> method.isAnnotationPresent(Command.class))
                 .filter(method -> !Modifier.isStatic(method.getModifiers()))
-                .map(CommandMethodBuilder::new)
+                .map(method -> new CommandMethodBuilder(method, getPropertyBuilder()))
                 .forEach(handleBuilders::add);
         Arrays.stream(innerClass.getClasses())
                 .filter(aClass -> aClass.isAnnotationPresent(Command.class))
                 .filter(aClass -> !Modifier.isStatic(aClass.getModifiers()))
-                .map(InnerCommandBuilder::new)
+                .map(aClass -> new InnerCommandBuilder(aClass, getPropertyBuilder()))
                 .forEach(handleBuilders::add);
     }
 

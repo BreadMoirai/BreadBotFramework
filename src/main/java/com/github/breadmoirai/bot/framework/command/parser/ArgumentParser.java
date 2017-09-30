@@ -14,6 +14,8 @@
 */
 package com.github.breadmoirai.bot.framework.command.parser;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Optional;
 
 public class ArgumentParser<T> implements ArgumentTypeMapper<T>, ArgumentTypePredicate {
@@ -30,6 +32,7 @@ public class ArgumentParser<T> implements ArgumentTypeMapper<T>, ArgumentTypePre
         this(null, mapper);
     }
 
+    @NotNull
     @Override
     public Optional<T> map(CommandArgument arg, int flags) {
         return parse(arg, flags);
@@ -57,7 +60,7 @@ public class ArgumentParser<T> implements ArgumentTypeMapper<T>, ArgumentTypePre
                 return Optional.empty();
             }
         }
-        return map(arg, flags);
+        return mapper.map(arg, flags);
     }
 
     public ArgumentTypePredicate getPredicate() {

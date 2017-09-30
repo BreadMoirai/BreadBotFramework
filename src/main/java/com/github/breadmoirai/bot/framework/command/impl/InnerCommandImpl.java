@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.invoke.MethodHandle;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -90,7 +91,12 @@ public class InnerCommandImpl implements CommandHandle {
     }
 
     @Override
-    public String[] getHandleKeys() {
-        return handleMap.keySet().toArray(new String[0]);
+    public Collection<CommandHandle> getHandles() {
+        return handleMap.values();
+    }
+
+    @Override
+    public List<CommandPreprocessor> getPreprocessors() {
+        return preprocessorList;
     }
 }

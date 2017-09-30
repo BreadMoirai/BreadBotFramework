@@ -20,6 +20,7 @@ import com.github.breadmoirai.bot.framework.event.CommandEvent;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Method;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -52,7 +53,12 @@ public class CommandMethodImpl implements CommandHandle {
 
     @Override
     public boolean handle(Object parent, CommandEvent event, Iterator<String> keyItr) {
-        //todo make custom arg list
+        final CommandProcessorStack commandPreprocessors = new CommandProcessorStack(parent, this, event, preprocessorList, () -> parseAndInvokeHandle(parent, event));
+        commandPreprocessors.runNext();
+        return commandPreprocessors.result();
+    }
+
+    private boolean parseAndInvokeHandle(Object parent, CommandEvent event) {
         final CommandParser parser = new CommandParser(event, this, event.getArguments(), commandParameters);
         while (parser.hasNext()) {
             parser.mapNext();
@@ -75,7 +81,12 @@ public class CommandMethodImpl implements CommandHandle {
     }
 
     @Override
-    public String[] getHandleKeys() {
+    public Collection<CommandHandle> getHandles() {
         return null;
+    }
+
+    @Override
+    public List<CommandPreprocessor> getPreprocessors() {
+        return preprocessorList;
     }
 }

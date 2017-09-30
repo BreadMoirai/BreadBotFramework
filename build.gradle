@@ -1,14 +1,3 @@
-buildscript {
-    repositories {
-        flatDir {
-            dirs 'C:/Users/TonTL/Desktop/git/github-release/build/libs'
-        }
-    }
-    dependencies {
-        classpath group: 'com.github.breadmoirai', name: 'github-release', version: '0.1.0'
-    }
-}
-
 plugins {
     id 'java'
     id 'idea'
@@ -17,12 +6,11 @@ plugins {
     id 'com.jfrog.bintray' version '1.7.3'
     id 'maven-publish'
     id 'signing'
+    id 'com.github.breadmoirai.github-release' version '1.0.0'
 }
 
-apply plugin: 'com.github.breadmoirai.github-release'
-
 group 'com.github.breadmoirai'
-version '0.6.1'
+version '0.6.2'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -43,7 +31,7 @@ dependencies {
 
     //slf4j
     compile 'org.slf4j:slf4j-api:1.8.0-alpha2'
-//    compile 'com.squareup.okhttp3:okhttp:3.8.1'
+    compile 'com.squareup.okhttp3:okhttp:3.8.1'
 //    compile 'com.j256.simplemagic:simplemagic:1.10'
     //Utility
     compile 'org.reflections:reflections:0.9.10'
@@ -54,7 +42,7 @@ dependencies {
 
     //testing
 //    compile 'com.sedmelluq:lavaplayer:1.2.42'
-//    compile 'org.slf4j:slf4j-simple:1.8.0-alpha2'
+    compile 'org.slf4j:slf4j-simple:1.8.0-alpha2'
 //    compile 'org.apache.derby:derby:10.13.1.1'
 //    compile 'com.google.api-client:google-api-client:1.22.0'
 //    compile 'com.google.apis:google-api-services-youtube:v3-rev183-1.22.0'
@@ -67,7 +55,9 @@ dependencies {
 }
 
 githubRelease {
-    token = getProperty('github.key').toString()
+    if (hasProperty('github.key')) {
+        token = getProperty('github.key').toString()
+    }
     String version = project.version
     body = "\n## Adding as Dependency\n### Gradle\n\n\tallprojects {\n\t\trepositories {\n\t\t\t...\n\t\t\tmaven { url 'https://dl.bintray.com/breadmoirai/maven'}\n\t\t}\n\t}\n\n\tdependencies {\n\t\tcompile '$project.group:$project.name:$project.version\n\t}\n\n### Maven\n\t<repositories>\n\t\t<repository>\n\t\t\t<snapshots>\n\t\t\t\t<enabled>false</enabled>\n\t\t\t</snapshots>\n\t\t\t<id>bintray-breadmoirai-maven</id>\n\t\t\t<name>bintray</name>\n\t\t\t<url>http://dl.bintray.com/breadmoirai/maven</url>\n\t\t</repository>\n\t</repositories>\n\t<pluginRepositories>\n\t\t<pluginRepository>\n\t\t\t<snapshots>\n\t\t\t\t<enabled>false</enabled>\n\t\t\t</snapshots>\n\t\t\t<id>bintray-breadmoirai-maven</id>\n\t\t\t<name>bintray-plugins</name>\n\t\t\t<url>http://dl.bintray.com/breadmoirai/maven</url>\n\t\t</pluginRepository>\n\t</pluginRepositories>\n\n\t<dependency>\n\t\t<groupId>$project.group</groupId>\n\t\t<artifactId>$project.name</artifactId>\n\t\t<version>$project.version</version>\n\t\t<type>pom</type>\n\t</dependency>"
     prerelease = true
@@ -150,4 +140,8 @@ task publishJavadoc(type: Exec) {
         cd ..
         rm -rf ${javadocDir.destinationDir.absolutePath}
     """
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '4.2'
 }

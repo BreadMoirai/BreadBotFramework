@@ -47,7 +47,8 @@ public class CommandClientImpl implements com.github.breadmoirai.bot.framework.C
     public CommandClientImpl(List<IModule> modules, IEventManager eventManager, ICommandEventFactory eventFactory, CommandEngineBuilder engineBuilder) {
         this.modules = Collections.unmodifiableList(modules);
         modules.forEach(module -> module.init(engineBuilder, this));
-        eventManager.register(this.new SamuraiEventListener(eventManager, engineBuilder.getPreProcessPredicate()));
+        SamuraiEventListener listener = this.new SamuraiEventListener(eventManager, engineBuilder.getPreProcessPredicate());
+        eventManager.register(listener);
 
         if (eventManager instanceof InterfacedEventManager)
             modules.stream().filter(net.dv8tion.jda.core.hooks.EventListener.class::isInstance).forEach(eventManager::register);
