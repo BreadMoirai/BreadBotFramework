@@ -49,13 +49,15 @@ import static org.hamcrest.MatcherAssert.assertThat;
 public class ClientTest {
 
     private static final long TEST_CHANNEL = 306868361541844993L;
+    private static final String BOT_TOKEN = "bot token";
+    private static final String CLIENT_TOKEN = "user bot / client token";
 
     @Rule
     public final Timeout globalTimeout = Timeout.seconds(600);
     @Rule
     public final ExpectedException exception = ExpectedException.none();
-    public final long responseTimout = 5;
 
+    private final static long RESPONSE_TIMEOUT = 5;
 
     private static ClientSender clientSender;
     private static JDA botApi, clientApi;
@@ -122,8 +124,8 @@ public class ClientTest {
 
         try {
             botApi = new JDABuilder(AccountType.BOT)
-                    .setGame(Game.of("Comprehensive Testing"))
-                    .setToken("MzQwNzAzODUxNjA0NjA2OTc2.DKx47Q.1BS8uVPkd5qwXaaNMU6VCea2Ufg")
+                    .setGame(Game.of("Testing"))
+                    .setToken(BOT_TOKEN)
                     .setEventManager(eventManager)
                     .addEventListener((EventListener) event -> {
                         if (event instanceof GuildMessageReceivedEvent) {
@@ -144,8 +146,8 @@ public class ClientTest {
 
         try {
             clientApi = new JDABuilder(AccountType.CLIENT)
-                    .setToken("MzYwNDgzNzMyOTUzNzU5NzQ2.DKyB6A.EGtrpiQufSXaC6q8rW-LwswAKpY")
-                    .setGame(Game.of("Setup"))
+                    .setToken(CLIENT_TOKEN)
+                    .setGame(Game.of("Testing"))
                     .buildBlocking();
         } catch (LoginException | InterruptedException | RateLimitedException e) {
             throw new RuntimeException(e);
@@ -156,58 +158,58 @@ public class ClientTest {
         clientId = clientApi.getSelfUser().getIdLong();
     }
 
-//    @Test
-//    public void basicCommandTest() {
-//        assertResponse("!ping", "pong");
-//    }
-//
-//    @Test
-//    public void ignoreKeyCaseTest() {
-//        assertResponse("!PING", "pong");
-//    }
-//
-//    @Test
-//    public void basicPreprocessorTest() {
-//        assertResponse("!pang", "pung");
-//    }
-//
-//    @Test
-//    public void methodPreprocessorPropertyTest() {
-//        assertResponse("!pyng", "gnyp");
-//    }
-//
-//    @Test
-//    public void classPreprocessorPropertyTest() {
-//        final String message = "!poing";
-//        final String response = "pong pong pong pong pong";
-//        assertResponse(message, response);
-//    }
-//
-//    @Test
-//    public void preprocessorPriorityTest() {
-//        assertResponse("!pnosort", "beta");
-//        assertResponse("!ponsort", "alpha");
-//    }
-//
-//    @Test
-//    public void persistenceTest() {
-//        assertResponse("!count", "1");
-//        assertResponse("!count", "2");
-//        assertResponse("!count", "3");
-//    }
-//
-//    @Test
-//    public void impersistenceTest() {
-//        assertResponse("!cyunt", "1");
-//        assertResponse("!cyunt", "1");
-//    }
-//
-//    @Test
-//    public void persistentSupplierTest() {
-//        assertResponse("!coynt", "10");
-//        assertResponse("!coynt", "11");
-//        assertResponse("!coynt", "12");
-//    }
+    @Test
+    public void basicCommandTest() {
+        assertResponse("!ping", "pong");
+    }
+
+    @Test
+    public void ignoreKeyCaseTest() {
+        assertResponse("!PING", "pong");
+    }
+
+    @Test
+    public void basicPreprocessorTest() {
+        assertResponse("!pang", "pung");
+    }
+
+    @Test
+    public void methodPreprocessorPropertyTest() {
+        assertResponse("!pyng", "gnyp");
+    }
+
+    @Test
+    public void classPreprocessorPropertyTest() {
+        final String message = "!poing";
+        final String response = "pong pong pong pong pong";
+        assertResponse(message, response);
+    }
+
+    @Test
+    public void preprocessorPriorityTest() {
+        assertResponse("!pnosort", "beta");
+        assertResponse("!ponsort", "alpha");
+    }
+
+    @Test
+    public void persistenceTest() {
+        assertResponse("!count", "1");
+        assertResponse("!count", "2");
+        assertResponse("!count", "3");
+    }
+
+    @Test
+    public void impersistenceTest() {
+        assertResponse("!cyunt", "1");
+        assertResponse("!cyunt", "1");
+    }
+
+    @Test
+    public void persistentSupplierTest() {
+        assertResponse("!coynt", "10");
+        assertResponse("!coynt", "11");
+        assertResponse("!coynt", "12");
+    }
 
     @Test
     public void parameterPropertyTest() {
@@ -220,7 +222,7 @@ public class ClientTest {
         clientSender.sendMessage(message);
         final Message poll;
         try {
-            poll = botQueue.poll(responseTimout, TimeUnit.SECONDS);
+            poll = botQueue.poll(RESPONSE_TIMEOUT, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
