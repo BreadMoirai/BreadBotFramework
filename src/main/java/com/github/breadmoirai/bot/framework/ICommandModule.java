@@ -18,7 +18,7 @@ package com.github.breadmoirai.bot.framework;
 import com.github.breadmoirai.bot.framework.event.CommandEvent;
 import org.json.JSONObject;
 
-public interface IModule {
+public interface ICommandModule {
 
     default String getName() {
         return this.getClass().getSimpleName();

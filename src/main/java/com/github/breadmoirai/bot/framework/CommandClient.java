@@ -27,15 +27,15 @@ public interface CommandClient {
 
     boolean hasModule(String moduleName);
 
-    boolean hasModule(Class<? extends IModule> moduleClass);
+    boolean hasModule(Class<? extends ICommandModule> moduleClass);
 
-    <T extends IModule> T getModule(Class<T> moduleClass);
+    <T extends ICommandModule> T getModule(Class<T> moduleClass);
 
-    IModule getModule(String moduleName);
+    ICommandModule getModule(String moduleName);
 
-    IModule getModule(Type moduleType);
+    ICommandModule getModule(Type moduleType);
 
-    List<IModule> getModules();
+    List<ICommandModule> getModules();
 
     CommandEngine getCommandEngine();
 

@@ -33,13 +33,13 @@ import java.util.function.Predicate;
 public class CommandEngineBuilder {
 
     private static final SimpleLog LOG = SimpleLog.getLog("CommandBuilder");
-    private final List<IModule> modules;
+    private final List<ICommandModule> modules;
 
     private Predicate<Message> preProcessPredicate;
 
     private List<CommandHandleBuilder> commandBuilderList = new ArrayList<>();
 
-    public CommandEngineBuilder(List<IModule> modules) {
+    public CommandEngineBuilder(List<ICommandModule> modules) {
         this.modules = modules;
     }
 
@@ -123,7 +123,7 @@ public class CommandEngineBuilder {
         return this;
     }
 
-    public boolean hasModule(Class<? extends IModule> moduleClass) {
+    public boolean hasModule(Class<? extends ICommandModule> moduleClass) {
         return moduleClass != null && modules.stream().map(Object::getClass).anyMatch(moduleClass::isAssignableFrom);
     }
 
@@ -133,21 +133,21 @@ public class CommandEngineBuilder {
      * @param moduleClass The class of the Module to find
      * @return The module if found. Else {@code null}.
      */
-    public <T extends IModule> T getModule(Class<T> moduleClass) {
+    public <T extends ICommandModule> T getModule(Class<T> moduleClass) {
         //noinspection unchecked
         return moduleClass == null ? null : modules.stream().filter(module -> moduleClass.isAssignableFrom(module.getClass())).map(iModule -> (T) iModule).findAny().orElse(null);
     }
 
-    public void addModule(IModule module) {
+    public void addModule(ICommandModule module) {
         checkDuplicateModules(module);
         modules.add(module);
     }
 
-    private void checkDuplicateModules(IModule module) {
-        Class<? extends IModule> moduleClass = module.getClass();
-        while (Arrays.stream(moduleClass.getInterfaces()).noneMatch(i -> i == IModule.class)) {
+    private void checkDuplicateModules(ICommandModule module) {
+        Class<? extends ICommandModule> moduleClass = module.getClass();
+        while (Arrays.stream(moduleClass.getInterfaces()).noneMatch(i -> i == ICommandModule.class)) {
             //noinspection unchecked
-            moduleClass = (Class<? extends IModule>) moduleClass.getSuperclass();
+            moduleClass = (Class<? extends ICommandModule>) moduleClass.getSuperclass();
         }
         if (hasModule(moduleClass))
             LOG.warn("Duplicate Module: There are two or more modules of type " + moduleClass.toString());

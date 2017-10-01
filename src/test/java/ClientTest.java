@@ -49,15 +49,15 @@ import static org.hamcrest.MatcherAssert.assertThat;
 public class ClientTest {
 
     private static final long TEST_CHANNEL = 306868361541844993L;
-    private static final String BOT_TOKEN = "bot token";
-    private static final String CLIENT_TOKEN = "user bot / client token";
+    private static final String BOT_TOKEN = "MzQwNzAzODUxNjA0NjA2OTc2.DLF18A.JhSbDlU-67yRoZX_juYFXLlW4Mg";
+    private static final String CLIENT_TOKEN = "MzEzODk3NjQ1Nzc5MzIwODMy.DLF3Dg.rM1Qj5awxS8IyymE5EzPMDCSEcA";
 
     @Rule
     public final Timeout globalTimeout = Timeout.seconds(600);
     @Rule
     public final ExpectedException exception = ExpectedException.none();
 
-    private final static long RESPONSE_TIMEOUT = 5;
+    private final static long RESPONSE_TIMEOUT = 10;
 
     private static ClientSender clientSender;
     private static JDA botApi, clientApi;

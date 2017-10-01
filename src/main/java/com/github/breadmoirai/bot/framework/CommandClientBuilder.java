@@ -45,7 +45,7 @@ import java.util.function.Predicate;
 public class CommandClientBuilder {
 
     private static final Logger LOG = LoggerFactory.getLogger("CommandClient");
-    private List<IModule> modules;
+    private List<ICommandModule> modules;
     private ICommandEventFactory commandEventFactory;
     private Consumer<CommandEngineBuilder> commandEngineModifier;
     private CommandClient client;
@@ -54,12 +54,12 @@ public class CommandClientBuilder {
         modules = new ArrayList<>();
     }
 
-    public CommandClientBuilder addModule(IModule... module) {
+    public CommandClientBuilder addModule(ICommandModule... module) {
         Collections.addAll(modules, module);
         return this;
     }
 
-    public CommandClientBuilder addModule(Collection<IModule> moduleList) {
+    public CommandClientBuilder addModule(Collection<ICommandModule> moduleList) {
         modules.addAll(moduleList);
         return this;
     }
@@ -68,9 +68,9 @@ public class CommandClientBuilder {
      * This module provides a static prefix that cannot be changed. By default, the prefix is set to "!".
      *
      * <p>This method's implementation is:
-     * <pre><code> {@link CommandClientBuilder#addModule(IModule...) addModule}(new {@link DefaultPrefixModule DefaultPrefixModule}(prefix)) </code></pre>
+     * <pre><code> {@link CommandClientBuilder#addModule(ICommandModule...) addModule}(new {@link DefaultPrefixModule DefaultPrefixModule}(prefix)) </code></pre>
      *
-     * <p>You can define a different prefix implementation by providing a class to {@link CommandClientBuilder#addModule(IModule...)} that implements {@link IPrefixModule IPrefixModule}
+     * <p>You can define a different prefix implementation by providing a class to {@link CommandClientBuilder#addModule(ICommandModule...)} that implements {@link IPrefixModule IPrefixModule}
      */
     public CommandClientBuilder addDefaultPrefixModule(String prefix) {
         addModule(new DefaultPrefixModule(prefix));
@@ -101,7 +101,7 @@ public class CommandClientBuilder {
      * Define custom behavior to determine which members can use Commands marked with {@link Admin @Admin}
      * <p>
      * <p>This method's implementation is:
-     * <pre><code> {@link CommandClientBuilder#addModule(IModule...) addModule}(new {@link DefaultAdminModule DefaultAdminModule}(isAdmin)) </code></pre>
+     * <pre><code> {@link CommandClientBuilder#addModule(ICommandModule...) addModule}(new {@link DefaultAdminModule DefaultAdminModule}(isAdmin)) </code></pre>
      */
     public CommandClientBuilder addAdminModule(Predicate<Member> isAdmin) {
         addModule(new DefaultAdminModule(isAdmin));
@@ -119,7 +119,7 @@ public class CommandClientBuilder {
     }
 
     /**
-     * Can configure the CommandEngineBuilder independently from a module.
+     * Modifies the CommandEngineBuilder with the given Consumer
      */
     public CommandClientBuilder configure(Consumer<CommandEngineBuilder> consumer) {
         if (commandEngineModifier == null) {

@@ -17,9 +17,9 @@ package com.github.breadmoirai.bot.modules.prefix;
 
 import com.github.breadmoirai.bot.framework.CommandClient;
 import com.github.breadmoirai.bot.framework.CommandEngineBuilder;
-import com.github.breadmoirai.bot.framework.IModule;
+import com.github.breadmoirai.bot.framework.ICommandModule;
 
-public interface IPrefixModule extends IModule {
+public interface IPrefixModule extends ICommandModule {
 
     @Override
     default void init(CommandEngineBuilder engineBuilder, CommandClient client) {

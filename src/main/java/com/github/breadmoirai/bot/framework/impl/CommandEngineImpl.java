@@ -16,7 +16,7 @@
 package com.github.breadmoirai.bot.framework.impl;
 
 import com.github.breadmoirai.bot.framework.CommandEngine;
-import com.github.breadmoirai.bot.framework.IModule;
+import com.github.breadmoirai.bot.framework.ICommandModule;
 import com.github.breadmoirai.bot.framework.command.CommandHandle;
 import com.github.breadmoirai.bot.framework.event.CommandEvent;
 import com.github.breadmoirai.bot.framework.event.impl.HelpEvent;
@@ -31,14 +31,14 @@ public class CommandEngineImpl implements CommandEngine {
 
     private final Map<String, CommandHandle> commandMap;
 
-    public CommandEngineImpl(List<IModule> modules, Map<String, CommandHandle> commandMap) {
+    public CommandEngineImpl(List<ICommandModule> modules, Map<String, CommandHandle> commandMap) {
         this.commandMap = commandMap;
     }
 
     @Override
     public void handle(CommandEvent event) {
         if (event instanceof HelpEvent) {
-            final IModule module = event.getClient().getModule(event.getKey());
+            final ICommandModule module = event.getClient().getModule(event.getKey());
             if (module != null) {
                 module.onHelpEvent(event);
                 return;

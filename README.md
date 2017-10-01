@@ -1,104 +1,75 @@
-[bintrayImage]: https://api.bintray.com/packages/breadmoirai/maven/SBF/images/download.svg
-[bintrayLink]: https://bintray.com/breadmoirai/maven/SBF/_latestVersion
-[contributorsImage]: https://img.shields.io/github/contributors/BreadMoirai/Samurai7.svg
-[contributorsLink]: https://github.com/BreadMoirai/Samurai7/graphs/contributors
-[issuesImage]: https://img.shields.io/github/issues-raw/BreadMoirai/Samurai7.svg
-[issuesLink]: https://github.com/BreadMoirai/Samurai7/issues
+[bintrayImage]: https://api.bintray.com/packages/breadmoirai/maven/BreadBotFramework/images/download.svg
+[bintrayLink]: https://bintray.com/breadmoirai/maven/BreadBotFramework/_latestVersion
+[contributorsImage]: https://img.shields.io/github/contributors/BreadMoirai/BreadBotFramework.svg
+[contributorsLink]: https://github.com/BreadMoirai/BreadBotFramework/graphs/contributors
+[issuesImage]: https://img.shields.io/github/issues-raw/BreadMoirai/BreadBotFramework.svg
+[issuesLink]: https://github.com/BreadMoirai/BreadBotFramework/issues
 [discordWidget]: https://discordapp.com/api/guilds/284822192821108736/widget.png
 [discordInvite]: https://discord.gg/yAMdGU9
+[wikiImage]: https://img.shields.io/badge/wiki-10%-orange.svg
+[wikiLink]: https://github.com/BreadMoirai/BreadBotFramework/wiki
+[docsImage]: https://img.shields.io/badge/docs-30%-yellow.svg
+[docsLink]: https://breadmoirai.github.io/BreadBotFramework/
 
 [ ![bintrayImage][] ][bintrayLink] 
 [ ![contributorsImage][] ][contributorsLink]
 [ ![issuesImage][] ][issuesLink]
 [ ![discordWidget][] ][discordInvite]
+[ ![wikiImage][]][wikiLink]
+[ ![docsImage][]][docsLink]
 
-# SamuraiBotFramework (SBF)
-This is a simple framework for bots that uses modules and reflection to make it easy.
+# BreadBotFramework
+This is a framework for Discord Bots
+
+### Features
+ - CommandModules
+ - 
+##### Planned Features
+ - Being able to do things with CommandModules instead of just having access to them.
+ - Being able to link sent messages with Response objects
+ - logs
 
 This framework is built ontop of [JDA](https://github.com/DV8FromTheWorld/JDA)
 ## Download
-You can check the releases tab. This is also distributed via [bintray][bintrayLink].
+You can check the [releases](https://github.com/BreadMoirai/BreadBotFramework/releases) tab for jars. This is also distributed via [bintray][bintrayLink].
 
+### Adding as Dependency
+[![bintrayImage][]][bintrayLink] 
+
+When using the snippets below replace the **VERSION** key with the version shown above.
+
+#### Gradle
 ```groovy
 repositories {
-    maven { url 'https://dl.bintray.com/breadmoirai/maven'}
+  jcenter()
 }
 
 dependencies {
-    compile 'net.breadmoirai:SamuraiBotFramework:0.3.9'
+  compile 'com.github.breadmoirai:BreadBotFramework:VERSION'
 }
+```
+
+#### Maven
+```xml
+<repository>
+  <id>jcenter</id>
+  <name>jcenter</name>
+  <url>http://jcenter.bintray.com/</url>
+</repository>
+
+<dependency>
+  <groupId>com.github.breadmoirai</groupId>
+  <artifactId>BreadBotFramework</artifactId>
+  <version>VERSION</version>
+  <type>pom</type>
+</dependency>
 ```
 
 ### Javadoc
-Web access to the javadocs is provided [here](https://breadmoirai.github.io/SamuraiBotFramework/). Please note that this is a work in progress and it is likely something you would like documented is not documented. Please open an issue via Github [Issues](https://github.com/BreadMoirai/SamuraiBotFramework/issues) or contact me directly through my [Discord][discordInvite].
+Web access to the javadocs is provided [here][docsLink]. Please note that this is a work in progress and it is likely something you would like documented is not documented. Please open an issue via Github [Issues](https://github.com/BreadMoirai/BreadBotFramework/issues) or contact me directly through my [Discord][discordInvite].
 
 ## Example
-**Main**
-```java
-import net.breadmoirai.sbf.core.impl.SamuraiClientBuilder;
-
-public class Main {
-    public static void main(String[] args) {
-        ...
-        long myId = 123456789L;
-        SamuraiClientBuilder scb = new SamuraiClientBuilder()
-                .addDefaultPrefixModule("!")
-                .addAdminModule(member -> {
-                    //defines criteria for which members are allowed to use commands marked with @Admin
-                    long myId = 0L;
-                    if (member.getUser().getIdLong() == myId) return true;
-                    else return member.canInteract(member.getGuild().getSelfMember()) && member.hasPermission(Permission.KICK_MEMBERS);
-                })
-                .addModule(new OwnerModule(myId))
-                .registerCommand(ShutdownCommand.class)
-                .addModule(new CatDogModule());
-        
-        EventManager eventManager = scb.buildInterfaced();
-                
-        try {
-            new JDABuilder(AccountType.BOT)
-                    .setToken("mytoken")
-                    .setEventManager(eventManager)
-                    //SBF also comes with a singleton implementation of jagrosh's EventWaiter.
-                    //This eventwaiter is slightly different in that it only takes a predicate that returns true if it should stop receiving events and false if it has not found the right event.
-                    .addEventListener(EventWaiter.get())
-                    .buildAsync();
-            } catch (LoginException | RateLimitedException e) {
-                e.printStackTrace();
-            }
-    }
-}
-```
-Please note, many of the default modules provided by me rely on a Database such as the PrefixModule which stores strings in a Database.
-The database is a thread-safe singleton instance of [JDBI](http://jdbi.github.io/) which will work with any JDBC connection.
-
-The database should be initialized first before the SamuraiClient as in the following example where a connection to an embedded apache derby database is provided.
-The Database#create method will take a [Supplier\<Connection\>](https://docs.oracle.com/javase/8/docs/api/java/util/function/Supplier.html).
-```java
-public class Main {
-    public static void main(String[] args) {
-        try {
-            DriverManager.registerDriver(new org.apache.derby.jdbc.EmbeddedDriver());
-            Database.create(() -> DriverManager.getConnection("jdbc:derby:MyDatabase;create=true"));
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return;
-        }
-        ...
-    }
-}
-```
-#### Shutdown Command
-This is an command independent of any module.
-```java
-@Owner //the @Owner annotation comes with the OwnerModule.
-@Key("shutdown")
-public class ShutdownCommand extends Command {
-    public Response execute(CommandEvent event) {
-        event.getJDA().shutdown();
-        return null;
-    }
-}
+Please refer [here](https://github.com/BreadMoirai/BreadBotFramework/wiki/Getting-Started)
 ```
 ## CatDog Module
 Here is an example module.

@@ -17,7 +17,7 @@ package com.github.breadmoirai.bot.framework.impl;
 
 import com.github.breadmoirai.bot.framework.CommandEngine;
 import com.github.breadmoirai.bot.framework.CommandEngineBuilder;
-import com.github.breadmoirai.bot.framework.IModule;
+import com.github.breadmoirai.bot.framework.ICommandModule;
 import com.github.breadmoirai.bot.framework.event.CommandEvent;
 import com.github.breadmoirai.bot.framework.event.ICommandEventFactory;
 import net.dv8tion.jda.core.JDA;
@@ -41,10 +41,10 @@ public class CommandClientImpl implements com.github.breadmoirai.bot.framework.C
 
     private final ICommandEventFactory eventFactory;
     private final CommandEngine commandEngine;
-    private final List<IModule> modules;
-    private final Map<Type, IModule> moduleTypeMap;
+    private final List<ICommandModule> modules;
+    private final Map<Type, ICommandModule> moduleTypeMap;
 
-    public CommandClientImpl(List<IModule> modules, IEventManager eventManager, ICommandEventFactory eventFactory, CommandEngineBuilder engineBuilder) {
+    public CommandClientImpl(List<ICommandModule> modules, IEventManager eventManager, ICommandEventFactory eventFactory, CommandEngineBuilder engineBuilder) {
         this.modules = Collections.unmodifiableList(modules);
         modules.forEach(module -> module.init(engineBuilder, this));
         SamuraiEventListener listener = this.new SamuraiEventListener(eventManager, engineBuilder.getPreProcessPredicate());
@@ -57,19 +57,19 @@ public class CommandClientImpl implements com.github.breadmoirai.bot.framework.C
         this.eventFactory = eventFactory;
         this.commandEngine = engineBuilder.build();
 
-        final HashMap<Type, IModule> typeMap = new HashMap<>(modules.size());
-        for (IModule module : modules) {
+        final HashMap<Type, ICommandModule> typeMap = new HashMap<>(modules.size());
+        for (ICommandModule module : modules) {
             Class<?> moduleClass = module.getClass();
             do {
                 typeMap.put(moduleClass, module);
                 for (Class<?> inter : moduleClass.getInterfaces()) {
-                    final List<Class<?>> interfaceList = getInterfaceHierarchy(inter, IModule.class);
+                    final List<Class<?>> interfaceList = getInterfaceHierarchy(inter, ICommandModule.class);
                     if (interfaceList != null) {
                         for (Class<?> interfaceClass : interfaceList)
                             typeMap.put(interfaceClass, module);
                     }
                 }
-            } while (IModule.class.isAssignableFrom(moduleClass = moduleClass.getSuperclass()));
+            } while (ICommandModule.class.isAssignableFrom(moduleClass = moduleClass.getSuperclass()));
         }
         this.moduleTypeMap = typeMap;
     }
@@ -95,11 +95,11 @@ public class CommandClientImpl implements com.github.breadmoirai.bot.framework.C
 
     @Override
     public boolean hasModule(String moduleName) {
-        return moduleName != null && modules.stream().map(IModule::getName).anyMatch(moduleName::equalsIgnoreCase);
+        return moduleName != null && modules.stream().map(ICommandModule::getName).anyMatch(moduleName::equalsIgnoreCase);
     }
 
     @Override
-    public boolean hasModule(Class<? extends IModule> moduleClass) {
+    public boolean hasModule(Class<? extends ICommandModule> moduleClass) {
         return moduleTypeMap.containsKey(moduleClass);
     }
 
@@ -110,7 +110,7 @@ public class CommandClientImpl implements com.github.breadmoirai.bot.framework.C
      * @return Optional containing the module if found.
      */
     @Override
-    public <T extends IModule> T getModule(Class<T> moduleClass) {
+    public <T extends ICommandModule> T getModule(Class<T> moduleClass) {
         //noinspection unchecked
         return (T) moduleTypeMap.get(moduleClass);
     }
@@ -118,21 +118,21 @@ public class CommandClientImpl implements com.github.breadmoirai.bot.framework.C
     /**
      * Finds and returns the first Module that is assignable to the provided {@code moduleClass}
      *
-     * @param moduleName the name of the module to find. If the module does not override {@link IModule#getName IModule#getName} the name of the class is used.
+     * @param moduleName the name of the module to find. If the module does not override {@link ICommandModule#getName IModule#getName} the name of the class is used.
      * @return Optional containing the module if foundd.
      */
     @Override
-    public IModule getModule(String moduleName) {
+    public ICommandModule getModule(String moduleName) {
         return moduleName == null ? null : modules.stream().filter(module -> module.getName().equalsIgnoreCase(moduleName)).findAny().orElse(null);
     }
 
     @Override
-    public IModule getModule(Type moduleType) {
+    public ICommandModule getModule(Type moduleType) {
         return moduleTypeMap.get(moduleType);
     }
 
     @Override
-    public List<IModule> getModules() {
+    public List<ICommandModule> getModules() {
         return modules;
     }
 

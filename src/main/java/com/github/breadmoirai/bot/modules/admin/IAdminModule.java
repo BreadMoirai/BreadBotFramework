@@ -17,10 +17,10 @@ package com.github.breadmoirai.bot.modules.admin;
 
 import com.github.breadmoirai.bot.framework.CommandClient;
 import com.github.breadmoirai.bot.framework.CommandEngineBuilder;
-import com.github.breadmoirai.bot.framework.IModule;
+import com.github.breadmoirai.bot.framework.ICommandModule;
 import net.dv8tion.jda.core.entities.Member;
 
-public interface IAdminModule extends IModule {
+public interface IAdminModule extends ICommandModule {
 
     @Override
     default String getName() {
