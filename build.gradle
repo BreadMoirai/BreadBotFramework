@@ -9,9 +9,10 @@ plugins {
     id 'com.github.breadmoirai.github-release' version '1.0.9'
 }
 
-def author = 'breadmoirai'
+final author = 'breadmoirai'
+final artifact = 'breadbot-framework'
 group "com.github.${author}"
-version '0.5.1'
+version '0.5.2'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -55,16 +56,14 @@ dependencies {
     testCompile 'org.hamcrest:hamcrest-library:1.3'
 }
 
-def body = "\n## Adding as Dependency\n### Gradle\n```groovy\nrepositories {\n  jcenter()\n}\n\ndependencies {\n  compile '$project.group:$project.name:$project.version'\n}\n```\n\n### Maven\n```xml\n<repository>\n  <id>jcenter</id>\n  <name>jcenter</name>\n  <url>http://jcenter.bintray.com/</url>\n</repository>\n\n<dependency>\n  <groupId>$project.group</groupId>\n  <artifactId>$project.name</artifactId>\n  <version>$project.version</version>\n  <type>pom</type>\n</dependency>\n```"
+def body = "\n## Adding as Dependency\n### Gradle\n```gradle\nrepositories {\n  jcenter()\n}\n\ndependencies {\n  compile '$project.group:$artifact:$project.version'\n}\n```\n\n### Maven\n```xml\n<repository>\n  <id>jcenter</id>\n  <name>jcenter</name>\n  <url>http://jcenter.bintray.com/</url>\n</repository>\n\n<dependency>\n  <groupId>$project.group</groupId>\n  <artifactId>$artifact</artifactId>\n  <version>$project.version</version>\n  <type>pom</type>\n</dependency>\n```"
 
 task printBody {
     println body
 }
 
 githubRelease {
-    if (hasProperty('github.key')) {
-        token = getProperty('github.key').toString()
-    }
+    token = getProperty('github.key').toString()
     String version = project.version
     it.body = body
     prerelease = true
@@ -80,7 +79,7 @@ bintray {
     publish = true
     pkg {
         repo = 'maven'
-        name = project.name
+        name = artifact
         licenses = ['Apache-2.0']
         vcsUrl = "https://github.com/${author}/${project.name}.git"
         version {
@@ -94,7 +93,7 @@ publishing {
     publications.create('BintrayRelease', MavenPublication) {
         from components.java
         groupId group
-        artifactId archivesBaseName
+        artifactId artifact
         version version
         Artifact javadocJar
         Artifact sourcesJar

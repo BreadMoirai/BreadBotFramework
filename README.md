@@ -45,7 +45,7 @@ repositories {
 }
 
 dependencies {
-  compile 'com.github.breadmoirai:BreadBotFramework:VERSION'
+  compile 'com.github.breadmoirai:breadbot-framework:VERSION'
 }
 ```
 
@@ -59,7 +59,7 @@ dependencies {
 
 <dependency>
   <groupId>com.github.breadmoirai</groupId>
-  <artifactId>BreadBotFramework</artifactId>
+  <artifactId>breadbot-framework</artifactId>
   <version>VERSION</version>
   <type>pom</type>
 </dependency>
