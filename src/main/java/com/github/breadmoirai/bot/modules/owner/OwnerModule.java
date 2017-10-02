@@ -15,7 +15,7 @@
  */
 package com.github.breadmoirai.bot.modules.owner;
 
-import com.github.breadmoirai.bot.framework.CommandClient;
+import com.github.breadmoirai.bot.framework.BreadBotClient;
 import com.github.breadmoirai.bot.framework.CommandEngineBuilder;
 import com.github.breadmoirai.bot.framework.ICommandModule;
 import net.dv8tion.jda.core.entities.User;
@@ -35,7 +35,7 @@ public class OwnerModule implements ICommandModule {
     }
 
     @Override
-    public void init(CommandEngineBuilder config, CommandClient client) {
+    public void init(CommandEngineBuilder config, BreadBotClient client) {
 //        config.addPostProcessPredicate(command -> !command.isMarkedWith(Owner.class) || isOwner(command.getEvent().getAuthor()));
     }
 

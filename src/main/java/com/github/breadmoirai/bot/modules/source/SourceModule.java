@@ -15,7 +15,7 @@
  */
 package com.github.breadmoirai.bot.modules.source;
 
-import com.github.breadmoirai.bot.framework.CommandClient;
+import com.github.breadmoirai.bot.framework.BreadBotClient;
 import com.github.breadmoirai.bot.framework.CommandEngineBuilder;
 import com.github.breadmoirai.bot.framework.ICommandModule;
 
@@ -28,7 +28,7 @@ public class SourceModule implements ICommandModule {
     }
 
     @Override
-    public void init(CommandEngineBuilder config, CommandClient client) {
+    public void init(CommandEngineBuilder config, BreadBotClient client) {
 //        config.addPostProcessPredicate(command -> {
 //            if (command.isMarkedWith(SourceGuild.class)) {
 //                long value = command.getClass().getAnnotation(SourceGuild.class).value();

@@ -24,7 +24,7 @@ public interface ICommandModule {
         return this.getClass().getSimpleName();
     }
 
-    void init(CommandEngineBuilder engineBuilder, CommandClient client);
+    void init(CommandEngineBuilder engineBuilder, BreadBotClient client);
 
     default void onHelpEvent(CommandEvent event) {
         event.reply("This is not the help you are looking for");

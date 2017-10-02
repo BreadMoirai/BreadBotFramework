@@ -15,6 +15,7 @@
  */
 package com.github.breadmoirai.bot.framework.impl;
 
+import com.github.breadmoirai.bot.framework.BreadBotClient;
 import com.github.breadmoirai.bot.framework.CommandEngine;
 import com.github.breadmoirai.bot.framework.CommandEngineBuilder;
 import com.github.breadmoirai.bot.framework.ICommandModule;
@@ -35,19 +36,21 @@ import java.lang.reflect.Type;
 import java.util.*;
 import java.util.function.Predicate;
 
-public class CommandClientImpl implements com.github.breadmoirai.bot.framework.CommandClient {
+public class BreadBotClientImpl implements BreadBotClient {
 
     private JDA jda;
 
+    private final IEventManager eventManager;
     private final ICommandEventFactory eventFactory;
     private final CommandEngine commandEngine;
     private final List<ICommandModule> modules;
     private final Map<Type, ICommandModule> moduleTypeMap;
 
-    public CommandClientImpl(List<ICommandModule> modules, IEventManager eventManager, ICommandEventFactory eventFactory, CommandEngineBuilder engineBuilder) {
+    public BreadBotClientImpl(List<ICommandModule> modules, IEventManager eventManager, ICommandEventFactory eventFactory, CommandEngineBuilder engineBuilder) {
         this.modules = Collections.unmodifiableList(modules);
         modules.forEach(module -> module.init(engineBuilder, this));
-        SamuraiEventListener listener = this.new SamuraiEventListener(eventManager, engineBuilder.getPreProcessPredicate());
+        this.eventManager = eventManager;
+        SamuraiEventListener listener = this.new SamuraiEventListener(engineBuilder.getPreProcessPredicate());
         eventManager.register(listener);
 
         if (eventManager instanceof InterfacedEventManager)
@@ -91,6 +94,11 @@ public class CommandClientImpl implements com.github.breadmoirai.bot.framework.C
     @Override
     public JDA getJDA() {
         return jda;
+    }
+
+    @Override
+    public IEventManager getEventManager() {
+        return eventManager;
     }
 
     @Override
@@ -143,18 +151,16 @@ public class CommandClientImpl implements com.github.breadmoirai.bot.framework.C
 
     private class SamuraiEventListener extends ListenerAdapter {
 
-        private final IEventManager eventManager;
         private final Predicate<Message> preProcessPredicate;
 
-        SamuraiEventListener(IEventManager eventManager, Predicate<Message> preProcessPredicate) {
-            this.eventManager = eventManager;
+        SamuraiEventListener(Predicate<Message> preProcessPredicate) {
             this.preProcessPredicate = preProcessPredicate == null ? message -> true : preProcessPredicate;
         }
 
         @SubscribeEvent
         @Override
         public void onReady(ReadyEvent event) {
-            CommandClientImpl.this.jda = event.getJDA();
+            BreadBotClientImpl.this.jda = event.getJDA();
         }
 
         @SubscribeEvent
@@ -173,7 +179,7 @@ public class CommandClientImpl implements com.github.breadmoirai.bot.framework.C
 
         private void onGuildMessageEvent(GenericGuildMessageEvent event, Message message) {
             if (preProcessPredicate.test(message)) {
-                final CommandEvent commandEvent = eventFactory.createEvent(event, message, CommandClientImpl.this);
+                final CommandEvent commandEvent = eventFactory.createEvent(event, message, BreadBotClientImpl.this);
                 if (commandEvent != null) {
                     commandEngine.handle(commandEvent);
                     eventManager.handle(commandEvent);

@@ -13,8 +13,8 @@
   limitations under the License.
 */
 
-import com.github.breadmoirai.bot.framework.CommandClient;
-import com.github.breadmoirai.bot.framework.CommandClientBuilder;
+import com.github.breadmoirai.bot.framework.BreadBotClient;
+import com.github.breadmoirai.bot.framework.BreadBotClientBuilder;
 import com.github.breadmoirai.bot.framework.command.CommandHandle;
 import com.github.breadmoirai.bot.framework.command.CommandPreprocessor;
 import com.github.breadmoirai.bot.framework.command.CommandPreprocessors;
@@ -26,7 +26,6 @@ import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.hooks.EventListener;
-import net.dv8tion.jda.core.hooks.InterfacedEventManager;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -73,8 +72,8 @@ public class ClientTest {
         CommandPreprocessors.associatePreprocessor(String.class, s -> new CommandPreprocessor("reversal", (commandObj, targetHandle, event, processorStack) -> event.reply(s)));
         CommandPreprocessors.associatePreprocessor(Integer.class, integer -> new CommandPreprocessor("repeater", (commandObj, targetHandle, event, processorStack) -> event.reply(IntStream.range(0, integer).mapToObj(value -> "pong").collect(Collectors.joining(" ")))));
         CommandPreprocessors.setPreprocessorPriority("alpha", "beta");
-        final CommandClientBuilder commandClientBuilder = new CommandClientBuilder();
-        final InterfacedEventManager eventManager = commandClientBuilder
+        final BreadBotClientBuilder commandClientBuilder = new BreadBotClientBuilder();
+        BreadBotClient client = commandClientBuilder
                 .registerCommand(PingCommand.class)
                 .registerCommand(PingCommand.class, builder -> builder
                         .configureCommandMethod("ping", methodBuilder -> methodBuilder
@@ -109,8 +108,6 @@ public class ClientTest {
                 .registerCommand(NameCommand.class)
                 .buildInterfaced();
 
-        final CommandClient client = commandClientBuilder.getClient();
-
         final Map<String, CommandHandle> commandMap = client.getCommandEngine().getCommandMap();
         for (Map.Entry<String, CommandHandle> stringCommandHandleEntry : commandMap.entrySet()) {
             final String key = stringCommandHandleEntry.getKey();
@@ -126,7 +123,7 @@ public class ClientTest {
             botApi = new JDABuilder(AccountType.BOT)
                     .setGame(Game.of("Testing"))
                     .setToken(BOT_TOKEN)
-                    .setEventManager(eventManager)
+                    .setEventManager(client.getEventManager())
                     .addEventListener((EventListener) event -> {
                         if (event instanceof GuildMessageReceivedEvent) {
                             final GuildMessageReceivedEvent messageReceivedEvent = (GuildMessageReceivedEvent) event;

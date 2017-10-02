@@ -15,6 +15,9 @@
  */
 package com.github.breadmoirai.bot.modules.prefix;
 
+/**
+ * Provides the same prefix for all guilds as it was specified in the constructor. Non-configurable.
+ */
 public class DefaultPrefixModule implements IPrefixModule {
 
     private final String defaultPrefix;

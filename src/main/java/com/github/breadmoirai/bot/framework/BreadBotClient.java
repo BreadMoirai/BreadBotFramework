@@ -18,12 +18,13 @@ package com.github.breadmoirai.bot.framework;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.core.hooks.IEventManager;
 
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Objects;
 
-public interface CommandClient {
+public interface BreadBotClient {
 
     boolean hasModule(String moduleName);
 
@@ -40,6 +41,8 @@ public interface CommandClient {
     CommandEngine getCommandEngine();
 
     JDA getJDA();
+
+    IEventManager getEventManager();
 
     default void send(Response response) {
         send(response.getChannelId(), response);
@@ -65,5 +68,4 @@ public interface CommandClient {
         response.setClient(this);
         user.openPrivateChannel().queue(response::send);
     }
-
 }

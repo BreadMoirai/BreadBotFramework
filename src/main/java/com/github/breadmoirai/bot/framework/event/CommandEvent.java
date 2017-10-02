@@ -15,7 +15,7 @@
  */
 package com.github.breadmoirai.bot.framework.event;
 
-import com.github.breadmoirai.bot.framework.CommandClient;
+import com.github.breadmoirai.bot.framework.BreadBotClient;
 import com.github.breadmoirai.bot.framework.Response;
 import com.github.breadmoirai.bot.framework.command.CommandArgumentList;
 import com.github.breadmoirai.bot.framework.command.parser.CommandArgument;
@@ -57,15 +57,15 @@ public abstract class CommandEvent extends Event {
         DEFAULT_LIMIT = limit;
     }
 
-    private final CommandClient client;
+    private final BreadBotClient client;
     private List<String> args;
 
-    public CommandEvent(JDA api, long responseNumber, CommandClient client) {
+    public CommandEvent(JDA api, long responseNumber, BreadBotClient client) {
         super(api, responseNumber);
         this.client = client;
     }
 
-    public CommandClient getClient() {
+    public BreadBotClient getClient() {
         return client;
     }
 

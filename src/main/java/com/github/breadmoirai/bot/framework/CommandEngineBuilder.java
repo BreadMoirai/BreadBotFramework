@@ -15,6 +15,7 @@
  */
 package com.github.breadmoirai.bot.framework;
 
+import com.github.breadmoirai.bot.framework.command.Command;
 import com.github.breadmoirai.bot.framework.command.CommandHandle;
 import com.github.breadmoirai.bot.framework.command.builder.CommandBuilder;
 import com.github.breadmoirai.bot.framework.command.builder.CommandHandleBuilder;
@@ -25,10 +26,14 @@ import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.utils.SimpleLog;
 import org.reflections.Reflections;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.GenericDeclaration;
 import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 public class CommandEngineBuilder {
 
@@ -116,6 +121,12 @@ public class CommandEngineBuilder {
                     || Modifier.isPrivate(mod)
                     || Modifier.isProtected(mod))
                 continue;
+            Stream<GenericDeclaration> classStream = Stream.concat(Stream.concat(Stream.of(commandClass), Arrays.stream(commandClass.getMethods())), Arrays.stream(commandClass.getClasses()));
+            boolean hasCommandAnnotation = classStream.map(AnnotatedElement::getAnnotations)
+                    .flatMap(Arrays::stream)
+                    .map(Annotation::annotationType)
+                    .anyMatch(aClass -> aClass == Command.class);
+            if (!hasCommandAnnotation) continue;
             final CommandBuilder commandBuilder = new CommandBuilder(commandClass);
             configurator.accept(commandBuilder);
             addCommandBuilder(commandBuilder);

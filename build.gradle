@@ -62,9 +62,9 @@ task printBody {
 }
 
 githubRelease {
-    //if (hasProperty('github.key')) {
+    if (hasProperty('github.key')) {
         token = getProperty('github.key').toString()
-    //}
+    }
     String version = project.version
     it.body = body
     prerelease = true
@@ -131,22 +131,18 @@ task javadocDir(type: Copy) {
 }
 
 task publishJavadoc(type: Exec) {
+    //this doesn't work. Just gonna go manually for now. Ugh
     group 'publishing'
     dependsOn javadoc
     dependsOn javadocDir
-    """
-    commandLine 'bash',
-        println name
-    }
-        cd ${javadocDir.destinationDir.absolutePath}
-        git checkout -t origin/gh-pages
-        git add .
-        git add -u
-        git commit -m "JavadocWebsite ver ${project.version} on ${new Date()}"
-        git push origin gh-pages
-        cd ..
-        rm -rf ${javadocDir.destinationDir.absolutePath}
-    """
+    commandLine 'cmd', "cd ${javadocDir.destinationDir.absolutePath}"
+    commandLine 'cmd', "git checkout -t origin/gh-pages"
+    commandLine 'cmd', "git add ."
+    commandLine 'cmd', "git add -u"
+    commandLine 'cmd', "git commit -m \"JavadocWebsite ver ${project.version} on ${new Date()}\""
+    commandLine 'cmd', "git push origin gh-pages"
+    commandLine 'cmd', "cd .."
+    commandLine 'cmd', "rm -rf ${javadocDir.destinationDir.absolutePath}"
 }
 
 task wrapper(type: Wrapper) {
