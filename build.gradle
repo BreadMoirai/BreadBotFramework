@@ -10,7 +10,7 @@ plugins {
 }
 
 group 'com.github.breadmoirai'
-version '0.6.2'
+version '0.6.3'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8

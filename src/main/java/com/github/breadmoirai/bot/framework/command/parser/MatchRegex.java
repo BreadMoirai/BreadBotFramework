@@ -21,9 +21,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.METHOD, ElementType.TYPE, ElementType.PACKAGE})
-public @interface Limit {
+@Target(ElementType.PARAMETER)
+public @interface MatchRegex {
 
-    int limit();
+    String value();
 
 }

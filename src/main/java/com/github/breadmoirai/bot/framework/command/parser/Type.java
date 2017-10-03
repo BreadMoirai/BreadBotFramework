@@ -24,6 +24,6 @@ import java.lang.annotation.Target;
 @Target(ElementType.PARAMETER)
 public @interface Type {
 
-    Class<?> type();
+    Class<?> value();
 
 }
