@@ -20,7 +20,7 @@ import com.github.breadmoirai.bot.framework.command.builder.FunctionalCommandBui
 import com.github.breadmoirai.bot.framework.event.CommandEvent;
 import com.github.breadmoirai.bot.framework.event.ICommandEventFactory;
 import com.github.breadmoirai.bot.framework.event.impl.CommandEventFactoryImpl;
-import com.github.breadmoirai.bot.framework.impl.CommandClientImpl;
+import com.github.breadmoirai.bot.framework.impl.BreadBotClientImpl;
 import com.github.breadmoirai.bot.modules.admin.Admin;
 import com.github.breadmoirai.bot.modules.admin.DefaultAdminModule;
 import com.github.breadmoirai.bot.modules.admin.IAdminModule;
@@ -42,24 +42,24 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-public class CommandClientBuilder {
+public class BreadBotClientBuilder {
 
     private static final Logger LOG = LoggerFactory.getLogger("CommandClient");
-    private List<IModule> modules;
+    private List<ICommandModule> modules;
     private ICommandEventFactory commandEventFactory;
     private Consumer<CommandEngineBuilder> commandEngineModifier;
-    private CommandClient client;
+    private BreadBotClient client;
 
-    public CommandClientBuilder() {
+    public BreadBotClientBuilder() {
         modules = new ArrayList<>();
     }
 
-    public CommandClientBuilder addModule(IModule... module) {
+    public BreadBotClientBuilder addModule(ICommandModule... module) {
         Collections.addAll(modules, module);
         return this;
     }
 
-    public CommandClientBuilder addModule(Collection<IModule> moduleList) {
+    public BreadBotClientBuilder addModule(Collection<ICommandModule> moduleList) {
         modules.addAll(moduleList);
         return this;
     }
@@ -68,11 +68,11 @@ public class CommandClientBuilder {
      * This module provides a static prefix that cannot be changed. By default, the prefix is set to "!".
      *
      * <p>This method's implementation is:
-     * <pre><code> {@link CommandClientBuilder#addModule(IModule...) addModule}(new {@link DefaultPrefixModule DefaultPrefixModule}(prefix)) </code></pre>
+     * <pre><code> {@link BreadBotClientBuilder#addModule(ICommandModule...) addModule}(new {@link DefaultPrefixModule DefaultPrefixModule}(prefix)) </code></pre>
      *
-     * <p>You can define a different prefix implementation by providing a class to {@link CommandClientBuilder#addModule(IModule...)} that implements {@link IPrefixModule IPrefixModule}
+     * <p>You can define a different prefix implementation by providing a class to {@link BreadBotClientBuilder#addModule(ICommandModule...)} that implements {@link IPrefixModule IPrefixModule}
      */
-    public CommandClientBuilder addDefaultPrefixModule(String prefix) {
+    public BreadBotClientBuilder addDefaultPrefixModule(String prefix) {
         addModule(new DefaultPrefixModule(prefix));
         return this;
     }
@@ -80,7 +80,7 @@ public class CommandClientBuilder {
     /**
      * This enables the {@link Admin @Admin} annotation that is marked on Command classes.
      * This ensures that Commands marked with {@link Admin @Admin} are only usable by Administrators.
-     * <p>It is <b>important</b> to include an implementation of {@link IAdminModule IAdminModule} through either this method, {@link CommandClientBuilder#addAdminModule(Predicate)}, or your own implementation.
+     * <p>It is <b>important</b> to include an implementation of {@link IAdminModule IAdminModule} through either this method, {@link BreadBotClientBuilder#addAdminModule(Predicate)}, or your own implementation.
      * Otherwise, all users will have access to Administrative Commands
      * <p>
      * <p>The default criteria for defining an Administrator is as follows:
@@ -89,10 +89,10 @@ public class CommandClientBuilder {
      * <li>Is higher than the bot on the role hierarchy</li>
      * </ul>
      * <p>
-     * <p>Different criteria to determine which member has administrative status with {@link CommandClientBuilder#addAdminModule(Predicate)}
+     * <p>Different criteria to determine which member has administrative status with {@link BreadBotClientBuilder#addAdminModule(Predicate)}
      * or your own implementation of {@link IAdminModule}
      */
-    public CommandClientBuilder addDefaultAdminModule() {
+    public BreadBotClientBuilder addDefaultAdminModule() {
         addModule(new DefaultAdminModule());
         return this;
     }
@@ -101,9 +101,9 @@ public class CommandClientBuilder {
      * Define custom behavior to determine which members can use Commands marked with {@link Admin @Admin}
      * <p>
      * <p>This method's implementation is:
-     * <pre><code> {@link CommandClientBuilder#addModule(IModule...) addModule}(new {@link DefaultAdminModule DefaultAdminModule}(isAdmin)) </code></pre>
+     * <pre><code> {@link BreadBotClientBuilder#addModule(ICommandModule...) addModule}(new {@link DefaultAdminModule DefaultAdminModule}(isAdmin)) </code></pre>
      */
-    public CommandClientBuilder addAdminModule(Predicate<Member> isAdmin) {
+    public BreadBotClientBuilder addAdminModule(Predicate<Member> isAdmin) {
         addModule(new DefaultAdminModule(isAdmin));
         return this;
     }
@@ -113,15 +113,15 @@ public class CommandClientBuilder {
      *
      * @param sourceGuildId The guild id
      */
-    public CommandClientBuilder addSourceModule(long sourceGuildId) {
+    public BreadBotClientBuilder addSourceModule(long sourceGuildId) {
         addModule(new SourceModule(sourceGuildId));
         return this;
     }
 
     /**
-     * Can configure the CommandEngineBuilder independently from a module.
+     * Modifies the CommandEngineBuilder with the given Consumer
      */
-    public CommandClientBuilder configure(Consumer<CommandEngineBuilder> consumer) {
+    public BreadBotClientBuilder configure(Consumer<CommandEngineBuilder> consumer) {
         if (commandEngineModifier == null) {
             commandEngineModifier = consumer;
         } else {
@@ -130,38 +130,38 @@ public class CommandClientBuilder {
         return this;
     }
 
-    public CommandClientBuilder registerCommand(String name, Consumer<CommandEvent> commandFunction, String... keys) {
+    public BreadBotClientBuilder registerCommand(String name, Consumer<CommandEvent> commandFunction, String... keys) {
         configure(o -> o.registerCommand(name, commandFunction, keys));
         return this;
     }
 
-    public CommandClientBuilder registerCommand(Consumer<CommandEvent> commandFunction, Consumer<FunctionalCommandBuilder> configurator) {
+    public BreadBotClientBuilder registerCommand(Consumer<CommandEvent> commandFunction, Consumer<FunctionalCommandBuilder> configurator) {
         configure(o -> o.registerCommand(commandFunction, configurator));
         return this;
     }
 
-    public CommandClientBuilder registerCommand(Object command) {
+    public BreadBotClientBuilder registerCommand(Object command) {
         configure(o -> o.registerCommand(command));
         return this;
     }
 
-    public CommandClientBuilder registerCommand(Object command, Consumer<CommandBuilder> configurator) {
+    public BreadBotClientBuilder registerCommand(Object command, Consumer<CommandBuilder> configurator) {
         configure(o -> o.registerCommand(command, configurator));
         return this;
     }
 
 
-    public CommandClientBuilder registerCommand(Class<?> commandClass) {
+    public BreadBotClientBuilder registerCommand(Class<?> commandClass) {
         configure(o -> o.registerCommand(commandClass));
         return this;
     }
 
-    public CommandClientBuilder registerCommand(Class<?> commandClass, Consumer<CommandBuilder> configurator) {
+    public BreadBotClientBuilder registerCommand(Class<?> commandClass, Consumer<CommandBuilder> configurator) {
         configure(o -> o.registerCommand(commandClass, configurator));
         return this;
     }
 
-    public CommandClientBuilder registerCommand(String packageName, Consumer<CommandBuilder> configurator) {
+    public BreadBotClientBuilder registerCommand(String packageName, Consumer<CommandBuilder> configurator) {
         configure(o -> o.registerCommand(packageName, configurator));
         return this;
     }
@@ -169,48 +169,55 @@ public class CommandClientBuilder {
     /**
      * Not much use for this at the moment.
      */
-    public CommandClientBuilder setEventFactory(ICommandEventFactory commandEventFactory) {
+    public BreadBotClientBuilder setEventFactory(ICommandEventFactory commandEventFactory) {
         this.commandEventFactory = commandEventFactory;
         return this;
     }
 
     /**
-     * Builds a SamuraiClient with an {@link net.dv8tion.jda.core.hooks.AnnotatedEventManager}
+     * Builds a BreadBotClient with an {@link net.dv8tion.jda.core.hooks.AnnotatedEventManager}
      *
-     * @return An {@link net.dv8tion.jda.core.hooks.AnnotatedEventManager} for use with {@link net.dv8tion.jda.core.JDABuilder#setEventManager(IEventManager) JDABuilder#setEventManager(IEventManager)}.
+     * This implementation is as follows:
+     * <pre><code>
+     *     return {@link com.github.breadmoirai.bot.framework.BreadBotClientBuilder breadBotBuilder}.{@link com.github.breadmoirai.bot.framework.BreadBotClientBuilder#build build}(new {@link net.dv8tion.jda.core.hooks.AnnotatedEventManager AnnotatedEventManager()});
+     * </code></pre>
+     *
+     * @return The {@link com.github.breadmoirai.bot.framework.BreadBotClient} for use with {@link net.dv8tion.jda.core.JDABuilder#setEventManager(IEventManager) JDABuilder#setEventManager}({@link com.github.breadmoirai.bot.framework.BreadBotClient#getEventManager client.getEventManager()})
      */
-    public AnnotatedEventManager buildAnnotated() {
+    public BreadBotClient buildAnnotated() {
         return build(new AnnotatedEventManager());
     }
 
     /**
-     * Builds a SamuraiClient with an {@link net.dv8tion.jda.core.hooks.InterfacedEventManager}
+     * Builds a BreadBotClient with an {@link net.dv8tion.jda.core.hooks.InterfacedEventManager}
      *
-     * @return An {@link net.dv8tion.jda.core.hooks.InterfacedEventManager} for use with {@link net.dv8tion.jda.core.JDABuilder#setEventManager(IEventManager) JDABuilder#setEventManager(IEventManager)}.
+     * This implementation is as follows:
+     * <pre><code>
+     *     return {@link com.github.breadmoirai.bot.framework.BreadBotClientBuilder breadBotBuilder}.{@link com.github.breadmoirai.bot.framework.BreadBotClientBuilder#build build}(new {@link net.dv8tion.jda.core.hooks.InterfacedEventManager InterfacedEventManager()});
+     * </code></pre>
+     *
+     * @return The {@link com.github.breadmoirai.bot.framework.BreadBotClient} for use with {@link net.dv8tion.jda.core.JDABuilder#setEventManager(IEventManager) JDABuilder#setEventManager}({@link com.github.breadmoirai.bot.framework.BreadBotClient#getEventManager client.getEventManager()})
      */
-    public InterfacedEventManager buildInterfaced() {
+    public BreadBotClient buildInterfaced() {
         return build(new InterfacedEventManager());
     }
 
-    private <T extends IEventManager> T build(T eventManager) {
+    /**
+     * Builds the BreadBotClient with the provided EventManager.
+     * It is at this point that all Modules are initialized and Commands built.
+     * If an {@link com.github.breadmoirai.bot.modules.prefix.IPrefixModule} has not been provided, a {@link com.github.breadmoirai.bot.modules.prefix.DefaultPrefixModule new DefaultPrefixModule("!")} is provided.
+     * @param eventManager The IEventManager of which to attach all the listeners (CommandModules) to. If the module is an instanceof {@link net.dv8tion.jda.core.hooks.InterfacedEventManager} it will only use {@link IEventManager#register(Object)} on Modules that extend {@link net.dv8tion.jda.core.hooks.EventListener}. Otherwise, the BreadBotClient will register all the CommandModules as listeners.
+     * @return a new BreadBotClient.
+     */
+    public BreadBotClient build(IEventManager eventManager) {
         final CommandEngineBuilder commandEngineBuilder = new CommandEngineBuilder(modules);
         if (!commandEngineBuilder.hasModule(IPrefixModule.class)) modules.add(new DefaultPrefixModule("!"));
         if (commandEventFactory == null) commandEventFactory = new CommandEventFactoryImpl(commandEngineBuilder);
         commandEngineModifier.accept(commandEngineBuilder);
-        this.client = new CommandClientImpl(modules, eventManager, commandEventFactory, commandEngineBuilder);
+        BreadBotClient client = new BreadBotClientImpl(modules, eventManager, commandEventFactory, commandEngineBuilder);
         LOG.info("Top Level Commands registered: " + client.getCommandEngine().getCommandMap().values().size() + ".");
         LOG.info("CommandClient Initialized.");
-        return eventManager;
-    }
-
-    /**
-     * Returns the client if it has been built. otherwise returns {@code null}
-     *
-     * @return A CommandClient.
-     */
-    public CommandClient getClient() {
         return client;
     }
-
 
 }

@@ -14,7 +14,7 @@
 */
 package com.github.breadmoirai.bot.framework.event.impl;
 
-import com.github.breadmoirai.bot.framework.CommandClient;
+import com.github.breadmoirai.bot.framework.BreadBotClient;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.events.message.guild.GenericGuildMessageEvent;
 
@@ -22,7 +22,7 @@ import net.dv8tion.jda.core.events.message.guild.GenericGuildMessageEvent;
  * Marker class for help events.
  */
 public class HelpEvent extends MessageReceivedCommandEvent {
-    HelpEvent(CommandClient client, GenericGuildMessageEvent event, Message message, String prefix, String key, String content) {
+    HelpEvent(BreadBotClient client, GenericGuildMessageEvent event, Message message, String prefix, String key, String content) {
         super(client, event, message, prefix, key, content);
     }
 }

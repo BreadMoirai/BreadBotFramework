@@ -15,15 +15,15 @@
  */
 package com.github.breadmoirai.bot.modules.owner;
 
-import com.github.breadmoirai.bot.framework.CommandClient;
+import com.github.breadmoirai.bot.framework.BreadBotClient;
 import com.github.breadmoirai.bot.framework.CommandEngineBuilder;
-import com.github.breadmoirai.bot.framework.IModule;
+import com.github.breadmoirai.bot.framework.ICommandModule;
 import net.dv8tion.jda.core.entities.User;
 
 /**
  * Commands annotated with {@link com.github.breadmoirai.bot.modules.owner.Owner @Owner} will only activate if the id provided to the constructor matches the user who sent the command.
  */
-public class OwnerModule implements IModule {
+public class OwnerModule implements ICommandModule {
 
     private long ownerId;
 
@@ -35,7 +35,7 @@ public class OwnerModule implements IModule {
     }
 
     @Override
-    public void init(CommandEngineBuilder config, CommandClient client) {
+    public void init(CommandEngineBuilder config, BreadBotClient client) {
 //        config.addPostProcessPredicate(command -> !command.isMarkedWith(Owner.class) || isOwner(command.getEvent().getAuthor()));
     }
 

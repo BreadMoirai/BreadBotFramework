@@ -33,7 +33,6 @@ public class Responses {
         return new StringResponse(message);
     }
 
-
     @Contract("null, _ -> null")
     public static StringResponse ofFormat(String format, Object... args) {
         if (format == null || format.isEmpty()) return null;

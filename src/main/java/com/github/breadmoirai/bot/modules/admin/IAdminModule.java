@@ -15,12 +15,12 @@
  */
 package com.github.breadmoirai.bot.modules.admin;
 
-import com.github.breadmoirai.bot.framework.CommandClient;
+import com.github.breadmoirai.bot.framework.BreadBotClient;
 import com.github.breadmoirai.bot.framework.CommandEngineBuilder;
-import com.github.breadmoirai.bot.framework.IModule;
+import com.github.breadmoirai.bot.framework.ICommandModule;
 import net.dv8tion.jda.core.entities.Member;
 
-public interface IAdminModule extends IModule {
+public interface IAdminModule extends ICommandModule {
 
     @Override
     default String getName() {
@@ -28,7 +28,7 @@ public interface IAdminModule extends IModule {
     }
 
     @Override
-    default void init(CommandEngineBuilder config, CommandClient client) {
+    default void init(CommandEngineBuilder config, BreadBotClient client) {
 //        config.addPostProcessPredicate(command -> !command.isMarkedWith(Admin.class) || isAdmin(command.getEvent().getMember()));
         config.registerCommand(AdminCommand.class);
     }

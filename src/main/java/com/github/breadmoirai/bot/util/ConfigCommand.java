@@ -14,7 +14,7 @@
 */
 package com.github.breadmoirai.bot.util;
 
-import com.github.breadmoirai.bot.framework.IModule;
+import com.github.breadmoirai.bot.framework.ICommandModule;
 import com.github.breadmoirai.bot.framework.command.Command;
 import com.github.breadmoirai.bot.framework.event.CommandEvent;
 import com.github.breadmoirai.bot.modules.admin.Admin;
@@ -37,7 +37,7 @@ public class ConfigCommand {
     @Command
     public void download(CommandEvent event) {
         final JSONObject jsonObject = new JSONObject();
-        for (IModule module : event.getClient().getModules()) {
+        for (ICommandModule module : event.getClient().getModules()) {
             if (module.isJSONConfigurable()) {
                 module.addJSONConfig(event.getGuildId(), jsonObject);
             }
@@ -66,8 +66,8 @@ public class ConfigCommand {
             final String collect = br.lines().collect(Collectors.joining("\n"));
             final JSONObject jsonObject = new JSONObject(collect);
             int success = 0;
-            List<IModule> failed = new ArrayList<>();
-            for (IModule module : event.getClient().getModules()) {
+            List<ICommandModule> failed = new ArrayList<>();
+            for (ICommandModule module : event.getClient().getModules()) {
                 if (module.loadJSONConfig(event.getGuildId(), jsonObject)) {
                     success++;
                 } else {
@@ -77,7 +77,7 @@ public class ConfigCommand {
             if (failed.isEmpty()) {
                 event.reply("Successfully configured " + success + " modules.");
             } else {
-                event.reply("Configuration failed for modules: " + failed.stream().map(IModule::getName).collect(Collectors.joining(", ")) +
+                event.reply("Configuration failed for modules: " + failed.stream().map(ICommandModule::getName).collect(Collectors.joining(", ")) +
                         "\nSuccessfully configured " + success + " other modules.");
             }
         } catch (IOException e) {

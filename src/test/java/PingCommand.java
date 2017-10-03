@@ -13,16 +13,12 @@
   limitations under the License.
 */
 
-import com.github.breadmoirai.bot.framework.command.Command;
 import com.github.breadmoirai.bot.framework.event.CommandEvent;
 
 public class PingCommand {
 
-    public PingCommand() {
-    }
-
-    @Command({"ping"})
     public void ping(CommandEvent event) {
         event.reply("pong");
     }
+
 }
