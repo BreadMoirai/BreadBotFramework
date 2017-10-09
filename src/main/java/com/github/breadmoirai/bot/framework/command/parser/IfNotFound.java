@@ -22,8 +22,8 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.PARAMETER)
-public @interface OnNull {
+public @interface IfNotFound {
 
-    Class<? extends NullArgumentConsumer> onNull();
+    Class<? extends NullArgumentConsumer> value();
 
 }

@@ -60,6 +60,10 @@ public class CommandPropertyMapBuilder implements Iterable<Object>, CommandPrope
         return propertyType.cast(obj);
     }
 
+    public <T> T getDeclaredProperty(Class<T> propertyType) {
+        return propertyType.cast(properties.get(propertyType));
+    }
+
     public <T> CommandPropertyMapBuilder putProperty(Class<? super T> propertyType, T propertyObj) {
         properties.put(propertyType, propertyObj);
         return this;

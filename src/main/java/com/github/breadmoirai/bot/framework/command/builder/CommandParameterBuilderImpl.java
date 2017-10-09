@@ -52,12 +52,37 @@ public class CommandParameterBuilderImpl implements CommandParameterBuilder {
         }
         parser = ArgumentTypes.getParser(type);
 
-        final Width width = this.map.getProperty(Width.class);
+        final Width width = this.map.getDeclaredProperty(Width.class);
         if (width != null) setWidth(width.value());
-        final Index index = this.map.getProperty(Index.class);
+        final Index index = this.map.getDeclaredProperty(Index.class);
         if (index != null) setIndex(index.value());
-        final Flags flags = this.map.getProperty(Flags.class);
+        final Flags flags = this.map.getDeclaredProperty(Flags.class);
         if (flags != null) setFlags(flags.value());
+        final Type type = this.map.getDeclaredProperty(Type.class);
+        if (type != null) setBaseType(type.value());
+        final RegisterArgumentMapper argumentMapper = this.map.getProperty(RegisterArgumentMapper.class);
+        //TODO figure this argumentMapper thing out.
+        final MatchRegex regex = this.map.getDeclaredProperty(MatchRegex.class);
+        if (regex != null) {
+            if (paramType == CommandArgument.class) {
+                parser = new ArgumentParser<>((arg, flags1) -> arg.matches(regex.value()), (arg, flags1) -> Optional.of(arg));
+            } else if (paramType == String.class) {
+                parser = new ArgumentParser<>((arg, flags1) -> arg.matches(regex.value()), (arg, flags1) -> Optional.of(arg.getArgument()));
+            }
+        }
+        final IfNotFound onNull = this.map.getProperty(IfNotFound.class);
+        if (onNull != null) {
+            final Class<? extends NullArgumentConsumer> onNullConsumerClass = onNull.value();
+            final NullArgumentConsumer onNullConsumer;
+            try {
+                onNullConsumer = onNullConsumerClass.newInstance();
+            } catch (InstantiationException | IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+            mustBePresent = true;
+            onParamNotFound = onNullConsumer;
+        }
+
     }
 
     private void setActualTypeParameter(Parameter parameter) {

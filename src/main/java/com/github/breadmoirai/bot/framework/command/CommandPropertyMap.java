@@ -26,9 +26,19 @@ public interface CommandPropertyMap extends Iterable<Object> {
      *
      * @param propertyType a class
      * @param <T>          the type
+     *
      * @return the type if found, otherwise {@code null}
      */
     <T> T getProperty(Class<T> propertyType);
+
+    /**
+     * Retrieves the property if it was declared on this element. If no element is found, it will not search for a default mapping in the enclosing object.
+     *
+     * @param propertyType the property class
+     * @param <T>          the type
+     * @return the property if found on this map, otherwise {@code null}
+     */
+    <T> T getDeclaredProperty(Class<T> propertyType);
 
     /**
      * Returns a read-only unmodifiable {@link java.util.Set} view of the mappings contained in this map.

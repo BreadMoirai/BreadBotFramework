@@ -50,6 +50,11 @@ public class CommandPropertyMapImpl implements CommandPropertyMap {
     }
 
     @Override
+    public <T> T getDeclaredProperty(Class<T> propertyType) {
+        return propertyType.cast(properties.get(propertyType));
+    }
+
+    @Override
     public Set<Map.Entry<Class<?>, Object>> entrySet() {
         return Collections.unmodifiableSet(properties.entrySet());
     }

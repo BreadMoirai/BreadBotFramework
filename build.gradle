@@ -10,9 +10,9 @@ plugins {
 }
 
 final author = 'breadmoirai'
-final artifact = 'breadbot-framework'
+final artifactId = 'breadbot-framework'
 group "com.github.${author}"
-version '0.5.2'
+version '0.5.4'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -56,14 +56,14 @@ dependencies {
     testCompile 'org.hamcrest:hamcrest-library:1.3'
 }
 
-def body = "\n## Adding as Dependency\n### Gradle\n```gradle\nrepositories {\n  jcenter()\n}\n\ndependencies {\n  compile '$project.group:$artifact:$project.version'\n}\n```\n\n### Maven\n```xml\n<repository>\n  <id>jcenter</id>\n  <name>jcenter</name>\n  <url>http://jcenter.bintray.com/</url>\n</repository>\n\n<dependency>\n  <groupId>$project.group</groupId>\n  <artifactId>$artifact</artifactId>\n  <version>$project.version</version>\n  <type>pom</type>\n</dependency>\n```"
+def body = "\n## Adding as Dependency\n### Gradle\n```gradle\nrepositories {\n  jcenter()\n}\n\ndependencies {\n  compile '$project.group:$artifactId:$project.version'\n}\n```\n\n### Maven\n```xml\n<repository>\n  <id>jcenter</id>\n  <name>jcenter</name>\n  <url>http://jcenter.bintray.com/</url>\n</repository>\n\n<dependency>\n  <groupId>$project.group</groupId>\n  <artifactId>$artifactId</artifactId>\n  <version>$project.version</version>\n  <type>pom</type>\n</dependency>\n```"
 
 task printBody {
     println body
 }
 
 githubRelease {
-    token = getProperty('github.key').toString()
+//    token = getProperty('github.key').toString()
     String version = project.version
     it.body = body
     prerelease = true
@@ -79,7 +79,7 @@ bintray {
     publish = true
     pkg {
         repo = 'maven'
-        name = artifact
+        name = artifactId
         licenses = ['Apache-2.0']
         vcsUrl = "https://github.com/${author}/${project.name}.git"
         version {
@@ -92,11 +92,13 @@ bintray {
 publishing {
     publications.create('BintrayRelease', MavenPublication) {
         from components.java
-        groupId group
-        artifactId artifact
+        groupId project.group as String
+        it.artifactId artifactId
         version version
-        Artifact javadocJar
-        Artifact sourcesJar
+        artifact javadocJar
+        artifact sourcesJar
+        artifact shadowJar
+
     }
 }
 
