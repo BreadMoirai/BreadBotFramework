@@ -103,7 +103,7 @@ public abstract class CommandHandleBuilder {
     }
 
     public CommandHandleBuilder sortPreprocessors() {
-        getPreprocessorList().sort(CommandPreprocessors.getPriorityComparator());
+        getPreprocessorList().sort(CommandPreprocessorsStatic.getPriorityComparator());
         return this;
     }
 
@@ -111,7 +111,7 @@ public abstract class CommandHandleBuilder {
      * Iterates through the currently registered properties and adds associated preprocessors
      */
     public CommandHandleBuilder addAssociatedPreprocessors() {
-        CommandPreprocessors.addPrepocessors(this);
+        CommandPreprocessorsStatic.addPrepocessors(this);
         return this;
     }
 }

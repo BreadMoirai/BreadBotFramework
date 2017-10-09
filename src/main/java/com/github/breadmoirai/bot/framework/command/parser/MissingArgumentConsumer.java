@@ -20,6 +20,6 @@ import com.github.breadmoirai.bot.framework.event.CommandEvent;
 import java.util.function.BiConsumer;
 
 @FunctionalInterface
-public interface NullArgumentConsumer extends BiConsumer<CommandEvent, CommandParameter> {
+public interface MissingArgumentConsumer extends BiConsumer<CommandEvent, CommandParameter> {
 
 }

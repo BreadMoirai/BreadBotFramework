@@ -17,7 +17,7 @@ import com.github.breadmoirai.bot.framework.BreadBotClient;
 import com.github.breadmoirai.bot.framework.BreadBotClientBuilder;
 import com.github.breadmoirai.bot.framework.command.CommandHandle;
 import com.github.breadmoirai.bot.framework.command.CommandPreprocessor;
-import com.github.breadmoirai.bot.framework.command.CommandPreprocessors;
+import com.github.breadmoirai.bot.framework.command.CommandPreprocessorsStatic;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
@@ -69,9 +69,9 @@ public class ClientTest {
 
     @BeforeClass
     public static void setup() {
-        CommandPreprocessors.associatePreprocessor(String.class, s -> new CommandPreprocessor("reversal", (commandObj, targetHandle, event, processorStack) -> event.reply(s)));
-        CommandPreprocessors.associatePreprocessor(Integer.class, integer -> new CommandPreprocessor("repeater", (commandObj, targetHandle, event, processorStack) -> event.reply(IntStream.range(0, integer).mapToObj(value -> "pong").collect(Collectors.joining(" ")))));
-        CommandPreprocessors.setPreprocessorPriority("alpha", "beta");
+        CommandPreprocessorsStatic.associatePreprocessor(String.class, s -> new CommandPreprocessor("reversal", (commandObj, targetHandle, event, processorStack) -> event.reply(s)));
+        CommandPreprocessorsStatic.associatePreprocessor(Integer.class, integer -> new CommandPreprocessor("repeater", (commandObj, targetHandle, event, processorStack) -> event.reply(IntStream.range(0, integer).mapToObj(value -> "pong").collect(Collectors.joining(" ")))));
+        CommandPreprocessorsStatic.setPreprocessorPriority("alpha", "beta");
         final BreadBotClientBuilder commandClientBuilder = new BreadBotClientBuilder();
         BreadBotClient client = commandClientBuilder
                 .registerCommand(PingCommand.class)

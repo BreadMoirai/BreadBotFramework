@@ -17,7 +17,7 @@ package com.github.breadmoirai.bot.framework.command.builder;
 import com.github.breadmoirai.bot.framework.command.CommandParameter;
 import com.github.breadmoirai.bot.framework.command.parser.ArgumentTypeMapper;
 import com.github.breadmoirai.bot.framework.command.parser.ArgumentTypePredicate;
-import com.github.breadmoirai.bot.framework.command.parser.NullArgumentConsumer;
+import com.github.breadmoirai.bot.framework.command.parser.MissingArgumentConsumer;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -73,7 +73,7 @@ public class CommandParameterBuilderSpecificImpl implements CommandParameterBuil
     }
 
     @Override
-    public CommandParameterBuilder setOnParamNotFound(NullArgumentConsumer onParamNotFound) {
+    public CommandParameterBuilder setOnParamNotFound(MissingArgumentConsumer onParamNotFound) {
         throw new UnsupportedOperationException(error);
     }
 

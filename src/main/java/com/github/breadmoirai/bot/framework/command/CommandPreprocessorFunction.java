@@ -20,6 +20,27 @@ import com.github.breadmoirai.bot.framework.event.CommandEvent;
  * This functional interface is ran before the command is executed.
  * <p>
  * <b>{@link com.github.breadmoirai.bot.framework.command.CommandPreprocessorFunction#process REFER HERE}</b>
+ *
+ * <p>An example implementation is shown as follows
+ * <pre><code>
+ *     (commandObj, targetHandle, event, processorStack) -> {
+ *         //examples of criteria
+ *         if (commandObj.getClass().getName().startsWith("com.github.breadmoirai.bot.commands.misc")) {
+ *             event.reply("this command is from the misc package");
+ *         }
+ *         if (targetHandle.getGroup().equals("misc")) {
+ *             event.reply("this command is from the misc group");
+ *         }
+ *         if (event.getMember().getColor().equals(Color.GREEN)) {
+ *             event.reply("you are green");
+ *         }
+ *
+ *         if (ThreadLocalRandom.current().nextBoolean()) {
+ *             //this next line will run the next preprocessor or the command if no preprocessors are left
+ *             processorStack.runNext();
+ *         }
+ *     }
+ * </code></pre>
  */
 @FunctionalInterface
 public interface CommandPreprocessorFunction {

@@ -21,56 +21,123 @@ import java.util.function.Function;
 
 public class CommandPreprocessors {
 
+    private List<String> preprocessorPriorityList = Collections.emptyList();
+
+    private final Map<Class<?>, Function<?, CommandPreprocessor>> preprocessorFactoryMap = new HashMap<>();
+    private final List<CommandPreprocessor> preprocessorList = new ArrayList<>();
+
+    public CommandPreprocessors() {
+    }
+
     /**
-     * private constructor for a static class. should probably de-staticfy or make singleton at the very least.
+     * Adds a preprocessor for later retrieval with {@link com.github.breadmoirai.bot.framework.command.CommandPreprocessors#getPreprocessor(String) }
+     *
+     * @param identifier a string identifying the preprocessor
+     * @param function   the preprocessor. A functional interface. {@link com.github.breadmoirai.bot.framework.command.CommandPreprocessorFunction#process See also.}
+     * @see com.github.breadmoirai.bot.framework.command.CommandPreprocessors#addPreprocessorPredicate(String, CommandPreprocessorPredicate)
      */
-    private CommandPreprocessors() {
+    public void registerPreprocessor(String identifier, CommandPreprocessorFunction function) {
+        preprocessorList.add(new CommandPreprocessor(identifier, function));
     }
 
-    private static List<String> preprocessorPriorityList = Collections.emptyList();
-    private static final Map<Class<?>, Function<?, CommandPreprocessor>> preprocessorMap = new HashMap<>();
-
-    public static <T> void associatePreprocessor(Class<T> propertyType, Function<T, CommandPreprocessor> function) {
-        preprocessorMap.put(propertyType, function);
+    /**
+     * Adds a preprocessor for later retrieval with {@link com.github.breadmoirai.bot.framework.command.CommandPreprocessors#getPreprocessor(String) }
+     *
+     * @param identifier a string identifying the preprocessor
+     * @param predicate  the preprocessor. A functional interface. Should return {@code true} if the command should continue to run, {@code false} otherwise.
+     *
+     * @see com.github.breadmoirai.bot.framework.command.CommandPreprocessors#registerPreprocessor(String, CommandPreprocessorFunction)
+     */
+    public void addPreprocessorPredicate(String identifier, CommandPreprocessorPredicate predicate) {
+        preprocessorList.add(new CommandPreprocessor(identifier, predicate));
     }
 
-    public static <T> void associatePreprocessorFunctionFactory(Class<T> propertyType, String identifier, Function<T, CommandPreprocessorFunction> factory) {
+    private <T> void associatePreprocessor(Class<T> propertyType, Function<T, CommandPreprocessor> factory) {
+        preprocessorFactoryMap.put(propertyType, factory);
+    }
+
+    /**
+     * Remind me to write docs for this.
+     *
+     * @param identifier
+     * @param propertyType
+     * @param factory
+     * @param <T>
+     */
+    public <T> void associatePreprocessorFactory(String identifier, Class<T> propertyType, Function<T, CommandPreprocessorFunction> factory) {
         associatePreprocessor(propertyType, o -> new CommandPreprocessor(identifier, factory.apply(o)));
     }
 
-    public static <T> void associatePreprocessorPredicateFactory(Class<T> propertyType, String identifier, Function<T, CommandPreprocessorPredicate> factory) {
+    /**
+     *
+     * @param identifier
+     * @param propertyType
+     * @param factory
+     * @param <T>
+     */
+    public <T> void associatePreprocessorPredicateFactory(String identifier, Class<T> propertyType, Function<T, CommandPreprocessorPredicate> factory) {
         associatePreprocessor(propertyType, o -> new CommandPreprocessor(identifier, factory.apply(o)));
     }
 
-    public static <T> void associatePreprocessorFunction(Class<T> propertyType, String identifier, CommandPreprocessorFunction function) {
+    /**
+     *
+     * @param identifier
+     * @param propertyType
+     * @param function
+     * @param <T>
+     */
+    public <T> void associatePreprocessor(String identifier, Class<T> propertyType, CommandPreprocessorFunction function) {
         associatePreprocessor(propertyType, o -> new CommandPreprocessor(identifier, function));
     }
 
-    public static void associatePreprocessorPredicate(Class<?> propertyType, String identifier, CommandPreprocessorPredicate predicate) {
+    /**
+     *
+     * @param identifier
+     * @param propertyType
+     * @param predicate
+     */
+    public void associatePreprocessorPredicate(String identifier, Class<?> propertyType, CommandPreprocessorPredicate predicate) {
         associatePreprocessor(propertyType, o -> new CommandPreprocessor(identifier, predicate));
     }
 
-    public static <T> CommandPreprocessor getPreprocessor(T obj) {
-        @SuppressWarnings("unchecked") final Function<T, CommandPreprocessor> commandPreprocessorFunction = (Function<T, CommandPreprocessor>) preprocessorMap.get(obj.getClass());
+    /**
+     *
+     * @param propertyObj
+     * @param <T>
+     * @return
+     */
+    public <T> CommandPreprocessor getAssociatedPreprocessor(T propertyObj) {
+        @SuppressWarnings("unchecked") final Function<T, CommandPreprocessor> commandPreprocessorFunction = (Function<T, CommandPreprocessor>) preprocessorFactoryMap.get(propertyObj.getClass());
         if (commandPreprocessorFunction == null) return null;
-        return commandPreprocessorFunction.apply(obj);
+        return commandPreprocessorFunction.apply(propertyObj);
     }
 
-    public static <T> CommandPreprocessor getPreprocessor(Class<T> type) {
-        @SuppressWarnings("unchecked") final Function<T, CommandPreprocessor> commandPreprocessorFunction = (Function<T, CommandPreprocessor>) preprocessorMap.get(type);
+    /**
+     *
+     * @param type
+     * @param <T>
+     * @return
+     */
+    public <T> CommandPreprocessor getAssociatedPreprocessor(Class<T> type) {
+        @SuppressWarnings("unchecked") final Function<T, CommandPreprocessor> commandPreprocessorFunction = (Function<T, CommandPreprocessor>) preprocessorFactoryMap.get(type);
         if (commandPreprocessorFunction == null) return null;
         return commandPreprocessorFunction.apply(null);
     }
 
-    public static int getPreprocessorPriority(String identifier) {
-        return getPriority(identifier, preprocessorPriorityList);
+    /**
+     *
+     * @param identifier
+     * @return
+     */
+    public CommandPreprocessor getPreprocessor(String identifier) {
+        return preprocessorList.stream().filter(preprocessor -> preprocessor.getIdentifier().equals(identifier)).findFirst().orElse(null);
     }
 
-    public static void setPreprocessorPriority(String... identifiers) {
+    public void setPreprocessorPriority(String... identifiers) {
         preprocessorPriorityList = Arrays.asList(identifiers);
     }
 
-    public static void setPreprocessorPriorityList(List<String> identifierList) {
+    public void setPreprocessorPriority(List<String> identifierList) {
         preprocessorPriorityList = identifierList;
     }
 
@@ -79,10 +146,10 @@ public class CommandPreprocessors {
      *
      * @param handleBuilder A CommandHandleBuilder of a top-level class, an inner class, or a method.
      */
-    public static void addPrepocessors(CommandHandleBuilder handleBuilder) {
+    public void addPreprocessors(CommandHandleBuilder handleBuilder) {
         final List<CommandPreprocessor> preprocessors = new ArrayList<>();
         for (Object o : handleBuilder.getPropertyBuilder()) {
-            final CommandPreprocessor preprocessor = getPreprocessor(o);
+            final CommandPreprocessor preprocessor = getAssociatedPreprocessor(o);
             if (preprocessor != null)
                 preprocessors.add(preprocessor);
         }
@@ -90,7 +157,7 @@ public class CommandPreprocessors {
         handleBuilder.addPreprocessors(preprocessors);
     }
 
-    private static int getPriority(String identifier, List<String> list) {
+    private int getPriority(String identifier, List<String> list) {
         final int i = list.indexOf(identifier);
         if (i != -1) return i;
         final int j = list.indexOf(null);
@@ -98,15 +165,15 @@ public class CommandPreprocessors {
         else return list.size();
     }
 
-    public static Comparator<CommandPreprocessor> getPriorityComparator() {
+    public Comparator<CommandPreprocessor> getPriorityComparator() {
         return new PriorityComparator(preprocessorPriorityList);
     }
 
-    public static Comparator<CommandPreprocessor> getComparator(String... identifier) {
+    public Comparator<CommandPreprocessor> getPreprocessorComparator(String... identifier) {
         return new PriorityComparator(Arrays.asList(identifier));
     }
 
-    public static class PriorityComparator implements Comparator<CommandPreprocessor> {
+    public class PriorityComparator implements Comparator<CommandPreprocessor> {
 
         private final List<String> identifierList;
 

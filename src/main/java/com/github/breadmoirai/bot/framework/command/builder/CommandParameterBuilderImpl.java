@@ -70,17 +70,10 @@ public class CommandParameterBuilderImpl implements CommandParameterBuilder {
                 parser = new ArgumentParser<>((arg, flags1) -> arg.matches(regex.value()), (arg, flags1) -> Optional.of(arg.getArgument()));
             }
         }
-        final IfNotFound onNull = this.map.getProperty(IfNotFound.class);
+        final MissingArgumentConsumer onNull = this.map.getProperty(MissingArgumentConsumer.class);
         if (onNull != null) {
-            final Class<? extends NullArgumentConsumer> onNullConsumerClass = onNull.value();
-            final NullArgumentConsumer onNullConsumer;
-            try {
-                onNullConsumer = onNullConsumerClass.newInstance();
-            } catch (InstantiationException | IllegalAccessException e) {
-                throw new RuntimeException(e);
-            }
             mustBePresent = true;
-            onParamNotFound = onNullConsumer;
+            onParamNotFound = onNull;
         }
 
     }
@@ -175,7 +168,7 @@ public class CommandParameterBuilderImpl implements CommandParameterBuilder {
     }
 
     @Override
-    public CommandParameterBuilder setOnParamNotFound(NullArgumentConsumer onParamNotFound) {
+    public CommandParameterBuilder setOnParamNotFound(MissingArgumentConsumer onParamNotFound) {
         this.onParamNotFound = onParamNotFound;
         return this;
     }

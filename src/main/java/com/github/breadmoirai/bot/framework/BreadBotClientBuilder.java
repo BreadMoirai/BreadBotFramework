@@ -15,43 +15,47 @@
  */
 package com.github.breadmoirai.bot.framework;
 
+import com.github.breadmoirai.bot.framework.command.CommandPreprocessor;
+import com.github.breadmoirai.bot.framework.command.CommandPreprocessorFunction;
+import com.github.breadmoirai.bot.framework.command.CommandPreprocessorPredicate;
+import com.github.breadmoirai.bot.framework.command.CommandPreprocessors;
 import com.github.breadmoirai.bot.framework.command.builder.CommandBuilder;
+import com.github.breadmoirai.bot.framework.command.builder.CommandHandleBuilder;
 import com.github.breadmoirai.bot.framework.command.builder.FunctionalCommandBuilder;
 import com.github.breadmoirai.bot.framework.event.CommandEvent;
 import com.github.breadmoirai.bot.framework.event.ICommandEventFactory;
 import com.github.breadmoirai.bot.framework.event.impl.CommandEventFactoryImpl;
 import com.github.breadmoirai.bot.framework.impl.BreadBotClientImpl;
-import com.github.breadmoirai.bot.modules.admin.Admin;
 import com.github.breadmoirai.bot.modules.admin.DefaultAdminModule;
-import com.github.breadmoirai.bot.modules.admin.IAdminModule;
 import com.github.breadmoirai.bot.modules.prefix.DefaultPrefixModule;
 import com.github.breadmoirai.bot.modules.prefix.IPrefixModule;
-import com.github.breadmoirai.bot.modules.source.SourceGuild;
 import com.github.breadmoirai.bot.modules.source.SourceModule;
 import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.hooks.AnnotatedEventManager;
 import net.dv8tion.jda.core.hooks.IEventManager;
 import net.dv8tion.jda.core.hooks.InterfacedEventManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 public class BreadBotClientBuilder {
 
     private static final Logger LOG = LoggerFactory.getLogger("CommandClient");
-    private List<ICommandModule> modules;
+
+    private final List<ICommandModule> modules;
     private ICommandEventFactory commandEventFactory;
-    private Consumer<CommandEngineBuilder> commandEngineModifier;
+    private final CommandEngineBuilder commandEngineBuilder;
     private BreadBotClient client;
+    private CommandPreprocessors preprocessors;
 
     public BreadBotClientBuilder() {
         modules = new ArrayList<>();
+        commandEngineBuilder = new CommandEngineBuilder(modules);
     }
 
     public BreadBotClientBuilder addModule(ICommandModule... module) {
@@ -63,6 +67,7 @@ public class BreadBotClientBuilder {
         modules.addAll(moduleList);
         return this;
     }
+
 
     /**
      * This module provides a static prefix that cannot be changed. By default, the prefix is set to "!".
@@ -78,9 +83,9 @@ public class BreadBotClientBuilder {
     }
 
     /**
-     * This enables the {@link Admin @Admin} annotation that is marked on Command classes.
-     * This ensures that Commands marked with {@link Admin @Admin} are only usable by Administrators.
-     * <p>It is <b>important</b> to include an implementation of {@link IAdminModule IAdminModule} through either this method, {@link BreadBotClientBuilder#addAdminModule(Predicate)}, or your own implementation.
+     * This enables the {@link com.github.breadmoirai.bot.modules.admin.Admin @Admin} annotation that is marked on Command classes.
+     * This ensures that Commands marked with {@link com.github.breadmoirai.bot.modules.admin.Admin @Admin} are only usable by Administrators.
+     * <p>It is <b>important</b> to include an implementation of {@link com.github.breadmoirai.bot.modules.admin.IAdminModule IAdminModule} through either this method, {@link BreadBotClientBuilder#addAdminModule(Predicate)}, or your own implementation.
      * Otherwise, all users will have access to Administrative Commands
      * <p>
      * <p>The default criteria for defining an Administrator is as follows:
@@ -90,7 +95,7 @@ public class BreadBotClientBuilder {
      * </ul>
      * <p>
      * <p>Different criteria to determine which member has administrative status with {@link BreadBotClientBuilder#addAdminModule(Predicate)}
-     * or your own implementation of {@link IAdminModule}
+     * or your own implementation of {@link com.github.breadmoirai.bot.modules.admin.IAdminModule}
      */
     public BreadBotClientBuilder addDefaultAdminModule() {
         addModule(new DefaultAdminModule());
@@ -98,7 +103,7 @@ public class BreadBotClientBuilder {
     }
 
     /**
-     * Define custom behavior to determine which members can use Commands marked with {@link Admin @Admin}
+     * Define custom behavior to determine which members can use Commands marked with {@link com.github.breadmoirai.bot.modules.admin.Admin @Admin}
      * <p>
      * <p>This method's implementation is:
      * <pre><code> {@link BreadBotClientBuilder#addModule(ICommandModule...) addModule}(new {@link DefaultAdminModule DefaultAdminModule}(isAdmin)) </code></pre>
@@ -109,7 +114,7 @@ public class BreadBotClientBuilder {
     }
 
     /**
-     * Adding this module will enable {@link SourceGuild @SourceGuild} annotations on Commands.
+     * Adding this module will enable {@link com.github.breadmoirai.bot.modules.source.SourceGuild @SourceGuild} annotations on Commands.
      *
      * @param sourceGuildId The guild id
      */
@@ -118,52 +123,169 @@ public class BreadBotClientBuilder {
         return this;
     }
 
-    /**
-     * Modifies the CommandEngineBuilder with the given Consumer
-     */
-    public BreadBotClientBuilder configure(Consumer<CommandEngineBuilder> consumer) {
-        if (commandEngineModifier == null) {
-            commandEngineModifier = consumer;
-        } else {
-            commandEngineModifier = commandEngineModifier.andThen(consumer);
-        }
+    public BreadBotClientBuilder addPreProcessPredicate(Predicate<Message> predicate) {
+        commandEngineBuilder.addPreProcessPredicate(predicate);
         return this;
     }
 
+    public Predicate<Message> getPreProcessPredicate() {
+        return commandEngineBuilder.getPreProcessPredicate();
+    }
+
     public BreadBotClientBuilder registerCommand(String name, Consumer<CommandEvent> commandFunction, String... keys) {
-        configure(o -> o.registerCommand(name, commandFunction, keys));
+        commandEngineBuilder.registerCommand(name, commandFunction, keys);
         return this;
     }
 
     public BreadBotClientBuilder registerCommand(Consumer<CommandEvent> commandFunction, Consumer<FunctionalCommandBuilder> configurator) {
-        configure(o -> o.registerCommand(commandFunction, configurator));
-        return this;
+        commandEngineBuilder.registerCommand(commandFunction, configurator);
+		return this;
     }
 
     public BreadBotClientBuilder registerCommand(Object command) {
-        configure(o -> o.registerCommand(command));
-        return this;
+        commandEngineBuilder.registerCommand(command);
+		return this;
     }
 
     public BreadBotClientBuilder registerCommand(Object command, Consumer<CommandBuilder> configurator) {
-        configure(o -> o.registerCommand(command, configurator));
-        return this;
+        commandEngineBuilder.registerCommand(command, configurator);
+		return this;
     }
 
-
     public BreadBotClientBuilder registerCommand(Class<?> commandClass) {
-        configure(o -> o.registerCommand(commandClass));
-        return this;
+        commandEngineBuilder.registerCommand(commandClass);
+		return this;
     }
 
     public BreadBotClientBuilder registerCommand(Class<?> commandClass, Consumer<CommandBuilder> configurator) {
-        configure(o -> o.registerCommand(commandClass, configurator));
-        return this;
+        commandEngineBuilder.registerCommand(commandClass, configurator);
+		return this;
     }
 
     public BreadBotClientBuilder registerCommand(String packageName, Consumer<CommandBuilder> configurator) {
-        configure(o -> o.registerCommand(packageName, configurator));
-        return this;
+        commandEngineBuilder.registerCommand(packageName, configurator);
+		return this;
+    }
+
+    /**
+     * Adds a preprocessor for later retrieval with {@link CommandPreprocessors#getPreprocessor(String) }
+     *
+     * @param identifier a string identifying the preprocessor
+     * @param function   the preprocessor. A functional interface. {@link CommandPreprocessorFunction#process See also.}
+     * @see CommandPreprocessors#addPreprocessorPredicate(String, CommandPreprocessorPredicate)
+     */
+    public BreadBotClientBuilder registerPreprocessor(String identifier, CommandPreprocessorFunction function) {
+        preprocessors.registerPreprocessor(identifier, function);
+		return this;
+    }
+
+    /**
+     * Adds a preprocessor for later retrieval with {@link CommandPreprocessors#getPreprocessor(String) }
+     *
+     * @param identifier a string identifying the preprocessor
+     * @param predicate  the preprocessor. A functional interface. Should return {@code true} if the command should continue to run, {@code false} otherwise.
+     *
+     * @see CommandPreprocessors#registerPreprocessor(String, CommandPreprocessorFunction)
+     */
+    public BreadBotClientBuilder registerPreprocessorPredicate(String identifier, CommandPreprocessorPredicate predicate) {
+        preprocessors.addPreprocessorPredicate(identifier, predicate);
+		return this;
+    }
+
+    /**
+     * Remind me to write docs for this.
+     *  @param identifier
+     * @param propertyType
+     * @param factory
+     */
+    public <T> BreadBotClientBuilder associatePreprocessorFactory(String identifier, Class<T> propertyType, Function<T, CommandPreprocessorFunction> factory) {
+        preprocessors.associatePreprocessorFactory(identifier, propertyType, factory);
+		return this;
+    }
+
+    /**
+     *  @param identifier
+     * @param propertyType
+     * @param factory
+     */
+    public <T> BreadBotClientBuilder associatePreprocessorPredicateFactory(String identifier, Class<T> propertyType, Function<T, CommandPreprocessorPredicate> factory) {
+        preprocessors.associatePreprocessorPredicateFactory(identifier, propertyType, factory);
+		return this;
+    }
+
+    /**
+     *  @param identifier
+     * @param propertyType
+     * @param function
+     */
+    public <T> BreadBotClientBuilder associatePreprocessor(String identifier, Class<T> propertyType, CommandPreprocessorFunction function) {
+        preprocessors.associatePreprocessor(identifier, propertyType, function);
+		return this;
+    }
+
+    /**
+     *  @param identifier
+     * @param propertyType
+     * @param predicate
+     */
+    public BreadBotClientBuilder associatePreprocessorPredicate(String identifier, Class<?> propertyType, CommandPreprocessorPredicate predicate) {
+        preprocessors.associatePreprocessorPredicate(identifier, propertyType, predicate);
+		return this;
+    }
+
+    /**
+     *
+     * @param propertyObj
+     * @return
+     */
+    public <T> CommandPreprocessor getAssociatedPreprocessor(T propertyObj) {
+        return preprocessors.getAssociatedPreprocessor(propertyObj);
+    }
+
+    /**
+     *
+     * @param type
+     * @return
+     */
+    public <T> CommandPreprocessor getAssociatedPreprocessor(Class<T> type) {
+        return preprocessors.getAssociatedPreprocessor(type);
+    }
+
+    /**
+     *
+     * @param identifier
+     * @return
+     */
+    public CommandPreprocessor getPreprocessor(String identifier) {
+        return preprocessors.getPreprocessor(identifier);
+    }
+
+    public BreadBotClientBuilder setPreprocessorPriority(String... identifiers) {
+        preprocessors.setPreprocessorPriority(identifiers);
+		return this;
+    }
+
+    public BreadBotClientBuilder setPreprocessorPriority(List<String> identifierList) {
+        preprocessors.setPreprocessorPriority(identifierList);
+		return this;
+    }
+
+    /**
+     * Will add associated preprocessors to the passed {@link CommandHandleBuilder} according to it's properties sorted by it's identifier priority as set in {@code #setPreprocessorPriority}
+     *
+     * @param handleBuilder A CommandHandleBuilder of a top-level class, an inner class, or a method.
+     */
+    public BreadBotClientBuilder addPreprocessors(CommandHandleBuilder handleBuilder) {
+        preprocessors.addPreprocessors(handleBuilder);
+		return this;
+    }
+
+    public Comparator<CommandPreprocessor> getPriorityComparator() {
+        return preprocessors.getPriorityComparator();
+    }
+
+    public Comparator<CommandPreprocessor> getPreprocessorComparator(String... identifier) {
+        return preprocessors.getPreprocessorComparator(identifier);
     }
 
     /**
@@ -210,11 +332,9 @@ public class BreadBotClientBuilder {
      * @return a new BreadBotClient.
      */
     public BreadBotClient build(IEventManager eventManager) {
-        final CommandEngineBuilder commandEngineBuilder = new CommandEngineBuilder(modules);
         if (!commandEngineBuilder.hasModule(IPrefixModule.class)) modules.add(new DefaultPrefixModule("!"));
         if (commandEventFactory == null) commandEventFactory = new CommandEventFactoryImpl(commandEngineBuilder);
-        commandEngineModifier.accept(commandEngineBuilder);
-        BreadBotClient client = new BreadBotClientImpl(modules, eventManager, commandEventFactory, commandEngineBuilder);
+        BreadBotClient client = new BreadBotClientImpl(modules, eventManager, commandEventFactory, commandEngineBuilder, preprocessors);
         LOG.info("Top Level Commands registered: " + client.getCommandEngine().getCommandMap().values().size() + ".");
         LOG.info("CommandClient Initialized.");
         return client;

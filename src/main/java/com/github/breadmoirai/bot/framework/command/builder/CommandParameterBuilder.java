@@ -20,7 +20,7 @@ import com.github.breadmoirai.bot.framework.command.CommandParameterFunctionImpl
 import com.github.breadmoirai.bot.framework.command.CommandPropertyMap;
 import com.github.breadmoirai.bot.framework.command.parser.ArgumentTypeMapper;
 import com.github.breadmoirai.bot.framework.command.parser.ArgumentTypePredicate;
-import com.github.breadmoirai.bot.framework.command.parser.NullArgumentConsumer;
+import com.github.breadmoirai.bot.framework.command.parser.MissingArgumentConsumer;
 import com.github.breadmoirai.bot.framework.event.CommandEvent;
 
 import java.lang.reflect.Parameter;
@@ -90,7 +90,7 @@ public interface CommandParameterBuilder {
      */
     CommandParameterBuilder setOptional(boolean mustBePresent);
 
-    CommandParameterBuilder setOnParamNotFound(NullArgumentConsumer onParamNotFound);
+    CommandParameterBuilder setOnParamNotFound(MissingArgumentConsumer onParamNotFound);
 
     CommandParameterBuilder configure(Consumer<CommandParameterBuilder> configurator);
 

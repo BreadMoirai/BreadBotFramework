@@ -19,6 +19,8 @@ import com.github.breadmoirai.bot.framework.BreadBotClient;
 import com.github.breadmoirai.bot.framework.CommandEngine;
 import com.github.breadmoirai.bot.framework.CommandEngineBuilder;
 import com.github.breadmoirai.bot.framework.ICommandModule;
+import com.github.breadmoirai.bot.framework.command.CommandPreprocessor;
+import com.github.breadmoirai.bot.framework.command.CommandPreprocessors;
 import com.github.breadmoirai.bot.framework.event.CommandEvent;
 import com.github.breadmoirai.bot.framework.event.ICommandEventFactory;
 import net.dv8tion.jda.core.JDA;
@@ -45,9 +47,11 @@ public class BreadBotClientImpl implements BreadBotClient {
     private final CommandEngine commandEngine;
     private final List<ICommandModule> modules;
     private final Map<Type, ICommandModule> moduleTypeMap;
+    private final CommandPreprocessors preprocessors;
 
-    public BreadBotClientImpl(List<ICommandModule> modules, IEventManager eventManager, ICommandEventFactory eventFactory, CommandEngineBuilder engineBuilder) {
+    public BreadBotClientImpl(List<ICommandModule> modules, IEventManager eventManager, ICommandEventFactory eventFactory, CommandEngineBuilder engineBuilder, CommandPreprocessors preprocessors) {
         this.modules = Collections.unmodifiableList(modules);
+        this.preprocessors = preprocessors;
         modules.forEach(module -> module.init(engineBuilder, this));
         this.eventManager = eventManager;
         SamuraiEventListener listener = this.new SamuraiEventListener(engineBuilder.getPreProcessPredicate());
@@ -147,6 +151,41 @@ public class BreadBotClientImpl implements BreadBotClient {
     @Override
     public CommandEngine getCommandEngine() {
         return commandEngine;
+    }
+
+    /**
+     *
+     * @param propertyObj
+     * @return
+     */
+    public <T> CommandPreprocessor getAssociatedPreprocessor(T propertyObj) {
+        return preprocessors.getAssociatedPreprocessor(propertyObj);
+    }
+
+    /**
+     *
+     * @param type
+     * @return
+     */
+    public <T> CommandPreprocessor getAssociatedPreprocessor(Class<T> type) {
+        return preprocessors.getAssociatedPreprocessor(type);
+    }
+
+    /**
+     *
+     * @param identifier
+     * @return
+     */
+    public CommandPreprocessor getPreprocessor(String identifier) {
+        return preprocessors.getPreprocessor(identifier);
+    }
+
+    public Comparator<CommandPreprocessor> getPriorityComparator() {
+        return preprocessors.getPriorityComparator();
+    }
+
+    public Comparator<CommandPreprocessor> getPreprocessorComparator(String... identifier) {
+        return preprocessors.getPreprocessorComparator(identifier);
     }
 
     private class SamuraiEventListener extends ListenerAdapter {

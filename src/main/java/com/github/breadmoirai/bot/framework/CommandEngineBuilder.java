@@ -128,7 +128,8 @@ public class CommandEngineBuilder {
                     .anyMatch(aClass -> aClass == Command.class);
             if (!hasCommandAnnotation) continue;
             final CommandBuilder commandBuilder = new CommandBuilder(commandClass);
-            configurator.accept(commandBuilder);
+            if (configurator != null)
+                configurator.accept(commandBuilder);
             addCommandBuilder(commandBuilder);
         }
         return this;
@@ -167,7 +168,7 @@ public class CommandEngineBuilder {
     public CommandEngine build() {
         final HashMap<String, CommandHandle> commandMap = new HashMap<>();
         commandBuilderList.stream().map(CommandHandleBuilder::build).forEach(commandExecutor -> {
-            final String[] keys = commandExecutor.getEffectiveKeys();
+            final String[] keys = commandExecutor.getKeys();
             if (keys == null || keys.length == 0) {
                 throw new RuntimeException("No keys defined for " + commandExecutor.getName());
             }

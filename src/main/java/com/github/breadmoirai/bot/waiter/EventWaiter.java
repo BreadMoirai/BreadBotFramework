@@ -38,7 +38,8 @@ import java.util.stream.Collectors;
  * <p>The EventWaiter is capable of handling specialized forms of {@link net.dv8tion.jda.core.events.Event Event}
  * that must meet criteria not normally specifiable without implementation of an {@link net.dv8tion.jda.core.hooks.EventListener EventListener}.
  *
- * <p>This is a singleton class accessed through {@link EventWaiter#get() EventWaiter#get}
+ * <p>There is a singleton option available with {@link com.github.breadmoirai.bot.waiter.EventWaiter#get} for ease of access but it is not required and this class can be instantiated normally.
+ *
  *
  * @author John Grosh (jagrosh)
  */
@@ -65,7 +66,7 @@ public class EventWaiter implements EventListener {
     /**
      * Constructs an empty EventWaiter.
      */
-    private EventWaiter()
+    public EventWaiter()
     {
         waitingEvents = new HashMap<>();
         threadpool = Executors.newSingleThreadScheduledExecutor();
