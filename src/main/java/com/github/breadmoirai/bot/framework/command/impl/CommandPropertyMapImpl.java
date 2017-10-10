@@ -14,7 +14,7 @@
 */
 package com.github.breadmoirai.bot.framework.command.impl;
 
-import com.github.breadmoirai.bot.framework.command.CommandPropertyMap;
+import com.github.breadmoirai.bot.framework.command.property.CommandPropertyMap;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;

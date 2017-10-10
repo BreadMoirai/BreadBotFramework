@@ -16,6 +16,10 @@ package com.github.breadmoirai.bot.framework.command.builder;
 
 import com.github.breadmoirai.bot.framework.command.*;
 import com.github.breadmoirai.bot.framework.command.impl.InnerCommandImpl;
+import com.github.breadmoirai.bot.framework.command.preprocessor.CommandPreprocessor;
+import com.github.breadmoirai.bot.framework.command.preprocessor.CommandPreprocessorFunction;
+import com.github.breadmoirai.bot.framework.command.preprocessor.CommandPreprocessorPredicate;
+import com.github.breadmoirai.bot.framework.command.property.CommandPropertyMap;
 import com.github.breadmoirai.bot.framework.error.NoSuchCommandException;
 import com.github.breadmoirai.bot.framework.event.CommandEvent;
 import net.dv8tion.jda.core.utils.Checks;

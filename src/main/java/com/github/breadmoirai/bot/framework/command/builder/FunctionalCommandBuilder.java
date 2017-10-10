@@ -15,9 +15,9 @@
 package com.github.breadmoirai.bot.framework.command.builder;
 
 import com.github.breadmoirai.bot.framework.command.CommandHandle;
-import com.github.breadmoirai.bot.framework.command.CommandPreprocessor;
-import com.github.breadmoirai.bot.framework.command.CommandPreprocessorFunction;
-import com.github.breadmoirai.bot.framework.command.CommandPreprocessorPredicate;
+import com.github.breadmoirai.bot.framework.command.preprocessor.CommandPreprocessor;
+import com.github.breadmoirai.bot.framework.command.preprocessor.CommandPreprocessorFunction;
+import com.github.breadmoirai.bot.framework.command.preprocessor.CommandPreprocessorPredicate;
 import com.github.breadmoirai.bot.framework.command.impl.FunctionalCommandImpl;
 import com.github.breadmoirai.bot.framework.event.CommandEvent;
 

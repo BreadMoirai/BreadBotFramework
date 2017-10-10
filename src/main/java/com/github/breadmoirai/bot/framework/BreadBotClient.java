@@ -15,6 +15,7 @@
  */
 package com.github.breadmoirai.bot.framework;
 
+import com.github.breadmoirai.bot.framework.command.preprocessor.CommandPreprocessors;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
@@ -43,6 +44,8 @@ public interface BreadBotClient {
     JDA getJDA();
 
     IEventManager getEventManager();
+
+    CommandPreprocessors preprocessors();
 
     default void send(Response response) {
         send(response.getChannelId(), response);

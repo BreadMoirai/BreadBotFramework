@@ -1,11 +1,11 @@
 package com.github.breadmoirai.bot.framework.command.builder;
 
-import com.github.breadmoirai.bot.framework.command.CommandParameter;
-import com.github.breadmoirai.bot.framework.command.CommandPropertyMap;
-import com.github.breadmoirai.bot.framework.command.CommandPropertyMapBuilder;
+import com.github.breadmoirai.bot.framework.command.parameter.CommandParameter;
+import com.github.breadmoirai.bot.framework.command.property.CommandPropertyMap;
+import com.github.breadmoirai.bot.framework.command.property.CommandPropertyMapBuilder;
 import com.github.breadmoirai.bot.framework.command.impl.CommandParameterCollectionImpl;
 import com.github.breadmoirai.bot.framework.command.impl.CommandParameterImpl;
-import com.github.breadmoirai.bot.framework.command.parser.*;
+import com.github.breadmoirai.bot.framework.command.parameter.*;
 import com.github.breadmoirai.bot.framework.error.MissingTypeMapperException;
 import com.github.breadmoirai.bot.framework.event.CommandEvent;
 

@@ -15,11 +15,11 @@
  */
 package com.github.breadmoirai.bot.framework;
 
-import com.github.breadmoirai.bot.framework.command.CommandPreprocessor;
-import com.github.breadmoirai.bot.framework.command.CommandPreprocessorFunction;
-import com.github.breadmoirai.bot.framework.command.CommandPreprocessorPredicate;
-import com.github.breadmoirai.bot.framework.command.CommandPreprocessors;
-import com.github.breadmoirai.bot.framework.command.builder.CommandBuilder;
+import com.github.breadmoirai.bot.framework.command.preprocessor.CommandPreprocessor;
+import com.github.breadmoirai.bot.framework.command.preprocessor.CommandPreprocessorFunction;
+import com.github.breadmoirai.bot.framework.command.preprocessor.CommandPreprocessorPredicate;
+import com.github.breadmoirai.bot.framework.command.preprocessor.CommandPreprocessors;
+import com.github.breadmoirai.bot.framework.command.builder.CommandClassBuilder;
 import com.github.breadmoirai.bot.framework.command.builder.CommandHandleBuilder;
 import com.github.breadmoirai.bot.framework.command.builder.FunctionalCommandBuilder;
 import com.github.breadmoirai.bot.framework.event.CommandEvent;
@@ -147,7 +147,7 @@ public class BreadBotClientBuilder {
 		return this;
     }
 
-    public BreadBotClientBuilder registerCommand(Object command, Consumer<CommandBuilder> configurator) {
+    public BreadBotClientBuilder registerCommand(Object command, Consumer<CommandClassBuilder> configurator) {
         commandEngineBuilder.registerCommand(command, configurator);
 		return this;
     }
@@ -157,12 +157,12 @@ public class BreadBotClientBuilder {
 		return this;
     }
 
-    public BreadBotClientBuilder registerCommand(Class<?> commandClass, Consumer<CommandBuilder> configurator) {
+    public BreadBotClientBuilder registerCommand(Class<?> commandClass, Consumer<CommandClassBuilder> configurator) {
         commandEngineBuilder.registerCommand(commandClass, configurator);
 		return this;
     }
 
-    public BreadBotClientBuilder registerCommand(String packageName, Consumer<CommandBuilder> configurator) {
+    public BreadBotClientBuilder registerCommand(String packageName, Consumer<CommandClassBuilder> configurator) {
         commandEngineBuilder.registerCommand(packageName, configurator);
 		return this;
     }
@@ -286,6 +286,10 @@ public class BreadBotClientBuilder {
 
     public Comparator<CommandPreprocessor> getPreprocessorComparator(String... identifier) {
         return preprocessors.getPreprocessorComparator(identifier);
+    }
+
+    public CommandPreprocessors getPreprocessors() {
+        return preprocessors;
     }
 
     /**

@@ -15,12 +15,12 @@
 package com.github.breadmoirai.bot.framework.command.builder;
 
 import com.github.breadmoirai.bot.framework.ICommandModule;
-import com.github.breadmoirai.bot.framework.command.CommandParameter;
-import com.github.breadmoirai.bot.framework.command.CommandParameterFunctionImpl;
-import com.github.breadmoirai.bot.framework.command.CommandPropertyMap;
-import com.github.breadmoirai.bot.framework.command.parser.ArgumentTypeMapper;
-import com.github.breadmoirai.bot.framework.command.parser.ArgumentTypePredicate;
-import com.github.breadmoirai.bot.framework.command.parser.MissingArgumentConsumer;
+import com.github.breadmoirai.bot.framework.command.parameter.CommandParameter;
+import com.github.breadmoirai.bot.framework.command.parameter.CommandParameterFunctionImpl;
+import com.github.breadmoirai.bot.framework.command.property.CommandPropertyMap;
+import com.github.breadmoirai.bot.framework.command.parameter.ArgumentTypeMapper;
+import com.github.breadmoirai.bot.framework.command.parameter.ArgumentTypePredicate;
+import com.github.breadmoirai.bot.framework.command.parameter.MissingArgumentConsumer;
 import com.github.breadmoirai.bot.framework.event.CommandEvent;
 
 import java.lang.reflect.Parameter;
@@ -73,9 +73,9 @@ public interface CommandParameterBuilder {
 
     /**
      * Sets the {@link ArgumentTypeMapper} to be used in mapping the {@link CommandParameter}.
-     * If an {@link ArgumentTypeMapper} is registered in {@link com.github.breadmoirai.bot.framework.command.parser.ArgumentTypes}, it will not be used.
-     * The provided {@link ArgumentTypeMapper} will not be registered with {@link com.github.breadmoirai.bot.framework.command.parser.ArgumentTypes}.
-     * It is generally recommended to prefer using different {@link com.github.breadmoirai.bot.framework.command.parser.ArgumentFlags flags} on custom types to indicate that the {@link com.github.breadmoirai.bot.framework.command.parser.CommandArgument} should be mapped differently.
+     * If an {@link ArgumentTypeMapper} is registered in {@link com.github.breadmoirai.bot.framework.command.parameter.ArgumentTypes}, it will not be used.
+     * The provided {@link ArgumentTypeMapper} will not be registered with {@link com.github.breadmoirai.bot.framework.command.parameter.ArgumentTypes}.
+     * It is generally recommended to prefer using different {@link com.github.breadmoirai.bot.framework.command.parameter.ArgumentFlags flags} on custom types to indicate that the {@link com.github.breadmoirai.bot.framework.command.parameter.CommandArgument} should be mapped differently.
      *
      * @param mapper a public class that implements {@link ArgumentTypeMapper} and contains a no-args public constructor.
      */

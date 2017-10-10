@@ -14,6 +14,7 @@
 */
 package com.github.breadmoirai.bot.framework.command;
 
+import com.github.breadmoirai.bot.framework.command.property.CommandPropertyMap;
 import com.github.breadmoirai.bot.framework.event.CommandEvent;
 import com.github.breadmoirai.bot.util.EventStringIterator;
 

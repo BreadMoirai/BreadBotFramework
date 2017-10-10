@@ -14,7 +14,7 @@
 */
 package com.github.breadmoirai.bot.framework.command.impl;
 
-import com.github.breadmoirai.bot.framework.command.parser.CommandArgument;
+import com.github.breadmoirai.bot.framework.command.parameter.CommandArgument;
 
 import java.time.*;
 import java.time.format.DateTimeFormatter;

@@ -17,7 +17,7 @@ package com.github.breadmoirai.bot.framework;
 
 import com.github.breadmoirai.bot.framework.command.Command;
 import com.github.breadmoirai.bot.framework.command.CommandHandle;
-import com.github.breadmoirai.bot.framework.command.builder.CommandBuilder;
+import com.github.breadmoirai.bot.framework.command.builder.CommandClassBuilder;
 import com.github.breadmoirai.bot.framework.command.builder.CommandHandleBuilder;
 import com.github.breadmoirai.bot.framework.command.builder.FunctionalCommandBuilder;
 import com.github.breadmoirai.bot.framework.event.CommandEvent;
@@ -61,7 +61,6 @@ public class CommandEngineBuilder {
 
     private void addCommandBuilder(CommandHandleBuilder builder) {
         commandBuilderList.add(builder);
-        LOG.info("Registered Command \"" + builder.getName() + "\" with " + Arrays.toString(builder.getKeys()) + ".");
     }
 
     public CommandEngineBuilder registerCommand(String name, Consumer<CommandEvent> commandFunction, String... keys) {
@@ -77,12 +76,12 @@ public class CommandEngineBuilder {
     }
 
     public CommandEngineBuilder registerCommand(Object command) {
-        addCommandBuilder(new CommandBuilder(command));
+        addCommandBuilder(new CommandClassBuilder(command));
         return this;
     }
 
-    public CommandEngineBuilder registerCommand(Object command, Consumer<CommandBuilder> configurator) {
-        final CommandBuilder builder = new CommandBuilder(command);
+    public CommandEngineBuilder registerCommand(Object command, Consumer<CommandClassBuilder> configurator) {
+        final CommandClassBuilder builder = new CommandClassBuilder(command);
         configurator.accept(builder);
         addCommandBuilder(builder);
         return this;
@@ -90,20 +89,20 @@ public class CommandEngineBuilder {
 
 
     public CommandEngineBuilder registerCommand(Class<?> commandClass) {
-        final CommandBuilder commandBuilder = new CommandBuilder(commandClass);
+        final CommandClassBuilder commandBuilder = new CommandClassBuilder(commandClass);
         addCommandBuilder(commandBuilder);
         return this;
     }
 
-    public CommandEngineBuilder registerCommand(Class<?> commandClass, Consumer<CommandBuilder> configurator) {
+    public CommandEngineBuilder registerCommand(Class<?> commandClass, Consumer<CommandClassBuilder> configurator) {
 
-        final CommandBuilder commandBuilder = new CommandBuilder(commandClass);
+        final CommandClassBuilder commandBuilder = new CommandClassBuilder(commandClass);
         configurator.accept(commandBuilder);
         addCommandBuilder(commandBuilder);
         return this;
     }
 
-    public CommandEngineBuilder registerCommand(String packageName, Consumer<CommandBuilder> configurator) {
+    public CommandEngineBuilder registerCommand(String packageName, Consumer<CommandClassBuilder> configurator) {
         final Reflections reflections = new Reflections(packageName);
         final Set<Class<?>> classes = reflections.getSubTypesOf(Object.class);
         for (Class<?> commandClass : classes) {
@@ -127,7 +126,7 @@ public class CommandEngineBuilder {
                     .map(Annotation::annotationType)
                     .anyMatch(aClass -> aClass == Command.class);
             if (!hasCommandAnnotation) continue;
-            final CommandBuilder commandBuilder = new CommandBuilder(commandClass);
+            final CommandClassBuilder commandBuilder = new CommandClassBuilder(commandClass);
             if (configurator != null)
                 configurator.accept(commandBuilder);
             addCommandBuilder(commandBuilder);

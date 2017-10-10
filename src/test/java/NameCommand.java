@@ -14,8 +14,8 @@
 */
 
 import com.github.breadmoirai.bot.framework.command.Command;
-import com.github.breadmoirai.bot.framework.command.parser.Index;
-import com.github.breadmoirai.bot.framework.command.parser.Width;
+import com.github.breadmoirai.bot.framework.command.parameter.Index;
+import com.github.breadmoirai.bot.framework.command.parameter.Width;
 import com.github.breadmoirai.bot.framework.event.CommandEvent;
 
 public class NameCommand {

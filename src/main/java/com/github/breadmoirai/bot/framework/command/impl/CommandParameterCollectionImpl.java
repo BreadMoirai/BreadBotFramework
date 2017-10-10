@@ -15,8 +15,8 @@
 package com.github.breadmoirai.bot.framework.command.impl;
 
 import com.github.breadmoirai.bot.framework.command.CommandArgumentList;
-import com.github.breadmoirai.bot.framework.command.CommandParameter;
-import com.github.breadmoirai.bot.framework.command.CommandParser;
+import com.github.breadmoirai.bot.framework.command.parameter.CommandParameter;
+import com.github.breadmoirai.bot.framework.command.parameter.CommandParser;
 
 import java.util.stream.Collector;
 import java.util.stream.Stream;

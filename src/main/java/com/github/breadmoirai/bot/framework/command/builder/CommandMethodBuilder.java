@@ -16,6 +16,11 @@ package com.github.breadmoirai.bot.framework.command.builder;
 
 import com.github.breadmoirai.bot.framework.command.*;
 import com.github.breadmoirai.bot.framework.command.impl.CommandMethodImpl;
+import com.github.breadmoirai.bot.framework.command.parameter.CommandParameter;
+import com.github.breadmoirai.bot.framework.command.preprocessor.CommandPreprocessor;
+import com.github.breadmoirai.bot.framework.command.preprocessor.CommandPreprocessorFunction;
+import com.github.breadmoirai.bot.framework.command.preprocessor.CommandPreprocessorPredicate;
+import com.github.breadmoirai.bot.framework.command.property.CommandPropertyMap;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;

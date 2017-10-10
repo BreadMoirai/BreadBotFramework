@@ -14,7 +14,7 @@
 */
 package com.github.breadmoirai.bot.util;
 
-import com.github.breadmoirai.bot.framework.command.parser.IfNotFound;
+import com.github.breadmoirai.bot.framework.command.parameter.IfNotFound;
 
 import java.util.function.Function;
 

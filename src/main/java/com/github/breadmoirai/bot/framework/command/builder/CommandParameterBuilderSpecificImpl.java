@@ -14,10 +14,10 @@
 */
 package com.github.breadmoirai.bot.framework.command.builder;
 
-import com.github.breadmoirai.bot.framework.command.CommandParameter;
-import com.github.breadmoirai.bot.framework.command.parser.ArgumentTypeMapper;
-import com.github.breadmoirai.bot.framework.command.parser.ArgumentTypePredicate;
-import com.github.breadmoirai.bot.framework.command.parser.MissingArgumentConsumer;
+import com.github.breadmoirai.bot.framework.command.parameter.CommandParameter;
+import com.github.breadmoirai.bot.framework.command.parameter.ArgumentTypeMapper;
+import com.github.breadmoirai.bot.framework.command.parameter.ArgumentTypePredicate;
+import com.github.breadmoirai.bot.framework.command.parameter.MissingArgumentConsumer;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;

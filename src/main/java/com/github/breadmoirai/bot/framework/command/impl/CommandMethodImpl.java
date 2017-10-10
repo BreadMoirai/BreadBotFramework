@@ -15,6 +15,11 @@
 package com.github.breadmoirai.bot.framework.command.impl;
 
 import com.github.breadmoirai.bot.framework.command.*;
+import com.github.breadmoirai.bot.framework.command.parameter.CommandParameter;
+import com.github.breadmoirai.bot.framework.command.parameter.CommandParser;
+import com.github.breadmoirai.bot.framework.command.preprocessor.CommandPreprocessor;
+import com.github.breadmoirai.bot.framework.command.preprocessor.CommandProcessorStack;
+import com.github.breadmoirai.bot.framework.command.property.CommandPropertyMap;
 import com.github.breadmoirai.bot.framework.event.CommandEvent;
 
 import java.lang.invoke.MethodHandle;

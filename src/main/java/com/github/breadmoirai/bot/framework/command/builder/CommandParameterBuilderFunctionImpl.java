@@ -15,8 +15,8 @@
 package com.github.breadmoirai.bot.framework.command.builder;
 
 import com.github.breadmoirai.bot.framework.command.CommandArgumentList;
-import com.github.breadmoirai.bot.framework.command.CommandParameterFunctionImpl;
-import com.github.breadmoirai.bot.framework.command.CommandParser;
+import com.github.breadmoirai.bot.framework.command.parameter.CommandParameterFunctionImpl;
+import com.github.breadmoirai.bot.framework.command.parameter.CommandParser;
 
 import java.util.function.BiFunction;
 

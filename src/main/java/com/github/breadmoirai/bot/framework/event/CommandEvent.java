@@ -18,7 +18,7 @@ package com.github.breadmoirai.bot.framework.event;
 import com.github.breadmoirai.bot.framework.BreadBotClient;
 import com.github.breadmoirai.bot.framework.Response;
 import com.github.breadmoirai.bot.framework.command.CommandArgumentList;
-import com.github.breadmoirai.bot.framework.command.parser.CommandArgument;
+import com.github.breadmoirai.bot.framework.command.parameter.CommandArgument;
 import com.github.breadmoirai.bot.framework.response.menu.PromptBuilder;
 import com.github.breadmoirai.bot.framework.response.menu.ReactionMenuBuilder;
 import com.github.breadmoirai.bot.framework.response.simple.EmbedResponse;
@@ -218,7 +218,7 @@ public abstract class CommandEvent extends Event {
     }
 
     /**
-     * retrieves a {@link com.github.breadmoirai.bot.framework.command.parser.CommandArgument} from the {@link CommandArgumentList} returned by {@link com.github.breadmoirai.bot.framework.event.CommandEvent#getArguments()}
+     * retrieves a {@link com.github.breadmoirai.bot.framework.command.parameter.CommandArgument} from the {@link CommandArgumentList} returned by {@link com.github.breadmoirai.bot.framework.event.CommandEvent#getArguments()}
      *
      * @param index the index of the argument starting at 0. This does not include the key.
      * @return the non-null CommandArgument

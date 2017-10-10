@@ -15,9 +15,9 @@
 package com.github.breadmoirai.bot.framework.command.impl;
 
 import com.github.breadmoirai.bot.framework.command.CommandHandle;
-import com.github.breadmoirai.bot.framework.command.CommandPreprocessor;
-import com.github.breadmoirai.bot.framework.command.CommandProcessorStack;
-import com.github.breadmoirai.bot.framework.command.CommandPropertyMap;
+import com.github.breadmoirai.bot.framework.command.preprocessor.CommandPreprocessor;
+import com.github.breadmoirai.bot.framework.command.preprocessor.CommandProcessorStack;
+import com.github.breadmoirai.bot.framework.command.property.CommandPropertyMap;
 import com.github.breadmoirai.bot.framework.event.CommandEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

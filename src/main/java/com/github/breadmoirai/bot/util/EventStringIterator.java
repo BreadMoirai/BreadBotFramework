@@ -14,7 +14,7 @@
 */
 package com.github.breadmoirai.bot.util;
 
-import com.github.breadmoirai.bot.framework.command.parser.CommandArgument;
+import com.github.breadmoirai.bot.framework.command.parameter.CommandArgument;
 import com.github.breadmoirai.bot.framework.event.CommandEvent;
 
 import java.util.Iterator;
