@@ -15,6 +15,7 @@
 package com.github.breadmoirai.bot.framework.command.builder;
 
 import com.github.breadmoirai.bot.framework.command.*;
+import com.github.breadmoirai.bot.framework.command.buildernew.CommandParameterBuilder;
 import com.github.breadmoirai.bot.framework.command.impl.CommandMethodImpl;
 import com.github.breadmoirai.bot.framework.command.parameter.CommandParameter;
 import com.github.breadmoirai.bot.framework.command.preprocessor.CommandPreprocessor;

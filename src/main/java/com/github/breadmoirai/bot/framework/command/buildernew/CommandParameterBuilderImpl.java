@@ -1,4 +1,4 @@
-package com.github.breadmoirai.bot.framework.command.builder;
+package com.github.breadmoirai.bot.framework.command.buildernew;
 
 import com.github.breadmoirai.bot.framework.command.parameter.CommandParameter;
 import com.github.breadmoirai.bot.framework.command.property.CommandPropertyMap;

@@ -24,8 +24,9 @@ public class CommandHandleBuilderFactory {
         this.clientBuilder = clientBuilder;
     }
 
-    public static CommandHandleBuilder newBuilder(Object o) {
+    public CommandHandleBuilder newBuilder(Object o) {
         if (o == null)
-        return new CommandHandleBuilderImpl()
+        return new CommandHandleBuilderImpl(clientBuilder, null);
+        
     }
 }

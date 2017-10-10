@@ -14,19 +14,29 @@
 */
 package com.github.breadmoirai.bot.framework.command;
 
+import com.github.breadmoirai.bot.framework.BreadBotClient;
 import com.github.breadmoirai.bot.framework.command.property.CommandPropertyMap;
 import com.github.breadmoirai.bot.framework.event.CommandEvent;
 import com.github.breadmoirai.bot.util.EventStringIterator;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Map;
 
 /**
  * Is a Command. May be a top-level class, an inner class, or a method.
  */
 public interface CommandHandle {
 
+    BreadBotClient getClient();
+
+    String[] getKeys();
+
     String getName();
+
+    String getGroup();
+
+    String getDescription();
 
     CommandPropertyMap getPropertyMap();
 
@@ -36,12 +46,6 @@ public interface CommandHandle {
 
     boolean handle(Object parent, CommandEvent event, Iterator<String> keyItr);
 
-    String[] getKeys();
-
-    Collection<CommandHandle> getSubCommands();
-//
-//    default List<CommandPreprocessor> getPreprocessors() {
-//        return null;
-//    }
+    Map<String, CommandHandle> getSubCommandMap();
 
 }

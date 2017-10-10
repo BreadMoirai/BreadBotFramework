@@ -18,7 +18,7 @@ package com.github.breadmoirai.bot.framework;
 import com.github.breadmoirai.bot.framework.command.Command;
 import com.github.breadmoirai.bot.framework.command.CommandHandle;
 import com.github.breadmoirai.bot.framework.command.builder.CommandClassBuilder;
-import com.github.breadmoirai.bot.framework.command.builder.CommandHandleBuilder;
+import com.github.breadmoirai.bot.framework.command.buildernew.CommandHandleBuilder;
 import com.github.breadmoirai.bot.framework.command.builder.FunctionalCommandBuilder;
 import com.github.breadmoirai.bot.framework.event.CommandEvent;
 import com.github.breadmoirai.bot.framework.impl.CommandEngineImpl;
@@ -164,9 +164,9 @@ public class CommandEngineBuilder {
             LOG.warn("Duplicate Module: There are two or more modules of type " + moduleClass.toString());
     }
 
-    public CommandEngine build() {
+    public CommandEngine build(BreadBotClient client) {
         final HashMap<String, CommandHandle> commandMap = new HashMap<>();
-        commandBuilderList.stream().map(CommandHandleBuilder::build).forEach(commandExecutor -> {
+        commandBuilderList.stream().map(commandHandleBuilder -> commandHandleBuilder.build(client)).forEach(commandExecutor -> {
             final String[] keys = commandExecutor.getKeys();
             if (keys == null || keys.length == 0) {
                 throw new RuntimeException("No keys defined for " + commandExecutor.getName());

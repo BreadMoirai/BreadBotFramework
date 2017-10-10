@@ -142,4 +142,9 @@ public class CommandParser {
     public boolean addAll(int[] array) {
         return set.addAll(array);
     }
+
+    public boolean mapAll() {
+        while (hasNext()) mapNext();
+        return !hasFailed();
+    }
 }

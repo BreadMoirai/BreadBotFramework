@@ -14,6 +14,7 @@
 */
 package com.github.breadmoirai.bot.framework.command.buildernew;
 
+import com.github.breadmoirai.bot.framework.BreadBotClient;
 import com.github.breadmoirai.bot.framework.BreadBotClientBuilder;
 import com.github.breadmoirai.bot.framework.command.CommandHandle;
 import com.github.breadmoirai.bot.framework.command.preprocessor.CommandPreprocessor;
@@ -39,13 +40,13 @@ public interface CommandHandleBuilder {
      * @param configurator
      * @return
      */
-    default CommandHandleBuilder addSubCommand(String key, @Nullable Consumer<CommandEvent> onCommand, Consumer<CommandHandleBuilder> configurator) {
-        return addSubCommand(key, () -> onCommand, configurator);
+    CommandHandleBuilder addSubCommand(String[] key, Consumer<CommandEvent> onCommand, Consumer<CommandHandleBuilder> configurator);
+
+    default CommandHandleBuilder addSubCommand(String key, Consumer<CommandEvent> onCommand, Consumer<CommandHandleBuilder> configurator) {
+        return addSubCommand(new String[]{key}, onCommand, configurator);
     }
 
-    CommandHandleBuilder addSubCommand(String key, Supplier<Consumer<CommandEvent>> commandSupplier, Consumer<CommandHandleBuilder> configurator);
-
-    CommandHandleBuilder setKey(String key);
+    CommandHandleBuilder setKeys(String... key);
 
     CommandHandleBuilder setName(String name);
 
@@ -96,6 +97,6 @@ public interface CommandHandleBuilder {
 
     BreadBotClientBuilder getClientBuilder();
 
-    CommandHandle build();
+    CommandHandle build(BreadBotClient client);
 
 }

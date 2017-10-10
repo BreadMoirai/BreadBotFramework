@@ -58,11 +58,13 @@ public abstract class CommandEvent extends Event {
     }
 
     private final BreadBotClient client;
+    private boolean isHelpEvent;
     private List<String> args;
 
-    public CommandEvent(JDA api, long responseNumber, BreadBotClient client) {
+    public CommandEvent(JDA api, long responseNumber, BreadBotClient client, boolean isHelpEvent) {
         super(api, responseNumber);
         this.client = client;
+        this.isHelpEvent = isHelpEvent;
     }
 
     public BreadBotClient getClient() {
@@ -85,7 +87,7 @@ public abstract class CommandEvent extends Event {
      * Whatever comes after the prefix and key.
      *
      * @return a {@link java.lang.String String} that does not contain the prefix or the key.
-     * @see CommandEvent#getArgs()
+     * @see CommandEvent#getArguments()
      */
     public abstract String getContent();
 
@@ -201,6 +203,7 @@ public abstract class CommandEvent extends Event {
      *
      * @return An immutable list of args.
      */
+    @Deprecated
     public synchronized List<String> getArgs() {
         if (args == null) {
             args = hasContent()
@@ -245,7 +248,7 @@ public abstract class CommandEvent extends Event {
      * If message content contains an uneven number of {@code "}, the result is not predictable.
      *
      * @param limit the limit to set for a maximum number of arguments. For more information on how this is used, see {@link java.util.regex.Pattern#split(java.lang.CharSequence, int)}
-     * @return an implementation of <code>{@link java.util.List}<{@link CommandArgument EventArgument}></code> in which arguments are lazily parsed.
+     * @return an implementation of <code>{@link java.util.List}<{@link CommandArgument EventArgument}></code>
      */
     public synchronized CommandArgumentList getArguments(int limit) {
         if (!hasContent()) {
@@ -442,5 +445,9 @@ public abstract class CommandEvent extends Event {
             return false;
         }
         return true;
+    }
+
+    public boolean isHelpEvent() {
+        return isHelpEvent;
     }
 }

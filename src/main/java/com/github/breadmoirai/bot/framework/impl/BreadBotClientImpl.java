@@ -62,7 +62,7 @@ public class BreadBotClientImpl implements BreadBotClient {
         else
             modules.forEach(eventManager::register);
         this.eventFactory = eventFactory;
-        this.commandEngine = engineBuilder.build();
+        this.commandEngine = engineBuilder.build(this);
 
         final HashMap<Type, ICommandModule> typeMap = new HashMap<>(modules.size());
         for (ICommandModule module : modules) {

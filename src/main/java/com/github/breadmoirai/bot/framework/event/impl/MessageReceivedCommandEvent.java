@@ -35,8 +35,8 @@ public class MessageReceivedCommandEvent extends CommandEvent {
     private String key;
     private String content;
 
-    MessageReceivedCommandEvent(BreadBotClient client, GenericGuildMessageEvent event, Message message, String prefix, String key, String content) {
-        super(event.getJDA(), event.getResponseNumber(), client);
+    MessageReceivedCommandEvent(BreadBotClient client, GenericGuildMessageEvent event, Message message, String prefix, String key, String content, boolean isHelpEvent) {
+        super(event.getJDA(), event.getResponseNumber(), client, isHelpEvent);
         this.event = event;
         this.message = message;
         this.prefix = prefix;

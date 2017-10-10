@@ -19,7 +19,6 @@ import com.github.breadmoirai.bot.framework.CommandEngine;
 import com.github.breadmoirai.bot.framework.ICommandModule;
 import com.github.breadmoirai.bot.framework.command.CommandHandle;
 import com.github.breadmoirai.bot.framework.event.CommandEvent;
-import com.github.breadmoirai.bot.framework.event.impl.HelpEvent;
 import net.dv8tion.jda.core.utils.SimpleLog;
 
 import java.util.List;
