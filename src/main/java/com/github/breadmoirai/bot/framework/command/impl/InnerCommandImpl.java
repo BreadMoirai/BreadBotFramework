@@ -16,7 +16,7 @@ package com.github.breadmoirai.bot.framework.command.impl;
 
 import com.github.breadmoirai.bot.framework.command.CommandHandle;
 import com.github.breadmoirai.bot.framework.command.preprocessor.CommandPreprocessor;
-import com.github.breadmoirai.bot.framework.command.preprocessor.CommandProcessorStack;
+import com.github.breadmoirai.bot.framework.command.preprocessor.CommandProcessStack;
 import com.github.breadmoirai.bot.framework.command.property.CommandPropertyMap;
 import com.github.breadmoirai.bot.framework.event.CommandEvent;
 import org.slf4j.Logger;
@@ -71,14 +71,14 @@ public class InnerCommandImpl implements CommandHandle {
             final String next = keyIterator.next().toLowerCase();
             final CommandHandle commandHandle = handleMap.get(next);
             if (commandHandle != null) {
-                final CommandProcessorStack commandPreprocessors = new CommandProcessorStack(commandObj, commandHandle, event, preprocessorList, () -> commandHandle.handle(commandObj, event, keyIterator));
+                final CommandProcessStack commandPreprocessors = new CommandProcessStack(commandObj, commandHandle, event, preprocessorList, () -> commandHandle.handle(commandObj, event, keyIterator));
                 commandPreprocessors.runNext();
                 return commandPreprocessors.result();
             }
         }
         final CommandHandle defaultHandle = handleMap.get("");
         if (defaultHandle != null) {
-            final CommandProcessorStack commandPreprocessors = new CommandProcessorStack(commandObj, defaultHandle, event, preprocessorList, () -> defaultHandle.handle(commandObj, event, null));
+            final CommandProcessStack commandPreprocessors = new CommandProcessStack(commandObj, defaultHandle, event, preprocessorList, () -> defaultHandle.handle(commandObj, event, null));
             commandPreprocessors.runNext();
             return commandPreprocessors.result();
         }

@@ -18,7 +18,7 @@ import com.github.breadmoirai.bot.framework.command.*;
 import com.github.breadmoirai.bot.framework.command.parameter.CommandParameter;
 import com.github.breadmoirai.bot.framework.command.parameter.CommandParser;
 import com.github.breadmoirai.bot.framework.command.preprocessor.CommandPreprocessor;
-import com.github.breadmoirai.bot.framework.command.preprocessor.CommandProcessorStack;
+import com.github.breadmoirai.bot.framework.command.preprocessor.CommandProcessStack;
 import com.github.breadmoirai.bot.framework.command.property.CommandPropertyMap;
 import com.github.breadmoirai.bot.framework.event.CommandEvent;
 
@@ -58,7 +58,7 @@ public class CommandMethodImpl implements CommandHandle {
 
     @Override
     public boolean handle(Object parent, CommandEvent event, Iterator<String> keyItr) {
-        final CommandProcessorStack commandPreprocessors = new CommandProcessorStack(parent, this, event, preprocessorList, () -> parseAndInvokeHandle(parent, event));
+        final CommandProcessStack commandPreprocessors = new CommandProcessStack(parent, this, event, preprocessorList, () -> parseAndInvokeHandle(parent, event));
         commandPreprocessors.runNext();
         return commandPreprocessors.result();
     }

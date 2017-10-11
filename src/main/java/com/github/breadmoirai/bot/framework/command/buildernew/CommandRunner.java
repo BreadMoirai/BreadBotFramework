@@ -1,5 +1,6 @@
 package com.github.breadmoirai.bot.framework.command.buildernew;
 
+import com.github.breadmoirai.bot.framework.command.parameter.CommandParser;
 import com.github.breadmoirai.bot.framework.event.CommandEvent;
 
 import java.util.function.BiConsumer;
@@ -8,12 +9,14 @@ public class CommandRunner implements Runnable {
 
     private final Object o;
     private final CommandEvent event;
-    private final BiConsumer<Object, CommandEvent> biConsumer;
+    private final BiConsumer<Object, Object[]> biConsumer;
+    private final CommandParser parser;
 
-    public CommandRunner(Object o, CommandEvent event, BiConsumer<Object, CommandEvent> biConsumer) {
+    public CommandRunner(Object o, CommandEvent event, BiConsumer<Object, Object[]> biConsumer, CommandParser parser) {
         this.o = o;
         this.event = event;
         this.biConsumer = biConsumer;
+        this.parser = parser;
     }
 
     public Object getCommandObject() {
@@ -26,7 +29,8 @@ public class CommandRunner implements Runnable {
 
     @Override
     public void run() {
-        biConsumer.accept(o, event);
+        if (parser.mapAll())
+            biConsumer.accept(o, parser.getResults());
     }
 
 }

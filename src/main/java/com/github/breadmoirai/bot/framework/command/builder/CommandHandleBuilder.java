@@ -19,7 +19,7 @@ import com.github.breadmoirai.bot.framework.command.preprocessor.CommandPreproce
 import com.github.breadmoirai.bot.framework.command.preprocessor.CommandPreprocessorFunction;
 import com.github.breadmoirai.bot.framework.command.preprocessor.CommandPreprocessorPredicate;
 import com.github.breadmoirai.bot.framework.command.property.CommandPropertyMap;
-import com.github.breadmoirai.bot.framework.command.property.CommandPropertyMapBuilder;
+import com.github.breadmoirai.bot.framework.command.property.CommandPropertyMapImpl;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
@@ -29,12 +29,12 @@ public abstract class CommandHandleBuilder {
 
     private String name;
     String[] keys;
-    private CommandPropertyMapBuilder propertyBuilder;
+    private CommandPropertyMapImpl propertyBuilder;
     private List<CommandPreprocessor> preprocessorList;
 
     public CommandHandleBuilder(String name, CommandPropertyMap map, Annotation[] annotations) {
         this.name = name;
-        propertyBuilder = new CommandPropertyMapBuilder(map);
+        propertyBuilder = new CommandPropertyMapImpl(map);
         preprocessorList = new ArrayList<>();
         propertyBuilder.putAnnotations(annotations);
     }
@@ -59,7 +59,7 @@ public abstract class CommandHandleBuilder {
 
     public abstract CommandHandle build();
 
-    public CommandPropertyMapBuilder getPropertyBuilder() {
+    public CommandPropertyMapImpl getPropertyBuilder() {
         return propertyBuilder;
     }
 

@@ -17,6 +17,7 @@ package com.github.breadmoirai.bot.framework.command.property;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Predicate;
 
 public interface CommandPropertyMap extends Iterable<Object> {
     boolean containsProperty(Class<?> propertyType);
@@ -26,7 +27,6 @@ public interface CommandPropertyMap extends Iterable<Object> {
      *
      * @param propertyType a class
      * @param <T>          the type
-     *
      * @return the type if found, otherwise {@code null}
      */
     <T> T getProperty(Class<T> propertyType);
@@ -39,6 +39,19 @@ public interface CommandPropertyMap extends Iterable<Object> {
      * @return the property if found on this map, otherwise {@code null}
      */
     <T> T getDeclaredProperty(Class<T> propertyType);
+
+    /**
+     * Checks the provided {@link Predicate} against the property type if it exists, returning the result if it does, and {@code false} if it doesn't.
+     *
+     * @param propertyType the property class
+     * @param test         the predicate to test the property.
+     * @param <T>          the type
+     * @return {@code true} if the property exists and {@code test} returns {@code true}.
+     */
+    default <T> boolean testProperty(Class<T> propertyType, Predicate<T> test) {
+        final T property = getProperty(propertyType);
+        return property != null && test.test(property);
+    }
 
     /**
      * Returns a read-only unmodifiable {@link java.util.Set} view of the mappings contained in this map.

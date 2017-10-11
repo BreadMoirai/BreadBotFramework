@@ -5,6 +5,7 @@ import com.github.breadmoirai.bot.framework.command.CommandHandle;
 import com.github.breadmoirai.bot.framework.command.parameter.CommandParameter;
 import com.github.breadmoirai.bot.framework.command.parameter.CommandParser;
 import com.github.breadmoirai.bot.framework.command.preprocessor.CommandPreprocessor;
+import com.github.breadmoirai.bot.framework.command.preprocessor.CommandProcessStack;
 import com.github.breadmoirai.bot.framework.command.property.CommandPropertyMap;
 import com.github.breadmoirai.bot.framework.event.CommandEvent;
 
@@ -62,16 +63,21 @@ public class CommandHandleImpl implements CommandHandle {
                 if (event.isHelpEvent()) {
                     return subHandle.handle(commandObj, event, keyItr) || (subCommandMap.containsKey("help") && subCommandMap.get("help").handle(commandObj, event, null));
                 } else {
-                    return subHandle.handle(commandObj, event, keyItr);
+                    return subHandle.handle(commandObj, event, keyItr) || runThis(commandObj, event);
                 }
             }
         }
-        final CommandParser parser = new CommandParser(event, this, event.getArguments(), commandParameters);
-        if (parser.mapAll()) {
-            commandFunction.accept(parent, parser.getResults());
-            return true;
-        }
-        return false;
+        return runThis(commandObj, event);
+    }
+
+    private boolean runThis(Object commandObj, CommandEvent event) {
+        if (commandFunction != null) {
+            final CommandParser parser = new CommandParser(event, this, event.getArguments(), commandParameters);
+            final CommandRunner runner = new CommandRunner(commandObj, event, commandFunction, parser);
+            final CommandProcessStack commandProcessStack = new CommandProcessStack(commandObj, this, event, preprocessors, runner);
+            commandProcessStack.runNext();
+            return commandProcessStack.result();
+        } else return false;
     }
 
     @Override

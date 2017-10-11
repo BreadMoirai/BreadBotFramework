@@ -16,7 +16,7 @@ package com.github.breadmoirai.bot.framework.command.impl;
 
 import com.github.breadmoirai.bot.framework.command.CommandHandle;
 import com.github.breadmoirai.bot.framework.command.preprocessor.CommandPreprocessor;
-import com.github.breadmoirai.bot.framework.command.preprocessor.CommandProcessorStack;
+import com.github.breadmoirai.bot.framework.command.preprocessor.CommandProcessStack;
 import com.github.breadmoirai.bot.framework.command.property.CommandPropertyMap;
 import com.github.breadmoirai.bot.framework.event.CommandEvent;
 
@@ -55,7 +55,7 @@ public class FunctionalCommandImpl implements CommandHandle {
     @Override
     public boolean handle(Object parent, CommandEvent event, Iterator<String> keyItr) {
         try {
-            final CommandProcessorStack commandPreprocessors = new CommandProcessorStack(parent, this, event, preprocessorList, () -> function.accept(event));
+            final CommandProcessStack commandPreprocessors = new CommandProcessStack(parent, this, event, preprocessorList, () -> function.accept(event));
             commandPreprocessors.runNext();
             return commandPreprocessors.result();
         } catch (Throwable t) {

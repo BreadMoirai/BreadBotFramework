@@ -36,7 +36,7 @@ public class CommandPackageProperties {
     }
 
     private static CommandPropertyMap createPropertiesForPackage(Package p) {
-        final CommandPropertyMapBuilder map = new CommandPropertyMapBuilder();
+        final CommandPropertyMapImpl map = new CommandPropertyMapImpl();
         for (Annotation a : p.getAnnotations()) {
             map.putProperty(a);
         }

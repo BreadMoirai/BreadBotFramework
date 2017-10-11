@@ -16,6 +16,7 @@ package com.github.breadmoirai.bot.framework.command.builder;
 
 import com.github.breadmoirai.bot.framework.command.*;
 import com.github.breadmoirai.bot.framework.command.buildernew.CommandParameterBuilder;
+import com.github.breadmoirai.bot.framework.command.buildernew.CommandParameterBuilderFactory;
 import com.github.breadmoirai.bot.framework.command.impl.CommandMethodImpl;
 import com.github.breadmoirai.bot.framework.command.parameter.CommandParameter;
 import com.github.breadmoirai.bot.framework.command.preprocessor.CommandPreprocessor;
@@ -38,7 +39,7 @@ public class CommandMethodBuilder extends CommandHandleBuilder {
         super(method.getName(), map, method.getAnnotations());
         this.method = method;
         parameterBuilderList = new ArrayList<>();
-        final CommandParameterBuilder.Factory factory = new CommandParameterBuilder.Factory(map, method.getName());
+        final CommandParameterBuilderFactory factory = new CommandParameterBuilderFactory(map, method.getName());
         Arrays.stream(method.getParameters())
                 .map(factory::builder)
                 .forEachOrdered(parameterBuilderList::add);

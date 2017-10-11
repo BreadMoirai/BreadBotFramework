@@ -2,7 +2,7 @@ package com.github.breadmoirai.bot.framework.command.buildernew;
 
 import com.github.breadmoirai.bot.framework.command.parameter.CommandParameter;
 import com.github.breadmoirai.bot.framework.command.property.CommandPropertyMap;
-import com.github.breadmoirai.bot.framework.command.property.CommandPropertyMapBuilder;
+import com.github.breadmoirai.bot.framework.command.property.CommandPropertyMapImpl;
 import com.github.breadmoirai.bot.framework.command.impl.CommandParameterCollectionImpl;
 import com.github.breadmoirai.bot.framework.command.impl.CommandParameterImpl;
 import com.github.breadmoirai.bot.framework.command.parameter.*;
@@ -22,7 +22,7 @@ import java.util.stream.Stream;
 
 public class CommandParameterBuilderImpl implements CommandParameterBuilder {
     private String methodName;
-    private final CommandPropertyMapBuilder map;
+    private final CommandPropertyMapImpl map;
     private String paramName;
     private final Class<?> paramType;
     private Function<Class<?>, Collector<?, ?, ?>> collectorSupplier;
@@ -34,7 +34,7 @@ public class CommandParameterBuilderImpl implements CommandParameterBuilder {
     private BiConsumer<CommandEvent, CommandParameter> onParamNotFound = null;
 
     public CommandParameterBuilderImpl(Parameter parameter, String methodName, CommandPropertyMap map) {
-        this.map = new CommandPropertyMapBuilder(map);
+        this.map = new CommandPropertyMapImpl(map);
         this.map.putAnnotations(parameter.getAnnotations());
         paramName = parameter.getName();
         paramType = parameter.getType();

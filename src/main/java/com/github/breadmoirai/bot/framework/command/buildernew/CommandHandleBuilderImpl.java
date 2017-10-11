@@ -17,8 +17,9 @@ package com.github.breadmoirai.bot.framework.command.buildernew;
 import com.github.breadmoirai.bot.framework.BreadBotClient;
 import com.github.breadmoirai.bot.framework.BreadBotClientBuilder;
 import com.github.breadmoirai.bot.framework.command.CommandHandle;
+import com.github.breadmoirai.bot.framework.command.parameter.CommandParameter;
 import com.github.breadmoirai.bot.framework.command.preprocessor.CommandPreprocessor;
-import com.github.breadmoirai.bot.framework.command.property.CommandPropertyMapBuilder;
+import com.github.breadmoirai.bot.framework.command.property.CommandPropertyMapImpl;
 import com.github.breadmoirai.bot.framework.event.CommandEvent;
 
 import java.util.*;
@@ -32,39 +33,41 @@ public class CommandHandleBuilderImpl implements CommandHandleBuilder {
     private String name, group, description;
     private final BreadBotClientBuilder builder;
     private final Function<Object, Object> commandSupplier;
-    private final BiConsumer<Object, CommandEvent> commandFunction;
+    private final CommandParameterBuilder[] parameterBuilders;
+    private final BiConsumer<Object, Object[]> commandFunction;
     private final List<CommandHandleBuilder> subCommands;
     private final List<CommandPreprocessor> preprocessors;
-    private final CommandPropertyMapBuilder propertyMap;
+    private final CommandPropertyMapImpl propertyMap;
 
-    public CommandHandleBuilderImpl(BreadBotClientBuilder builder, Function<Object, Object> commandSupplier, BiConsumer<Object, CommandEvent> commandFunction) {
+    public CommandHandleBuilderImpl(BreadBotClientBuilder builder, Function<Object, Object> commandSupplier, CommandParameterBuilder[] parameterBuilders, BiConsumer<Object, Object[]> commandFunction) {
         this.builder = builder;
         this.commandSupplier = commandSupplier;
+        this.parameterBuilders = parameterBuilders;
         this.commandFunction = commandFunction;
         this.subCommands = new ArrayList<>();
         this.preprocessors = new ArrayList<>();
-        this.propertyMap = new CommandPropertyMapBuilder();
+        this.propertyMap = new CommandPropertyMapImpl();
+    }
+    public CommandHandleBuilderImpl(BreadBotClientBuilder builder, Function<Object, Object> commandSupplier, CommandParameterBuilder[] parameterBuilders, BiConsumer<Object, Object[]> commandFunction, CommandPropertyMapImpl propertyMap) {
+        this.builder = builder;
+        this.commandSupplier = commandSupplier;
+        this.parameterBuilders = parameterBuilders;
+        this.commandFunction = commandFunction;
+        this.subCommands = new ArrayList<>();
+        this.preprocessors = new ArrayList<>();
+        this.propertyMap = propertyMap;
     }
 
     @Override
     public CommandHandleBuilder addSubCommand(String[] keys, Consumer<CommandEvent> command, Consumer<CommandHandleBuilder> configurator) {
-        @SuppressWarnings("unchecked") BiConsumer<Object, CommandEvent> biConsumer = (o, commandEvent) -> ((Consumer<CommandEvent>) o).accept(commandEvent);
-        final CommandHandleBuilderImpl commandHandleBuilder = new CommandHandleBuilderImpl(builder, o -> command, biConsumer);
+        final CommandHandleBuilder commandHandleBuilder = new CommandHandleBuilderFactory(builder).fromConsumer(command);
         commandHandleBuilder.setKeys(keys);
         configurator.accept(commandHandleBuilder);
-        subCommands.add(commandHandleBuilder);
-        return this;
+        return addSubCommand(commandHandleBuilder);
     }
 
-    CommandHandleBuilder addSubCommand(String key,
-                                       Function<Object, Object> commandSupplier,
-                                       BiConsumer<Object, CommandEvent> commandFunction,
-                                       Consumer<CommandHandleBuilder> configurator) {
-
-        final CommandHandleBuilderImpl commandHandleBuilder = new CommandHandleBuilderImpl(builder, commandSupplier, commandFunction);
-        commandHandleBuilder.setKeys(key);
-        configurator.accept(commandHandleBuilder);
-        subCommands.add(commandHandleBuilder);
+    CommandHandleBuilder addSubCommand(CommandHandleBuilder subCommandBuilder) {
+        subCommands.add(subCommandBuilder);
         return this;
     }
 
@@ -93,7 +96,7 @@ public class CommandHandleBuilderImpl implements CommandHandleBuilder {
     }
 
     @Override
-    public CommandPropertyMapBuilder getPropertyMapBuilder() {
+    public CommandPropertyMapImpl getPropertyMapBuilder() {
         return propertyMap;
     }
 
@@ -135,7 +138,8 @@ public class CommandHandleBuilderImpl implements CommandHandleBuilder {
                 subCommandMap.put(key, command);
             }
         }
-
+        final CommandParameter[] commandParameters = new CommandParameter[parameterBuilders.length];
+        Arrays.setAll(commandParameters, value -> parameterBuilders[value].build());
         return new CommandHandleImpl(keys, name, group, description, client, commandSupplier, commandParameters, commandFunction, subCommandMap, preprocessors, propertyMap.build());
     }
 }

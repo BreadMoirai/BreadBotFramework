@@ -31,44 +31,7 @@ public class CommandClassBuilder extends CommandHandleBuilder {
 
     public CommandClassBuilder(Class<?> commandClass) {
         super(commandClass.getSimpleName(), CommandPackageProperties.getPropertiesForPackage(commandClass.getPackage()), commandClass.getAnnotations());
-        this.commandClass = commandClass;
 
-        handleBuilders = new ArrayList<>();
-        Arrays.stream(commandClass.getMethods())
-                .filter(method -> method.getParameterCount() > 0)
-                .filter(method -> method.getParameterTypes()[0] == CommandEvent.class)
-                .filter(method -> method.isAnnotationPresent(Command.class))
-                .filter(method -> !Modifier.isStatic(method.getModifiers()))
-                .map(method -> new CommandMethodBuilder(method, getPropertyBuilder()))
-                .forEach(handleBuilders::add);
-        Arrays.stream(commandClass.getClasses())
-                .filter(aClass -> aClass.isAnnotationPresent(Command.class))
-                .filter(aClass -> !Modifier.isStatic(aClass.getModifiers()))
-                .map(aClass -> new InnerCommandBuilder(aClass, getPropertyBuilder()))
-                .forEach(handleBuilders::add);
-        if (handleBuilders.isEmpty()) {
-            Arrays.stream(commandClass.getMethods())
-                    .filter(method -> method.getParameterCount() > 0)
-                    .filter(method -> method.getParameterTypes()[0] == CommandEvent.class)
-                    .filter(method -> !Modifier.isStatic(method.getModifiers()))
-                    .map(method -> new CommandMethodBuilder(method, getPropertyBuilder()))
-                    .peek(cmhb -> {
-                        if (getPropertyBuilder().containsProperty(Command.class)) {
-                            final Command property = getPropertyBuilder().getProperty(Command.class);
-                            if (property.value().length != 0) {
-                                cmhb.setKeys(property.value());
-                                return;
-                            }
-                        }
-                        final String simpleName = commandClass.getSimpleName().toLowerCase();
-                        if (simpleName.endsWith("command")) {
-                            cmhb.setKeys(simpleName.substring(0, simpleName.length() - 7));
-                        } else {
-                            cmhb.setKeys(simpleName);
-                        }
-                    })
-                    .forEach(handleBuilders::add);
-        }
     }
 
     public CommandClassBuilder(Object commandObj) {

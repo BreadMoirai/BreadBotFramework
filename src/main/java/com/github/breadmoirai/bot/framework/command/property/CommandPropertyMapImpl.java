@@ -14,7 +14,6 @@
 */
 package com.github.breadmoirai.bot.framework.command.property;
 
-import com.github.breadmoirai.bot.framework.command.impl.CommandPropertyMapImpl;
 import com.github.breadmoirai.bot.framework.command.parameter.RegisterPropertyMapper;
 import org.jetbrains.annotations.NotNull;
 
@@ -25,20 +24,31 @@ import java.util.function.Function;
 /**
  * A builder for a {@link CommandPropertyMap}. This map can inherit values from another map.
  */
-public class CommandPropertyMapBuilder implements Iterable<Object>, CommandPropertyMap {
+public class CommandPropertyMapImpl implements Iterable<Object>, CommandPropertyMap {
 
     private CommandPropertyMap defaultProperties;
     private final Map<Class<?>, Object> properties;
 
-    public CommandPropertyMapBuilder(CommandPropertyMap base) {
-        defaultProperties = base;
+    public CommandPropertyMapImpl() {
+        this(null, null);
+    }
+
+    public CommandPropertyMapImpl(CommandPropertyMap defaultMap) {
+        this(defaultMap, null);
+    }
+
+    public CommandPropertyMapImpl(Annotation[] annotations) {
+        this(null, annotations);
+    }
+
+    public CommandPropertyMapImpl(CommandPropertyMap defaultMap, Annotation[] annotations) {
+        this.defaultProperties = defaultMap;
+        if (annotations != null)
+            putAnnotations(annotations);
         properties = new HashMap<>();
     }
 
-    public CommandPropertyMapBuilder() {
-        this(null);
-    }
-
+    @Override
     public boolean containsProperty(Class<?> propertyType) {
         return properties.containsKey(propertyType);
     }
@@ -50,6 +60,7 @@ public class CommandPropertyMapBuilder implements Iterable<Object>, CommandPrope
      * @param <T>          the type
      * @return the type if found, otherwise {@code null}
      */
+    @Override
     public <T> T getProperty(Class<T> propertyType) {
         final Object obj = properties.get(propertyType);
         if (obj == null) {
@@ -60,16 +71,17 @@ public class CommandPropertyMapBuilder implements Iterable<Object>, CommandPrope
         return propertyType.cast(obj);
     }
 
+    @Override
     public <T> T getDeclaredProperty(Class<T> propertyType) {
         return propertyType.cast(properties.get(propertyType));
     }
 
-    public <T> CommandPropertyMapBuilder putProperty(Class<? super T> propertyType, T propertyObj) {
+    public <T> CommandPropertyMapImpl putProperty(Class<? super T> propertyType, T propertyObj) {
         properties.put(propertyType, propertyObj);
         return this;
     }
 
-    public CommandPropertyMapBuilder putProperty(Object propertyObj) {
+    public CommandPropertyMapImpl putProperty(Object propertyObj) {
         if (propertyObj instanceof Annotation) {
             final Class<? extends Annotation> aClass = ((Annotation) propertyObj).annotationType();
             properties.put(aClass, propertyObj);
@@ -79,18 +91,12 @@ public class CommandPropertyMapBuilder implements Iterable<Object>, CommandPrope
         return this;
     }
 
-    public CommandPropertyMapBuilder setDefaultProperties(CommandPropertyMap defaultProperties) {
+    public CommandPropertyMapImpl setDefaultProperties(CommandPropertyMap defaultProperties) {
         this.defaultProperties = defaultProperties;
         return this;
     }
 
-    public CommandPropertyMapBuilder setDefaultProperties(CommandPropertyMapBuilder defaultProperties) {
-        this.defaultProperties = defaultProperties;
-        return this;
-    }
-
-
-    public CommandPropertyMapBuilder clear() {
+    public CommandPropertyMapImpl clear() {
         properties.clear();
         return this;
     }
@@ -100,6 +106,7 @@ public class CommandPropertyMapBuilder implements Iterable<Object>, CommandPrope
      *
      * @return a set view of the mappings contained in this map.
      */
+    @Override
     public Set<Map.Entry<Class<?>, Object>> entrySet() {
         return Collections.unmodifiableSet(properties.entrySet());
     }
@@ -109,6 +116,7 @@ public class CommandPropertyMapBuilder implements Iterable<Object>, CommandPrope
      *
      * @return a {@link java.util.Collection} view of the mappings contained in this map.
      */
+    @Override
     public Collection<Object> values() {
         return Collections.unmodifiableCollection(properties.values());
     }
@@ -123,7 +131,7 @@ public class CommandPropertyMapBuilder implements Iterable<Object>, CommandPrope
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        CommandPropertyMapBuilder objects = (CommandPropertyMapBuilder) o;
+        CommandPropertyMapImpl objects = (CommandPropertyMapImpl) o;
 
         if (defaultProperties != null ? !defaultProperties.equals(objects.defaultProperties) : objects.defaultProperties != null)
             return false;
@@ -148,17 +156,7 @@ public class CommandPropertyMapBuilder implements Iterable<Object>, CommandPrope
         return values().iterator();
     }
 
-    public CommandPropertyMap build() {
-        final CommandPropertyMap defaultProperties;
-        if (this.defaultProperties instanceof CommandPropertyMapBuilder) {
-            defaultProperties = ((CommandPropertyMapBuilder) this.defaultProperties).build();
-        } else {
-            defaultProperties = this.defaultProperties;
-        }
-        return new CommandPropertyMapImpl(defaultProperties, properties);
-    }
-
-    public CommandPropertyMapBuilder putAnnotations(Annotation[] annotations) {
+    public CommandPropertyMapImpl putAnnotations(Annotation[] annotations) {
         for (Annotation annotation : annotations) {
             final RegisterPropertyMapper propertyMapper = annotation.getClass().getAnnotation(RegisterPropertyMapper.class);
             if (propertyMapper != null) {

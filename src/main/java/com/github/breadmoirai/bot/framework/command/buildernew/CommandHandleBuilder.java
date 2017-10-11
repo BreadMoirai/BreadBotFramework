@@ -20,16 +20,14 @@ import com.github.breadmoirai.bot.framework.command.CommandHandle;
 import com.github.breadmoirai.bot.framework.command.preprocessor.CommandPreprocessor;
 import com.github.breadmoirai.bot.framework.command.preprocessor.CommandPreprocessorFunction;
 import com.github.breadmoirai.bot.framework.command.preprocessor.CommandPreprocessorPredicate;
-import com.github.breadmoirai.bot.framework.command.property.CommandPropertyMapBuilder;
+import com.github.breadmoirai.bot.framework.command.property.CommandPropertyMapImpl;
 import com.github.breadmoirai.bot.framework.event.CommandEvent;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Comparator;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 public interface CommandHandleBuilder {
 
@@ -54,7 +52,7 @@ public interface CommandHandleBuilder {
 
     CommandHandleBuilder setDescription(String description);
 
-    CommandPropertyMapBuilder getPropertyMapBuilder();
+    CommandPropertyMapImpl getPropertyMapBuilder();
 
     <T> CommandHandleBuilder putProperty(Class<? super T> type, T property);
 
@@ -82,7 +80,7 @@ public interface CommandHandleBuilder {
 
     default CommandHandleBuilder addAssociatedPreprocessors() {
         final Map<Class<?>, Function<?, CommandPreprocessor>> preprocessorFactoryMap = getClientBuilder().getPreprocessors().getPreprocessorFactoryMap();
-        final CommandPropertyMapBuilder propertyMapBuilder = getPropertyMapBuilder();
+        final CommandPropertyMapImpl propertyMapBuilder = getPropertyMapBuilder();
         final Set<Map.Entry<Class<?>, Object>> entries = propertyMapBuilder.entrySet();
         for (Map.Entry<Class<?>, Object> entry : entries) {
             final Class<?> propertyType = entry.getKey();

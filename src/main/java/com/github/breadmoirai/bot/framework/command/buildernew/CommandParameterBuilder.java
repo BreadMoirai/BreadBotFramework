@@ -96,24 +96,4 @@ public interface CommandParameterBuilder {
 
     CommandParameter build();
 
-    static class Factory {
-        private final CommandPropertyMap map;
-        private final String methodName;
-
-        public Factory(CommandPropertyMap map, String methodName) {
-            this.map = map;
-            this.methodName = methodName;
-        }
-
-        public CommandParameterBuilder builder(Parameter parameter) {
-            final Class<?> type = parameter.getType();
-            if (type == CommandEvent.class) {
-                return new CommandParameterBuilderSpecificImpl("This parameter of type CommandEvent is inconfigurable", () -> new CommandParameterFunctionImpl((commandArguments, commandParser) -> commandParser.getEvent()));
-            } else if (ICommandModule.class.isAssignableFrom(type)) {
-                return new CommandParameterBuilderSpecificImpl("This parameter of type " + type.getSimpleName() + " is inconfigurable", () -> new CommandParameterFunctionImpl((commandArguments, commandParser) -> commandParser.getEvent().getClient().getModule(type)));
-            } else {
-                return new CommandParameterBuilderImpl(parameter, methodName, map);
-            }
-        }
-    }
 }

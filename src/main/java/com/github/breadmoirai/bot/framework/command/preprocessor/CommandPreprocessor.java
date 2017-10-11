@@ -21,7 +21,7 @@ public class CommandPreprocessor implements CommandPreprocessorFunction {
     }
 
     @Override
-    public void process(Object commandObj, CommandHandle targetHandle, CommandEvent event, CommandProcessorStack processQueue) {
+    public void process(Object commandObj, CommandHandle targetHandle, CommandEvent event, CommandProcessStack processQueue) {
         getFunction().process(commandObj, targetHandle, event, processQueue);
     }
 
