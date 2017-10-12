@@ -15,9 +15,7 @@
 package com.github.breadmoirai.bot.framework.command;
 
 import com.github.breadmoirai.bot.framework.command.impl.CommandParameterBuilder;
-import com.github.breadmoirai.bot.util.TriConsumer;
 
-import java.lang.reflect.Parameter;
 import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
@@ -90,37 +88,89 @@ public class CommandProperties {
         parameterPropertyMap.merge(propertyType, configurator, BiConsumer::andThen);
     }
 
+    /**
+     * Applies modifiers to a CommandHandleBuilder based on whether the handle contains a property.
+     *
+     * @param builder the builder to modify
+     */
     public void applyModifiers(CommandHandleBuilder builder) {
         for (Class<?> aClass : commandPropertyMap.keySet()) {
             applyCommandModifier(aClass, builder);
         }
     }
 
-    private <T> BiConsumer<T, CommandHandleBuilder> getCommandModifier(Class<T> propertyType) {
+    /**
+     * Retrieves a BiConsumer that is used to modify a CommandHandleBuilder.
+     *
+     * @param propertyType the class of the Property.
+     * @param <T>          the property type.
+     * @return a BiConsumer if present, otherwise {@code null}.
+     * @see #putCommandModifier(Class, BiConsumer)
+     * @see #appendCommandModifier(Class, BiConsumer)
+     * @see #applyCommandModifier(Class, CommandHandleBuilder)
+     */
+    public <T> BiConsumer<T, CommandHandleBuilder> getCommandModifier(Class<T> propertyType) {
         BiConsumer<?, CommandHandleBuilder> biConsumer = commandPropertyMap.get(propertyType);
         @SuppressWarnings("unchecked") BiConsumer<T, CommandHandleBuilder> consumer = (BiConsumer<T, CommandHandleBuilder>) biConsumer;
         return consumer;
     }
 
-    private <T> void applyCommandModifier(Class<T> propertyType, CommandHandleBuilder builder) {
+    /**
+     * Applies a modifier that is associated with a certain {@code propertyType} to the passed {@code builder}.
+     * If a modifier is not found the {@code builder} is not modified.
+     *
+     * @param propertyType the property class
+     * @param builder the CommandHandleBuilder to be modified
+     * @param <T> the property type
+     * @see #putCommandModifier(Class, BiConsumer)
+     * @see #appendCommandModifier(Class, BiConsumer)
+     * @see #getCommandModifier(Class)
+     */
+    public <T> void applyCommandModifier(Class<T> propertyType, CommandHandleBuilder builder) {
         BiConsumer<T, CommandHandleBuilder> commandModifier = getCommandModifier(propertyType);
         T property = builder.getProperty(propertyType);
         commandModifier.accept(property, builder);
     }
 
+    /**
+     * Applies modifiers to a CommandParameterBuilder based on whether the handle contains a property.
+     *
+     * @param builder the builder to modify
+     */
     public void applyModifiers(CommandParameterBuilder builder) {
         for (Class<?> aClass : parameterPropertyMap.keySet()) {
             applyParameterModifier(aClass, builder);
         }
     }
 
-    private <T> BiConsumer<T, CommandParameterBuilder> getParameterModifier(Class<T> propertyType) {
+    /**
+     * Retrieves a BiConsumer that is used to modify a CommandParameterBuilder.
+     *
+     * @param propertyType the class of the Property.
+     * @param <T>          the property type.
+     * @return a BiConsumer if present, otherwise {@code null}.
+     * @see #putParameterModifier(Class, BiConsumer)
+     * @see #appendParameterModifier(Class, BiConsumer)
+     * @see #applyParameterModifier(Class, CommandParameterBuilder)
+     */
+    public <T> BiConsumer<T, CommandParameterBuilder> getParameterModifier(Class<T> propertyType) {
         BiConsumer<?, CommandParameterBuilder> biConsumer = parameterPropertyMap.get(propertyType);
         @SuppressWarnings("unchecked") BiConsumer<T, CommandParameterBuilder> consumer = (BiConsumer<T, CommandParameterBuilder>) biConsumer;
         return consumer;
     }
 
-    private <T> void applyParameterModifier(Class<T> propertyType, CommandParameterBuilder builder) {
+    /**
+     * Applies a modifier that is associated with a certain {@code propertyType} to the passed {@code builder}.
+     * If a modifier is not found the {@code builder} is not modified.
+     *
+     * @param propertyType the property class
+     * @param builder the CommandHandleBuilder to be modified
+     * @param <T> the property type
+     * @see #putParameterModifier(Class, BiConsumer)
+     * @see #appendParameterModifier(Class, BiConsumer)
+     * @see #getParameterModifier(Class)
+     */
+    public <T> void applyParameterModifier(Class<T> propertyType, CommandParameterBuilder builder) {
         BiConsumer<T, CommandParameterBuilder> commandModifier = getParameterModifier(propertyType);
         T property = builder.getProperty(propertyType);
         commandModifier.accept(property, builder);
@@ -172,47 +222,10 @@ public class CommandProperties {
         associatePreprocessor(propertyType, o -> new CommandPreprocessor(identifier, predicate));
     }
 
-    /**
-     * @param propertyObj
-     * @param <T>
-     * @return
-     */
-    public <T> CommandPreprocessor getAssociatedPreprocessor(T propertyObj) {
-        @SuppressWarnings("unchecked") final Function<T, CommandPreprocessor> commandPreprocessorFunction = (Function<T, CommandPreprocessor>) preprocessorFactoryMap.get(propertyObj.getClass());
-        if (commandPreprocessorFunction == null) return null;
-        return commandPreprocessorFunction.apply(propertyObj);
-    }
-
-    /**
-     * @param type
-     * @param <T>
-     * @return
-     */
-    public <T> CommandPreprocessor getAssociatedPreprocessor(Class<T> type) {
-        @SuppressWarnings("unchecked") final Function<T, CommandPreprocessor> commandPreprocessorFunction = (Function<T, CommandPreprocessor>) preprocessorFactoryMap.get(type);
-        if (commandPreprocessorFunction == null) return null;
-        return commandPreprocessorFunction.apply(null);
-    }
-
     public List<String> getPreprocessorPriorityList() {
         return preprocessorPriorityList;
     }
 
-    public Map<Class<?>, Function<?, CommandPreprocessor>> getPreprocessorFactoryMap() {
-        return preprocessorFactoryMap;
-    }
-
-    public List<CommandPreprocessor> getPreprocessorList() {
-        return preprocessorList;
-    }
-
-    /**
-     * @param identifier
-     * @return
-     */
-    public CommandPreprocessor getPreprocessor(String identifier) {
-        return preprocessorList.stream().filter(preprocessor -> preprocessor.getIdentifier().equals(identifier)).findFirst().orElse(null);
-    }
 
     public void setPreprocessorPriority(String... identifiers) {
         preprocessorPriorityList = Arrays.asList(identifiers);
@@ -220,22 +233,6 @@ public class CommandProperties {
 
     public void setPreprocessorPriority(List<String> identifierList) {
         preprocessorPriorityList = identifierList;
-    }
-
-    /**
-     * Will add associated preprocessors to the passed {@link CommandHandleBuilder} according to it's properties sorted by it's identifier priority as set in {@code #setPreprocessorPriority}
-     *
-     * @param handleBuilder A CommandHandleBuilder of a top-level class, an inner class, or a method.
-     */
-    public void addPreprocessors(CommandHandleBuilder handleBuilder) {
-        final List<CommandPreprocessor> preprocessors = new ArrayList<>();
-        for (Object o : handleBuilder.getPropertyBuilder()) {
-            final CommandPreprocessor preprocessor = getAssociatedPreprocessor(o);
-            if (preprocessor != null)
-                preprocessors.add(preprocessor);
-        }
-        preprocessors.sort(getPriorityComparator());
-        handleBuilder.addPreprocessors(preprocessors);
     }
 
     private int getPriority(String identifier, List<String> list) {
