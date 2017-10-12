@@ -1,10 +1,7 @@
-package com.github.breadmoirai.bot.framework.command.buildernew;
+package com.github.breadmoirai.bot.framework.command.impl;
 
 import com.github.breadmoirai.bot.framework.command.parameter.CommandParameter;
-import com.github.breadmoirai.bot.framework.command.property.CommandPropertyMap;
-import com.github.breadmoirai.bot.framework.command.property.CommandPropertyMapImpl;
-import com.github.breadmoirai.bot.framework.command.impl.CommandParameterCollectionImpl;
-import com.github.breadmoirai.bot.framework.command.impl.CommandParameterImpl;
+import com.github.breadmoirai.bot.framework.command.CommandPropertyMap;
 import com.github.breadmoirai.bot.framework.command.parameter.*;
 import com.github.breadmoirai.bot.framework.error.MissingTypeMapperException;
 import com.github.breadmoirai.bot.framework.event.CommandEvent;
@@ -21,6 +18,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class CommandParameterBuilderImpl implements CommandParameterBuilder {
+    private final Parameter parameter;
     private String methodName;
     private final CommandPropertyMapImpl map;
     private String paramName;
@@ -34,10 +32,11 @@ public class CommandParameterBuilderImpl implements CommandParameterBuilder {
     private BiConsumer<CommandEvent, CommandParameter> onParamNotFound = null;
 
     public CommandParameterBuilderImpl(Parameter parameter, String methodName, CommandPropertyMap map) {
+        this.parameter = parameter;
         this.map = new CommandPropertyMapImpl(map);
         this.map.putAnnotations(parameter.getAnnotations());
-        paramName = parameter.getName();
-        paramType = parameter.getType();
+        this.paramName = parameter.getName();
+        this.paramType = parameter.getType();
         this.methodName = methodName;
         if (paramType == List.class) {
             collectorSupplier = getToList();
@@ -179,6 +178,20 @@ public class CommandParameterBuilderImpl implements CommandParameterBuilder {
         return this;
     }
 
+    @Override
+    public Parameter getDeclaringParameter() {
+        return parameter;
+    }
+
+    @Override
+    public <T> T getProperty(Class<T> propertyType) {
+        return map.getProperty(propertyType);
+    }
+
+    @Override
+    public boolean containsProperty(Class<?> propertyType) {
+        return map.containsProperty(propertyType);
+    }
 
     @Override
     public CommandParameter build() {

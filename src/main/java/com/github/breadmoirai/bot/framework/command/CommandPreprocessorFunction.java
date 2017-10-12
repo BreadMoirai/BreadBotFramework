@@ -12,9 +12,9 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 */
-package com.github.breadmoirai.bot.framework.command.preprocessor;
+package com.github.breadmoirai.bot.framework.command;
 
-import com.github.breadmoirai.bot.framework.command.CommandHandle;
+import com.github.breadmoirai.bot.framework.command.impl.CommandProcessStack;
 import com.github.breadmoirai.bot.framework.event.CommandEvent;
 
 /**

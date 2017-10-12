@@ -16,7 +16,7 @@
 import com.github.breadmoirai.bot.framework.BreadBotClient;
 import com.github.breadmoirai.bot.framework.BreadBotClientBuilder;
 import com.github.breadmoirai.bot.framework.command.CommandHandle;
-import com.github.breadmoirai.bot.framework.command.preprocessor.CommandPreprocessor;
+import com.github.breadmoirai.bot.framework.command.CommandPreprocessor;
 import com.github.breadmoirai.bot.framework.command.CommandPreprocessorsStatic;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;

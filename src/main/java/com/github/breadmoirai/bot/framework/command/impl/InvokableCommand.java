@@ -12,13 +12,9 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 */
-package com.github.breadmoirai.bot.framework.command.buildernew;
+package com.github.breadmoirai.bot.framework.command.impl;
 
-public interface CommandFactory {
+public interface InvokableCommand {
 
-    Object create(Object o) throws Throwable;
-
-    default Object create() throws Throwable {
-        return create(null);
-    }
+    void invoke(Object object, Object[] parameters) throws Throwable;
 }

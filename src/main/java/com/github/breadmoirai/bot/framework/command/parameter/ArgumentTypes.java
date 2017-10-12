@@ -14,8 +14,8 @@
 */
 package com.github.breadmoirai.bot.framework.command.parameter;
 
-import com.github.breadmoirai.bot.framework.command.impl.DateTimeMapper;
-import com.github.breadmoirai.bot.framework.command.impl.DurationMapper;
+import com.github.breadmoirai.bot.util.DateTimeMapper;
+import com.github.breadmoirai.bot.util.DurationMapper;
 import com.github.breadmoirai.bot.framework.event.Arguments;
 import com.github.breadmoirai.bot.util.Emoji;
 import net.dv8tion.jda.core.entities.*;

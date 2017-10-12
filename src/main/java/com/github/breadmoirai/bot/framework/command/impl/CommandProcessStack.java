@@ -1,6 +1,7 @@
-package com.github.breadmoirai.bot.framework.command.preprocessor;
+package com.github.breadmoirai.bot.framework.command.impl;
 
 import com.github.breadmoirai.bot.framework.command.CommandHandle;
+import com.github.breadmoirai.bot.framework.command.CommandPreprocessor;
 import com.github.breadmoirai.bot.framework.event.CommandEvent;
 
 import java.util.ArrayDeque;

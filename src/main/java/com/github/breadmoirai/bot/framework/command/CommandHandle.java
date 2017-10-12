@@ -15,11 +15,9 @@
 package com.github.breadmoirai.bot.framework.command;
 
 import com.github.breadmoirai.bot.framework.BreadBotClient;
-import com.github.breadmoirai.bot.framework.command.property.CommandPropertyMap;
 import com.github.breadmoirai.bot.framework.event.CommandEvent;
 import com.github.breadmoirai.bot.util.EventStringIterator;
 
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 

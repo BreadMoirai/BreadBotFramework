@@ -12,7 +12,7 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 */
-package com.github.breadmoirai.bot.framework.command.property;
+package com.github.breadmoirai.bot.framework.command;
 
 import java.util.Collection;
 import java.util.Map;

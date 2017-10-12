@@ -12,14 +12,13 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 */
-package com.github.breadmoirai.bot.framework.command.buildernew;
+package com.github.breadmoirai.bot.framework.command.impl;
 
 import com.github.breadmoirai.bot.framework.BreadBotClientBuilder;
 import com.github.breadmoirai.bot.framework.command.Command;
+import com.github.breadmoirai.bot.framework.command.CommandHandleBuilder;
 import com.github.breadmoirai.bot.framework.command.parameter.CommandParameterFunctionImpl;
-import com.github.breadmoirai.bot.framework.command.property.CommandPackageProperties;
-import com.github.breadmoirai.bot.framework.command.property.CommandPropertyMap;
-import com.github.breadmoirai.bot.framework.command.property.CommandPropertyMapImpl;
+import com.github.breadmoirai.bot.framework.command.CommandPropertyMap;
 import com.github.breadmoirai.bot.framework.event.CommandEvent;
 import net.dv8tion.jda.core.utils.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
@@ -53,7 +52,7 @@ public class CommandHandleBuilderFactory {
 
     public <T> CommandHandleBuilder fromClass(Class<T> commandClass, @Nullable T object) throws NoSuchMethodException, IllegalAccessException {
         final Class<?> superclass = commandClass.getSuperclass();
-        final CommandFactory commandSupplier;
+        final CommandObjectFactory commandSupplier;
         if (object != null) {
             commandSupplier = nullObj -> object;
         } else if (superclass == null) {
@@ -84,12 +83,12 @@ public class CommandHandleBuilderFactory {
                 .filter(pair -> pair.getRight().testProperty(Command.class, command -> command.value().length == 1 && command.value()[0].length() == 0))
                 .findFirst();
 
-
         final CommandParameterBuilder[] parameterBuilders;
         final InvokableCommand commandFunction;
         final CommandPropertyMapImpl methodMap;
         if (first.isPresent()) {
             final Pair<Method, CommandPropertyMapImpl> methodPair = first.get();
+            methods.remove(methodPair);
             methodMap = methodPair.getRight();
             final Pair<CommandParameterBuilder[], InvokableCommand> biConsumerPair = mapMethod(methodPair.getLeft(), methodPair.getRight());
             parameterBuilders = biConsumerPair.getLeft();
@@ -100,7 +99,7 @@ public class CommandHandleBuilderFactory {
             methodMap = propertyMap;
         }
 
-        final CommandHandleBuilderImpl commandHandleBuilder = new CommandHandleBuilderImpl(commandClass,
+        final CommandHandleBuilderImpl commandHandleBuilder = new CommandHandleBuilderImpl(object != null ? object : commandClass,
                 clientBuilder,
                 commandSupplier,
                 parameterBuilders,
@@ -125,12 +124,16 @@ public class CommandHandleBuilderFactory {
             packageName = packageNames[packageNames.length - 2];
         }
         commandHandleBuilder.setGroup(packageName);
-
+        for (Pair<Method, CommandPropertyMapImpl> method : methods) {
+            CommandHandleBuilder handle = fromMethod(method.getLeft(), method.getRight());
+            commandHandleBuilder.addSubCommand(handle);
+        }
         return commandHandleBuilder;
     }
 
-    public CommandHandleBuilder fromMethod(Method method) {
-
+    public CommandHandleBuilder fromMethod(Method method, CommandPropertyMapImpl map) throws IllegalAccessException {
+        Pair<CommandParameterBuilder[], InvokableCommand> pair = mapMethod(method, map);
+        return new CommandHandleBuilderImpl(method, clientBuilder, o -> o, pair.getLeft(), pair.getRight(), map);
     }
 
     private Pair<CommandParameterBuilder[], InvokableCommand> mapMethod(Method method, CommandPropertyMap map) throws IllegalAccessException {

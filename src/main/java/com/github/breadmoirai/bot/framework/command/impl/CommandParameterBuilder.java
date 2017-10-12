@@ -12,16 +12,12 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 */
-package com.github.breadmoirai.bot.framework.command.buildernew;
+package com.github.breadmoirai.bot.framework.command.impl;
 
-import com.github.breadmoirai.bot.framework.ICommandModule;
 import com.github.breadmoirai.bot.framework.command.parameter.CommandParameter;
-import com.github.breadmoirai.bot.framework.command.parameter.CommandParameterFunctionImpl;
-import com.github.breadmoirai.bot.framework.command.property.CommandPropertyMap;
 import com.github.breadmoirai.bot.framework.command.parameter.ArgumentTypeMapper;
 import com.github.breadmoirai.bot.framework.command.parameter.ArgumentTypePredicate;
 import com.github.breadmoirai.bot.framework.command.parameter.MissingArgumentConsumer;
-import com.github.breadmoirai.bot.framework.event.CommandEvent;
 
 import java.lang.reflect.Parameter;
 import java.util.function.Consumer;
@@ -29,6 +25,11 @@ import java.util.function.Consumer;
 public interface CommandParameterBuilder {
 
 
+    /**
+     *
+     * @return the {@link java.lang.reflect.Parameter}
+     */
+    Parameter getDeclaringParameter();
 
     /**
      * Sets the name of this parameter. Primarily used for debugging.
@@ -96,4 +97,7 @@ public interface CommandParameterBuilder {
 
     CommandParameter build();
 
+    <T> T getProperty(Class<T> propertyType);
+
+    boolean containsProperty(Class<?> propertyType);
 }

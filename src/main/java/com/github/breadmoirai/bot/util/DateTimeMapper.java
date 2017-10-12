@@ -12,7 +12,7 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 */
-package com.github.breadmoirai.bot.framework.command.impl;
+package com.github.breadmoirai.bot.util;
 
 import com.github.breadmoirai.bot.framework.command.parameter.CommandArgument;
 

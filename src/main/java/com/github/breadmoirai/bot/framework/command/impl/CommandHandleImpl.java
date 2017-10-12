@@ -1,19 +1,16 @@
-package com.github.breadmoirai.bot.framework.command.buildernew;
+package com.github.breadmoirai.bot.framework.command.impl;
 
 import com.github.breadmoirai.bot.framework.BreadBotClient;
 import com.github.breadmoirai.bot.framework.command.CommandHandle;
 import com.github.breadmoirai.bot.framework.command.parameter.CommandParameter;
 import com.github.breadmoirai.bot.framework.command.parameter.CommandParser;
-import com.github.breadmoirai.bot.framework.command.preprocessor.CommandPreprocessor;
-import com.github.breadmoirai.bot.framework.command.preprocessor.CommandProcessStack;
-import com.github.breadmoirai.bot.framework.command.property.CommandPropertyMap;
+import com.github.breadmoirai.bot.framework.command.CommandPreprocessor;
+import com.github.breadmoirai.bot.framework.command.CommandPropertyMap;
 import com.github.breadmoirai.bot.framework.event.CommandEvent;
 
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.function.BiConsumer;
-import java.util.function.Function;
 
 public class CommandHandleImpl implements CommandHandle {
 
@@ -22,9 +19,9 @@ public class CommandHandleImpl implements CommandHandle {
     private final String group;
     private final String description;
     private final BreadBotClient client;
-    private final Function<Object, Object> commandSupplier;
+    private final CommandObjectFactory commandSupplier;
     private final CommandParameter[] commandParameters;
-    private final BiConsumer<Object, Object[]> commandFunction;
+    private final InvokableCommand invokableCommand;
     private final Map<String, CommandHandle> subCommandMap;
     private final List<CommandPreprocessor> preprocessors;
     private final CommandPropertyMap propertyMap;
@@ -34,9 +31,9 @@ public class CommandHandleImpl implements CommandHandle {
                              String group,
                              String description,
                              BreadBotClient client,
-                             Function<Object, Object> commandSupplier,
+                             CommandObjectFactory commandSupplier,
                              CommandParameter[] commandParameters,
-                             BiConsumer<Object, Object[]> commandFunction,
+                             InvokableCommand commandFunction,
                              Map<String, CommandHandle> subCommandMap,
                              List<CommandPreprocessor> preprocessors,
                              CommandPropertyMap propertyMap) {
@@ -47,7 +44,7 @@ public class CommandHandleImpl implements CommandHandle {
         this.client = client;
         this.commandSupplier = commandSupplier;
         this.commandParameters = commandParameters;
-        this.commandFunction = commandFunction;
+        this.invokableCommand = commandFunction;
         this.subCommandMap = subCommandMap.isEmpty() ? null : subCommandMap;
         this.preprocessors = preprocessors;
         this.propertyMap = propertyMap;
@@ -55,7 +52,14 @@ public class CommandHandleImpl implements CommandHandle {
 
     @Override
     public boolean handle(Object parent, CommandEvent event, Iterator<String> keyItr) {
-        Object commandObj = commandSupplier.apply(parent);
+        final Object commandObj;
+        try {
+            commandObj = commandSupplier.create(parent);
+        } catch (Throwable throwable) {
+            //todo log this
+            throwable.printStackTrace();
+            return false;
+        }
         if (keyItr != null && keyItr.hasNext() && subCommandMap != null) {
             String next = keyItr.next().toLowerCase();
             if (subCommandMap.containsKey(next)) {
@@ -71,9 +75,9 @@ public class CommandHandleImpl implements CommandHandle {
     }
 
     private boolean runThis(Object commandObj, CommandEvent event) {
-        if (commandFunction != null) {
+        if (invokableCommand != null) {
             final CommandParser parser = new CommandParser(event, this, event.getArguments(), commandParameters);
-            final CommandRunner runner = new CommandRunner(commandObj, event, commandFunction, parser);
+            final CommandRunner runner = new CommandRunner(commandObj, event, invokableCommand, parser, Throwable::printStackTrace); //todo log this
             final CommandProcessStack commandProcessStack = new CommandProcessStack(commandObj, this, event, preprocessors, runner);
             commandProcessStack.runNext();
             return commandProcessStack.result();

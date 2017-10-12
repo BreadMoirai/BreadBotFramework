@@ -12,7 +12,9 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 */
-package com.github.breadmoirai.bot.framework.command.property;
+package com.github.breadmoirai.bot.framework.command.impl;
+
+import com.github.breadmoirai.bot.framework.command.CommandPropertyMap;
 
 import java.lang.annotation.Annotation;
 import java.util.HashMap;
@@ -48,7 +50,7 @@ public class CommandPackageProperties {
             if (aPackage != null)
                 map.setDefaultProperties(getPropertiesForPackage(aPackage));
         }
-        return map.build();
+        return map;
     }
 
 }

@@ -12,52 +12,123 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 */
-package com.github.breadmoirai.bot.framework.command.preprocessor;
+package com.github.breadmoirai.bot.framework.command;
 
-import com.github.breadmoirai.bot.framework.command.builder.CommandHandleBuilder;
-import com.github.breadmoirai.bot.framework.command.buildernew.CommandParameterBuilder;
+import com.github.breadmoirai.bot.framework.command.impl.CommandParameterBuilder;
 import com.github.breadmoirai.bot.util.TriConsumer;
 
 import java.lang.reflect.Parameter;
 import java.util.*;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 public class CommandProperties {
 
     private List<String> preprocessorPriorityList = Collections.emptyList();
 
-    private final Map<Class<?>, TriConsumer<?, Object, CommandHandleBuilder>> commandPropertyMap = new HashMap<>();
-    private final Map<Class<?>, TriConsumer<?, Parameter, CommandParameterBuilder>> parameterPropertyMap = new HashMap<>();
+    private final Map<Class<?>, BiConsumer<?, CommandHandleBuilder>> commandPropertyMap = new HashMap<>();
+    private final Map<Class<?>, BiConsumer<?, CommandParameterBuilder>> parameterPropertyMap = new HashMap<>();
 
     public CommandProperties() {
     }
 
     /**
      * The provided {@code configurator} is used to modify commands that possess the specified property.
+     * If there is an existing modifier it is overridden.
      *
      * @param propertyType the class of the property
-     * @param configurator a {@link com.github.breadmoirai.bot.util.TriConsumer TriConsumer}.
+     * @param configurator a {@link java.util.function.BiConsumer BiConsumer}.
      *                     The first argument is the property.
-     *                     The second argument is the object that the property is attached to.
-     *                     This is either a {@link java.lang.Class} or a {@link java.lang.reflect.Method Method}.
-     *                     The third argument is the {@link com.github.breadmoirai.bot.framework.command.builder.CommandHandleBuilder CommandHandleBuilder} that is intended to be modified by this TriConsumer.
+     *                     The second argument is the {@link CommandHandleBuilder CommandHandleBuilder} the property is attached to.
      * @param <T>          the propertyType
      */
-    public <T> void setCommandApplication(Class<T> propertyType, TriConsumer<T, Object, CommandHandleBuilder> configurator) {
-        propertyMap.put(propertyType, configurator);
+    public <T> void putCommandModifier(Class<T> propertyType, BiConsumer<T, CommandHandleBuilder> configurator) {
+        commandPropertyMap.put(propertyType, configurator);
     }
 
-    public <T> void append(Class<T> propertyType, TriConsumer<T, Object, CommandHandleBuilder> configurator) {
+    /**
+     * The provided {@code configurator} is used to modify commands that possess the specified property.
+     * If there is an existing modifier, the passed BiConsumer is appended to the end of it so that it is applied to the builder after the existing one has been applied.
+     *
+     * @param propertyType the class of the property
+     * @param configurator a {@link java.util.function.BiConsumer BiConsumer}.
+     *                     The first argument is the property.
+     *                     The second argument is the {@link CommandHandleBuilder CommandHandleBuilder} the property is attached to.
+     * @param <T>          the propertyType
+     */
+    public <T> void appendCommandModifier(Class<T> propertyType, BiConsumer<T, CommandHandleBuilder> configurator) {
         //noinspection unchecked
-        propertyMap.merge(propertyType, configurator, TriConsumer::andThen);
+        commandPropertyMap.merge(propertyType, configurator, BiConsumer::andThen);
     }
 
-    public <T> TriConsumer<T, ?, CommandHandleBuilder> getPropertyConfigurator(Class<? super T> type) {
-        return
+    /**
+     * The provided {@code configurator} is used to modify commands that possess the specified property.
+     * If there is an existing modifier it is overridden.
+     *
+     * @param propertyType the class of the property
+     * @param configurator a {@link java.util.function.BiConsumer BiConsumer}.
+     *                     The first argument is the property.
+     *                     The second argument is the {@link CommandHandleBuilder CommandHandleBuilder} the property is attached to.
+     * @param <T>          the propertyType
+     */
+    public <T> void putParameterModifier(Class<T> propertyType, BiConsumer<T, CommandParameterBuilder> configurator) {
+        parameterPropertyMap.put(propertyType, configurator);
     }
+
+    /**
+     * The provided {@code configurator} is used to modify commands that possess the specified property.
+     * If there is an existing modifier, the passed BiConsumer is appended to the end of it so that it is applied to the builder after the existing one has been applied.
+     *
+     * @param propertyType the class of the property
+     * @param configurator a {@link java.util.function.BiConsumer BiConsumer}.
+     *                     The first argument is the property.
+     *                     The second argument is the {@link CommandHandleBuilder CommandHandleBuilder} the property is attached to.
+     * @param <T>          the propertyType
+     */
+    public <T> void appendParameterModifier(Class<T> propertyType, BiConsumer<T, CommandParameterBuilder> configurator) {
+        //noinspection unchecked
+        parameterPropertyMap.merge(propertyType, configurator, BiConsumer::andThen);
+    }
+
+    public void applyModifiers(CommandHandleBuilder builder) {
+        for (Class<?> aClass : commandPropertyMap.keySet()) {
+            applyCommandModifier(aClass, builder);
+        }
+    }
+
+    private <T> BiConsumer<T, CommandHandleBuilder> getCommandModifier(Class<T> propertyType) {
+        BiConsumer<?, CommandHandleBuilder> biConsumer = commandPropertyMap.get(propertyType);
+        @SuppressWarnings("unchecked") BiConsumer<T, CommandHandleBuilder> consumer = (BiConsumer<T, CommandHandleBuilder>) biConsumer;
+        return consumer;
+    }
+
+    private <T> void applyCommandModifier(Class<T> propertyType, CommandHandleBuilder builder) {
+        BiConsumer<T, CommandHandleBuilder> commandModifier = getCommandModifier(propertyType);
+        T property = builder.getProperty(propertyType);
+        commandModifier.accept(property, builder);
+    }
+
+    public void applyModifiers(CommandParameterBuilder builder) {
+        for (Class<?> aClass : parameterPropertyMap.keySet()) {
+            applyParameterModifier(aClass, builder);
+        }
+    }
+
+    private <T> BiConsumer<T, CommandParameterBuilder> getParameterModifier(Class<T> propertyType) {
+        BiConsumer<?, CommandParameterBuilder> biConsumer = parameterPropertyMap.get(propertyType);
+        @SuppressWarnings("unchecked") BiConsumer<T, CommandParameterBuilder> consumer = (BiConsumer<T, CommandParameterBuilder>) biConsumer;
+        return consumer;
+    }
+
+    private <T> void applyParameterModifier(Class<T> propertyType, CommandParameterBuilder builder) {
+        BiConsumer<T, CommandParameterBuilder> commandModifier = getParameterModifier(propertyType);
+        T property = builder.getProperty(propertyType);
+        commandModifier.accept(property, builder);
+    }
+
 
     private <T> void associatePreprocessor(Class<T> propertyType, Function<T, CommandPreprocessor> factory) {
-        preprocessorFactoryMap.put(propertyType, factory);
+        appendCommandModifier(propertyType, (t, commandHandleBuilder) -> commandHandleBuilder.addPreprocessor(factory.apply(t)));
     }
 
     /**

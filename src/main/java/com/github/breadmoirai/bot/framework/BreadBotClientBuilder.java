@@ -15,12 +15,8 @@
  */
 package com.github.breadmoirai.bot.framework;
 
-import com.github.breadmoirai.bot.framework.command.preprocessor.CommandPreprocessor;
-import com.github.breadmoirai.bot.framework.command.preprocessor.CommandPreprocessorFunction;
-import com.github.breadmoirai.bot.framework.command.preprocessor.CommandPreprocessorPredicate;
-import com.github.breadmoirai.bot.framework.command.preprocessor.CommandProperties;
+import com.github.breadmoirai.bot.framework.command.CommandProperties;
 import com.github.breadmoirai.bot.framework.command.builder.CommandClassBuilder;
-import com.github.breadmoirai.bot.framework.command.builder.CommandHandleBuilder;
 import com.github.breadmoirai.bot.framework.command.builder.FunctionalCommandBuilder;
 import com.github.breadmoirai.bot.framework.event.CommandEvent;
 import com.github.breadmoirai.bot.framework.event.ICommandEventFactory;
@@ -40,7 +36,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.Predicate;
 
 public class BreadBotClientBuilder {

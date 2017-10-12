@@ -18,7 +18,7 @@ package com.github.breadmoirai.bot.framework;
 import com.github.breadmoirai.bot.framework.command.Command;
 import com.github.breadmoirai.bot.framework.command.CommandHandle;
 import com.github.breadmoirai.bot.framework.command.builder.CommandClassBuilder;
-import com.github.breadmoirai.bot.framework.command.buildernew.CommandHandleBuilder;
+import com.github.breadmoirai.bot.framework.command.CommandHandleBuilder;
 import com.github.breadmoirai.bot.framework.command.builder.FunctionalCommandBuilder;
 import com.github.breadmoirai.bot.framework.event.CommandEvent;
 import com.github.breadmoirai.bot.framework.impl.CommandEngineImpl;

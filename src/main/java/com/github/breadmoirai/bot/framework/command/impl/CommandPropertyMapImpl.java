@@ -12,9 +12,10 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 */
-package com.github.breadmoirai.bot.framework.command.property;
+package com.github.breadmoirai.bot.framework.command.impl;
 
 import com.github.breadmoirai.bot.framework.command.parameter.RegisterPropertyMapper;
+import com.github.breadmoirai.bot.framework.command.CommandPropertyMap;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.annotation.Annotation;

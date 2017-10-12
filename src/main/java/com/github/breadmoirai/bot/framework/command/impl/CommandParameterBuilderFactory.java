@@ -12,11 +12,11 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 */
-package com.github.breadmoirai.bot.framework.command.buildernew;
+package com.github.breadmoirai.bot.framework.command.impl;
 
 import com.github.breadmoirai.bot.framework.ICommandModule;
 import com.github.breadmoirai.bot.framework.command.parameter.CommandParameterFunctionImpl;
-import com.github.breadmoirai.bot.framework.command.property.CommandPropertyMap;
+import com.github.breadmoirai.bot.framework.command.CommandPropertyMap;
 import com.github.breadmoirai.bot.framework.event.CommandEvent;
 
 import java.lang.reflect.Parameter;
