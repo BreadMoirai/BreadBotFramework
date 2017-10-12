@@ -58,6 +58,16 @@ public interface CommandHandleBuilder {
 
     CommandHandleBuilder putProperty(Object property);
 
+    default <T> CommandHandleBuilder applyProperty(Class<? super T> type, T property) {
+        putProperty(type, property);
+        getClientBuilder().getCommandPropreties().getPropertyConfigurator(type)
+    }
+
+    default <T> CommandHandleBuilder applyProperty(T property) {
+        @SuppressWarnings("unchecked") Class<T> propertyClass = (Class<T>) property.getClass();
+        return applyProperty(propertyClass, property);
+    }
+
     default CommandHandleBuilder addPreprocessorFunction(String identifier, CommandPreprocessorFunction function) {
         return addPreprocessor(new CommandPreprocessor(identifier, function));
     }

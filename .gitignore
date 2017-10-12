@@ -96,9 +96,9 @@ version.txt
 /SamuraiDatabase
 err.txt
 out.txt
-/src/main/resources/samurai/commandSupplier/restricted/imports.java
-/src/main/resources/samurai/commandSupplier/restricted/functions.txt
-/src/main/resources/samurai/commandSupplier/restricted/imports.txt
+/src/main/resources/samurai/commandFactory/restricted/imports.java
+/src/main/resources/samurai/commandFactory/restricted/functions.txt
+/src/main/resources/samurai/commandFactory/restricted/imports.txt
 /Objects.ser
 /tasks.ser
 /src/main/resources/samurai/database/~$SamuraiItems.xlsx

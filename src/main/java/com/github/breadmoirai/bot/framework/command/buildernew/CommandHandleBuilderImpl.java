@@ -31,26 +31,30 @@ public class CommandHandleBuilderImpl implements CommandHandleBuilder {
 
     private String[] keys;
     private String name, group, description;
+    private final Object declaringObject;
     private final BreadBotClientBuilder builder;
-    private final Function<Object, Object> commandSupplier;
+    private final CommandFactory commandFactory;
     private final CommandParameterBuilder[] parameterBuilders;
-    private final BiConsumer<Object, Object[]> commandFunction;
+    private final InvokableCommand commandFunction;
     private final List<CommandHandleBuilder> subCommands;
     private final List<CommandPreprocessor> preprocessors;
     private final CommandPropertyMapImpl propertyMap;
 
-    public CommandHandleBuilderImpl(BreadBotClientBuilder builder, Function<Object, Object> commandSupplier, CommandParameterBuilder[] parameterBuilders, BiConsumer<Object, Object[]> commandFunction) {
+    public CommandHandleBuilderImpl(Object declaringObject, BreadBotClientBuilder builder, CommandFactory commandFactory, CommandParameterBuilder[] parameterBuilders, InvokableCommand commandFunction) {
+        this.declaringObject = declaringObject;
         this.builder = builder;
-        this.commandSupplier = commandSupplier;
+        this.commandFactory = commandFactory;
         this.parameterBuilders = parameterBuilders;
         this.commandFunction = commandFunction;
         this.subCommands = new ArrayList<>();
         this.preprocessors = new ArrayList<>();
         this.propertyMap = new CommandPropertyMapImpl();
     }
-    public CommandHandleBuilderImpl(BreadBotClientBuilder builder, Function<Object, Object> commandSupplier, CommandParameterBuilder[] parameterBuilders, BiConsumer<Object, Object[]> commandFunction, CommandPropertyMapImpl propertyMap) {
+
+    public CommandHandleBuilderImpl(Object declaringObject, BreadBotClientBuilder builder, CommandFactory commandFactory, CommandParameterBuilder[] parameterBuilders, InvokableCommand commandFunction, CommandPropertyMapImpl propertyMap) {
+        this.declaringObject = declaringObject;
         this.builder = builder;
-        this.commandSupplier = commandSupplier;
+        this.commandFactory = commandFactory;
         this.parameterBuilders = parameterBuilders;
         this.commandFunction = commandFunction;
         this.subCommands = new ArrayList<>();
@@ -140,6 +144,6 @@ public class CommandHandleBuilderImpl implements CommandHandleBuilder {
         }
         final CommandParameter[] commandParameters = new CommandParameter[parameterBuilders.length];
         Arrays.setAll(commandParameters, value -> parameterBuilders[value].build());
-        return new CommandHandleImpl(keys, name, group, description, client, commandSupplier, commandParameters, commandFunction, subCommandMap, preprocessors, propertyMap.build());
+        return new CommandHandleImpl(keys, name, group, description, client, commandFactory, commandParameters, commandFunction, subCommandMap, preprocessors, propertyMap);
     }
 }

@@ -18,7 +18,7 @@ package com.github.breadmoirai.bot.framework;
 import com.github.breadmoirai.bot.framework.command.preprocessor.CommandPreprocessor;
 import com.github.breadmoirai.bot.framework.command.preprocessor.CommandPreprocessorFunction;
 import com.github.breadmoirai.bot.framework.command.preprocessor.CommandPreprocessorPredicate;
-import com.github.breadmoirai.bot.framework.command.preprocessor.CommandPreprocessors;
+import com.github.breadmoirai.bot.framework.command.preprocessor.CommandProperties;
 import com.github.breadmoirai.bot.framework.command.builder.CommandClassBuilder;
 import com.github.breadmoirai.bot.framework.command.builder.CommandHandleBuilder;
 import com.github.breadmoirai.bot.framework.command.builder.FunctionalCommandBuilder;
@@ -51,7 +51,7 @@ public class BreadBotClientBuilder {
     private ICommandEventFactory commandEventFactory;
     private final CommandEngineBuilder commandEngineBuilder;
     private BreadBotClient client;
-    private CommandPreprocessors preprocessors;
+    private CommandProperties commandProperties;
 
     public BreadBotClientBuilder() {
         modules = new ArrayList<>();
@@ -167,129 +167,14 @@ public class BreadBotClientBuilder {
 		return this;
     }
 
-    /**
-     * Adds a preprocessor for later retrieval with {@link CommandPreprocessors#getPreprocessor(String) }
-     *
-     * @param identifier a string identifying the preprocessor
-     * @param function   the preprocessor. A functional interface. {@link CommandPreprocessorFunction#process See also.}
-     * @see CommandPreprocessors#addPreprocessorPredicate(String, CommandPreprocessorPredicate)
-     */
-    public BreadBotClientBuilder registerPreprocessor(String identifier, CommandPreprocessorFunction function) {
-        preprocessors.registerPreprocessor(identifier, function);
-		return this;
-    }
 
-    /**
-     * Adds a preprocessor for later retrieval with {@link CommandPreprocessors#getPreprocessor(String) }
-     *
-     * @param identifier a string identifying the preprocessor
-     * @param predicate  the preprocessor. A functional interface. Should return {@code true} if the command should continue to run, {@code false} otherwise.
-     *
-     * @see CommandPreprocessors#registerPreprocessor(String, CommandPreprocessorFunction)
-     */
-    public BreadBotClientBuilder registerPreprocessorPredicate(String identifier, CommandPreprocessorPredicate predicate) {
-        preprocessors.addPreprocessorPredicate(identifier, predicate);
-		return this;
-    }
 
-    /**
-     * Remind me to write docs for this.
-     *  @param identifier
-     * @param propertyType
-     * @param factory
-     */
-    public <T> BreadBotClientBuilder associatePreprocessorFactory(String identifier, Class<T> propertyType, Function<T, CommandPreprocessorFunction> factory) {
-        preprocessors.associatePreprocessorFactory(identifier, propertyType, factory);
-		return this;
-    }
 
-    /**
-     *  @param identifier
-     * @param propertyType
-     * @param factory
-     */
-    public <T> BreadBotClientBuilder associatePreprocessorPredicateFactory(String identifier, Class<T> propertyType, Function<T, CommandPreprocessorPredicate> factory) {
-        preprocessors.associatePreprocessorPredicateFactory(identifier, propertyType, factory);
-		return this;
-    }
 
-    /**
-     *  @param identifier
-     * @param propertyType
-     * @param function
-     */
-    public <T> BreadBotClientBuilder associatePreprocessor(String identifier, Class<T> propertyType, CommandPreprocessorFunction function) {
-        preprocessors.associatePreprocessor(identifier, propertyType, function);
-		return this;
-    }
 
-    /**
-     *  @param identifier
-     * @param propertyType
-     * @param predicate
-     */
-    public BreadBotClientBuilder associatePreprocessorPredicate(String identifier, Class<?> propertyType, CommandPreprocessorPredicate predicate) {
-        preprocessors.associatePreprocessorPredicate(identifier, propertyType, predicate);
-		return this;
-    }
 
-    /**
-     *
-     * @param propertyObj
-     * @return
-     */
-    public <T> CommandPreprocessor getAssociatedPreprocessor(T propertyObj) {
-        return preprocessors.getAssociatedPreprocessor(propertyObj);
-    }
-
-    /**
-     *
-     * @param type
-     * @return
-     */
-    public <T> CommandPreprocessor getAssociatedPreprocessor(Class<T> type) {
-        return preprocessors.getAssociatedPreprocessor(type);
-    }
-
-    /**
-     *
-     * @param identifier
-     * @return
-     */
-    public CommandPreprocessor getPreprocessor(String identifier) {
-        return preprocessors.getPreprocessor(identifier);
-    }
-
-    public BreadBotClientBuilder setPreprocessorPriority(String... identifiers) {
-        preprocessors.setPreprocessorPriority(identifiers);
-		return this;
-    }
-
-    public BreadBotClientBuilder setPreprocessorPriority(List<String> identifierList) {
-        preprocessors.setPreprocessorPriority(identifierList);
-		return this;
-    }
-
-    /**
-     * Will add associated preprocessors to the passed {@link CommandHandleBuilder} according to it's properties sorted by it's identifier priority as set in {@code #setPreprocessorPriority}
-     *
-     * @param handleBuilder A CommandHandleBuilder of a top-level class, an inner class, or a method.
-     */
-    public BreadBotClientBuilder addPreprocessors(CommandHandleBuilder handleBuilder) {
-        preprocessors.addPreprocessors(handleBuilder);
-		return this;
-    }
-
-    public Comparator<CommandPreprocessor> getPriorityComparator() {
-        return preprocessors.getPriorityComparator();
-    }
-
-    public Comparator<CommandPreprocessor> getPreprocessorComparator(String... identifier) {
-        return preprocessors.getPreprocessorComparator(identifier);
-    }
-
-    public CommandPreprocessors getPreprocessors() {
-        return preprocessors;
+    public CommandProperties getCommandPropreties() {
+        return commandProperties;
     }
 
     /**

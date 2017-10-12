@@ -15,41 +15,45 @@
 package com.github.breadmoirai.bot.framework.command.preprocessor;
 
 import com.github.breadmoirai.bot.framework.command.builder.CommandHandleBuilder;
+import com.github.breadmoirai.bot.framework.command.buildernew.CommandParameterBuilder;
+import com.github.breadmoirai.bot.util.TriConsumer;
 
+import java.lang.reflect.Parameter;
 import java.util.*;
 import java.util.function.Function;
 
-public class CommandPreprocessors {
+public class CommandProperties {
 
     private List<String> preprocessorPriorityList = Collections.emptyList();
 
-    private final Map<Class<?>, Function<?, CommandPreprocessor>> preprocessorFactoryMap = new HashMap<>();
-    private final List<CommandPreprocessor> preprocessorList = new ArrayList<>();
+    private final Map<Class<?>, TriConsumer<?, Object, CommandHandleBuilder>> commandPropertyMap = new HashMap<>();
+    private final Map<Class<?>, TriConsumer<?, Parameter, CommandParameterBuilder>> parameterPropertyMap = new HashMap<>();
 
-    public CommandPreprocessors() {
+    public CommandProperties() {
     }
 
     /**
-     * Adds a preprocessor for later retrieval with {@link CommandPreprocessors#getPreprocessor(String) }
+     * The provided {@code configurator} is used to modify commands that possess the specified property.
      *
-     * @param identifier a string identifying the preprocessor
-     * @param function   the preprocessor. A functional interface. {@link CommandPreprocessorFunction#process See also.}
-     * @see CommandPreprocessors#addPreprocessorPredicate(String, CommandPreprocessorPredicate)
+     * @param propertyType the class of the property
+     * @param configurator a {@link com.github.breadmoirai.bot.util.TriConsumer TriConsumer}.
+     *                     The first argument is the property.
+     *                     The second argument is the object that the property is attached to.
+     *                     This is either a {@link java.lang.Class} or a {@link java.lang.reflect.Method Method}.
+     *                     The third argument is the {@link com.github.breadmoirai.bot.framework.command.builder.CommandHandleBuilder CommandHandleBuilder} that is intended to be modified by this TriConsumer.
+     * @param <T>          the propertyType
      */
-    public void registerPreprocessor(String identifier, CommandPreprocessorFunction function) {
-        preprocessorList.add(new CommandPreprocessor(identifier, function));
+    public <T> void setCommandApplication(Class<T> propertyType, TriConsumer<T, Object, CommandHandleBuilder> configurator) {
+        propertyMap.put(propertyType, configurator);
     }
 
-    /**
-     * Adds a preprocessor for later retrieval with {@link CommandPreprocessors#getPreprocessor(String) }
-     *
-     * @param identifier a string identifying the preprocessor
-     * @param predicate  the preprocessor. A functional interface. Should return {@code true} if the command should continue to run, {@code false} otherwise.
-     *
-     * @see CommandPreprocessors#registerPreprocessor(String, CommandPreprocessorFunction)
-     */
-    public void addPreprocessorPredicate(String identifier, CommandPreprocessorPredicate predicate) {
-        preprocessorList.add(new CommandPreprocessor(identifier, predicate));
+    public <T> void append(Class<T> propertyType, TriConsumer<T, Object, CommandHandleBuilder> configurator) {
+        //noinspection unchecked
+        propertyMap.merge(propertyType, configurator, TriConsumer::andThen);
+    }
+
+    public <T> TriConsumer<T, ?, CommandHandleBuilder> getPropertyConfigurator(Class<? super T> type) {
+        return
     }
 
     private <T> void associatePreprocessor(Class<T> propertyType, Function<T, CommandPreprocessor> factory) {
@@ -69,7 +73,6 @@ public class CommandPreprocessors {
     }
 
     /**
-     *
      * @param identifier
      * @param propertyType
      * @param factory
@@ -80,7 +83,6 @@ public class CommandPreprocessors {
     }
 
     /**
-     *
      * @param identifier
      * @param propertyType
      * @param function
@@ -91,7 +93,6 @@ public class CommandPreprocessors {
     }
 
     /**
-     *
      * @param identifier
      * @param propertyType
      * @param predicate
@@ -101,7 +102,6 @@ public class CommandPreprocessors {
     }
 
     /**
-     *
      * @param propertyObj
      * @param <T>
      * @return
@@ -113,7 +113,6 @@ public class CommandPreprocessors {
     }
 
     /**
-     *
      * @param type
      * @param <T>
      * @return
@@ -137,7 +136,6 @@ public class CommandPreprocessors {
     }
 
     /**
-     *
      * @param identifier
      * @return
      */

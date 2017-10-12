@@ -19,6 +19,13 @@ import java.util.function.Function;
 
 public class Iterators {
 
+    /**
+     * static class -{@literal >} private constructor
+     */
+    private Iterators() {
+
+    }
+
     public static <T, R> Iterator<R> map(Iterator<T> iterator, Function<T, R> mapper) {
         return new IteratorMapper<>(iterator, mapper);
     }

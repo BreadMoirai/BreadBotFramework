@@ -20,7 +20,7 @@ import com.github.breadmoirai.bot.framework.CommandEngine;
 import com.github.breadmoirai.bot.framework.CommandEngineBuilder;
 import com.github.breadmoirai.bot.framework.ICommandModule;
 import com.github.breadmoirai.bot.framework.command.preprocessor.CommandPreprocessor;
-import com.github.breadmoirai.bot.framework.command.preprocessor.CommandPreprocessors;
+import com.github.breadmoirai.bot.framework.command.preprocessor.CommandProperties;
 import com.github.breadmoirai.bot.framework.event.CommandEvent;
 import com.github.breadmoirai.bot.framework.event.ICommandEventFactory;
 import net.dv8tion.jda.core.JDA;
@@ -47,9 +47,9 @@ public class BreadBotClientImpl implements BreadBotClient {
     private final CommandEngine commandEngine;
     private final List<ICommandModule> modules;
     private final Map<Type, ICommandModule> moduleTypeMap;
-    private final CommandPreprocessors preprocessors;
+    private final CommandProperties preprocessors;
 
-    public BreadBotClientImpl(List<ICommandModule> modules, IEventManager eventManager, ICommandEventFactory eventFactory, CommandEngineBuilder engineBuilder, CommandPreprocessors preprocessors) {
+    public BreadBotClientImpl(List<ICommandModule> modules, IEventManager eventManager, ICommandEventFactory eventFactory, CommandEngineBuilder engineBuilder, CommandProperties preprocessors) {
         this.modules = Collections.unmodifiableList(modules);
         this.preprocessors = preprocessors;
         modules.forEach(module -> module.init(engineBuilder, this));
