@@ -36,7 +36,6 @@ import java.util.stream.Collectors;
 public class CommandHandleBuilderFactory {
 
     private final BreadBotClientBuilder clientBuilder;
-    private final Map<Class<?>, CommandPropertyMapImpl> propertyMaps = new HashMap<>();
 
     public CommandHandleBuilderFactory(BreadBotClientBuilder clientBuilder) {
         this.clientBuilder = clientBuilder;
@@ -50,22 +49,24 @@ public class CommandHandleBuilderFactory {
                 (o, objects) -> onCommand.accept(((CommandEvent) objects[0])));
     }
 
-    public <T> CommandHandleBuilder fromClass(Class<T> commandClass, @Nullable T object) throws NoSuchMethodException, IllegalAccessException {
+    public <T> CommandHandleBuilder fromClass(Class<T> commandClass, @Nullable T object, CommandPropertyMapImpl defaultPropertyMap) throws NoSuchMethodException, IllegalAccessException {
         final Class<?> superclass = commandClass.getSuperclass();
         final CommandObjectFactory commandSupplier;
         if (object != null) {
             commandSupplier = nullObj -> object;
         } else if (superclass == null) {
             final MethodHandle constructor = MethodHandles.publicLookup().findConstructor(commandClass, MethodType.methodType(void.class));
+            //noinspection Convert2MethodRef
             commandSupplier = nullObj -> constructor.invoke();
         } else {
             final MethodHandle constructor = MethodHandles.publicLookup().findConstructor(commandClass, MethodType.methodType(void.class, superclass));
+            //noinspection Convert2MethodRef
             commandSupplier = o -> constructor.invoke(o);
         }
 
         final CommandPropertyMapImpl propertyMap = new CommandPropertyMapImpl();
-        if (superclass != null)
-            propertyMap.setDefaultProperties(propertyMaps.get(superclass));
+        if (defaultPropertyMap != null)
+            propertyMap.setDefaultProperties(defaultPropertyMap);
         else {
             propertyMap.setDefaultProperties(CommandPackageProperties.getPropertiesForPackage(commandClass.getPackage()));
         }
@@ -85,31 +86,29 @@ public class CommandHandleBuilderFactory {
 
         final CommandParameterBuilder[] parameterBuilders;
         final InvokableCommand commandFunction;
-        final CommandPropertyMapImpl methodMap;
+        final CommandPropertyMapImpl methodPropertyMap;
         if (first.isPresent()) {
             final Pair<Method, CommandPropertyMapImpl> methodPair = first.get();
             methods.remove(methodPair);
-            methodMap = methodPair.getRight();
+            methodPropertyMap = methodPair.getRight();
             final Pair<CommandParameterBuilder[], InvokableCommand> biConsumerPair = mapMethod(methodPair.getLeft(), methodPair.getRight());
             parameterBuilders = biConsumerPair.getLeft();
             commandFunction = biConsumerPair.getRight();
         } else {
             parameterBuilders = null;
             commandFunction = null;
-            methodMap = propertyMap;
+            methodPropertyMap = propertyMap;
         }
-
         final CommandHandleBuilderImpl commandHandleBuilder = new CommandHandleBuilderImpl(object != null ? object : commandClass,
                 clientBuilder,
                 commandSupplier,
                 parameterBuilders,
                 commandFunction,
-                methodMap);
+                methodPropertyMap);
 
-        List<Pair<? extends Class<?>, CommandPropertyMapImpl>> classes = Arrays.stream(commandClass.getClasses())
+        List<Class<?>> classes = Arrays.stream(commandClass.getClasses())
                 .filter(aClass -> aClass.isAnnotationPresent(Command.class))
                 .filter(aClass -> !Modifier.isStatic(aClass.getModifiers()))
-                .map(aClass -> Pair.of(aClass, new CommandPropertyMapImpl(propertyMap, aClass.getAnnotations())))
                 .collect(Collectors.toList());
 
         String simpleName = commandClass.getSimpleName().toLowerCase();
@@ -124,14 +123,20 @@ public class CommandHandleBuilderFactory {
             packageName = packageNames[packageNames.length - 2];
         }
         commandHandleBuilder.setGroup(packageName);
+
         for (Pair<Method, CommandPropertyMapImpl> method : methods) {
             CommandHandleBuilder handle = fromMethod(method.getLeft(), method.getRight());
             commandHandleBuilder.addSubCommand(handle);
         }
+
+        for (Class<?> aClass : classes) {
+            CommandHandleBuilder subCommandBuilder = fromClass(aClass, null, propertyMap);
+            commandHandleBuilder.addSubCommand(subCommandBuilder);
+        }
         return commandHandleBuilder;
     }
 
-    public CommandHandleBuilder fromMethod(Method method, CommandPropertyMapImpl map) throws IllegalAccessException {
+    private CommandHandleBuilder fromMethod(Method method, CommandPropertyMapImpl map) throws IllegalAccessException {
         Pair<CommandParameterBuilder[], InvokableCommand> pair = mapMethod(method, map);
         return new CommandHandleBuilderImpl(method, clientBuilder, o -> o, pair.getLeft(), pair.getRight(), map);
     }

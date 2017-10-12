@@ -34,7 +34,7 @@ public class CommandEventFactoryImpl implements ICommandEventFactory {
 
     private final IPrefixModule prefixModule;
 
-    public CommandEventFactoryImpl(CommandEngineBuilder client) {
+    public CommandEventFactoryImpl(IPrefixModule prefixSupplier) {
         this.prefixModule = client.getModule(IPrefixModule.class);
     }
 

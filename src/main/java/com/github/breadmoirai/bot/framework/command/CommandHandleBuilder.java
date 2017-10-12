@@ -21,17 +21,12 @@ import com.github.breadmoirai.bot.framework.event.CommandEvent;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Comparator;
+import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 
 public interface CommandHandleBuilder {
 
-    /**
-     * Adds a sub command and
-     * @param onCommand a consumer
-     * @param configurator
-     * @return
-     */
     default CommandHandleBuilder addSubCommand(@Nullable Consumer<CommandEvent> onCommand, Consumer<CommandHandleBuilder> configurator) {
         Objects.requireNonNull(configurator);
         CommandHandleBuilder subCommand = createSubCommand(onCommand);
@@ -67,15 +62,9 @@ public interface CommandHandleBuilder {
 
     CommandHandleBuilder addPreprocessor(CommandPreprocessor preprocessor);
 
-    CommandHandleBuilder sortPreprocessors(Comparator<CommandPreprocessor>preprocessorComparator);
+    List<CommandPreprocessor> getPreprocessors();
 
-    default CommandHandleBuilder sortPreprocessors(String... identifierPriority) {
-        return sortPreprocessors(getClientBuilder().getPreprocessorComparator(identifierPriority));
-    }
-
-    default CommandHandleBuilder sortPreprocessors() {
-        return sortPreprocessors(getClientBuilder().getPriorityComparator());
-    }
+    CommandHandleBuilder sortPreprocessors(Comparator<CommandPreprocessor> comparator);
 
 //    default CommandHandleBuilder addAssociatedPreprocessors() {
 //        final Map<Class<?>, Function<?, CommandPreprocessor>> preprocessorFactoryMap = getClientBuilder().getPreprocessors().getPreprocessorFactoryMap();
@@ -99,7 +88,6 @@ public interface CommandHandleBuilder {
     Object getDeclaringObject();
 
     BreadBotClientBuilder getClientBuilder();
-
 
     CommandHandle build(BreadBotClient client);
 

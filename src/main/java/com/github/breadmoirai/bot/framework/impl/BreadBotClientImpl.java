@@ -17,10 +17,9 @@ package com.github.breadmoirai.bot.framework.impl;
 
 import com.github.breadmoirai.bot.framework.BreadBotClient;
 import com.github.breadmoirai.bot.framework.CommandEngine;
-import com.github.breadmoirai.bot.framework.CommandEngineBuilder;
 import com.github.breadmoirai.bot.framework.ICommandModule;
-import com.github.breadmoirai.bot.framework.command.CommandPreprocessor;
-import com.github.breadmoirai.bot.framework.command.CommandProperties;
+import com.github.breadmoirai.bot.framework.command.CommandHandle;
+import com.github.breadmoirai.bot.framework.command.CommandHandleBuilder;
 import com.github.breadmoirai.bot.framework.event.CommandEvent;
 import com.github.breadmoirai.bot.framework.event.ICommandEventFactory;
 import net.dv8tion.jda.core.JDA;
@@ -30,7 +29,6 @@ import net.dv8tion.jda.core.events.message.guild.GenericGuildMessageEvent;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageUpdateEvent;
 import net.dv8tion.jda.core.hooks.IEventManager;
-import net.dv8tion.jda.core.hooks.InterfacedEventManager;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 import net.dv8tion.jda.core.hooks.SubscribeEvent;
 
@@ -45,24 +43,25 @@ public class BreadBotClientImpl implements BreadBotClient {
     private final IEventManager eventManager;
     private final ICommandEventFactory eventFactory;
     private final CommandEngine commandEngine;
+    private final Predicate<Message> preProcessPredicate;
     private final List<ICommandModule> modules;
     private final Map<Type, ICommandModule> moduleTypeMap;
-    private final CommandProperties preprocessors;
+    private final Map<String, CommandHandle> commandMap;
 
-    public BreadBotClientImpl(List<ICommandModule> modules, IEventManager eventManager, ICommandEventFactory eventFactory, CommandEngineBuilder engineBuilder, CommandProperties preprocessors) {
+    public BreadBotClientImpl(List<ICommandModule> modules, IEventManager eventManager, ICommandEventFactory eventFactory, List<CommandHandleBuilder> commands, Predicate<Message> preProcessPredicate) {
         this.modules = Collections.unmodifiableList(modules);
-        this.preprocessors = preprocessors;
-        modules.forEach(module -> module.init(engineBuilder, this));
         this.eventManager = eventManager;
-        SamuraiEventListener listener = this.new SamuraiEventListener(engineBuilder.getPreProcessPredicate());
-        eventManager.register(listener);
-
-        if (eventManager instanceof InterfacedEventManager)
-            modules.stream().filter(net.dv8tion.jda.core.hooks.EventListener.class::isInstance).forEach(eventManager::register);
-        else
-            modules.forEach(eventManager::register);
         this.eventFactory = eventFactory;
-        this.commandEngine = engineBuilder.build(this);
+        this.preProcessPredicate = preProcessPredicate;
+
+        HashMap<String, CommandHandle> handleMap = new HashMap<>();
+        for (CommandHandleBuilder command : commands) {
+            CommandHandle handle = command.build(this);
+            for (String key : handle.getKeys()) {
+                handleMap.put(key, handle);
+            }
+        }
+        this.commandMap = Collections.unmodifiableMap(handleMap);
 
         final HashMap<Type, ICommandModule> typeMap = new HashMap<>(modules.size());
         for (ICommandModule module : modules) {
@@ -78,7 +77,16 @@ public class BreadBotClientImpl implements BreadBotClient {
                 }
             } while (ICommandModule.class.isAssignableFrom(moduleClass = moduleClass.getSuperclass()));
         }
+
         this.moduleTypeMap = typeMap;
+
+        commandEngine = event -> {
+            CommandHandle commandHandle = handleMap.get(event.getKey().toLowerCase());
+            if (commandHandle != null) {
+                commandHandle.handle(event);
+            }
+        };
+
     }
 
     private List<Class<?>> getInterfaceHierarchy(Class<?> from, Class<?> toSuper) {
@@ -103,6 +111,11 @@ public class BreadBotClientImpl implements BreadBotClient {
     @Override
     public IEventManager getEventManager() {
         return eventManager;
+    }
+
+    @Override
+    public Map<String, CommandHandle> getCommandMap() {
+        return null;
     }
 
     @Override
@@ -151,41 +164,6 @@ public class BreadBotClientImpl implements BreadBotClient {
     @Override
     public CommandEngine getCommandEngine() {
         return commandEngine;
-    }
-
-    /**
-     *
-     * @param propertyObj
-     * @return
-     */
-    public <T> CommandPreprocessor getAssociatedPreprocessor(T propertyObj) {
-        return preprocessors.getAssociatedPreprocessor(propertyObj);
-    }
-
-    /**
-     *
-     * @param type
-     * @return
-     */
-    public <T> CommandPreprocessor getAssociatedPreprocessor(Class<T> type) {
-        return preprocessors.getAssociatedPreprocessor(type);
-    }
-
-    /**
-     *
-     * @param identifier
-     * @return
-     */
-    public CommandPreprocessor getPreprocessor(String identifier) {
-        return preprocessors.getPreprocessor(identifier);
-    }
-
-    public Comparator<CommandPreprocessor> getPriorityComparator() {
-        return preprocessors.getPriorityComparator();
-    }
-
-    public Comparator<CommandPreprocessor> getPreprocessorComparator(String... identifier) {
-        return preprocessors.getPreprocessorComparator(identifier);
     }
 
     private class SamuraiEventListener extends ListenerAdapter {

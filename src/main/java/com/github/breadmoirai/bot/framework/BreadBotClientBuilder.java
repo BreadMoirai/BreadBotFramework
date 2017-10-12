@@ -15,9 +15,10 @@
  */
 package com.github.breadmoirai.bot.framework;
 
+import com.github.breadmoirai.bot.framework.command.Command;
+import com.github.breadmoirai.bot.framework.command.CommandHandleBuilder;
 import com.github.breadmoirai.bot.framework.command.CommandProperties;
-import com.github.breadmoirai.bot.framework.command.builder.CommandClassBuilder;
-import com.github.breadmoirai.bot.framework.command.builder.FunctionalCommandBuilder;
+import com.github.breadmoirai.bot.framework.command.impl.CommandHandleBuilderFactory;
 import com.github.breadmoirai.bot.framework.event.CommandEvent;
 import com.github.breadmoirai.bot.framework.event.ICommandEventFactory;
 import com.github.breadmoirai.bot.framework.event.impl.CommandEventFactoryImpl;
@@ -31,12 +32,19 @@ import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.hooks.AnnotatedEventManager;
 import net.dv8tion.jda.core.hooks.IEventManager;
 import net.dv8tion.jda.core.hooks.InterfacedEventManager;
+import org.jetbrains.annotations.Nullable;
+import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.GenericDeclaration;
+import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 public class BreadBotClientBuilder {
 
@@ -44,25 +52,95 @@ public class BreadBotClientBuilder {
 
     private final List<ICommandModule> modules;
     private ICommandEventFactory commandEventFactory;
-    private final CommandEngineBuilder commandEngineBuilder;
-    private BreadBotClient client;
     private CommandProperties commandProperties;
+    private Predicate<Message> preProcessPredicate;
+    private List<CommandHandleBuilder> commands;
+    private CommandHandleBuilderFactory factory;
 
     public BreadBotClientBuilder() {
+        commandProperties = new CommandProperties();
         modules = new ArrayList<>();
-        commandEngineBuilder = new CommandEngineBuilder(modules);
+        commands = new ArrayList<>();
+        factory = new CommandHandleBuilderFactory(this);
     }
 
-    public BreadBotClientBuilder addModule(ICommandModule... module) {
-        Collections.addAll(modules, module);
+    public BreadBotClientBuilder addModule(ICommandModule... modules) throws NoSuchMethodException, IllegalAccessException {
+        for (ICommandModule module : modules) {
+            module.initialize(this);
+        }
         return this;
     }
 
-    public BreadBotClientBuilder addModule(Collection<ICommandModule> moduleList) {
-        modules.addAll(moduleList);
+    public BreadBotClientBuilder addModule(Collection<ICommandModule> modules) {
+        for (ICommandModule module : modules) {
+            addModule(module);
+        }
         return this;
     }
 
+    public boolean hasModule(Class<? extends ICommandModule> moduleClass) {
+        return moduleClass != null && modules.stream().map(Object::getClass).anyMatch(moduleClass::isAssignableFrom);
+    }
+
+    /**
+     * Finds and returns the first Module that is assignable to the provided {@code moduleClass}
+     *
+     * @param moduleClass The class of the Module to find
+     * @return The module if found. Else {@code null}.
+     */
+    public <T extends ICommandModule> T getModule(Class<T> moduleClass) {
+        //noinspection unchecked
+        return moduleClass == null ? null : modules.stream().filter(module -> moduleClass.isAssignableFrom(module.getClass())).map(iModule -> (T) iModule).findAny().orElse(null);
+    }
+
+
+    public CommandHandleBuilder createCommand(Consumer<CommandEvent> onCommand) {
+        CommandHandleBuilder commandHandleBuilder = factory.fromConsumer(onCommand);
+        commands.add(commandHandleBuilder);
+        return commandHandleBuilder;
+    }
+
+    public <T> CommandHandleBuilder createCommand(Class<T> commandClass, @Nullable T object) throws NoSuchMethodException, IllegalAccessException {
+        CommandHandleBuilder commandHandleBuilder = factory.fromClass(commandClass, object, null);
+        commands.add(commandHandleBuilder);
+        return commandHandleBuilder;
+    }
+
+    public <T> CommandHandleBuilder createCommand(T object) throws NoSuchMethodException, IllegalAccessException {
+        @SuppressWarnings("unchecked") CommandHandleBuilder commandHandleBuilder = factory.fromClass((Class<T>) object.getClass(), object, null);
+        commands.add(commandHandleBuilder);
+        return commandHandleBuilder;
+    }
+
+    public <T> List<CommandHandleBuilder> createCommands(String packageName) throws NoSuchMethodException, IllegalAccessException {
+        List<CommandHandleBuilder> builders = new ArrayList<>();
+        final Reflections reflections = new Reflections(packageName);
+        final Set<Class<?>> classes = reflections.getSubTypesOf(Object.class);
+        for (Class<?> commandClass : classes) {
+            final int mod = commandClass.getModifiers();
+            if (commandClass.isInterface()
+                    || commandClass.isSynthetic()
+                    || commandClass.isAnonymousClass()
+                    || commandClass.isArray()
+                    || commandClass.isAnnotation()
+                    || commandClass.isEnum()
+                    || commandClass.isPrimitive()
+                    || commandClass.isLocalClass()
+                    || commandClass.isMemberClass()
+                    || Modifier.isAbstract(mod)
+                    || Modifier.isPrivate(mod)
+                    || Modifier.isProtected(mod))
+                continue;
+            Stream<GenericDeclaration> classStream = Stream.concat(Stream.concat(Stream.of(commandClass), Arrays.stream(commandClass.getMethods())), Arrays.stream(commandClass.getClasses()));
+            boolean hasCommandAnnotation = classStream.map(AnnotatedElement::getAnnotations)
+                    .flatMap(Arrays::stream)
+                    .map(Annotation::annotationType)
+                    .anyMatch(aClass -> aClass == Command.class);
+            if (!hasCommandAnnotation) continue;
+            builders.add(createCommand(commandClass, null));
+        }
+        return builders;
+    }
 
     /**
      * This module provides a static prefix that cannot be changed. By default, the prefix is set to "!".
@@ -118,57 +196,21 @@ public class BreadBotClientBuilder {
         return this;
     }
 
+    public BreadBotClientBuilder setPreProcessPredicate(Predicate<Message> predicate) {
+        preProcessPredicate = predicate;
+        return this;
+    }
+
     public BreadBotClientBuilder addPreProcessPredicate(Predicate<Message> predicate) {
-        commandEngineBuilder.addPreProcessPredicate(predicate);
+        if (preProcessPredicate == null) {
+            preProcessPredicate = predicate;
+        } else {
+            preProcessPredicate = preProcessPredicate.and(predicate);
+        }
         return this;
     }
 
-    public Predicate<Message> getPreProcessPredicate() {
-        return commandEngineBuilder.getPreProcessPredicate();
-    }
-
-    public BreadBotClientBuilder registerCommand(String name, Consumer<CommandEvent> commandFunction, String... keys) {
-        commandEngineBuilder.registerCommand(name, commandFunction, keys);
-        return this;
-    }
-
-    public BreadBotClientBuilder registerCommand(Consumer<CommandEvent> commandFunction, Consumer<FunctionalCommandBuilder> configurator) {
-        commandEngineBuilder.registerCommand(commandFunction, configurator);
-		return this;
-    }
-
-    public BreadBotClientBuilder registerCommand(Object command) {
-        commandEngineBuilder.registerCommand(command);
-		return this;
-    }
-
-    public BreadBotClientBuilder registerCommand(Object command, Consumer<CommandClassBuilder> configurator) {
-        commandEngineBuilder.registerCommand(command, configurator);
-		return this;
-    }
-
-    public BreadBotClientBuilder registerCommand(Class<?> commandClass) {
-        commandEngineBuilder.registerCommand(commandClass);
-		return this;
-    }
-
-    public BreadBotClientBuilder registerCommand(Class<?> commandClass, Consumer<CommandClassBuilder> configurator) {
-        commandEngineBuilder.registerCommand(commandClass, configurator);
-		return this;
-    }
-
-    public BreadBotClientBuilder registerCommand(String packageName, Consumer<CommandClassBuilder> configurator) {
-        commandEngineBuilder.registerCommand(packageName, configurator);
-		return this;
-    }
-
-
-
-
-
-
-
-    public CommandProperties getCommandPropreties() {
+    public CommandProperties getCommandProperties() {
         return commandProperties;
     }
 
@@ -216,10 +258,12 @@ public class BreadBotClientBuilder {
      * @return a new BreadBotClient.
      */
     public BreadBotClient build(IEventManager eventManager) {
-        if (!commandEngineBuilder.hasModule(IPrefixModule.class)) modules.add(new DefaultPrefixModule("!"));
-        if (commandEventFactory == null) commandEventFactory = new CommandEventFactoryImpl(commandEngineBuilder);
-        BreadBotClient client = new BreadBotClientImpl(modules, eventManager, commandEventFactory, commandEngineBuilder, preprocessors);
-        LOG.info("Top Level Commands registered: " + client.getCommandEngine().getCommandMap().values().size() + ".");
+        if (!hasModule(IPrefixModule.class)) modules.add(new DefaultPrefixModule("!"));
+        if (commandEventFactory == null) commandEventFactory = new CommandEventFactoryImpl(getModule(IPrefixModule.class));
+
+
+        BreadBotClient client = new BreadBotClientImpl(modules, eventManager, commandEventFactory, commands, preProcessPredicate);
+        LOG.info("Top Level Commands registered: " + client.getCommandMap().values().size() + ".");
         LOG.info("CommandClient Initialized.");
         return client;
     }

@@ -24,7 +24,13 @@ public interface ICommandModule {
         return this.getClass().getSimpleName();
     }
 
-    void init(CommandEngineBuilder engineBuilder, BreadBotClient client);
+    void initialize(BreadBotClientBuilder breadBotClientBuilder) throws NoSuchMethodException, IllegalAccessException;
+
+    /**
+     * This method is called when the BreadBotClient has been built.
+     * @param client
+     */
+    default void onBreadReady(BreadBotClient client) {}
 
     default void onHelpEvent(CommandEvent event) {
         event.reply("This is not the help you are looking for");

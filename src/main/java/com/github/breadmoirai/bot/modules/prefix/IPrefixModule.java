@@ -15,15 +15,14 @@
  */
 package com.github.breadmoirai.bot.modules.prefix;
 
-import com.github.breadmoirai.bot.framework.BreadBotClient;
-import com.github.breadmoirai.bot.framework.CommandEngineBuilder;
+import com.github.breadmoirai.bot.framework.BreadBotClientBuilder;
 import com.github.breadmoirai.bot.framework.ICommandModule;
 
 public interface IPrefixModule extends ICommandModule {
 
     @Override
-    default void init(CommandEngineBuilder engineBuilder, BreadBotClient client) {
-        engineBuilder.registerCommand(PrefixCommand.class);
+    default void initialize(BreadBotClientBuilder client) throws NoSuchMethodException, IllegalAccessException {
+        client.createCommand(PrefixCommand.class);
     }
 
     @Override

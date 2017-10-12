@@ -15,16 +15,10 @@
  */
 package com.github.breadmoirai.bot.framework;
 
-import com.github.breadmoirai.bot.framework.command.CommandHandle;
 import com.github.breadmoirai.bot.framework.event.CommandEvent;
-
-import java.util.Map;
 
 public interface CommandEngine {
 
     void handle(CommandEvent event);
 
-    boolean hasCommand(String key);
-
-    Map<String, CommandHandle> getCommandMap();
 }
