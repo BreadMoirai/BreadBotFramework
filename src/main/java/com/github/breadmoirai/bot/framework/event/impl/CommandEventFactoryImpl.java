@@ -16,7 +16,6 @@
 package com.github.breadmoirai.bot.framework.event.impl;
 
 import com.github.breadmoirai.bot.framework.BreadBotClient;
-import com.github.breadmoirai.bot.framework.CommandEngineBuilder;
 import com.github.breadmoirai.bot.framework.event.CommandEvent;
 import com.github.breadmoirai.bot.framework.event.ICommandEventFactory;
 import com.github.breadmoirai.bot.modules.prefix.IPrefixModule;
@@ -35,7 +34,7 @@ public class CommandEventFactoryImpl implements ICommandEventFactory {
     private final IPrefixModule prefixModule;
 
     public CommandEventFactoryImpl(IPrefixModule prefixSupplier) {
-        this.prefixModule = client.getModule(IPrefixModule.class);
+        this.prefixModule = prefixSupplier;
     }
 
     @Override

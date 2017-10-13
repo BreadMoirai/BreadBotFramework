@@ -15,8 +15,6 @@
  */
 package com.github.breadmoirai.bot.modules.admin;
 
-import com.github.breadmoirai.bot.framework.BreadBotClient;
-import com.github.breadmoirai.bot.framework.CommandEngineBuilder;
 import com.github.breadmoirai.bot.framework.ICommandModule;
 import net.dv8tion.jda.core.entities.Member;
 
@@ -27,11 +25,6 @@ public interface IAdminModule extends ICommandModule {
         return "AdminModule";
     }
 
-    @Override
-    default void init(CommandEngineBuilder config, BreadBotClient client) {
-//        config.addPostProcessPredicate(command -> !command.isMarkedWith(Admin.class) || isAdmin(command.getEvent().getMember()));
-        config.registerCommand(AdminCommand.class);
-    }
 
     boolean isAdmin(Member member);
 }

@@ -17,9 +17,10 @@ package com.github.breadmoirai.bot.framework.command.impl;
 import com.github.breadmoirai.bot.framework.BreadBotClientBuilder;
 import com.github.breadmoirai.bot.framework.command.Command;
 import com.github.breadmoirai.bot.framework.command.CommandHandleBuilder;
-import com.github.breadmoirai.bot.framework.command.parameter.CommandParameterFunctionImpl;
 import com.github.breadmoirai.bot.framework.command.CommandPropertyMap;
+import com.github.breadmoirai.bot.framework.command.parameter.CommandParameterFunctionImpl;
 import com.github.breadmoirai.bot.framework.event.CommandEvent;
+import com.github.breadmoirai.bot.util.TypeFinder;
 import net.dv8tion.jda.core.utils.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
@@ -29,8 +30,11 @@ import java.lang.invoke.MethodType;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class CommandHandleBuilderFactory {
@@ -47,6 +51,10 @@ public class CommandHandleBuilderFactory {
                 o -> null,
                 new CommandParameterBuilder[]{new CommandParameterBuilderSpecificImpl("This parameter of type CommandEvent is inconfigurable", () -> new CommandParameterFunctionImpl((commandArguments, commandParser) -> commandParser.getEvent()))},
                 (o, objects) -> onCommand.accept(((CommandEvent) objects[0])));
+    }
+
+    public <T> List<CommandHandleBuilder> fromClassMethods(Class<T> commandClass, @Nullable T object, CommandPropertyMapImpl defaultPropertyMap) throws NoSuchMethodException, IllegalAccessException {
+
     }
 
     public <T> CommandHandleBuilder fromClass(Class<T> commandClass, @Nullable T object, CommandPropertyMapImpl defaultPropertyMap) throws NoSuchMethodException, IllegalAccessException {

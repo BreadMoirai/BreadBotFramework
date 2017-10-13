@@ -64,7 +64,7 @@ public class BreadBotClientBuilder {
         factory = new CommandHandleBuilderFactory(this);
     }
 
-    public BreadBotClientBuilder addModule(ICommandModule... modules) throws NoSuchMethodException, IllegalAccessException {
+    public BreadBotClientBuilder addModule(ICommandModule... modules) {
         for (ICommandModule module : modules) {
             module.initialize(this);
         }
@@ -101,6 +101,7 @@ public class BreadBotClientBuilder {
     }
 
     public <T> CommandHandleBuilder createCommand(Class<T> commandClass, @Nullable T object) throws NoSuchMethodException, IllegalAccessException {
+
         CommandHandleBuilder commandHandleBuilder = factory.fromClass(commandClass, object, null);
         commands.add(commandHandleBuilder);
         return commandHandleBuilder;
