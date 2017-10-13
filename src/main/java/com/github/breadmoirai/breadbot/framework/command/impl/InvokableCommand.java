@@ -12,21 +12,9 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 */
+package com.github.breadmoirai.breadbot.framework.command.impl;
 
-import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
+public interface InvokableCommand {
 
-public class CountCommand {
-
-    private int i = 1;
-
-    public CountCommand() {
-    }
-
-    public CountCommand(int i) {
-        this.i = i;
-    }
-
-    public void count(CommandEvent event) {
-        event.reply(String.valueOf(i++));
-    }
+    void invoke(Object object, Object[] parameters) throws Throwable;
 }

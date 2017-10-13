@@ -13,7 +13,7 @@
   limitations under the License.
 */
 
-import com.github.breadmoirai.bot.framework.event.CommandEvent;
+import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
 
 public class PingCommand {
 

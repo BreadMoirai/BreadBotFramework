@@ -13,11 +13,11 @@
   limitations under the License.
 */
 
-import com.github.breadmoirai.bot.framework.BreadBotClient;
-import com.github.breadmoirai.bot.framework.BreadBotClientBuilder;
-import com.github.breadmoirai.bot.framework.command.CommandHandle;
-import com.github.breadmoirai.bot.framework.command.CommandPreprocessor;
-import com.github.breadmoirai.bot.framework.command.CommandPreprocessorsStatic;
+import com.github.breadmoirai.breadbot.framework.BreadBotClient;
+import com.github.breadmoirai.breadbot.framework.BreadBotClientBuilder;
+import com.github.breadmoirai.breadbot.framework.command.CommandHandle;
+import com.github.breadmoirai.breadbot.framework.command.CommandPreprocessor;
+import com.github.breadmoirai.breadbot.framework.command.CommandPreprocessorsStatic;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;

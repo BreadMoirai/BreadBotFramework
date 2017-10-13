@@ -12,21 +12,11 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 */
+package com.github.breadmoirai.breadbot.framework.error;
 
-import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
+public class MissingCommandAnnotation extends CommandInitializationException {
 
-public class CountCommand {
-
-    private int i = 1;
-
-    public CountCommand() {
-    }
-
-    public CountCommand(int i) {
-        this.i = i;
-    }
-
-    public void count(CommandEvent event) {
-        event.reply(String.valueOf(i++));
+    public MissingCommandAnnotation(Class<?> klass) {
+        super("Command Class: " + klass.getName() + " is not marked with @Command.");
     }
 }

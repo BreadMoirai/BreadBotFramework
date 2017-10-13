@@ -12,21 +12,25 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 */
+package com.github.breadmoirai.breadbot.framework.command;
 
+import com.github.breadmoirai.breadbot.framework.command.impl.CommandProcessStack;
 import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
 
-public class CountCommand {
+import java.util.function.Predicate;
 
-    private int i = 1;
+@FunctionalInterface
+public interface CommandPreprocessorPredicate extends CommandPreprocessorFunction, Predicate<CommandEvent> {
 
-    public CountCommand() {
+    @Override
+    default void process(Object commandObj, CommandHandle targetHandle, CommandEvent event, CommandProcessStack processQueue) {
+        if (test(event)) {
+            processQueue.runNext();
+        }
     }
 
-    public CountCommand(int i) {
-        this.i = i;
-    }
+    @Override
+    boolean test(CommandEvent event);
 
-    public void count(CommandEvent event) {
-        event.reply(String.valueOf(i++));
-    }
+
 }

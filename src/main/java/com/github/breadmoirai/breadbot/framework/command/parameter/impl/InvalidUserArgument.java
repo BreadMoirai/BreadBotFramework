@@ -12,21 +12,18 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 */
+package com.github.breadmoirai.breadbot.framework.command.parameter.impl;
 
 import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
 
-public class CountCommand {
+public class InvalidUserArgument extends InvalidMentionArgument {
 
-    private int i = 1;
-
-    public CountCommand() {
+    public InvalidUserArgument(CommandEvent event, String s, long idLong) {
+        super(event, s, idLong);
     }
 
-    public CountCommand(int i) {
-        this.i = i;
-    }
-
-    public void count(CommandEvent event) {
-        event.reply(String.valueOf(i++));
+    @Override
+    public boolean isUser() {
+        return true;
     }
 }

@@ -12,21 +12,14 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 */
+package com.github.breadmoirai.breadbot.framework.error;
 
-import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
-
-public class CountCommand {
-
-    private int i = 1;
-
-    public CountCommand() {
+public class CommandInitializationException extends RuntimeException {
+    public CommandInitializationException(String message) {
+        super(message);
     }
 
-    public CountCommand(int i) {
-        this.i = i;
-    }
-
-    public void count(CommandEvent event) {
-        event.reply(String.valueOf(i++));
+    public CommandInitializationException(String message, Throwable cause) {
+        super(message, cause);
     }
 }

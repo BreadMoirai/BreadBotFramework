@@ -12,21 +12,11 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 */
+package com.github.breadmoirai.breadbot.framework.error;
 
-import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
+public class DuplicateCommandKeyException extends Exception {
 
-public class CountCommand {
-
-    private int i = 1;
-
-    public CountCommand() {
-    }
-
-    public CountCommand(int i) {
-        this.i = i;
-    }
-
-    public void count(CommandEvent event) {
-        event.reply(String.valueOf(i++));
+    public DuplicateCommandKeyException(String key, Object a, Object b) {
+        super("Duplicate Command key: \"" + key + "\" found for " + a + " and " + b);
     }
 }

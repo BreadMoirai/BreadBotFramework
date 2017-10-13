@@ -12,21 +12,20 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 */
+package com.github.breadmoirai.breadbot.framework.command.impl;
 
-import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
+import java.lang.invoke.MethodHandle;
 
-public class CountCommand {
+public class InvokableCommandHandle implements InvokableCommand {
 
-    private int i = 1;
+    private final MethodHandle handle;
 
-    public CountCommand() {
+    public InvokableCommandHandle(MethodHandle handle) {
+        this.handle = handle;
     }
 
-    public CountCommand(int i) {
-        this.i = i;
-    }
-
-    public void count(CommandEvent event) {
-        event.reply(String.valueOf(i++));
+    @Override
+    public void invoke(Object object, Object[] parameters) throws Throwable {
+        handle.invoke(object, parameters);
     }
 }

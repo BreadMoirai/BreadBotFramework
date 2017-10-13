@@ -13,10 +13,10 @@
   limitations under the License.
 */
 
-import com.github.breadmoirai.bot.framework.command.Command;
-import com.github.breadmoirai.bot.framework.command.parameter.Index;
-import com.github.breadmoirai.bot.framework.command.parameter.Width;
-import com.github.breadmoirai.bot.framework.event.CommandEvent;
+import com.github.breadmoirai.breadbot.framework.command.Command;
+import com.github.breadmoirai.breadbot.framework.command.parameter.Index;
+import com.github.breadmoirai.breadbot.framework.command.parameter.Width;
+import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
 
 public class NameCommand {
 

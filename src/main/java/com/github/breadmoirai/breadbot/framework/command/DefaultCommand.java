@@ -12,21 +12,17 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 */
+package com.github.breadmoirai.breadbot.framework.command;
 
-import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
+import com.github.breadmoirai.breadbot.framework.command.parameter.RegisterPropertyMapper;
 
-public class CountCommand {
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-    private int i = 1;
-
-    public CountCommand() {
-    }
-
-    public CountCommand(int i) {
-        this.i = i;
-    }
-
-    public void count(CommandEvent event) {
-        event.reply(String.valueOf(i++));
-    }
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+@RegisterPropertyMapper(mapper = DefaultCommandPropertyMapper.class)
+public @interface DefaultCommand {
 }

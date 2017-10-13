@@ -12,21 +12,13 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 */
+package com.github.breadmoirai.breadbot.framework.command.parameter;
 
 import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
 
-public class CountCommand {
+import java.util.function.BiConsumer;
 
-    private int i = 1;
+@FunctionalInterface
+public interface MissingArgumentConsumer extends BiConsumer<CommandEvent, CommandParameter> {
 
-    public CountCommand() {
-    }
-
-    public CountCommand(int i) {
-        this.i = i;
-    }
-
-    public void count(CommandEvent event) {
-        event.reply(String.valueOf(i++));
-    }
 }

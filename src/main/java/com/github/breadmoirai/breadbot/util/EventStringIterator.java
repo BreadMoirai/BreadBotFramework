@@ -12,21 +12,33 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 */
+package com.github.breadmoirai.breadbot.util;
 
+import com.github.breadmoirai.breadbot.framework.command.parameter.CommandArgument;
 import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
 
-public class CountCommand {
+import java.util.Iterator;
 
-    private int i = 1;
+public class EventStringIterator implements Iterator<String> {
+    private final Iterator<CommandArgument> base;
 
-    public CountCommand() {
+    public EventStringIterator(CommandEvent event) {
+        this.base = event.getArguments().iterator();
     }
 
-    public CountCommand(int i) {
-        this.i = i;
+    @Override
+    public boolean hasNext() {
+        return base.hasNext();
     }
 
-    public void count(CommandEvent event) {
-        event.reply(String.valueOf(i++));
+    @Override
+    public String next() {
+        return base.next().getArgument();
     }
+
+    @Override
+    public void remove() {
+        base.remove();
+    }
+
 }
