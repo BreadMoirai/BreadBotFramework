@@ -14,5 +14,27 @@
 */
 package com.github.breadmoirai.breadbot.framework.error;
 
+/**
+ * This is an unchecked exception that wraps checked exceptions.
+ */
 public class BreadBotException extends RuntimeException {
+    public BreadBotException() {
+        super();
+    }
+
+    public BreadBotException(String message) {
+        super(message);
+    }
+
+    public BreadBotException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public BreadBotException(Throwable cause) {
+        super(cause);
+    }
+
+    protected BreadBotException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+        super(message, cause, enableSuppression, writableStackTrace);
+    }
 }

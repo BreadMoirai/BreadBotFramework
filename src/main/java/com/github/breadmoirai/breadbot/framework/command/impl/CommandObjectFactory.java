@@ -14,11 +14,32 @@
 */
 package com.github.breadmoirai.breadbot.framework.command.impl;
 
-public interface CommandObjectFactory {
+import com.github.breadmoirai.breadbot.util.ExceptionalSupplier;
 
-    Object create(Object o) throws Throwable;
+import java.util.Objects;
+import java.util.function.Consumer;
 
-    default Object supply() throws Throwable {
-        return create(null);
+public class CommandObjectFactory {
+
+    private final ExceptionalSupplier<Object> supplier;
+    private Consumer<Throwable> exceptionHandler;
+
+    public CommandObjectFactory(ExceptionalSupplier<Object> supplier) {
+        this.supplier = supplier;
     }
+
+    public void setExceptionHandler(Consumer<Throwable> exceptionHandler) {
+        Objects.requireNonNull(exceptionHandler, "ExceptionHandler must not be null.");
+        this.exceptionHandler = exceptionHandler;
+    }
+
+    public Object get() {
+        try {
+            return supplier.get();
+        } catch (Throwable t) {
+            exceptionHandler.accept(t);
+            return null;
+        }
+    }
+
 }

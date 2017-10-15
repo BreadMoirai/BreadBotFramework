@@ -51,30 +51,23 @@ public class CommandHandleImpl implements CommandHandle {
     }
 
     @Override
-    public boolean handle(Object parent, CommandEvent event, Iterator<String> keyItr) {
-        final Object commandObj;
-        try {
-            commandObj = commandSupplier.create(parent);
-        } catch (Throwable throwable) {
-            //todo log this
-            throwable.printStackTrace();
-            return false;
-        }
+    public boolean handle(CommandEvent event, Iterator<String> keyItr) {
         if (keyItr != null && keyItr.hasNext() && subCommandMap != null) {
             String next = keyItr.next().toLowerCase();
             if (subCommandMap.containsKey(next)) {
                 CommandHandle subHandle = subCommandMap.get(next);
                 if (event.isHelpEvent()) {
-                    return subHandle.handle(commandObj, event, keyItr) || (subCommandMap.containsKey("help") && subCommandMap.get("help").handle(commandObj, event, null));
+                    return subHandle.handle(event, keyItr) || (subCommandMap.containsKey("help") && subCommandMap.get("help").handle(event, null));
                 } else {
-                    return subHandle.handle(commandObj, event, keyItr) || runThis(commandObj, event);
+                    return subHandle.handle(event, keyItr) || runThis(event);
                 }
             }
         }
-        return runThis(commandObj, event);
+        return runThis(event);
     }
 
-    private boolean runThis(Object commandObj, CommandEvent event) {
+    private boolean runThis(CommandEvent event) {
+        Object commandObj = commandSupplier.get();
         if (invokableCommand != null) {
             final CommandParser parser = new CommandParser(event, this, event.getArguments(), commandParameters);
             final CommandRunner runner = new CommandRunner(commandObj, event, invokableCommand, parser, Throwable::printStackTrace); //todo log this

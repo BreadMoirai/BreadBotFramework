@@ -19,6 +19,9 @@ import com.github.breadmoirai.breadbot.framework.BreadBotClientBuilder;
 import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.GenericDeclaration;
+import java.lang.reflect.Method;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
@@ -59,11 +62,17 @@ public interface CommandHandleBuilder {
         return addPreprocessor(new CommandPreprocessor(identifier, predicate));
     }
 
-    CommandHandleBuilder addPreprocessor(CommandPreprocessor preprocessor);
+    default CommandHandleBuilder addPreprocessor(CommandPreprocessor preprocessor) {
+        getPreprocessors().add(preprocessor);
+        return this;
+    }
 
     List<CommandPreprocessor> getPreprocessors();
 
-    CommandHandleBuilder sortPreprocessors(Comparator<CommandPreprocessor> comparator);
+    default CommandHandleBuilder sortPreprocessors(Comparator<CommandPreprocessor> comparator) {
+        getPreprocessors().sort(comparator);
+        return this;
+    }
 
 //    default CommandHandleBuilder addAssociatedPreprocessors() {
 //        final Map<Class<?>, Function<?, CommandPreprocessor>> preprocessorFactoryMap = getClientBuilder().getPreprocessors().getPreprocessorFactoryMap();
@@ -81,10 +90,11 @@ public interface CommandHandleBuilder {
 //    }
 
     /**
-     * Returns the object that this command was created from.
-     * @return whatever was passed into builder to create this.
+     *
      */
-    Object getDeclaringObject();
+    Class<?> getDeclaringClass();
+
+    Method getDeclaringMethod();
 
     BreadBotClientBuilder getClientBuilder();
 

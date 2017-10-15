@@ -133,6 +133,11 @@ public class CommandHandleBuilderImpl implements CommandHandleBuilder {
     }
 
     @Override
+    public List<CommandPreprocessor> getPreprocessors() {
+        return preprocessors;
+    }
+
+    @Override
     public CommandHandleBuilder sortPreprocessors(Comparator<CommandPreprocessor> preprocessorComparator) {
         preprocessors.sort(preprocessorComparator);
         return null;

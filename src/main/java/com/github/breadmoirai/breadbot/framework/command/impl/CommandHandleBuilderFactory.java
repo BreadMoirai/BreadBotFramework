@@ -19,9 +19,10 @@ import com.github.breadmoirai.breadbot.framework.command.Command;
 import com.github.breadmoirai.breadbot.framework.command.CommandHandleBuilder;
 import com.github.breadmoirai.breadbot.framework.command.CommandPropertyMap;
 import com.github.breadmoirai.breadbot.framework.command.parameter.CommandParameterFunctionImpl;
+import com.github.breadmoirai.breadbot.framework.error.BreadBotException;
 import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
+import com.github.breadmoirai.breadbot.util.ExceptionalSupplier;
 import net.dv8tion.jda.core.utils.tuple.Pair;
-import org.jetbrains.annotations.Nullable;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -29,11 +30,11 @@ import java.lang.invoke.MethodType;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class CommandHandleBuilderFactory {
 
@@ -46,28 +47,52 @@ public class CommandHandleBuilderFactory {
     public CommandHandleBuilder fromConsumer(Consumer<CommandEvent> onCommand) {
         return new CommandHandleBuilderImpl(onCommand,
                 clientBuilder,
-                o -> null,
+                new CommandObjectFactory(() -> onCommand),
                 new CommandParameterBuilder[]{new CommandParameterBuilderSpecificImpl("This parameter of type CommandEvent is inconfigurable", () -> new CommandParameterFunctionImpl((commandArguments, commandParser) -> commandParser.getEvent()))},
                 (o, objects) -> onCommand.accept(((CommandEvent) objects[0])));
     }
 
-    public <T> List<CommandHandleBuilder> fromClassMethods(Class<T> commandClass, @Nullable T object, CommandPropertyMapImpl defaultPropertyMap) throws NoSuchMethodException, IllegalAccessException {
+    public List<CommandHandleBuilder> fromClassMethods(Class<?> commandClass, Supplier<Object> supplier, CommandPropertyMapImpl defaultPropertyMap) throws BreadBotException {
+        final ArrayList<CommandHandleBuilder> handles = new ArrayList<>();
+        final CommandObjectFactory commandSupplier;
+        if (supplier != null) {
+            commandSupplier = new CommandObjectFactory(ExceptionalSupplier.convert(supplier));
+        } else {
+            commandSupplier = getSupplierForClass(commandClass);
+        }
 
+        final CommandPropertyMapImpl propertyMap = new CommandPropertyMapImpl();
+        if (defaultPropertyMap != null)
+            propertyMap.setDefaultProperties(defaultPropertyMap);
+        else {
+            propertyMap.setDefaultProperties(CommandPackageProperties.getPropertiesForPackage(commandClass.getPackage()));
+        }
+        propertyMap.putAnnotations(commandClass.getAnnotations());
+
+        Stream<CommandHandleBuilderImpl> commandHandleBuilderStream = Arrays.stream(commandClass.getMethods())
+                .filter(method -> method.getParameterCount() > 0)
+                .filter(method -> method.getParameterTypes()[0] == CommandEvent.class)
+                .filter(method -> method.isAnnotationPresent(Command.class))
+                .filter(method -> !Modifier.isStatic(method.getModifiers()))
+                .map(method -> {
+                    CommandPropertyMapImpl map = new CommandPropertyMapImpl(propertyMap, method.getAnnotations());
+                    Pair<CommandParameterBuilder[], InvokableCommand> invokableCommandPair = mapMethod(method, map);
+                    return new CommandHandleBuilderImpl(method, clientBuilder, commandSupplier, invokableCommandPair.getLeft(), invokableCommandPair.getRight());
+                });
+
+        Arrays.stream(commandClass.getClasses())
+                .filter(aClass -> aClass.isAnnotationPresent(Command.class))
+                .map(aClass -> fromClass(commandClass))
     }
 
-    public <T> CommandHandleBuilder fromClass(Class<T> commandClass, @Nullable T object, CommandPropertyMapImpl defaultPropertyMap) throws NoSuchMethodException, IllegalAccessException {
-        final Class<?> superclass = commandClass.getSuperclass();
-        final CommandObjectFactory commandSupplier;
-        if (object != null) {
-            commandSupplier = nullObj -> object;
-        } else if (superclass == null) {
-            final MethodHandle constructor = MethodHandles.publicLookup().findConstructor(commandClass, MethodType.methodType(void.class));
-            //noinspection Convert2MethodRef
-            commandSupplier = nullObj -> constructor.invoke();
+    public CommandHandleBuilder fromClass(Class<?> commandClass, CommandObjectFactory factory, Supplier<Object> supplier, CommandPropertyMapImpl defaultPropertyMap) throws BreadBotException {
+        CommandObjectFactory commandSupplier;
+        if (factory != null) {
+            commandSupplier = factory;
+        } else if (supplier != null) {
+            commandSupplier = new CommandObjectFactory(ExceptionalSupplier.convert(supplier));
         } else {
-            final MethodHandle constructor = MethodHandles.publicLookup().findConstructor(commandClass, MethodType.methodType(void.class, superclass));
-            //noinspection Convert2MethodRef
-            commandSupplier = o -> constructor.invoke(o);
+            commandSupplier = getSupplierForClass(commandClass);
         }
 
         final CommandPropertyMapImpl propertyMap = new CommandPropertyMapImpl();
@@ -105,7 +130,7 @@ public class CommandHandleBuilderFactory {
             commandFunction = null;
             methodPropertyMap = propertyMap;
         }
-        final CommandHandleBuilderImpl commandHandleBuilder = new CommandHandleBuilderImpl(object != null ? object : commandClass,
+        final CommandHandleBuilderImpl commandHandleBuilder = new CommandHandleBuilderImpl(commandClass,
                 clientBuilder,
                 commandSupplier,
                 parameterBuilders,
@@ -114,7 +139,6 @@ public class CommandHandleBuilderFactory {
 
         List<Class<?>> classes = Arrays.stream(commandClass.getClasses())
                 .filter(aClass -> aClass.isAnnotationPresent(Command.class))
-                .filter(aClass -> !Modifier.isStatic(aClass.getModifiers()))
                 .collect(Collectors.toList());
 
         String simpleName = commandClass.getSimpleName().toLowerCase();
@@ -136,23 +160,111 @@ public class CommandHandleBuilderFactory {
         }
 
         for (Class<?> aClass : classes) {
-            CommandHandleBuilder subCommandBuilder = fromClass(aClass, null, propertyMap);
+            CommandHandleBuilder subCommandBuilder;
+            if (supplier == null)
+                subCommandBuilder = fromClass(aClass, null, null, propertyMap);
+            else {
+                new CommandObjectFactory(() -> {
+
+                })
+                subCommandBuilder =
+            }
             commandHandleBuilder.addSubCommand(subCommandBuilder);
         }
         return commandHandleBuilder;
     }
 
-    private CommandHandleBuilder fromMethod(Method method, CommandPropertyMapImpl map) throws IllegalAccessException {
+    private CommandHandleBuilder fromMethod(Method method, CommandPropertyMapImpl map) throws BreadBotException {
         Pair<CommandParameterBuilder[], InvokableCommand> pair = mapMethod(method, map);
-        return new CommandHandleBuilderImpl(method, clientBuilder, o -> o, pair.getLeft(), pair.getRight(), map);
+        return new CommandHandleBuilderImpl(method, clientBuilder, getSupplierForClass(method.getDeclaringClass()), pair.getLeft(), pair.getRight(), map);
     }
 
-    private Pair<CommandParameterBuilder[], InvokableCommand> mapMethod(Method method, CommandPropertyMap map) throws IllegalAccessException {
+    private CommandObjectFactory getSupplierForClass(Class<?> klass) throws BreadBotException {
+        ArrayDeque<MethodHandle> constructors = new ArrayDeque<>();
+        Class<?> aClass = klass;
+        while (aClass != null) {
+            final Class<?> outClass = Modifier.isStatic(klass.getModifiers()) ? null : klass.getDeclaringClass();
+            if (outClass == null) {
+                try {
+                    MethodHandle constructor = MethodHandles.publicLookup().findConstructor(aClass, MethodType.methodType(void.class));
+                    constructors.addFirst(constructor);
+                } catch (NoSuchMethodException | IllegalAccessException e) {
+                    throw new BreadBotException(aClass + " is registered as a command but does not have a public no-args constructor", e);
+                }
+                break;
+            } else {
+                try {
+                    MethodHandle constructor = MethodHandles.publicLookup().findConstructor(aClass, MethodType.methodType(void.class, outClass));
+                    constructors.addFirst(constructor);
+                } catch (NoSuchMethodException | IllegalAccessException e) {
+                    throw new BreadBotException(aClass + " is registered as a command but does not have a public no-args constructor", e);
+                }
+            }
+            aClass = outClass;
+        }
+
+        MethodHandle[] methodHandles = constructors.toArray(new MethodHandle[0]);
+
+        if (methodHandles.length == 1) {
+            MethodHandle methodHandle = methodHandles[0];
+            return new CommandObjectFactory(methodHandle::invoke);
+        } else {
+            return new CommandObjectFactory(() -> {
+                Object o = methodHandles[0].invoke();
+                for (int i = 1; i < methodHandles.length; i++) {
+                    o = methodHandles[i].invoke(o);
+                }
+                return o;
+            });
+        }
+    }
+
+    private CommandObjectFactory getSupplierForObject(Class<?> oClass, Supplier<Object> supplier, Class<?> klass) throws BreadBotException {
+        ArrayDeque<MethodHandle> constructors = new ArrayDeque<>();
+        Class<?> aClass = klass;
+        while (aClass != oClass) {
+            final Class<?> outClass = Modifier.isStatic(klass.getModifiers()) ? null : klass.getDeclaringClass();
+            if (outClass == null) {
+                throw new BreadBotException(aClass + " is registered as a command but does not have a public no-args constructor", e);
+                break;
+            } else {
+                try {
+                    MethodHandle constructor = MethodHandles.publicLookup().findConstructor(aClass, MethodType.methodType(void.class, outClass));
+                    constructors.addFirst(constructor);
+                } catch (NoSuchMethodException | IllegalAccessException e) {
+                    throw new BreadBotException(aClass + " is registered as a command but does not have a public no-args constructor", e);
+                }
+            }
+            aClass = outClass;
+        }
+
+        MethodHandle[] methodHandles = constructors.toArray(new MethodHandle[0]);
+
+        if (methodHandles.length == 1) {
+            MethodHandle methodHandle = methodHandles[0];
+            return new CommandObjectFactory(() -> methodHandle.invoke(supplier.get()));
+        } else {
+            return new CommandObjectFactory(() -> {
+                Object o = methodHandles[0].invoke(supplier.get());
+                for (int i = 1; i < methodHandles.length; i++) {
+                    o = methodHandles[i].invoke(o);
+                }
+                return o;
+            });
+        }
+    }
+
+    private Pair<CommandParameterBuilder[], InvokableCommand> mapMethod(Method method, CommandPropertyMap map) throws BreadBotException {
         final CommandParameterBuilderFactory factory = new CommandParameterBuilderFactory(map, method.getName());
         final Parameter[] parameters = method.getParameters();
         final CommandParameterBuilder[] parameterBuilders = new CommandParameterBuilder[parameters.length];
         Arrays.setAll(parameterBuilders, value -> factory.builder(parameters[value]));
-        final MethodHandle handle = MethodHandles.publicLookup().unreflect(method);
+        final MethodHandle handle;
+        try {
+            handle = MethodHandles.publicLookup().unreflect(method);
+        } catch (IllegalAccessException e) {
+            throw new BreadBotException(method + " could not be accessed.", e);
+        }
         final MethodHandle spread = handle.asSpreader(Object[].class, parameterBuilders.length);
         InvokableCommandHandle invokableCommandHandle = new InvokableCommandHandle(spread);
         return Pair.of(parameterBuilders, invokableCommandHandle);
