@@ -69,7 +69,7 @@ public class CommandHandleBuilderFactory {
         }
         propertyMap.putAnnotations(commandClass.getAnnotations());
 
-        Stream<CommandHandleBuilderImpl> commandHandleBuilderStream = Arrays.stream(commandClass.getMethods())
+        Stream<CommandHandleBuilderImpl> stream1 = Arrays.stream(commandClass.getMethods())
                 .filter(method -> method.getParameterCount() > 0)
                 .filter(method -> method.getParameterTypes()[0] == CommandEvent.class)
                 .filter(method -> method.isAnnotationPresent(Command.class))
@@ -80,9 +80,11 @@ public class CommandHandleBuilderFactory {
                     return new CommandHandleBuilderImpl(method, clientBuilder, commandSupplier, invokableCommandPair.getLeft(), invokableCommandPair.getRight());
                 });
 
-        Arrays.stream(commandClass.getClasses())
+        Stream<CommandHandleBuilder> stream2 = Arrays.stream(commandClass.getClasses())
                 .filter(aClass -> aClass.isAnnotationPresent(Command.class))
-                .map(aClass -> fromClass(commandClass))
+                .map(aClass -> fromClass(commandClass, null, supplier, propertyMap));
+
+        return Stream.concat(stream1, stream2).collect(Collectors.toList());
     }
 
     public CommandHandleBuilder fromClass(Class<?> commandClass, CommandObjectFactory factory, Supplier<Object> supplier, CommandPropertyMapImpl defaultPropertyMap) throws BreadBotException {
@@ -164,10 +166,7 @@ public class CommandHandleBuilderFactory {
             if (supplier == null)
                 subCommandBuilder = fromClass(aClass, null, null, propertyMap);
             else {
-                new CommandObjectFactory(() -> {
-
-                })
-                subCommandBuilder =
+                subCommandBuilder = fromClass(aClass, getSupplierForObject(aClass, supplier, aClass), supplier, propertyMap);
             }
             commandHandleBuilder.addSubCommand(subCommandBuilder);
         }
@@ -225,8 +224,7 @@ public class CommandHandleBuilderFactory {
         while (aClass != oClass) {
             final Class<?> outClass = Modifier.isStatic(klass.getModifiers()) ? null : klass.getDeclaringClass();
             if (outClass == null) {
-                throw new BreadBotException(aClass + " is registered as a command but does not have a public no-args constructor", e);
-                break;
+                throw new BreadBotException("SupplierForObject ClassMisMatch");
             } else {
                 try {
                     MethodHandle constructor = MethodHandles.publicLookup().findConstructor(aClass, MethodType.methodType(void.class, outClass));
