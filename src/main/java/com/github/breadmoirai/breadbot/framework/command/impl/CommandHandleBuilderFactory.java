@@ -23,6 +23,7 @@ import com.github.breadmoirai.breadbot.framework.error.BreadBotException;
 import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
 import com.github.breadmoirai.breadbot.util.ExceptionalSupplier;
 import net.dv8tion.jda.core.utils.tuple.Pair;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -53,27 +54,11 @@ public class CommandHandleBuilderFactory {
     }
 
     public List<CommandHandleBuilder> fromClassMethods(Class<?> commandClass, Supplier<Object> supplier, CommandPropertyMapImpl defaultPropertyMap) throws BreadBotException {
-        final ArrayList<CommandHandleBuilder> handles = new ArrayList<>();
-        final CommandObjectFactory commandSupplier;
-        if (supplier != null) {
-            commandSupplier = new CommandObjectFactory(ExceptionalSupplier.convert(supplier));
-        } else {
-            commandSupplier = getSupplierForClass(commandClass);
-        }
+        final CommandObjectFactory commandSupplier = createCommandFactory(commandClass, null, supplier);
 
-        final CommandPropertyMapImpl propertyMap = new CommandPropertyMapImpl();
-        if (defaultPropertyMap != null)
-            propertyMap.setDefaultProperties(defaultPropertyMap);
-        else {
-            propertyMap.setDefaultProperties(CommandPackageProperties.getPropertiesForPackage(commandClass.getPackage()));
-        }
-        propertyMap.putAnnotations(commandClass.getAnnotations());
+        final CommandPropertyMapImpl propertyMap = createPropertyMap(commandClass, defaultPropertyMap);
 
-        Stream<CommandHandleBuilderImpl> stream1 = Arrays.stream(commandClass.getMethods())
-                .filter(method -> method.getParameterCount() > 0)
-                .filter(method -> method.getParameterTypes()[0] == CommandEvent.class)
-                .filter(method -> method.isAnnotationPresent(Command.class))
-                .filter(method -> !Modifier.isStatic(method.getModifiers()))
+        Stream<CommandHandleBuilderImpl> stream1 = getCommandMethodStream(commandClass)
                 .map(method -> {
                     CommandPropertyMapImpl map = new CommandPropertyMapImpl(propertyMap, method.getAnnotations());
                     Pair<CommandParameterBuilder[], InvokableCommand> invokableCommandPair = mapMethod(method, map);
@@ -88,28 +73,11 @@ public class CommandHandleBuilderFactory {
     }
 
     public CommandHandleBuilder fromClass(Class<?> commandClass, CommandObjectFactory factory, Supplier<Object> supplier, CommandPropertyMapImpl defaultPropertyMap) throws BreadBotException {
-        CommandObjectFactory commandSupplier;
-        if (factory != null) {
-            commandSupplier = factory;
-        } else if (supplier != null) {
-            commandSupplier = new CommandObjectFactory(ExceptionalSupplier.convert(supplier));
-        } else {
-            commandSupplier = getSupplierForClass(commandClass);
-        }
+        CommandObjectFactory commandSupplier = createCommandFactory(commandClass, factory, supplier);
 
-        final CommandPropertyMapImpl propertyMap = new CommandPropertyMapImpl();
-        if (defaultPropertyMap != null)
-            propertyMap.setDefaultProperties(defaultPropertyMap);
-        else {
-            propertyMap.setDefaultProperties(CommandPackageProperties.getPropertiesForPackage(commandClass.getPackage()));
-        }
-        propertyMap.putAnnotations(commandClass.getAnnotations());
+        final CommandPropertyMapImpl propertyMap = createPropertyMap(commandClass, defaultPropertyMap);
 
-        List<Pair<Method, CommandPropertyMapImpl>> methods = Arrays.stream(commandClass.getMethods())
-                .filter(method -> method.getParameterCount() > 0)
-                .filter(method -> method.getParameterTypes()[0] == CommandEvent.class)
-                .filter(method -> method.isAnnotationPresent(Command.class))
-                .filter(method -> !Modifier.isStatic(method.getModifiers()))
+        List<Pair<Method, CommandPropertyMapImpl>> methods = getCommandMethodStream(commandClass)
                 .map(method -> Pair.of(method, new CommandPropertyMapImpl(propertyMap, method.getAnnotations())))
                 .collect(Collectors.toList());
 
@@ -143,18 +111,7 @@ public class CommandHandleBuilderFactory {
                 .filter(aClass -> aClass.isAnnotationPresent(Command.class))
                 .collect(Collectors.toList());
 
-        String simpleName = commandClass.getSimpleName().toLowerCase();
-        commandHandleBuilder.setName(simpleName);
-        if (simpleName.endsWith("command") && simpleName.length() > 7) {
-            simpleName = simpleName.substring(0, simpleName.length() - 7);
-        }
-        commandHandleBuilder.setKeys(simpleName);
-        String[] packageNames = commandClass.getPackage().getName().split("\\.");
-        String packageName = packageNames[packageNames.length - 1];
-        if (packageName.matches("(command|cmd)(s)?") && packageNames.length > 1) {
-            packageName = packageNames[packageNames.length - 2];
-        }
-        commandHandleBuilder.setGroup(packageName);
+        setDefaultValues(commandClass, commandHandleBuilder);
 
         for (Pair<Method, CommandPropertyMapImpl> method : methods) {
             CommandHandleBuilder handle = fromMethod(method.getLeft(), method.getRight());
@@ -173,9 +130,77 @@ public class CommandHandleBuilderFactory {
         return commandHandleBuilder;
     }
 
+    private void setDefaultValues(Class<?> commandClass, CommandHandleBuilderImpl commandHandleBuilder) {
+        String simpleName = commandClass.getSimpleName().toLowerCase();
+        commandHandleBuilder.setName(simpleName);
+        if (simpleName.endsWith("command") && simpleName.length() > 7) {
+            simpleName = simpleName.substring(0, simpleName.length() - 7);
+        }
+        commandHandleBuilder.setKeys(simpleName);
+        String[] packageNames = commandClass.getPackage().getName().split("\\.");
+        String packageName = packageNames[packageNames.length - 1];
+        if (packageName.matches("(command|cmd)(s)?") && packageNames.length > 1) {
+            packageName = packageNames[packageNames.length - 2];
+        }
+        commandHandleBuilder.setGroup(packageName);
+    }
+
     private CommandHandleBuilder fromMethod(Method method, CommandPropertyMapImpl map) throws BreadBotException {
         Pair<CommandParameterBuilder[], InvokableCommand> pair = mapMethod(method, map);
         return new CommandHandleBuilderImpl(method, clientBuilder, getSupplierForClass(method.getDeclaringClass()), pair.getLeft(), pair.getRight(), map);
+    }
+
+    private Pair<CommandParameterBuilder[], InvokableCommand> mapMethod(Method method, CommandPropertyMap map) throws BreadBotException {
+        final CommandParameterBuilderFactory factory = new CommandParameterBuilderFactory(map, method.getName());
+        final Parameter[] parameters = method.getParameters();
+        final CommandParameterBuilder[] parameterBuilders = new CommandParameterBuilder[parameters.length];
+        Arrays.setAll(parameterBuilders, value -> factory.builder(parameters[value]));
+        final MethodHandle handle;
+        try {
+            handle = MethodHandles.publicLookup().unreflect(method);
+        } catch (IllegalAccessException e) {
+            throw new BreadBotException(method + " could not be accessed.", e);
+        }
+        final MethodHandle spread = handle.asSpreader(Object[].class, parameterBuilders.length);
+        InvokableCommandHandle invokableCommandHandle = new InvokableCommandHandle(spread);
+        return Pair.of(parameterBuilders, invokableCommandHandle);
+    }
+
+    @NotNull
+    private Stream<Method> getCommandMethodStream(Class<?> commandClass) {
+        return Arrays.stream(commandClass.getMethods())
+                .filter(method -> method.getParameterCount() > 0)
+                .filter(method -> method.getParameterTypes()[0] == CommandEvent.class)
+                .filter(method -> method.isAnnotationPresent(Command.class))
+                .filter(method -> !Modifier.isStatic(method.getModifiers()));
+    }
+
+    @NotNull
+    private CommandPropertyMapImpl createPropertyMap(Class<?> commandClass, CommandPropertyMapImpl defaultPropertyMap) {
+        CommandPropertyMapImpl propertyMap;
+        CommandPropertyMapImpl propertyMap1 = new CommandPropertyMapImpl();
+        if (defaultPropertyMap != null) {
+            propertyMap1.setDefaultProperties(defaultPropertyMap);
+        }
+        else {
+            propertyMap1.setDefaultProperties(CommandPackageProperties.getPropertiesForPackage(commandClass.getPackage()));
+        }
+        propertyMap1.putAnnotations(commandClass.getAnnotations());
+        propertyMap = propertyMap1;
+        return propertyMap;
+    }
+
+    @NotNull
+    private CommandObjectFactory createCommandFactory(Class<?> commandClass, CommandObjectFactory factory, Supplier<Object> supplier) {
+        CommandObjectFactory commandSupplier;
+        if (factory != null) {
+            commandSupplier = factory;
+        } else if (supplier != null) {
+            commandSupplier = new CommandObjectFactory(ExceptionalSupplier.convert(supplier));
+        } else {
+            commandSupplier = getSupplierForClass(commandClass);
+        }
+        return commandSupplier;
     }
 
     private CommandObjectFactory getSupplierForClass(Class<?> klass) throws BreadBotException {
@@ -250,21 +275,5 @@ public class CommandHandleBuilderFactory {
                 return o;
             });
         }
-    }
-
-    private Pair<CommandParameterBuilder[], InvokableCommand> mapMethod(Method method, CommandPropertyMap map) throws BreadBotException {
-        final CommandParameterBuilderFactory factory = new CommandParameterBuilderFactory(map, method.getName());
-        final Parameter[] parameters = method.getParameters();
-        final CommandParameterBuilder[] parameterBuilders = new CommandParameterBuilder[parameters.length];
-        Arrays.setAll(parameterBuilders, value -> factory.builder(parameters[value]));
-        final MethodHandle handle;
-        try {
-            handle = MethodHandles.publicLookup().unreflect(method);
-        } catch (IllegalAccessException e) {
-            throw new BreadBotException(method + " could not be accessed.", e);
-        }
-        final MethodHandle spread = handle.asSpreader(Object[].class, parameterBuilders.length);
-        InvokableCommandHandle invokableCommandHandle = new InvokableCommandHandle(spread);
-        return Pair.of(parameterBuilders, invokableCommandHandle);
     }
 }

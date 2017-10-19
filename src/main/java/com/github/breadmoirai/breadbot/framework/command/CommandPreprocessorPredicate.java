@@ -19,6 +19,9 @@ import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
 
 import java.util.function.Predicate;
 
+/**
+ * Returns {@code true} if the command should continue to execute, {@code false} otherwise.
+ */
 @FunctionalInterface
 public interface CommandPreprocessorPredicate extends CommandPreprocessorFunction, Predicate<CommandEvent> {
 
@@ -29,6 +32,9 @@ public interface CommandPreprocessorPredicate extends CommandPreprocessorFunctio
         }
     }
 
+    /**
+     * @return {@code true} if the command should continue to execute, {@code false} otherwise.
+     */
     @Override
     boolean test(CommandEvent event);
 

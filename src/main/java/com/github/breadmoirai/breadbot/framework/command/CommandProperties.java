@@ -120,8 +120,8 @@ public class CommandProperties {
      * If a modifier is not found the {@code builder} is not modified.
      *
      * @param propertyType the property class
-     * @param builder the CommandHandleBuilder to be modified
-     * @param <T> the property type
+     * @param builder      the CommandHandleBuilder to be modified
+     * @param <T>          the property type
      * @see #putCommandModifier(Class, BiConsumer)
      * @see #appendCommandModifier(Class, BiConsumer)
      * @see #getCommandModifier(Class)
@@ -164,8 +164,8 @@ public class CommandProperties {
      * If a modifier is not found the {@code builder} is not modified.
      *
      * @param propertyType the property class
-     * @param builder the CommandHandleBuilder to be modified
-     * @param <T> the property type
+     * @param builder      the CommandHandleBuilder to be modified
+     * @param <T>          the property type
      * @see #putParameterModifier(Class, BiConsumer)
      * @see #appendParameterModifier(Class, BiConsumer)
      * @see #getParameterModifier(Class)
@@ -182,41 +182,46 @@ public class CommandProperties {
     }
 
     /**
-     * Remind me to write docs for this.
+     * Associates a preprocessor with a property. This does not replace any existing preprocessors associated with the property.
      *
-     * @param identifier
-     * @param propertyType
-     * @param factory
-     * @param <T>
+     * @param identifier   a name for the preprocessor
+     * @param propertyType the property class
+     * @param factory      a function that generates a preprocessor based upon the value of the property
+     * @param <T>          the property type
      */
     public <T> void associatePreprocessorFactory(String identifier, Class<T> propertyType, Function<T, CommandPreprocessorFunction> factory) {
         associatePreprocessor(propertyType, o -> new CommandPreprocessor(identifier, factory.apply(o)));
     }
 
     /**
-     * @param identifier
-     * @param propertyType
-     * @param factory
-     * @param <T>
+     * Associates a preprocessor with a property. This does not replace any existing preprocessors associated with the property.
+     *
+     * @param identifier   a name for the preprocessor
+     * @param propertyType the property class
+     * @param factory      a function that generates a preprocessor predicate based upon the value of the property
+     * @param <T>          the property type
      */
     public <T> void associatePreprocessorPredicateFactory(String identifier, Class<T> propertyType, Function<T, CommandPreprocessorPredicate> factory) {
         associatePreprocessor(propertyType, o -> new CommandPreprocessor(identifier, factory.apply(o)));
     }
 
     /**
-     * @param identifier
-     * @param propertyType
-     * @param function
-     * @param <T>
+     * Associates a preprocessor with a property. This does not replace any existing preprocessors associated with the property.
+     *
+     * @param identifier   a name for the preprocessor
+     * @param propertyType the property class
+     * @param function     a {@link com.github.breadmoirai.breadbot.framework.command.CommandPreprocessorFunction#process CommandPreprocessorFunction}
      */
-    public <T> void associatePreprocessor(String identifier, Class<T> propertyType, CommandPreprocessorFunction function) {
+    public void associatePreprocessor(String identifier, Class<?> propertyType, CommandPreprocessorFunction function) {
         associatePreprocessor(propertyType, o -> new CommandPreprocessor(identifier, function));
     }
 
     /**
-     * @param identifier
-     * @param propertyType
-     * @param predicate
+     * Associates a preprocessor with a property. This does not replace any existing preprocessors associated with the property.
+     *
+     * @param identifier   a name for the preprocessor
+     * @param propertyType the property class
+     * @param predicate    a {@link java.util.function.Predicate Predicate}{@literal <}{@link com.github.breadmoirai.breadbot.framework.event.CommandEvent CommandEvent}{@literal >} that returns {@code true} when the command should continue to execute, {@code false} otherwise
      */
     public void associatePreprocessorPredicate(String identifier, Class<?> propertyType, CommandPreprocessorPredicate predicate) {
         associatePreprocessor(propertyType, o -> new CommandPreprocessor(identifier, predicate));
