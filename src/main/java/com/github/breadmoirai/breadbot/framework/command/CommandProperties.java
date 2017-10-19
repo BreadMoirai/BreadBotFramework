@@ -14,7 +14,8 @@
 */
 package com.github.breadmoirai.breadbot.framework.command;
 
-import com.github.breadmoirai.breadbot.framework.command.impl.CommandParameterBuilder;
+import com.github.breadmoirai.breadbot.framework.builder.CommandHandleBuilder;
+import com.github.breadmoirai.breadbot.framework.builder.CommandParameterBuilder;
 
 import java.util.*;
 import java.util.function.BiConsumer;

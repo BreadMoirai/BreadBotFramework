@@ -12,24 +12,28 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 */
-package com.github.breadmoirai.breadbot.framework.command.impl;
+package com.github.breadmoirai.breadbot.framework.builder;
 
 import com.github.breadmoirai.breadbot.framework.BreadBotClient;
-import com.github.breadmoirai.breadbot.framework.BreadBotClientBuilder;
 import com.github.breadmoirai.breadbot.framework.command.CommandHandle;
-import com.github.breadmoirai.breadbot.framework.command.CommandHandleBuilder;
 import com.github.breadmoirai.breadbot.framework.command.CommandPreprocessor;
+import com.github.breadmoirai.breadbot.framework.command.impl.CommandHandleImpl;
+import com.github.breadmoirai.breadbot.framework.command.impl.CommandObjectFactory;
+import com.github.breadmoirai.breadbot.framework.command.impl.CommandPropertyMapImpl;
+import com.github.breadmoirai.breadbot.framework.command.impl.InvokableCommand;
 import com.github.breadmoirai.breadbot.framework.command.parameter.CommandParameter;
 import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
 
+import java.lang.reflect.Method;
 import java.util.*;
 import java.util.function.Consumer;
 
 public class CommandHandleBuilderImpl implements CommandHandleBuilder {
 
+    private final Class<?> declaringClass;
+    private final Method declaringMethod;
     private String[] keys;
     private String name, group, description;
-    private final Object declaringObject;
     private final BreadBotClientBuilder builder;
     private final CommandObjectFactory commandFactory;
     private final CommandParameterBuilder[] parameterBuilders;
@@ -38,12 +42,14 @@ public class CommandHandleBuilderImpl implements CommandHandleBuilder {
     private final List<CommandPreprocessor> preprocessors;
     private final CommandPropertyMapImpl propertyMap;
 
-    public CommandHandleBuilderImpl(Object declaringObject,
+    public CommandHandleBuilderImpl(Class<?> declaringClass,
+                                    Method declaringMethod,
                                     BreadBotClientBuilder builder,
                                     CommandObjectFactory commandFactory,
                                     CommandParameterBuilder[] parameterBuilders,
                                     InvokableCommand commandFunction) {
-        this.declaringObject = declaringObject;
+        this.declaringClass = declaringClass;
+        this.declaringMethod = declaringMethod;
         this.builder = builder;
         this.commandFactory = commandFactory;
         this.parameterBuilders = parameterBuilders;
@@ -53,13 +59,15 @@ public class CommandHandleBuilderImpl implements CommandHandleBuilder {
         this.propertyMap = new CommandPropertyMapImpl();
     }
 
-    public CommandHandleBuilderImpl(Object declaringObject,
+    public CommandHandleBuilderImpl(Class<?> declaringClass,
+                                    Method declaringMethod,
                                     BreadBotClientBuilder builder,
                                     CommandObjectFactory commandFactory,
                                     CommandParameterBuilder[] parameterBuilders,
                                     InvokableCommand commandFunction,
                                     CommandPropertyMapImpl propertyMap) {
-        this.declaringObject = declaringObject;
+        this.declaringClass = declaringClass;
+        this.declaringMethod = declaringMethod;
         this.builder = builder;
         this.commandFactory = commandFactory;
         this.parameterBuilders = parameterBuilders;
@@ -71,7 +79,7 @@ public class CommandHandleBuilderImpl implements CommandHandleBuilder {
 
     @Override
     public CommandHandleBuilder createSubCommand(Consumer<CommandEvent> onCommand) {
-        CommandHandleBuilder handleBuilder = new CommandHandleBuilderFactory(getClientBuilder()).fromConsumer(onCommand);
+        CommandHandleBuilder handleBuilder = new CommandHandleBuilderFactory(getClientBuilder()).createCommand(onCommand);
         addSubCommand(handleBuilder);
         return handleBuilder;
     }
@@ -144,14 +152,20 @@ public class CommandHandleBuilderImpl implements CommandHandleBuilder {
     }
 
     @Override
+    public Class<?> getDeclaringClass() {
+        return declaringClass;
+    }
+
+    @Override
+    public Method getDeclaringMethod() {
+        return declaringMethod;
+    }
+
+    @Override
     public BreadBotClientBuilder getClientBuilder() {
         return builder;
     }
 
-    @Override
-    public Object getDeclaringObject() {
-        return declaringObject;
-    }
 
     @Override
     public CommandHandle build(BreadBotClient client) {

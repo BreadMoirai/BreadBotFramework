@@ -19,7 +19,8 @@ import com.github.breadmoirai.breadbot.framework.BreadBotClient;
 import com.github.breadmoirai.breadbot.framework.CommandEngine;
 import com.github.breadmoirai.breadbot.framework.ICommandModule;
 import com.github.breadmoirai.breadbot.framework.command.CommandHandle;
-import com.github.breadmoirai.breadbot.framework.command.CommandHandleBuilder;
+import com.github.breadmoirai.breadbot.framework.builder.CommandHandleBuilder;
+import com.github.breadmoirai.breadbot.framework.builder.CommandHandleBuilderFactory;
 import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
 import com.github.breadmoirai.breadbot.framework.event.ICommandEventFactory;
 import net.dv8tion.jda.core.JDA;
@@ -48,14 +49,14 @@ public class BreadBotClientImpl implements BreadBotClient {
     private final Map<Type, ICommandModule> moduleTypeMap;
     private final Map<String, CommandHandle> commandMap;
 
-    public BreadBotClientImpl(List<ICommandModule> modules, IEventManager eventManager, ICommandEventFactory eventFactory, List<CommandHandleBuilder> commands, Predicate<Message> preProcessPredicate) {
+    public BreadBotClientImpl(List<ICommandModule> modules, IEventManager eventManager, ICommandEventFactory eventFactory, CommandHandleBuilderFactory commandFactory, Predicate<Message> preProcessPredicate) {
         this.modules = Collections.unmodifiableList(modules);
         this.eventManager = eventManager;
         this.eventFactory = eventFactory;
         this.preProcessPredicate = preProcessPredicate;
 
         HashMap<String, CommandHandle> handleMap = new HashMap<>();
-        for (CommandHandleBuilder command : commands) {
+        for (CommandHandleBuilder command : commandFactory.getBuilderList()) {
             CommandHandle handle = command.build(this);
             for (String key : handle.getKeys()) {
                 handleMap.put(key, handle);

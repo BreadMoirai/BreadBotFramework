@@ -14,7 +14,6 @@
 */
 package com.github.breadmoirai.breadbot.framework.command;
 
-import com.github.breadmoirai.breadbot.framework.BreadBotClient;
 import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
 import com.github.breadmoirai.breadbot.util.EventStringIterator;
 
@@ -25,8 +24,6 @@ import java.util.Map;
  * Is a Command. May be a top-level class, an inner class, or a method.
  */
 public interface CommandHandle {
-
-    BreadBotClient getClient();
 
     String[] getKeys();
 

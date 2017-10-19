@@ -18,7 +18,6 @@ public class CommandHandleImpl implements CommandHandle {
     private final String name;
     private final String group;
     private final String description;
-    private final BreadBotClient client;
     private final CommandObjectFactory commandSupplier;
     private final CommandParameter[] commandParameters;
     private final InvokableCommand invokableCommand;
@@ -30,7 +29,6 @@ public class CommandHandleImpl implements CommandHandle {
                              String name,
                              String group,
                              String description,
-                             BreadBotClient client,
                              CommandObjectFactory commandSupplier,
                              CommandParameter[] commandParameters,
                              InvokableCommand commandFunction,
@@ -41,7 +39,6 @@ public class CommandHandleImpl implements CommandHandle {
         this.name = name;
         this.group = group;
         this.description = description;
-        this.client = client;
         this.commandSupplier = commandSupplier;
         this.commandParameters = commandParameters;
         this.invokableCommand = commandFunction;
@@ -75,11 +72,6 @@ public class CommandHandleImpl implements CommandHandle {
             commandProcessStack.runNext();
             return commandProcessStack.result();
         } else return false;
-    }
-
-    @Override
-    public BreadBotClient getClient() {
-        return client;
     }
 
     @Override

@@ -12,19 +12,21 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 */
-package com.github.breadmoirai.breadbot.framework.command;
+package com.github.breadmoirai.breadbot.framework.builder;
 
 import com.github.breadmoirai.breadbot.framework.BreadBotClient;
-import com.github.breadmoirai.breadbot.framework.BreadBotClientBuilder;
+import com.github.breadmoirai.breadbot.framework.command.CommandHandle;
+import com.github.breadmoirai.breadbot.framework.command.CommandPreprocessor;
+import com.github.breadmoirai.breadbot.framework.command.CommandPreprocessorFunction;
+import com.github.breadmoirai.breadbot.framework.command.CommandPreprocessorPredicate;
 import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
 import org.jetbrains.annotations.Nullable;
 
-import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.GenericDeclaration;
 import java.lang.reflect.Method;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public interface CommandHandleBuilder {
@@ -37,6 +39,12 @@ public interface CommandHandleBuilder {
     }
 
     CommandHandleBuilder createSubCommand(Consumer<CommandEvent> onCommand);
+
+    CommandHandleBuilder getSubCommand(String commandName) {
+        getSubCommands()
+    }
+
+    List<CommandHandleBuilder> getSubCommands();
 
     CommandHandleBuilder setKeys(String... key);
 
@@ -53,6 +61,23 @@ public interface CommandHandleBuilder {
     <T> CommandHandleBuilder putProperty(Class<? super T> type, T property);
 
     CommandHandleBuilder putProperty(Object property);
+
+    default <T> CommandHandleBuilder applyProperty(Class<? super T> type, T property) {
+        BiConsumer<? super T, CommandHandleBuilder> commandModifier = getClientBuilder().getCommandProperties().getCommandModifier(type);
+        if (commandModifier != null)
+            commandModifier.accept(property, this);
+        return putProperty(type, property);
+    }
+
+    default <T> CommandHandleBuilder applyProperty(T property) {
+        @SuppressWarnings("unchecked") Class<T> type = (Class<T>) property.getClass();
+        BiConsumer<? super T, CommandHandleBuilder> commandModifier = getClientBuilder().getCommandProperties().getCommandModifier(type);
+        if (commandModifier != null)
+            commandModifier.accept(property, this);
+        return putProperty(type, property);
+    }
+
+
 
     default CommandHandleBuilder addPreprocessorFunction(String identifier, CommandPreprocessorFunction function) {
         return addPreprocessor(new CommandPreprocessor(identifier, function));
@@ -98,6 +123,9 @@ public interface CommandHandleBuilder {
 
     BreadBotClientBuilder getClientBuilder();
 
-    CommandHandle build(BreadBotClient client);
+    default void build() {
+        buildAndGet();
+    }
 
+    CommandHandle buildAndGet();
 }

@@ -15,7 +15,7 @@
  */
 package com.github.breadmoirai.breadbot.modules.prefix;
 
-import com.github.breadmoirai.breadbot.framework.BreadBotClientBuilder;
+import com.github.breadmoirai.breadbot.framework.builder.BreadBotClientBuilder;
 import com.github.breadmoirai.breadbot.framework.ICommandModule;
 
 public interface IPrefixModule extends ICommandModule {

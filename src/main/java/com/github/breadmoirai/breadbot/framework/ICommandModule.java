@@ -15,6 +15,7 @@
  */
 package com.github.breadmoirai.breadbot.framework;
 
+import com.github.breadmoirai.breadbot.framework.builder.BreadBotClientBuilder;
 import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
 import org.json.JSONObject;
 
