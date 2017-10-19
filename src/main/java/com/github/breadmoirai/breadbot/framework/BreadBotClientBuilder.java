@@ -19,6 +19,7 @@ import com.github.breadmoirai.breadbot.framework.command.Command;
 import com.github.breadmoirai.breadbot.framework.command.CommandHandleBuilder;
 import com.github.breadmoirai.breadbot.framework.command.CommandProperties;
 import com.github.breadmoirai.breadbot.framework.command.impl.CommandHandleBuilderFactory;
+import com.github.breadmoirai.breadbot.framework.error.BreadBotException;
 import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
 import com.github.breadmoirai.breadbot.framework.event.ICommandEventFactory;
 import com.github.breadmoirai.breadbot.framework.event.impl.CommandEventFactoryImpl;
@@ -44,6 +45,7 @@ import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 public class BreadBotClientBuilder {
@@ -93,6 +95,25 @@ public class BreadBotClientBuilder {
         return moduleClass == null ? null : modules.stream().filter(module -> moduleClass.isAssignableFrom(module.getClass())).map(iModule -> (T) iModule).findAny().orElse(null);
     }
 
+    public BreadBotClientBuilder addCommand(Consumer<CommandEvent> onCommand, Consumer<CommandHandleBuilder> configurator) {
+        configurator.accept(createCommand(onCommand));
+        return this;
+    }
+
+    public BreadBotClientBuilder addCommand(Class<?> commandClass, Consumer<CommandHandleBuilder> configurator) {
+        configurator.accept(createCommand(commandClass));
+        return this;
+    }
+
+    public BreadBotClientBuilder addCommand(Object commandObject, Consumer<CommandHandleBuilder> configurator) {
+        configurator.accept(createCommand(commandObject));
+        return this;
+    }
+
+    public BreadBotClientBuilder addCommand(Supplier<Object> commandSupplier, Consumer<CommandHandleBuilder> configurator) {
+        configurator.accept(createCommand(commandSupplier));
+        return this;
+    }
 
     public CommandHandleBuilder createCommand(Consumer<CommandEvent> onCommand) {
         CommandHandleBuilder commandHandleBuilder = factory.fromConsumer(onCommand);
@@ -100,20 +121,32 @@ public class BreadBotClientBuilder {
         return commandHandleBuilder;
     }
 
-    public <T> CommandHandleBuilder createCommand(Class<T> commandClass, @Nullable T object) throws NoSuchMethodException, IllegalAccessException {
+    public CommandHandleBuilder createCommand(Supplier<Object> commandSupplier) {
+        //well one more wrong turn
+        return false;
+    }
 
-        CommandHandleBuilder commandHandleBuilder = factory.fromClass(commandClass, object, null);
+    public CommandHandleBuilder createCommand(Class<?> commandClass) {
+        return createCommand(commandClass, null);
+    }
+
+    public CommandHandleBuilder createCommand(Object commandObject) {
+        return createCommandFromObject(commandObject);
+    }
+
+    private  <T> CommandHandleBuilder createCommandFromObject(T object) {
+        @SuppressWarnings("unchecked") Class<T> aClass = (Class<T>) object.getClass();
+        return createCommand(aClass, object);
+    }
+
+    private <T> CommandHandleBuilder createCommand(Class<T> commandClass, @Nullable T object) {
+        Supplier<Object> supplier = object != null ? () -> object : null;
+        CommandHandleBuilder commandHandleBuilder = factory.fromClass(commandClass, null, supplier, null);
         commands.add(commandHandleBuilder);
         return commandHandleBuilder;
     }
 
-    public <T> CommandHandleBuilder createCommand(T object) throws NoSuchMethodException, IllegalAccessException {
-        @SuppressWarnings("unchecked") CommandHandleBuilder commandHandleBuilder = factory.fromClass((Class<T>) object.getClass(), object, null);
-        commands.add(commandHandleBuilder);
-        return commandHandleBuilder;
-    }
-
-    public <T> List<CommandHandleBuilder> createCommands(String packageName) throws NoSuchMethodException, IllegalAccessException {
+    public <T> List<CommandHandleBuilder> createCommands(String packageName) {
         List<CommandHandleBuilder> builders = new ArrayList<>();
         final Reflections reflections = new Reflections(packageName);
         final Set<Class<?>> classes = reflections.getSubTypesOf(Object.class);
