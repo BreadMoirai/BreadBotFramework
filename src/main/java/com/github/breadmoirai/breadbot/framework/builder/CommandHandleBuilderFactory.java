@@ -40,25 +40,27 @@ import java.util.stream.Stream;
 public class CommandHandleBuilderFactory {
 
     private final BreadBotClientBuilder clientBuilder;
+    private final List<CommandHandleBuilderImpl> builders;
 
     public CommandHandleBuilderFactory(BreadBotClientBuilder clientBuilder) {
         this.clientBuilder = clientBuilder;
+        builders = new ArrayList<>();
     }
 
     public void addCommand(Consumer<CommandEvent> onCommand, Consumer<CommandHandleBuilder> configurator) {
-        configurator.andThen(CommandHandleBuilder::build).accept(createCommand(onCommand));
+        configurator.accept(createCommand(onCommand));
     }
 
     public void addCommand(Class<?> commandClass, Consumer<CommandHandleBuilder> configurator) {
-        configurator.andThen(CommandHandleBuilder::build).accept(createCommand(commandClass));
+        configurator.accept(createCommand(commandClass));
     }
 
     public void addCommand(Object commandObject, Consumer<CommandHandleBuilder> configurator) {
-        configurator.andThen(CommandHandleBuilder::build).accept(createCommand(commandObject));
+        configurator.accept(createCommand(commandObject));
     }
 
     public void addCommand(Supplier<Object> commandSupplier, Consumer<CommandHandleBuilder> configurator) {
-        configurator.andThen(CommandHandleBuilder::build).accept(createCommand(commandSupplier));
+        configurator.accept(createCommand(commandSupplier));
     }
 
     public void addCommands(String packageName, Consumer<CommandHandleBuilder> configurator) {
@@ -67,7 +69,9 @@ public class CommandHandleBuilderFactory {
     }
 
     public CommandHandleBuilder createCommand(Consumer<CommandEvent> onCommand) {
-        return fromConsumer(onCommand);
+        CommandHandleBuilderImpl commandHandleBuilder = fromConsumer(onCommand);
+        builders.add(commandHandleBuilder);
+        return commandHandleBuilder;
     }
 
     public CommandHandleBuilder createCommand(Supplier<Object> commandSupplier) {
@@ -77,15 +81,14 @@ public class CommandHandleBuilderFactory {
 
     public CommandHandleBuilder createCommand(Class<?> commandClass) {
         return fromObjectClass(commandClass, null);
-
     }
 
     public CommandHandleBuilder createCommand(Object commandObject) {
         return fromObject(commandObject);
     }
 
-    public <T> List<CommandHandleBuilder> createCommands(String packageName) {
-        List<CommandHandleBuilder> builders = new ArrayList<>();
+    public List<CommandHandleBuilder> createCommands(String packageName) {
+        List<CommandHandleBuilderImpl> builders = new ArrayList<>();
         final Reflections reflections = new Reflections(packageName);
         final Set<Class<?>> classes = reflections.getSubTypesOf(Object.class);
         for (Class<?> commandClass : classes) {
@@ -109,32 +112,32 @@ public class CommandHandleBuilderFactory {
                     .map(Annotation::annotationType)
                     .anyMatch(aClass -> aClass == Command.class);
             if (!hasCommandAnnotation) continue;
-            builders.add(createCommand(commandClass));
+            builders.add((CommandHandleBuilderImpl) createCommand(commandClass));
         }
-        builderList.addAll(builders);
-        return builders;
+        this.builders.addAll(builders);
+        return new ArrayList<>(builders);
     }
 
     public List<CommandHandleBuilder> getBuilderList() {
-        return builderList;
+        return new ArrayList<>(builders);
     }
 
-    private <T> CommandHandleBuilder fromObject(T object) {
+    private <T> CommandHandleBuilderImpl fromObject(T object) {
         @SuppressWarnings("unchecked") Class<T> aClass = (Class<T>) object.getClass();
         return fromObjectClass(aClass, object);
     }
 
-    private <T> CommandHandleBuilder fromObjectSupplier(T commandObj, Supplier<Object> commandSupplier) {
+    private <T> CommandHandleBuilderImpl fromObjectSupplier(T commandObj, Supplier<Object> commandSupplier) {
         @SuppressWarnings("unchecked") Class<T> aClass = (Class<T>) commandObj.getClass();
         return fromClass(aClass, null, commandSupplier, null);
     }
 
-    private <T> CommandHandleBuilder fromObjectClass(Class<T> commandClass, @Nullable T object) {
+    private <T> CommandHandleBuilderImpl fromObjectClass(Class<T> commandClass, @Nullable T object) {
         Supplier<Object> supplier = object != null ? () -> object : null;
         return fromClass(commandClass, null, supplier, null);
     }
 
-    private CommandHandleBuilder fromConsumer(Consumer<CommandEvent> onCommand) {
+    private CommandHandleBuilderImpl fromConsumer(Consumer<CommandEvent> onCommand) {
         return new CommandHandleBuilderImpl(null, null,
                 clientBuilder,
                 new CommandObjectFactory(() -> onCommand),
@@ -142,7 +145,7 @@ public class CommandHandleBuilderFactory {
                 (o, objects) -> onCommand.accept(((CommandEvent) objects[0])));
     }
 
-    private List<CommandHandleBuilder> fromClassMethods(Class<?> commandClass, Supplier<Object> supplier, CommandPropertyMapImpl defaultPropertyMap) throws BreadBotException {
+    private List<CommandHandleBuilderImpl> fromClassMethods(Class<?> commandClass, Supplier<Object> supplier, CommandPropertyMapImpl defaultPropertyMap) throws BreadBotException {
         final CommandObjectFactory commandSupplier = createCommandFactory(commandClass, null, supplier);
 
         final CommandPropertyMapImpl propertyMap = createPropertyMap(commandClass, defaultPropertyMap);
@@ -154,14 +157,14 @@ public class CommandHandleBuilderFactory {
                     return new CommandHandleBuilderImpl(null, method, clientBuilder, commandSupplier, invokableCommandPair.getLeft(), invokableCommandPair.getRight());
                 });
 
-        Stream<CommandHandleBuilder> stream2 = Arrays.stream(commandClass.getClasses())
+        Stream<CommandHandleBuilderImpl> stream2 = Arrays.stream(commandClass.getClasses())
                 .filter(aClass -> aClass.isAnnotationPresent(Command.class))
                 .map(aClass -> fromClass(commandClass, null, supplier, propertyMap));
 
         return Stream.concat(stream1, stream2).collect(Collectors.toList());
     }
 
-    private CommandHandleBuilder fromClass(Class<?> commandClass, CommandObjectFactory factory, Supplier<Object> supplier, CommandPropertyMapImpl defaultPropertyMap) throws BreadBotException {
+    private CommandHandleBuilderImpl fromClass(Class<?> commandClass, CommandObjectFactory factory, Supplier<Object> supplier, CommandPropertyMapImpl defaultPropertyMap) throws BreadBotException {
         CommandObjectFactory commandSupplier = createCommandFactory(commandClass, factory, supplier);
 
         final CommandPropertyMapImpl propertyMap = createPropertyMap(commandClass, defaultPropertyMap);
@@ -235,7 +238,7 @@ public class CommandHandleBuilderFactory {
         commandHandleBuilder.setGroup(packageName);
     }
 
-    private CommandHandleBuilder fromMethod(Method method, CommandPropertyMapImpl map) throws BreadBotException {
+    private CommandHandleBuilderImpl fromMethod(Method method, CommandPropertyMapImpl map) throws BreadBotException {
         Pair<CommandParameterBuilder[], InvokableCommand> pair = mapMethod(method, map);
         return new CommandHandleBuilderImpl(null, method, clientBuilder, getSupplierForClass(method.getDeclaringClass()), pair.getLeft(), pair.getRight(), map);
     }

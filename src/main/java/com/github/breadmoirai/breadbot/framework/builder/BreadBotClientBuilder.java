@@ -18,9 +18,6 @@ package com.github.breadmoirai.breadbot.framework.builder;
 import com.github.breadmoirai.breadbot.framework.BreadBotClient;
 import com.github.breadmoirai.breadbot.framework.ICommandModule;
 import com.github.breadmoirai.breadbot.framework.command.CommandProperties;
-import com.github.breadmoirai.breadbot.framework.command.impl.CommandObjectFactory;
-import com.github.breadmoirai.breadbot.framework.command.impl.CommandPropertyMapImpl;
-import com.github.breadmoirai.breadbot.framework.error.BreadBotException;
 import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
 import com.github.breadmoirai.breadbot.framework.event.ICommandEventFactory;
 import com.github.breadmoirai.breadbot.framework.event.impl.CommandEventFactoryImpl;
@@ -37,7 +34,9 @@ import net.dv8tion.jda.core.hooks.InterfacedEventManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -50,13 +49,11 @@ public class BreadBotClientBuilder {
     private ICommandEventFactory commandEventFactory;
     private CommandProperties commandProperties;
     private Predicate<Message> preProcessPredicate;
-    private List<CommandHandleBuilder> commands;
     private CommandHandleBuilderFactory factory;
 
     public BreadBotClientBuilder() {
         commandProperties = new CommandProperties();
         modules = new ArrayList<>();
-        commands = new ArrayList<>();
         factory = new CommandHandleBuilderFactory(this);
     }
 
@@ -185,7 +182,7 @@ public class BreadBotClientBuilder {
         return factory.createCommand(commandObject);
     }
 
-    public <T> List<CommandHandleBuilder> createCommands(String packageName) {
+    public List<CommandHandleBuilder> createCommands(String packageName) {
         return factory.createCommands(packageName);
     }
 

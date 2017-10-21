@@ -14,8 +14,6 @@
 */
 package com.github.breadmoirai.breadbot.framework.builder;
 
-import com.github.breadmoirai.breadbot.framework.BreadBotClient;
-import com.github.breadmoirai.breadbot.framework.command.CommandHandle;
 import com.github.breadmoirai.breadbot.framework.command.CommandPreprocessor;
 import com.github.breadmoirai.breadbot.framework.command.CommandPreprocessorFunction;
 import com.github.breadmoirai.breadbot.framework.command.CommandPreprocessorPredicate;
@@ -40,8 +38,8 @@ public interface CommandHandleBuilder {
 
     CommandHandleBuilder createSubCommand(Consumer<CommandEvent> onCommand);
 
-    CommandHandleBuilder getSubCommand(String commandName) {
-        getSubCommands()
+    default CommandHandleBuilder getSubCommand(String commandName) {
+        return getSubCommands().stream().filter(commandHandleBuilder -> commandHandleBuilder.getName().equals(commandName)).findAny().orElse(null);
     }
 
     List<CommandHandleBuilder> getSubCommands();
@@ -114,18 +112,12 @@ public interface CommandHandleBuilder {
 //        return this;
 //    }
 
-    /**
-     *
-     */
+    String getName();
+
     Class<?> getDeclaringClass();
 
     Method getDeclaringMethod();
 
     BreadBotClientBuilder getClientBuilder();
 
-    default void build() {
-        buildAndGet();
-    }
-
-    CommandHandle buildAndGet();
 }
