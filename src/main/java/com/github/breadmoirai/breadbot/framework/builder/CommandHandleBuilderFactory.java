@@ -124,7 +124,7 @@ public class CommandHandleBuilderFactory {
 
     private <T> CommandHandleBuilderImpl fromObject(T object) {
         @SuppressWarnings("unchecked") Class<T> aClass = (Class<T>) object.getClass();
-        return fromObjectClass(aClass, object);
+        return fromObjectClass(aClass, object).setDeclaringObject(object);
     }
 
     private <T> CommandHandleBuilderImpl fromObjectSupplier(T commandObj, Supplier<Object> commandSupplier) {

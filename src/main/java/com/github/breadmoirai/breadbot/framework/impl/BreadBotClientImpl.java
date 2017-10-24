@@ -21,8 +21,10 @@ import com.github.breadmoirai.breadbot.framework.ICommandModule;
 import com.github.breadmoirai.breadbot.framework.command.CommandHandle;
 import com.github.breadmoirai.breadbot.framework.builder.CommandHandleBuilder;
 import com.github.breadmoirai.breadbot.framework.builder.CommandHandleBuilderFactory;
+import com.github.breadmoirai.breadbot.framework.command.impl.CommandHandleImpl;
 import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
 import com.github.breadmoirai.breadbot.framework.event.ICommandEventFactory;
+import com.github.breadmoirai.breadbot.util.EventStringIterator;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.events.ReadyEvent;
@@ -84,7 +86,7 @@ public class BreadBotClientImpl implements BreadBotClient {
         commandEngine = event -> {
             CommandHandle commandHandle = handleMap.get(event.getKey().toLowerCase());
             if (commandHandle != null) {
-                commandHandle.handle(event);
+                commandHandle.handle(event, new EventStringIterator(event));
             }
         };
 

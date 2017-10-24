@@ -75,8 +75,6 @@ public interface CommandHandleBuilder {
         return putProperty(type, property);
     }
 
-
-
     default CommandHandleBuilder addPreprocessorFunction(String identifier, CommandPreprocessorFunction function) {
         return addPreprocessor(new CommandPreprocessor(identifier, function));
     }
@@ -117,6 +115,8 @@ public interface CommandHandleBuilder {
     Class<?> getDeclaringClass();
 
     Method getDeclaringMethod();
+
+    Object getDeclaringObject();
 
     BreadBotClientBuilder getClientBuilder();
 

@@ -35,11 +35,11 @@ public interface CommandHandle {
 
     CommandPropertyMap getPropertyMap();
 
-    default boolean handle(CommandEvent event) {
-        return handle(event, new EventStringIterator(event));
-    }
+    boolean handle(CommandEvent event);
 
-    boolean handle(CommandEvent event, Iterator<String> keyItr);
+    default boolean handle(CommandEvent event, Iterator<String> keyItr) {
+        return handle(event);
+    }
 
     Map<String, CommandHandle> getSubCommandMap();
 
