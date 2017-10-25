@@ -18,10 +18,9 @@ package com.github.breadmoirai.breadbot.framework.impl;
 import com.github.breadmoirai.breadbot.framework.BreadBotClient;
 import com.github.breadmoirai.breadbot.framework.CommandEngine;
 import com.github.breadmoirai.breadbot.framework.ICommandModule;
+import com.github.breadmoirai.breadbot.framework.builder.CommandHandleBuilderFactoryImpl;
 import com.github.breadmoirai.breadbot.framework.command.CommandHandle;
 import com.github.breadmoirai.breadbot.framework.builder.CommandHandleBuilder;
-import com.github.breadmoirai.breadbot.framework.builder.CommandHandleBuilderFactory;
-import com.github.breadmoirai.breadbot.framework.command.impl.CommandHandleImpl;
 import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
 import com.github.breadmoirai.breadbot.framework.event.ICommandEventFactory;
 import com.github.breadmoirai.breadbot.util.EventStringIterator;
@@ -51,7 +50,7 @@ public class BreadBotClientImpl implements BreadBotClient {
     private final Map<Type, ICommandModule> moduleTypeMap;
     private final Map<String, CommandHandle> commandMap;
 
-    public BreadBotClientImpl(List<ICommandModule> modules, IEventManager eventManager, ICommandEventFactory eventFactory, CommandHandleBuilderFactory commandFactory, Predicate<Message> preProcessPredicate) {
+    public BreadBotClientImpl(List<ICommandModule> modules, IEventManager eventManager, ICommandEventFactory eventFactory, CommandHandleBuilderFactoryImpl commandFactory, Predicate<Message> preProcessPredicate) {
         this.modules = Collections.unmodifiableList(modules);
         this.eventManager = eventManager;
         this.eventFactory = eventFactory;

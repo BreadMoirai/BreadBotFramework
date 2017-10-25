@@ -112,6 +112,12 @@ public interface CommandHandleBuilder {
 
     String getName();
 
+    String[] getKeys();
+
+    String getGroup();
+
+    String getDescription();
+
     Class<?> getDeclaringClass();
 
     Method getDeclaringMethod();

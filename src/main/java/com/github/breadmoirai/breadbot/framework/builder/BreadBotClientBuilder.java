@@ -49,12 +49,12 @@ public class BreadBotClientBuilder {
     private ICommandEventFactory commandEventFactory;
     private CommandProperties commandProperties;
     private Predicate<Message> preProcessPredicate;
-    private CommandHandleBuilderFactory factory;
+    private CommandHandleBuilderFactoryImpl factory;
 
     public BreadBotClientBuilder() {
         commandProperties = new CommandProperties();
         modules = new ArrayList<>();
-        factory = new CommandHandleBuilderFactory(this);
+        factory = new CommandHandleBuilderFactoryImpl(this);
     }
 
     public BreadBotClientBuilder addModule(ICommandModule... modules) {

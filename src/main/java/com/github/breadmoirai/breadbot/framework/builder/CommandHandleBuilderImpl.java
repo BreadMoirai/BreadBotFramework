@@ -14,7 +14,6 @@
 */
 package com.github.breadmoirai.breadbot.framework.builder;
 
-import com.github.breadmoirai.breadbot.framework.BreadBotClient;
 import com.github.breadmoirai.breadbot.framework.command.CommandHandle;
 import com.github.breadmoirai.breadbot.framework.command.CommandPreprocessor;
 import com.github.breadmoirai.breadbot.framework.command.impl.CommandHandleImpl;
@@ -28,8 +27,9 @@ import java.lang.reflect.Method;
 import java.util.*;
 import java.util.function.Consumer;
 
-public class CommandHandleBuilderImpl implements CommandHandleBuilder {
+public class CommandHandleBuilderImpl extends CommandHandleBuilderInternal {
 
+    private final Object declaringObject;
     private final Class<?> declaringClass;
     private final Method declaringMethod;
     private String[] keys;
@@ -38,34 +38,19 @@ public class CommandHandleBuilderImpl implements CommandHandleBuilder {
     private final CommandObjectFactory commandFactory;
     private final CommandParameterBuilder[] parameterBuilders;
     private final InvokableCommand commandFunction;
-    private final List<CommandHandleBuilder> subCommands;
+    private final List<CommandHandleBuilderInternal> subCommands;
     private final List<CommandPreprocessor> preprocessors;
     private final CommandPropertyMapImpl propertyMap;
 
-    public CommandHandleBuilderImpl(Class<?> declaringClass,
-                                    Method declaringMethod,
-                                    BreadBotClientBuilder builder,
-                                    CommandObjectFactory commandFactory,
-                                    CommandParameterBuilder[] parameterBuilders,
-                                    InvokableCommand commandFunction) {
-        this.declaringClass = declaringClass;
-        this.declaringMethod = declaringMethod;
-        this.builder = builder;
-        this.commandFactory = commandFactory;
-        this.parameterBuilders = parameterBuilders;
-        this.commandFunction = commandFunction;
-        this.subCommands = new ArrayList<>();
-        this.preprocessors = new ArrayList<>();
-        this.propertyMap = new CommandPropertyMapImpl();
-    }
-
-    public CommandHandleBuilderImpl(Class<?> declaringClass,
+    public CommandHandleBuilderImpl(Object declaringObject,
+                                    Class<?> declaringClass,
                                     Method declaringMethod,
                                     BreadBotClientBuilder builder,
                                     CommandObjectFactory commandFactory,
                                     CommandParameterBuilder[] parameterBuilders,
                                     InvokableCommand commandFunction,
                                     CommandPropertyMapImpl propertyMap) {
+        this.declaringObject = declaringObject;
         this.declaringClass = declaringClass;
         this.declaringMethod = declaringMethod;
         this.builder = builder;
@@ -74,12 +59,12 @@ public class CommandHandleBuilderImpl implements CommandHandleBuilder {
         this.commandFunction = commandFunction;
         this.subCommands = new ArrayList<>();
         this.preprocessors = new ArrayList<>();
-        this.propertyMap = propertyMap;
+        this.propertyMap = propertyMap == null ? new CommandPropertyMapImpl() : propertyMap;
     }
 
     @Override
     public CommandHandleBuilder createSubCommand(Consumer<CommandEvent> onCommand) {
-        CommandHandleBuilder handleBuilder = new CommandHandleBuilderFactory(getClientBuilder()).createCommand(onCommand);
+        CommandHandleBuilderInternal handleBuilder = new CommandHandleBuilderFactoryImpl(getClientBuilder()).createCommand(onCommand);
         addSubCommand(handleBuilder);
         return handleBuilder;
     }
@@ -92,10 +77,6 @@ public class CommandHandleBuilderImpl implements CommandHandleBuilder {
     @Override
     public <T> T getProperty(Class<T> propertyType) {
         return propertyMap.getProperty(propertyType);
-    }
-
-    void addSubCommand(CommandHandleBuilder subCommandBuilder) {
-        subCommands.add(subCommandBuilder);
     }
 
     @Override
@@ -162,20 +143,49 @@ public class CommandHandleBuilderImpl implements CommandHandleBuilder {
     }
 
     @Override
+    public Object getDeclaringObject() {
+        return declaringObject;
+    }
+
+    @Override
     public BreadBotClientBuilder getClientBuilder() {
         return builder;
     }
 
+    @Override
+    public String[] getKeys() {
+        return keys;
+    }
 
     @Override
-    public CommandHandle build(BreadBotClient client) {
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public String getGroup() {
+        return group;
+    }
+
+    @Override
+    public String getDescription() {
+        return description;
+    }
+
+    @Override
+    public List<CommandHandleBuilder> getSubCommands() {
+        return Collections.unmodifiableList(subCommands);
+    }
+
+    @Override
+    public CommandHandle build() {
         Map<String, CommandHandle> subCommandMap;
         if (subCommands.isEmpty()) {
             subCommandMap = null;
         } else {
             subCommandMap = new HashMap<>();
-            for (CommandHandleBuilder subCommand : subCommands) {
-                CommandHandle command = subCommand.build(client);
+            for (CommandHandleBuilderInternal subCommand : subCommands) {
+                CommandHandle command = subCommand.build();
                 for (String key : command.getKeys()) {
                     subCommandMap.put(key, command);
                 }
@@ -183,6 +193,6 @@ public class CommandHandleBuilderImpl implements CommandHandleBuilder {
         }
         final CommandParameter[] commandParameters = new CommandParameter[parameterBuilders.length];
         Arrays.setAll(commandParameters, value -> parameterBuilders[value].build());
-        return new CommandHandleImpl(keys, name, group, description, client, commandFactory, commandParameters, commandFunction, subCommandMap, preprocessors, propertyMap);
+        return new CommandHandleImpl(keys, name, group, description, /*client,*/ commandFactory, commandParameters, commandFunction, subCommandMap, preprocessors, propertyMap);
     }
 }

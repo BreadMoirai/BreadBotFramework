@@ -17,4 +17,5 @@ package com.github.breadmoirai.breadbot.framework.command.impl;
 public interface InvokableCommand {
 
     void invoke(Object object, Object[] parameters) throws Throwable;
+
 }

@@ -7,6 +7,8 @@ import com.github.breadmoirai.breadbot.framework.command.CommandPropertyMap;
 import com.github.breadmoirai.breadbot.framework.command.parameter.CommandParameter;
 import com.github.breadmoirai.breadbot.framework.command.parameter.CommandParser;
 import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
+import com.github.breadmoirai.breadbot.framework.impl.BreadBotClientImpl;
+import com.github.breadmoirai.breadbot.util.EventStringIterator;
 
 import java.util.Iterator;
 import java.util.List;
@@ -18,6 +20,7 @@ public class CommandHandleImpl implements CommandHandle {
     private final String name;
     private final String group;
     private final String description;
+//    private final BreadBotClientImpl client;
     private final CommandObjectFactory commandSupplier;
     private final CommandParameter[] commandParameters;
     private final InvokableCommand invokableCommand;
@@ -29,6 +32,7 @@ public class CommandHandleImpl implements CommandHandle {
                              String name,
                              String group,
                              String description,
+//                             BreadBotClientImpl client,
                              CommandObjectFactory commandSupplier,
                              CommandParameter[] commandParameters,
                              InvokableCommand commandFunction,
@@ -39,12 +43,18 @@ public class CommandHandleImpl implements CommandHandle {
         this.name = name;
         this.group = group;
         this.description = description;
+//        this.client = client;
         this.commandSupplier = commandSupplier;
         this.commandParameters = commandParameters;
         this.invokableCommand = commandFunction;
         this.subCommandMap = subCommandMap.isEmpty() ? null : subCommandMap;
         this.preprocessors = preprocessors;
         this.propertyMap = propertyMap;
+    }
+
+    @Override
+    public boolean handle(CommandEvent event) {
+        return handle(event, new EventStringIterator(event));
     }
 
     @Override
