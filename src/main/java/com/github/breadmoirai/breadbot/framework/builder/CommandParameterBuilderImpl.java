@@ -196,7 +196,7 @@ public class CommandParameterBuilderImpl implements CommandParameterBuilder {
 
     @Override
     public boolean containsProperty(Class<?> propertyType) {
-        return map.containsProperty(propertyType);
+        return map.hasProperty(propertyType);
     }
 
     @Override

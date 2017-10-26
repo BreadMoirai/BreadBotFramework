@@ -9,4 +9,5 @@ public interface CommandHandleBuilderInternal extends CommandHandleBuilder {
 
     CommandHandle build();
 
+    void putCommandHandle(CommandHandleBuilderInternal handle);
 }

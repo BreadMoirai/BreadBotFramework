@@ -50,7 +50,12 @@ public class CommandPropertyMapImpl implements Iterable<Object>, CommandProperty
     }
 
     @Override
-    public boolean containsProperty(Class<?> propertyType) {
+    public boolean hasProperty(Class<?> propertyType) {
+        return properties.containsKey(propertyType) || (defaultProperties != null && defaultProperties.hasProperty(propertyType));
+    }
+
+    @Override
+    public boolean hasDeclaredProperty(Class<?> propertyType) {
         return properties.containsKey(propertyType);
     }
 

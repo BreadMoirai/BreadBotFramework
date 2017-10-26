@@ -27,13 +27,7 @@ import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-public interface CommandHandleBuilder {
-
-    default CommandHandleBuilder getSubCommand(String commandName) {
-        return getSubCommands().stream().filter(commandHandleBuilder -> commandHandleBuilder.getName().equals(commandName)).findAny().orElse(null);
-    }
-
-    List<CommandHandleBuilder> getSubCommands();
+public interface CommandHandleBuilder extends CommandHandleBuilderFactory {
 
     CommandHandleBuilder setKeys(String... key);
 
@@ -42,6 +36,12 @@ public interface CommandHandleBuilder {
     CommandHandleBuilder setGroup(String group);
 
     CommandHandleBuilder setDescription(String description);
+
+    default CommandHandleBuilder getSubCommand(String commandName) {
+        return getSubCommands().stream().filter(commandHandleBuilder -> commandHandleBuilder.getName().equals(commandName)).findAny().orElse(null);
+    }
+
+    List<CommandHandleBuilder> getSubCommands();
 
     boolean containsProperty(Class<?> propertyType);
 

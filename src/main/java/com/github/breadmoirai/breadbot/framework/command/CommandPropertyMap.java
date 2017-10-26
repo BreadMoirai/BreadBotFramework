@@ -20,7 +20,9 @@ import java.util.Set;
 import java.util.function.Predicate;
 
 public interface CommandPropertyMap extends Iterable<Object> {
-    boolean containsProperty(Class<?> propertyType);
+    boolean hasProperty(Class<?> propertyType);
+
+    boolean hasDeclaredProperty(Class<?> propertyType);
 
     /**
      * Retrieves the property of the passed {@link Class}. If this obj does not contain a mapping, it will attempt to provide a value from it's defaultPropertyMap

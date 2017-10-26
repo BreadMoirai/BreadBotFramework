@@ -21,11 +21,9 @@ import com.github.breadmoirai.breadbot.framework.command.impl.CommandObjectFacto
 import com.github.breadmoirai.breadbot.framework.command.impl.CommandPropertyMapImpl;
 import com.github.breadmoirai.breadbot.framework.command.impl.InvokableCommand;
 import com.github.breadmoirai.breadbot.framework.command.parameter.CommandParameter;
-import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
 
 import java.lang.reflect.Method;
 import java.util.*;
-import java.util.function.Consumer;
 
 public class CommandHandleBuilderImpl implements CommandHandleBuilderInternal {
 
@@ -64,7 +62,7 @@ public class CommandHandleBuilderImpl implements CommandHandleBuilderInternal {
 
     @Override
     public boolean containsProperty(Class<?> propertyType) {
-        return propertyMap.containsProperty(propertyType);
+        return propertyMap.hasProperty(propertyType);
     }
 
     @Override
