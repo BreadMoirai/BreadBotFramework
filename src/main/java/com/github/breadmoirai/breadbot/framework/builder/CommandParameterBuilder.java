@@ -18,12 +18,12 @@ import com.github.breadmoirai.breadbot.framework.command.parameter.ArgumentTypeM
 import com.github.breadmoirai.breadbot.framework.command.parameter.ArgumentTypePredicate;
 import com.github.breadmoirai.breadbot.framework.command.parameter.CommandParameter;
 import com.github.breadmoirai.breadbot.framework.command.parameter.MissingArgumentConsumer;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Parameter;
 import java.util.function.Consumer;
 
 public interface CommandParameterBuilder {
-
 
     /**
      *
@@ -85,6 +85,14 @@ public interface CommandParameterBuilder {
     }
 
     <T> CommandParameterBuilder setBaseType(Class<T> type, ArgumentTypePredicate predicate, ArgumentTypeMapper<T> mapper);
+
+    /**
+     *
+     * @param predicate may be null
+     * @param parser may not be null
+     * @return this
+     */
+    <T> CommandParameterBuilder setMapper(@Nullable ArgumentTypePredicate predicate, ArgumentTypeMapper<T> parser);
 
     /**
      * @param mustBePresent {@code true} if the argument must be present. Otherwise an error message will be sent to the user with the default error or

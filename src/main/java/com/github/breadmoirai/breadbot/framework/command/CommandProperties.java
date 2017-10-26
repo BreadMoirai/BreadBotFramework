@@ -178,6 +178,9 @@ public class CommandProperties {
     }
 
 
+
+
+
     private <T> void associatePreprocessor(Class<T> propertyType, Function<T, CommandPreprocessor> factory) {
         appendCommandModifier(propertyType, (t, commandHandleBuilder) -> commandHandleBuilder.addPreprocessor(factory.apply(t)));
     }

@@ -27,7 +27,7 @@ import java.lang.reflect.Method;
 import java.util.*;
 import java.util.function.Consumer;
 
-public class CommandHandleBuilderImpl extends CommandHandleBuilderInternal {
+public class CommandHandleBuilderImpl implements CommandHandleBuilderInternal {
 
     private final Object declaringObject;
     private final Class<?> declaringClass;
@@ -60,13 +60,6 @@ public class CommandHandleBuilderImpl extends CommandHandleBuilderInternal {
         this.subCommands = new ArrayList<>();
         this.preprocessors = new ArrayList<>();
         this.propertyMap = propertyMap == null ? new CommandPropertyMapImpl() : propertyMap;
-    }
-
-    @Override
-    public CommandHandleBuilder createSubCommand(Consumer<CommandEvent> onCommand) {
-        CommandHandleBuilderInternal handleBuilder = new CommandHandleBuilderFactoryImpl(getClientBuilder()).createCommand(onCommand);
-        addSubCommand(handleBuilder);
-        return handleBuilder;
     }
 
     @Override
@@ -175,6 +168,11 @@ public class CommandHandleBuilderImpl extends CommandHandleBuilderInternal {
     @Override
     public List<CommandHandleBuilder> getSubCommands() {
         return Collections.unmodifiableList(subCommands);
+    }
+
+    @Override
+    public CommandPropertyMapImpl getPropertyMap() {
+        return propertyMap;
     }
 
     @Override

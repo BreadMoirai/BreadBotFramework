@@ -14,7 +14,7 @@ public interface ArgumentTypeMapper<T> extends BiFunction<CommandArgument, Integ
 
     ArgumentTypeMapper<Void> VOID_MAPPER = (arg, flags) -> Optional.empty();
 
-    static <R> ArgumentTypeMapper<R> getEmptyMapper(Class<R> type) {
+    static <R> ArgumentTypeMapper<R> getEmptyMapper() {
         return (arg, flags) -> Optional.empty();
     }
 

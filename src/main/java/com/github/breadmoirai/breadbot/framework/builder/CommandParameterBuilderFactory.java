@@ -22,10 +22,12 @@ import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
 import java.lang.reflect.Parameter;
 
 public class CommandParameterBuilderFactory {
+    private BreadBotClientBuilder clientBuilder;
     private final CommandPropertyMap map;
     private final String methodName;
 
-    public CommandParameterBuilderFactory(CommandPropertyMap map, String methodName) {
+    public CommandParameterBuilderFactory(BreadBotClientBuilder clientBuilder, CommandPropertyMap map, String methodName) {
+        this.clientBuilder = clientBuilder;
         this.map = map;
         this.methodName = methodName;
     }
@@ -33,11 +35,13 @@ public class CommandParameterBuilderFactory {
     public CommandParameterBuilder builder(Parameter parameter) {
         final Class<?> type = parameter.getType();
         if (type == CommandEvent.class) {
-            return new CommandParameterBuilderSpecificImpl("This parameter of type CommandEvent is inconfigurable", () -> new CommandParameterFunctionImpl((commandArguments, commandParser) -> commandParser.getEvent()));
+            return new CommandParameterBuilderSpecificImpl(parameter, "This parameter of type CommandEvent is inconfigurable", () -> new CommandParameterFunctionImpl((commandArguments, commandParser) -> commandParser.getEvent()));
         } else if (ICommandModule.class.isAssignableFrom(type)) {
-            return new CommandParameterBuilderSpecificImpl("This parameter of type " + type.getSimpleName() + " is inconfigurable", () -> new CommandParameterFunctionImpl((commandArguments, commandParser) -> commandParser.getEvent().getClient().getModule(type)));
+            return new CommandParameterBuilderSpecificImpl(parameter,"This parameter of type " + type.getSimpleName() + " is inconfigurable", () -> new CommandParameterFunctionImpl((commandArguments, commandParser) -> commandParser.getEvent().getClient().getModule(type)));
         } else {
-            return new CommandParameterBuilderImpl(parameter, methodName, map);
+            CommandParameterBuilderImpl param = new CommandParameterBuilderImpl(parameter, methodName, map);
+            clientBuilder.getCommandProperties().applyModifiers(param);
+            return param;
         }
     }
 }

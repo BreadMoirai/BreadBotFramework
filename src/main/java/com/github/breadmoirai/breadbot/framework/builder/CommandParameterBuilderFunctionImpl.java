@@ -23,7 +23,7 @@ import java.util.function.BiFunction;
 public class CommandParameterBuilderFunctionImpl extends CommandParameterBuilderSpecificImpl {
 
     public CommandParameterBuilderFunctionImpl(BiFunction<CommandArgumentList, CommandParser, ?> function) {
-        super("This CommandParameterBuilder has been defined with a function.", () -> new CommandParameterFunctionImpl(function));
+        super(null, "This CommandParameterBuilder has been defined with a function.", () -> new CommandParameterFunctionImpl(function));
     }
 
 }

@@ -6,24 +6,44 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+/**
+ * Todo write docs
+ */
 public interface CommandHandleBuilderFactory {
-    void addCommand(Consumer<CommandEvent> onCommand, Consumer<CommandHandleBuilder> configurator);
+    default void addCommand(Consumer<CommandEvent> onCommand, Consumer<CommandHandleBuilder> configurator) {
+        configurator.accept(createCommand(onCommand));
+    }
 
-    void addCommand(Class<?> commandClass, Consumer<CommandHandleBuilder> configurator);
+    default void addCommand(Class<?> commandClass, Consumer<CommandHandleBuilder> configurator) {
+        configurator.accept(createCommand(commandClass));
+    }
 
-    void addCommand(Object commandObject, Consumer<CommandHandleBuilder> configurator);
+    default void addCommand(Object commandObject, Consumer<CommandHandleBuilder> configurator) {
+        configurator.accept(createCommand(commandObject));
+    }
 
-    void addCommand(Supplier<Object> commandSupplier, Consumer<CommandHandleBuilder> configurator);
+    default void addCommand(Supplier<Object> commandSupplier, Consumer<CommandHandleBuilder> configurator) {
+        configurator.accept(createCommand(commandSupplier));
+    }
 
-    void addCommands(String packageName, Consumer<CommandHandleBuilder> configurator);
+    default void addCommands(String packageName, Consumer<CommandHandleBuilder> configurator) {
+        createCommands(packageName).forEach(configurator);
+    }
 
-    CommandHandleBuilderInternal createCommand(Consumer<CommandEvent> onCommand);
+    default void addCommands(Class<?> commandClass, Consumer<CommandHandleBuilder> configurator) {
+        createCommands(commandClass).forEach(configurator);
+    }
 
-    CommandHandleBuilderInternal createCommand(Supplier<Object> commandSupplier);
+    CommandHandleBuilder createCommand(Consumer<CommandEvent> onCommand);
 
-    CommandHandleBuilderInternal createCommand(Class<?> commandClass);
+    CommandHandleBuilder createCommand(Supplier<Object> commandSupplier);
 
-    CommandHandleBuilderInternal createCommand(Object commandObject);
+    CommandHandleBuilder createCommand(Class<?> commandClass);
+
+    CommandHandleBuilder createCommand(Object commandObject);
+
+    List<CommandHandleBuilder> createCommands(Class<?> commandClass);
 
     List<CommandHandleBuilder> createCommands(String packageName);
+
 }

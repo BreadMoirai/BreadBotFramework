@@ -18,18 +18,27 @@ import com.github.breadmoirai.breadbot.framework.command.parameter.ArgumentTypeM
 import com.github.breadmoirai.breadbot.framework.command.parameter.ArgumentTypePredicate;
 import com.github.breadmoirai.breadbot.framework.command.parameter.CommandParameter;
 import com.github.breadmoirai.breadbot.framework.command.parameter.MissingArgumentConsumer;
+import org.jetbrains.annotations.Nullable;
 
+import java.lang.reflect.Parameter;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class CommandParameterBuilderSpecificImpl implements CommandParameterBuilder {
 
+    private Parameter parameter;
     private final Supplier<CommandParameter> supplier;
     private final String error;
 
-    public CommandParameterBuilderSpecificImpl(String error, Supplier<CommandParameter> supplier) {
+    public CommandParameterBuilderSpecificImpl(Parameter parameter, String error, Supplier<CommandParameter> supplier) {
+        this.parameter = parameter;
         this.supplier = supplier;
         this.error = error;
+    }
+
+    @Override
+    public Parameter getDeclaringParameter() {
+        return parameter;
     }
 
     @Override
@@ -68,6 +77,11 @@ public class CommandParameterBuilderSpecificImpl implements CommandParameterBuil
     }
 
     @Override
+    public <T> CommandParameterBuilder setMapper(@Nullable ArgumentTypePredicate predicate, ArgumentTypeMapper<T> parser) {
+        throw new UnsupportedOperationException(error);
+    }
+
+    @Override
     public CommandParameterBuilder setOptional(boolean mustBePresent) {
         throw new UnsupportedOperationException(error);
     }
@@ -80,6 +94,16 @@ public class CommandParameterBuilderSpecificImpl implements CommandParameterBuil
     @Override
     public CommandParameterBuilder configure(Consumer<CommandParameterBuilder> configurator) {
         throw new UnsupportedOperationException(error);
+    }
+
+    @Override
+    public <T> T getProperty(Class<T> propertyType) {
+        return null;
+    }
+
+    @Override
+    public boolean containsProperty(Class<?> propertyType) {
+        return false;
     }
 
     @Override

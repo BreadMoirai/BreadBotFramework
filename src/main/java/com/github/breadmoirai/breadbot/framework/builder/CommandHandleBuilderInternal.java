@@ -1,11 +1,12 @@
 package com.github.breadmoirai.breadbot.framework.builder;
 
 import com.github.breadmoirai.breadbot.framework.command.CommandHandle;
+import com.github.breadmoirai.breadbot.framework.command.impl.CommandPropertyMapImpl;
 
-public abstract class CommandHandleBuilderInternal implements CommandHandleBuilder {
+public interface CommandHandleBuilderInternal extends CommandHandleBuilder {
 
-    abstract
+    CommandPropertyMapImpl getPropertyMap();
 
-    abstract CommandHandle build();
+    CommandHandle build();
 
 }

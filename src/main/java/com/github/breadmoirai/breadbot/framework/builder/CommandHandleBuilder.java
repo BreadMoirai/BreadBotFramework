@@ -29,15 +29,6 @@ import java.util.function.Consumer;
 
 public interface CommandHandleBuilder {
 
-    default CommandHandleBuilder addSubCommand(@Nullable Consumer<CommandEvent> onCommand, Consumer<CommandHandleBuilder> configurator) {
-        Objects.requireNonNull(configurator);
-        CommandHandleBuilder subCommand = createSubCommand(onCommand);
-        configurator.accept(subCommand);
-        return this;
-    }
-
-    CommandHandleBuilder createSubCommand(Consumer<CommandEvent> onCommand);
-
     default CommandHandleBuilder getSubCommand(String commandName) {
         return getSubCommands().stream().filter(commandHandleBuilder -> commandHandleBuilder.getName().equals(commandName)).findAny().orElse(null);
     }

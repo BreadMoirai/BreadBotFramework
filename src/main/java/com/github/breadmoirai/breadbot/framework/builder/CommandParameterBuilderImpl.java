@@ -61,8 +61,6 @@ public class CommandParameterBuilderImpl implements CommandParameterBuilder {
         if (flags != null) setFlags(flags.value());
         final Type type = this.map.getDeclaredProperty(Type.class);
         if (type != null) setBaseType(type.value());
-        final RegisterArgumentMapper argumentMapper = this.map.getProperty(RegisterArgumentMapper.class);
-        //TODO figure this argumentMapper thing out.
         final MatchRegex regex = this.map.getDeclaredProperty(MatchRegex.class);
         if (regex != null) {
             if (paramType == CommandArgument.class) {
@@ -159,6 +157,12 @@ public class CommandParameterBuilderImpl implements CommandParameterBuilder {
     public <T> CommandParameterBuilder setBaseType(Class<T> type, ArgumentTypePredicate predicate, ArgumentTypeMapper<T> mapper) {
         this.type = type;
         this.parser = new ArgumentParser<>(predicate, mapper);
+        return this;
+    }
+
+    @Override
+    public <T> CommandParameterBuilder setMapper(ArgumentTypePredicate predicate, ArgumentTypeMapper<T> mapper) {
+        this.parser = new ArgumentParser<T>(predicate, mapper);
         return this;
     }
 
