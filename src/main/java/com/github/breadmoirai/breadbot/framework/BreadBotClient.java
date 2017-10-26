@@ -30,15 +30,15 @@ public interface BreadBotClient {
 
     boolean hasModule(String moduleName);
 
-    boolean hasModule(Class<? extends ICommandModule> moduleClass);
+    boolean hasModule(Class<? extends CommandModule> moduleClass);
 
-    <T extends ICommandModule> T getModule(Class<T> moduleClass);
+    <T extends CommandModule> T getModule(Class<T> moduleClass);
 
-    ICommandModule getModule(String moduleName);
+    CommandModule getModule(String moduleName);
 
-    ICommandModule getModule(Type moduleType);
+    CommandModule getModule(Type moduleType);
 
-    List<ICommandModule> getModules();
+    List<CommandModule> getModules();
 
     CommandEngine getCommandEngine();
 

@@ -77,12 +77,12 @@ public class CommandParameterBuilderSpecificImpl implements CommandParameterBuil
     }
 
     @Override
-    public <T> CommandParameterBuilder setMapper(@Nullable ArgumentTypePredicate predicate, ArgumentTypeMapper<T> parser) {
+    public <T> CommandParameterBuilder setParser(@Nullable ArgumentTypePredicate predicate, ArgumentTypeMapper<T> parser) {
         throw new UnsupportedOperationException(error);
     }
 
     @Override
-    public CommandParameterBuilder setOptional(boolean mustBePresent) {
+    public CommandParameterBuilder setRequired(boolean mustBePresent) {
         throw new UnsupportedOperationException(error);
     }
 

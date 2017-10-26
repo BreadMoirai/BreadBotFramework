@@ -24,4 +24,12 @@ public interface ArgumentTypePredicate extends Predicate<CommandArgument> {
     default boolean test(CommandArgument arg) {
         return test(arg, 0);
     }
+
+    default ArgumentTypePredicate and(ArgumentTypePredicate other) {
+        return (arg, flags) -> test(arg, flags) && other.test(arg, flags);
+    }
+
+    default ArgumentTypePredicate or(ArgumentTypePredicate other) {
+        return (arg, flags) -> test(arg, flags) || other.test(arg, flags);
+    }
 }

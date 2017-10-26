@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 @Command
 public class AdminCommand {
 
-    public void execute(CommandEvent event, IAdminModule module) {
+    public void execute(CommandEvent event, AdminModule module) {
         event.reply("**Administrative Members:** " + event.getGuild().getMembers().stream().filter(module::isAdmin).map(Member::getEffectiveName).collect(Collectors.joining(", ")));
     }
 

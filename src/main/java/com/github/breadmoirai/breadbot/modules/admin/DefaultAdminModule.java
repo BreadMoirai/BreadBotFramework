@@ -20,7 +20,7 @@ import net.dv8tion.jda.core.entities.Member;
 
 import java.util.function.Predicate;
 
-public class DefaultAdminModule implements IAdminModule {
+public class DefaultAdminModule implements AdminModule {
 
     private Predicate<Member> adminPredicate;
 

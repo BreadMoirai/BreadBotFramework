@@ -2,52 +2,46 @@ package com.github.breadmoirai.breadbot.framework.builder;
 
 import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
 
-import java.util.Collections;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-public interface CommandHandleBuilderFactoryInternal extends CommandHandleBuilderFactory {
+public interface CommandHandleBuilderFactoryInternal {
 
-    @Override
-    default CommandHandleBuilder createCommand(Consumer<CommandEvent> onCommand) {
-        return createCommandHandle(onCommand);
+    CommandHandleBuilderInternal createCommand(Consumer<CommandEvent> onCommand);
+
+    CommandHandleBuilderInternal createCommand(Class<?> commandClass);
+
+    CommandHandleBuilderInternal createCommand(Object commandObject);
+
+    CommandHandleBuilderInternal createCommand(Supplier<?> commandSupplier);
+
+    List<CommandHandleBuilderInternal> createCommands(Class<?> commandClass);
+
+    List<CommandHandleBuilderInternal> createCommands(Object commandObject);
+
+    List<CommandHandleBuilderInternal> createCommands(Supplier<?> commandSupplier);
+
+    List<CommandHandleBuilderInternal> createCommands(String packageName);
+
+    default List<CommandHandleBuilderInternal> createCommandsFromClasses(Class<?>... commandClasses) {
+        return createCommandsFromClasses(Arrays.asList(commandClasses));
     }
 
-    @Override
-    default CommandHandleBuilder createCommand(Supplier<Object> commandSupplier) {
-        return createCommandHandle(commandSupplier);
+    default List<CommandHandleBuilderInternal> createCommandsFromObjects(Object... commandObjects) {
+        return createCommandsFromObjects(Arrays.asList(commandObjects));
     }
 
-    @Override
-    default CommandHandleBuilder createCommand(Class<?> commandClass) {
-        return createCommandHandle(commandClass);
+    default List<CommandHandleBuilderInternal> createCommandsFromSuppliers(Supplier<?>... commandSuppliers) {
+        return createCommandsFromSuppliers(Arrays.asList(commandSuppliers));
     }
 
-    @Override
-    default CommandHandleBuilder createCommand(Object commandObject) {
-        return createCommandHandle(commandObject);
-    }
+    List<CommandHandleBuilderInternal> createCommandsFromClasses(Collection<Class<?>> commandClasses);
 
-    @Override
-    default List<CommandHandleBuilder> createCommands(String packageName) {
-        return Collections.unmodifiableList(createCommandHandles(packageName));
-    }
+    List<CommandHandleBuilderInternal> createCommandsFromObjects(Collection<?> commandObjects);
 
-    @Override
-    default List<CommandHandleBuilder> createCommands(Class<?> commandClass) {
-        return Collections.unmodifiableList(createCommandHandles(commandClass));
-    }
+    List<CommandHandleBuilderInternal> createCommandsFromSuppliers(Collection<Supplier<?>> commandSupplier);
 
-    CommandHandleBuilderInternal createCommandHandle(Consumer<CommandEvent> onCommand);
-
-    CommandHandleBuilderInternal createCommandHandle(Supplier<Object> commandSupplier);
-
-    CommandHandleBuilderInternal createCommandHandle(Class<?> commandClass);
-
-    CommandHandleBuilderInternal createCommandHandle(Object commandObject);
-
-    List<CommandHandleBuilderInternal> createCommandHandles(Class<?> commandClass);
-
-    List<CommandHandleBuilderInternal> createCommandHandles(String packageName);
 }

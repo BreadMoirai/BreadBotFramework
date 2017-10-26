@@ -40,7 +40,7 @@ public class PrefixCommand {
 //        event.replyFormat("The current prefix is `%s`", module.getPrefix(event.getGuildId()));
 //    }
 
-    public void execute(CommandEvent event, IPrefixModule module) {
+    public void execute(CommandEvent event, PrefixModule module) {
         event.replyFormat("The current prefix is `%s`", module.getPrefix(event.getGuildId()));
     }
 }

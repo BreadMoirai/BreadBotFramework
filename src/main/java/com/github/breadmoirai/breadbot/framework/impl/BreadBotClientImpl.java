@@ -17,7 +17,7 @@ package com.github.breadmoirai.breadbot.framework.impl;
 
 import com.github.breadmoirai.breadbot.framework.BreadBotClient;
 import com.github.breadmoirai.breadbot.framework.CommandEngine;
-import com.github.breadmoirai.breadbot.framework.ICommandModule;
+import com.github.breadmoirai.breadbot.framework.CommandModule;
 import com.github.breadmoirai.breadbot.framework.builder.CommandHandleBuilderFactoryImpl;
 import com.github.breadmoirai.breadbot.framework.command.CommandHandle;
 import com.github.breadmoirai.breadbot.framework.builder.CommandHandleBuilder;
@@ -46,11 +46,11 @@ public class BreadBotClientImpl implements BreadBotClient {
     private final ICommandEventFactory eventFactory;
     private final CommandEngine commandEngine;
     private final Predicate<Message> preProcessPredicate;
-    private final List<ICommandModule> modules;
-    private final Map<Type, ICommandModule> moduleTypeMap;
+    private final List<CommandModule> modules;
+    private final Map<Type, CommandModule> moduleTypeMap;
     private final Map<String, CommandHandle> commandMap;
 
-    public BreadBotClientImpl(List<ICommandModule> modules, IEventManager eventManager, ICommandEventFactory eventFactory, CommandHandleBuilderFactoryImpl commandFactory, Predicate<Message> preProcessPredicate) {
+    public BreadBotClientImpl(List<CommandModule> modules, IEventManager eventManager, ICommandEventFactory eventFactory, CommandHandleBuilderFactoryImpl commandFactory, Predicate<Message> preProcessPredicate) {
         this.modules = Collections.unmodifiableList(modules);
         this.eventManager = eventManager;
         this.eventFactory = eventFactory;
@@ -65,19 +65,19 @@ public class BreadBotClientImpl implements BreadBotClient {
         }
         this.commandMap = Collections.unmodifiableMap(handleMap);
 
-        final HashMap<Type, ICommandModule> typeMap = new HashMap<>(modules.size());
-        for (ICommandModule module : modules) {
+        final HashMap<Type, CommandModule> typeMap = new HashMap<>(modules.size());
+        for (CommandModule module : modules) {
             Class<?> moduleClass = module.getClass();
             do {
                 typeMap.put(moduleClass, module);
                 for (Class<?> inter : moduleClass.getInterfaces()) {
-                    final List<Class<?>> interfaceList = getInterfaceHierarchy(inter, ICommandModule.class);
+                    final List<Class<?>> interfaceList = getInterfaceHierarchy(inter, CommandModule.class);
                     if (interfaceList != null) {
                         for (Class<?> interfaceClass : interfaceList)
                             typeMap.put(interfaceClass, module);
                     }
                 }
-            } while (ICommandModule.class.isAssignableFrom(moduleClass = moduleClass.getSuperclass()));
+            } while (CommandModule.class.isAssignableFrom(moduleClass = moduleClass.getSuperclass()));
         }
 
         this.moduleTypeMap = typeMap;
@@ -122,11 +122,11 @@ public class BreadBotClientImpl implements BreadBotClient {
 
     @Override
     public boolean hasModule(String moduleName) {
-        return moduleName != null && modules.stream().map(ICommandModule::getName).anyMatch(moduleName::equalsIgnoreCase);
+        return moduleName != null && modules.stream().map(CommandModule::getName).anyMatch(moduleName::equalsIgnoreCase);
     }
 
     @Override
-    public boolean hasModule(Class<? extends ICommandModule> moduleClass) {
+    public boolean hasModule(Class<? extends CommandModule> moduleClass) {
         return moduleTypeMap.containsKey(moduleClass);
     }
 
@@ -137,7 +137,7 @@ public class BreadBotClientImpl implements BreadBotClient {
      * @return Optional containing the module if found.
      */
     @Override
-    public <T extends ICommandModule> T getModule(Class<T> moduleClass) {
+    public <T extends CommandModule> T getModule(Class<T> moduleClass) {
         //noinspection unchecked
         return (T) moduleTypeMap.get(moduleClass);
     }
@@ -145,21 +145,21 @@ public class BreadBotClientImpl implements BreadBotClient {
     /**
      * Finds and returns the first Module that is assignable to the provided {@code moduleClass}
      *
-     * @param moduleName the name of the module to find. If the module does not override {@link ICommandModule#getName IModule#getName} the name of the class is used.
+     * @param moduleName the name of the module to find. If the module does not override {@link CommandModule#getName IModule#getName} the name of the class is used.
      * @return Optional containing the module if foundd.
      */
     @Override
-    public ICommandModule getModule(String moduleName) {
+    public CommandModule getModule(String moduleName) {
         return moduleName == null ? null : modules.stream().filter(module -> module.getName().equalsIgnoreCase(moduleName)).findAny().orElse(null);
     }
 
     @Override
-    public ICommandModule getModule(Type moduleType) {
+    public CommandModule getModule(Type moduleType) {
         return moduleTypeMap.get(moduleType);
     }
 
     @Override
-    public List<ICommandModule> getModules() {
+    public List<CommandModule> getModules() {
         return modules;
     }
 

@@ -17,9 +17,10 @@ package com.github.breadmoirai.breadbot.modules.source;
 
 import com.github.breadmoirai.breadbot.framework.BreadBotClient;
 import com.github.breadmoirai.breadbot.framework.CommandEngineBuilder;
-import com.github.breadmoirai.breadbot.framework.ICommandModule;
+import com.github.breadmoirai.breadbot.framework.CommandModule;
+import com.github.breadmoirai.breadbot.framework.BreadBotClientBuilder;
 
-public class SourceModule implements ICommandModule {
+public class SourceModule implements CommandModule {
 
     private final long sourceGuildId;
 
@@ -37,5 +38,10 @@ public class SourceModule implements ICommandModule {
 //            }
 //            return true;
 //        });
+    }
+
+    @Override
+    public void initialize(BreadBotClientBuilder builder) {
+
     }
 }

@@ -18,7 +18,7 @@ package com.github.breadmoirai.breadbot.framework.event.impl;
 import com.github.breadmoirai.breadbot.framework.BreadBotClient;
 import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
 import com.github.breadmoirai.breadbot.framework.event.ICommandEventFactory;
-import com.github.breadmoirai.breadbot.modules.prefix.IPrefixModule;
+import com.github.breadmoirai.breadbot.modules.prefix.PrefixModule;
 import com.github.breadmoirai.breadbot.util.DiscordPatterns;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.events.message.guild.GenericGuildMessageEvent;
@@ -31,9 +31,9 @@ public class CommandEventFactoryImpl implements ICommandEventFactory {
 
     private static final SimpleLog LOG = SimpleLog.getLog("CommandEvent");
 
-    private final IPrefixModule prefixModule;
+    private final PrefixModule prefixModule;
 
-    public CommandEventFactoryImpl(IPrefixModule prefixSupplier) {
+    public CommandEventFactoryImpl(PrefixModule prefixSupplier) {
         this.prefixModule = prefixSupplier;
     }
 

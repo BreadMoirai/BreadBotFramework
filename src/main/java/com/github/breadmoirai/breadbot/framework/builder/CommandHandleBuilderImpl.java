@@ -14,6 +14,7 @@
 */
 package com.github.breadmoirai.breadbot.framework.builder;
 
+import com.github.breadmoirai.breadbot.framework.BreadBotClientBuilder;
 import com.github.breadmoirai.breadbot.framework.command.CommandHandle;
 import com.github.breadmoirai.breadbot.framework.command.CommandPreprocessor;
 import com.github.breadmoirai.breadbot.framework.command.impl.CommandHandleImpl;
@@ -32,18 +33,19 @@ public class CommandHandleBuilderImpl implements CommandHandleBuilderInternal {
     private final Method declaringMethod;
     private String[] keys;
     private String name, group, description;
-    private final BreadBotClientBuilder builder;
+    private final BreadBotClientBuilder clientBuilder;
     private final CommandObjectFactory commandFactory;
     private final CommandParameterBuilder[] parameterBuilders;
     private final InvokableCommand commandFunction;
     private final List<CommandHandleBuilderInternal> subCommands;
     private final List<CommandPreprocessor> preprocessors;
     private final CommandPropertyMapImpl propertyMap;
+    private transient CommandHandleBuilderFactoryImpl handleBuilderFactory;
 
     public CommandHandleBuilderImpl(Object declaringObject,
                                     Class<?> declaringClass,
                                     Method declaringMethod,
-                                    BreadBotClientBuilder builder,
+                                    BreadBotClientBuilder clientBuilder,
                                     CommandObjectFactory commandFactory,
                                     CommandParameterBuilder[] parameterBuilders,
                                     InvokableCommand commandFunction,
@@ -51,7 +53,7 @@ public class CommandHandleBuilderImpl implements CommandHandleBuilderInternal {
         this.declaringObject = declaringObject;
         this.declaringClass = declaringClass;
         this.declaringMethod = declaringMethod;
-        this.builder = builder;
+        this.clientBuilder = clientBuilder;
         this.commandFactory = commandFactory;
         this.parameterBuilders = parameterBuilders;
         this.commandFunction = commandFunction;
@@ -140,7 +142,7 @@ public class CommandHandleBuilderImpl implements CommandHandleBuilderInternal {
 
     @Override
     public BreadBotClientBuilder getClientBuilder() {
-        return builder;
+        return clientBuilder;
     }
 
     @Override
@@ -174,6 +176,29 @@ public class CommandHandleBuilderImpl implements CommandHandleBuilderInternal {
     }
 
     @Override
+    public void putCommandHandle(CommandHandleBuilderInternal handle) {
+        subCommands.add(handle);
+    }
+
+    @Override
+    public void putCommandHandles(Collection<CommandHandleBuilderInternal> commands) {
+        subCommands.addAll(commands);
+    }
+
+    @Override
+    public CommandHandleBuilderFactoryInternal getCommandFactory() {
+        if (handleBuilderFactory == null) {
+            handleBuilderFactory = new CommandHandleBuilderFactoryImpl(clientBuilder);
+        }
+        return handleBuilderFactory;
+    }
+
+    @Override
+    public CommandHandleBuilder self() {
+        return this;
+    }
+
+    @Override
     public CommandHandle build() {
         Map<String, CommandHandle> subCommandMap;
         if (subCommands.isEmpty()) {
@@ -191,4 +216,5 @@ public class CommandHandleBuilderImpl implements CommandHandleBuilderInternal {
         Arrays.setAll(commandParameters, value -> parameterBuilders[value].build());
         return new CommandHandleImpl(keys, name, group, description, /*client,*/ commandFactory, commandParameters, commandFunction, subCommandMap, preprocessors, propertyMap);
     }
+
 }

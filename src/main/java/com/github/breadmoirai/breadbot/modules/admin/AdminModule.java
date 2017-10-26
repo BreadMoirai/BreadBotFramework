@@ -15,10 +15,10 @@
  */
 package com.github.breadmoirai.breadbot.modules.admin;
 
-import com.github.breadmoirai.breadbot.framework.ICommandModule;
+import com.github.breadmoirai.breadbot.framework.CommandModule;
 import net.dv8tion.jda.core.entities.Member;
 
-public interface IAdminModule extends ICommandModule {
+public interface AdminModule extends CommandModule {
 
     @Override
     default String getName() {

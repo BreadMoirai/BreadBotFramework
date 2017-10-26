@@ -14,7 +14,7 @@
 */
 package com.github.breadmoirai.breadbot.framework.error;
 
-public class CommandInitializationException extends RuntimeException {
+public class CommandInitializationException extends BreadBotException {
     public CommandInitializationException(String message) {
         super(message);
     }

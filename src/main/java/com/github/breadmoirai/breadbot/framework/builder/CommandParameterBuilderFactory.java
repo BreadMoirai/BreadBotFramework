@@ -14,7 +14,8 @@
 */
 package com.github.breadmoirai.breadbot.framework.builder;
 
-import com.github.breadmoirai.breadbot.framework.ICommandModule;
+import com.github.breadmoirai.breadbot.framework.BreadBotClientBuilder;
+import com.github.breadmoirai.breadbot.framework.CommandModule;
 import com.github.breadmoirai.breadbot.framework.command.CommandPropertyMap;
 import com.github.breadmoirai.breadbot.framework.command.parameter.CommandParameterFunctionImpl;
 import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
@@ -36,7 +37,7 @@ public class CommandParameterBuilderFactory {
         final Class<?> type = parameter.getType();
         if (type == CommandEvent.class) {
             return new CommandParameterBuilderSpecificImpl(parameter, "This parameter of type CommandEvent is inconfigurable", () -> new CommandParameterFunctionImpl((commandArguments, commandParser) -> commandParser.getEvent()));
-        } else if (ICommandModule.class.isAssignableFrom(type)) {
+        } else if (CommandModule.class.isAssignableFrom(type)) {
             return new CommandParameterBuilderSpecificImpl(parameter,"This parameter of type " + type.getSimpleName() + " is inconfigurable", () -> new CommandParameterFunctionImpl((commandArguments, commandParser) -> commandParser.getEvent().getClient().getModule(type)));
         } else {
             CommandParameterBuilderImpl param = new CommandParameterBuilderImpl(parameter, methodName, map);

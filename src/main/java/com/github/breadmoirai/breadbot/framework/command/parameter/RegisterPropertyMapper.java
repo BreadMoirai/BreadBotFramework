@@ -20,6 +20,7 @@ import java.util.function.Function;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.ANNOTATION_TYPE)
+@Inherited
 public @interface RegisterPropertyMapper {
 
     Class<? extends Function<? extends Annotation, ?>> mapper();

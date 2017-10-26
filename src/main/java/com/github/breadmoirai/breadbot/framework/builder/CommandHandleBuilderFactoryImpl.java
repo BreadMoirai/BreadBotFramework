@@ -14,6 +14,7 @@
 */
 package com.github.breadmoirai.breadbot.framework.builder;
 
+import com.github.breadmoirai.breadbot.framework.BreadBotClientBuilder;
 import com.github.breadmoirai.breadbot.framework.command.Command;
 import com.github.breadmoirai.breadbot.framework.command.CommandPropertyMap;
 import com.github.breadmoirai.breadbot.framework.command.DefaultCommand;
@@ -23,8 +24,11 @@ import com.github.breadmoirai.breadbot.framework.command.impl.CommandPropertyMap
 import com.github.breadmoirai.breadbot.framework.command.impl.InvokableCommandHandle;
 import com.github.breadmoirai.breadbot.framework.command.parameter.CommandParameterFunctionImpl;
 import com.github.breadmoirai.breadbot.framework.error.BreadBotException;
+import com.github.breadmoirai.breadbot.framework.error.CommandInitializationException;
+import com.github.breadmoirai.breadbot.framework.error.MissingCommandAnnotation;
 import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
-import com.github.breadmoirai.breadbot.util.ExceptionalSupplier;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.reflections.Reflections;
 
 import java.lang.annotation.Annotation;
@@ -35,6 +39,7 @@ import java.lang.reflect.*;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class CommandHandleBuilderFactoryImpl implements CommandHandleBuilderFactoryInternal {
@@ -46,7 +51,7 @@ public class CommandHandleBuilderFactoryImpl implements CommandHandleBuilderFact
     }
 
     @Override
-    public CommandHandleBuilderInternal createCommandHandle(Consumer<CommandEvent> onCommand) {
+    public CommandHandleBuilderInternal createCommand(Consumer<CommandEvent> onCommand) {
         return new CommandHandleBuilderImpl(
                 onCommand,
                 null,
@@ -59,27 +64,144 @@ public class CommandHandleBuilderFactoryImpl implements CommandHandleBuilderFact
     }
 
     @Override
-    public CommandHandleBuilderInternal createCommandHandle(Supplier<Object> commandSupplier) {
-        final Object o = commandSupplier.get();
-        final Class<?> aClass = o.getClass();
-        final Method method = findDefaultMethod(aClass);
-        final CommandObjectFactory factory = new CommandObjectFactory(ExceptionalSupplier.convert(commandSupplier));
-        return createCommandHandleBuilderInternal(null, aClass, method, factory, aClass, commandSupplier);
-    }
-
-    @Override
-    public CommandHandleBuilderInternal createCommandHandle(Class<?> commandClass) {
+    public CommandHandleBuilderInternal createCommand(Class<?> commandClass) {
         final Method method = findDefaultMethod(commandClass);
         final CommandObjectFactory factory = getSupplierForClass(commandClass);
         return createCommandHandleBuilderInternal(null, commandClass, method, factory, null, null);
     }
 
     @Override
-    public CommandHandleBuilderInternal createCommandHandle(Object commandObject) {
+    public CommandHandleBuilderInternal createCommand(Object commandObject) {
         final Class<?> aClass = commandObject.getClass();
         final Method method = findDefaultMethod(aClass);
         final CommandObjectFactory factory = new CommandObjectFactory(() -> commandObject);
         return createCommandHandleBuilderInternal(commandObject, aClass, method, factory, null, null);
+    }
+
+    @Override
+    public CommandHandleBuilderInternal createCommand(Supplier<?> commandSupplier) {
+        final Object o = commandSupplier.get();
+        final Class<?> aClass = o.getClass();
+        final Method method = findDefaultMethod(aClass);
+        final CommandObjectFactory factory = new CommandObjectFactory(commandSupplier::get);
+        return createCommandHandleBuilderInternal(null, aClass, method, factory, aClass, commandSupplier);
+    }
+
+    @Override
+    public List<CommandHandleBuilderInternal> createCommands(String packageName) {
+        final Reflections reflections = new Reflections(packageName);
+        final Set<Class<?>> classes = reflections.getSubTypesOf(Object.class);
+        List<CommandHandleBuilderInternal> builders = new ArrayList<>();
+        for (Class<?> commandClass : classes) {
+            final int mod = commandClass.getModifiers();
+            if (commandClass.isInterface()
+                    || commandClass.isSynthetic()
+                    || commandClass.isAnonymousClass()
+                    || commandClass.isArray()
+                    || commandClass.isAnnotation()
+                    || commandClass.isEnum()
+                    || commandClass.isPrimitive()
+                    || commandClass.isLocalClass()
+                    || commandClass.isMemberClass()
+                    || Modifier.isAbstract(mod)
+                    || Modifier.isPrivate(mod)
+                    || Modifier.isProtected(mod))
+                continue;
+            Stream<GenericDeclaration> classStream = Stream.concat(Stream.concat(Stream.of(commandClass), Arrays.stream(commandClass.getMethods())), Arrays.stream(commandClass.getClasses()));
+            boolean hasCommandAnnotation = classStream.map(AnnotatedElement::getAnnotations)
+                    .flatMap(Arrays::stream)
+                    .map(Annotation::annotationType)
+                    .anyMatch(aClass -> aClass == Command.class);
+            if (!hasCommandAnnotation) continue;
+            if (commandClass.isAnnotationPresent(Command.class)) {
+                builders.add(createCommand(commandClass));
+            } else {
+                builders.addAll(createCommands(commandClass));
+            }
+        }
+        return builders;
+    }
+
+    @Override
+    public List<CommandHandleBuilderInternal> createCommands(Class<?> commandClass) {
+        return getSubCommands(
+                null,
+                commandClass,
+                getSupplierForClass(commandClass),
+                new CommandPropertyMapImpl(CommandPackageProperties.getPropertiesForPackage(commandClass.getPackage()), commandClass.getAnnotations()),
+                null,
+                null);
+    }
+
+    @Override
+    public List<CommandHandleBuilderInternal> createCommands(Object commandObject) {
+        Class<?> commandClass = commandObject.getClass();
+        return getSubCommands(
+                commandObject,
+                commandClass,
+                getSupplierForClass(commandClass),
+                new CommandPropertyMapImpl(CommandPackageProperties.getPropertiesForPackage(commandClass.getPackage()), commandClass.getAnnotations()),
+                null,
+                null);
+    }
+
+    @Override
+    public List<CommandHandleBuilderInternal> createCommands(Supplier<?> commandSupplier) {
+        Object commandObject = commandSupplier.get();
+        Class<?> commandClass = commandObject.getClass();
+        return getSubCommands(
+                commandObject,
+                commandClass,
+                getSupplierForClass(commandClass),
+                new CommandPropertyMapImpl(CommandPackageProperties.getPropertiesForPackage(commandClass.getPackage()), commandClass.getAnnotations()),
+                commandClass,
+                commandSupplier);
+    }
+
+    @Override
+    public List<CommandHandleBuilderInternal> createCommandsFromClasses(Collection<Class<?>> commandClasses) {
+        return commandClasses.stream()
+                .flatMap(commandClass -> {
+                    if (commandClass.isAnnotationPresent(Command.class)) {
+                        return Stream.of(createCommand(commandClass));
+                    } else {
+                        return createCommands(commandClass).stream();
+                    }
+                }).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<CommandHandleBuilderInternal> createCommandsFromObjects(Collection<?> commandObjects) {
+        return commandObjects.stream()
+                .flatMap(commandObject -> {
+                    if (commandObject.getClass().isAnnotationPresent(Command.class)) {
+                        return Stream.of(createCommand(commandObject));
+                    } else {
+                        return createCommands(commandObject).stream();
+                    }
+                }).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<CommandHandleBuilderInternal> createCommandsFromSuppliers(Collection<Supplier<?>> commandSuppliers) {
+        return commandSuppliers.stream()
+                .flatMap(commandSupplier -> {
+                    final Object commandObject = commandSupplier.get();
+                    final Class<?> commandClass = commandObject.getClass();
+                    if (commandClass.isAnnotationPresent(Command.class)) {
+                        final Method method = findDefaultMethod(commandClass);
+                        final CommandObjectFactory factory = new CommandObjectFactory(commandSupplier::get);
+                        return Stream.of(createCommandHandleBuilderInternal(null, commandClass, method, factory, commandClass, commandSupplier));
+                    } else {
+                        return getSubCommands(
+                                commandObject,
+                                commandClass,
+                                getSupplierForClass(commandClass),
+                                new CommandPropertyMapImpl(CommandPackageProperties.getPropertiesForPackage(commandClass.getPackage()), commandClass.getAnnotations()),
+                                commandClass,
+                                commandSupplier).stream();
+                    }
+                }).collect(Collectors.toList());
     }
 
     private CommandHandleBuilderInternal createCommandHandleBuilderInternal(Object commandObject, Class<?> aClass, Method method, CommandObjectFactory factory, Class<?> supplierReturnType, Supplier<?> supplier) {
@@ -103,18 +225,17 @@ public class CommandHandleBuilderFactoryImpl implements CommandHandleBuilderFact
         }
         clientBuilder.getCommandProperties().applyModifiers(builder);
         setDefaultValues(aClass, builder);
-        addSubCommands(commandObject, aClass, factory, prop, builder, supplierReturnType, supplier);
+        getSubCommands(commandObject, aClass, factory, prop, supplierReturnType, supplier).forEach(builder::putCommandHandle);
         return builder;
     }
 
-    private void addSubCommands(Object commandObject,
-                                Class<?> commandClass,
-                                CommandObjectFactory factory,
-                                CommandPropertyMapImpl propertyMap,
-                                CommandHandleBuilderInternal builder,
-                                Class<?> supplierReturnType,
-                                Supplier<?> supplier) {
-        CommandPropertyMap pkg = CommandPackageProperties.getPropertiesForPackage(commandClass.getPackage());
+    private List<CommandHandleBuilderInternal> getSubCommands(@Nullable Object commandObject,
+                                                              @NotNull Class<?> commandClass,
+                                                              @NotNull CommandObjectFactory factory,
+                                                              @Nullable CommandPropertyMapImpl propertyMap,
+                                                              @Nullable Class<?> supplierReturnType,
+                                                              @Nullable Supplier<?> supplier) {
+        ArrayList<CommandHandleBuilderInternal> builders = new ArrayList<>();
         for (Method method : commandClass.getMethods()) {
             CommandPropertyMapImpl map = new CommandPropertyMapImpl(propertyMap, method.getAnnotations());
             if (!map.hasDeclaredProperty(Command.class)) continue;
@@ -122,7 +243,7 @@ public class CommandHandleBuilderFactoryImpl implements CommandHandleBuilderFact
             if (keys.length == 1 && keys[0].isEmpty()) continue;
             CommandHandleBuilderInternal handle = createHandleFromMethod(commandObject, commandClass, method, factory, map);
             setDefaultValues(method, handle);
-            builder.putCommandHandle(handle);
+            builders.add(handle);
         }
 
         for (Class<?> inner : commandClass.getClasses()) {
@@ -131,46 +252,8 @@ public class CommandHandleBuilderFactoryImpl implements CommandHandleBuilderFact
             final Method method = findDefaultMethod(commandClass);
             final CommandObjectFactory innerFactory = supplier != null ? getSupplierForObject(supplierReturnType, supplier, inner) : getSupplierForClass(commandClass);
             CommandHandleBuilderInternal handle = createCommandHandleBuilderInternal(commandObject, commandClass, method, innerFactory, supplierReturnType, supplier);
-            builder.putCommandHandle(handle);
-        }
-    }
-
-    @Override
-    public List<CommandHandleBuilderInternal> createCommandHandles(Class<?> commandClass) {
-        return null;
-    }
-
-    @Override
-    public List<CommandHandleBuilderInternal> createCommandHandles(String packageName) {
-        List<CommandHandleBuilderInternal> builders = new ArrayList<>();
-        final Reflections reflections = new Reflections(packageName);
-        final Set<Class<?>> classes = reflections.getSubTypesOf(Object.class);
-        for (Class<?> commandClass : classes) {
-            final int mod = commandClass.getModifiers();
-            if (commandClass.isInterface()
-                    || commandClass.isSynthetic()
-                    || commandClass.isAnonymousClass()
-                    || commandClass.isArray()
-                    || commandClass.isAnnotation()
-                    || commandClass.isEnum()
-                    || commandClass.isPrimitive()
-                    || commandClass.isLocalClass()
-                    || commandClass.isMemberClass()
-                    || Modifier.isAbstract(mod)
-                    || Modifier.isPrivate(mod)
-                    || Modifier.isProtected(mod))
-                continue;
-            Stream<GenericDeclaration> classStream = Stream.concat(Stream.concat(Stream.of(commandClass), Arrays.stream(commandClass.getMethods())), Arrays.stream(commandClass.getClasses()));
-            boolean hasCommandAnnotation = classStream.map(AnnotatedElement::getAnnotations)
-                    .flatMap(Arrays::stream)
-                    .map(Annotation::annotationType)
-                    .anyMatch(aClass -> aClass == Command.class);
-            if (!hasCommandAnnotation) continue;
-            if (commandClass.isAnnotationPresent(Command.class)) {
-                builders.add(createCommandHandle(commandClass));
-            } else {
-                builders.addAll(createCommandHandles(commandClass));
-            }
+            setDefaultValues(inner, handle);
+            builders.add(handle);
         }
         return builders;
     }
@@ -331,5 +414,21 @@ public class CommandHandleBuilderFactoryImpl implements CommandHandleBuilderFact
                 return o;
             });
         }
+    }
+
+    public void requireCommandAnnotation(Class<?> aClass) {
+        Command command = aClass.getAnnotation(Command.class);
+        if (command == null) throw new MissingCommandAnnotation(aClass,
+                "If you want to register " + aClass.getSimpleName() + " as a single command, you must add an @Command annotation." +
+                        " Otherwise use #createCommands or #addCommands instead to register as multiple commands.");
+    }
+
+    public void requireNoCommandAnnotation(Class<?> aClass) {
+        Command command = aClass.getAnnotation(Command.class);
+        if (command != null) throw new CommandInitializationException(
+                aClass + " is registered as multiple commands but is marked as a single command. " +
+                        "If you want to register " + aClass.getSimpleName() + " as multiple commands, " +
+                        "you must remove the @Command annotation. " +
+                        "Otherwise use #createCommand or #addCommand instead to register as a single command with subcommands.");
     }
 }

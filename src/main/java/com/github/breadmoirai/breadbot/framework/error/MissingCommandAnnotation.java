@@ -16,7 +16,7 @@ package com.github.breadmoirai.breadbot.framework.error;
 
 public class MissingCommandAnnotation extends CommandInitializationException {
 
-    public MissingCommandAnnotation(Class<?> klass) {
-        super("Command Class: " + klass.getName() + " is not marked with @Command.");
+    public MissingCommandAnnotation(Class<?> klass, String message) {
+        super(klass.getName() + " is not marked with @Command but is registered as a Command.\n" + message);
     }
 }

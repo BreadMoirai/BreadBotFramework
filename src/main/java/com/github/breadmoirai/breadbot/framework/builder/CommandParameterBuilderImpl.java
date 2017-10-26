@@ -52,29 +52,6 @@ public class CommandParameterBuilderImpl implements CommandParameterBuilder {
             type = paramType;
         }
         parser = ArgumentTypes.getParser(type);
-
-        final Width width = this.map.getDeclaredProperty(Width.class);
-        if (width != null) setWidth(width.value());
-        final Index index = this.map.getDeclaredProperty(Index.class);
-        if (index != null) setIndex(index.value());
-        final Flags flags = this.map.getDeclaredProperty(Flags.class);
-        if (flags != null) setFlags(flags.value());
-        final Type type = this.map.getDeclaredProperty(Type.class);
-        if (type != null) setBaseType(type.value());
-        final MatchRegex regex = this.map.getDeclaredProperty(MatchRegex.class);
-        if (regex != null) {
-            if (paramType == CommandArgument.class) {
-                parser = new ArgumentParser<>((arg, flags1) -> arg.matches(regex.value()), (arg, flags1) -> Optional.of(arg));
-            } else if (paramType == String.class) {
-                parser = new ArgumentParser<>((arg, flags1) -> arg.matches(regex.value()), (arg, flags1) -> Optional.of(arg.getArgument()));
-            }
-        }
-        final MissingArgumentConsumer onNull = this.map.getProperty(MissingArgumentConsumer.class);
-        if (onNull != null) {
-            mustBePresent = true;
-            onParamNotFound = onNull;
-        }
-
     }
 
     private void setActualTypeParameter(Parameter parameter) {
@@ -161,13 +138,13 @@ public class CommandParameterBuilderImpl implements CommandParameterBuilder {
     }
 
     @Override
-    public <T> CommandParameterBuilder setMapper(ArgumentTypePredicate predicate, ArgumentTypeMapper<T> mapper) {
+    public <T> CommandParameterBuilder setParser(ArgumentTypePredicate predicate, ArgumentTypeMapper<T> mapper) {
         this.parser = new ArgumentParser<T>(predicate, mapper);
         return this;
     }
 
     @Override
-    public CommandParameterBuilder setOptional(boolean mustBePresent) {
+    public CommandParameterBuilder setRequired(boolean mustBePresent) {
         this.mustBePresent = mustBePresent;
         return this;
     }
@@ -176,6 +153,11 @@ public class CommandParameterBuilderImpl implements CommandParameterBuilder {
     public CommandParameterBuilder setOnParamNotFound(MissingArgumentConsumer onParamNotFound) {
         this.onParamNotFound = onParamNotFound;
         return this;
+    }
+
+    @Override
+    public ArgumentParser<?> getParser() {
+        return parser;
     }
 
     @Override

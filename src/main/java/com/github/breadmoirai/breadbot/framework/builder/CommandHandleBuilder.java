@@ -14,20 +14,17 @@
 */
 package com.github.breadmoirai.breadbot.framework.builder;
 
+import com.github.breadmoirai.breadbot.framework.BreadBotClientBuilder;
 import com.github.breadmoirai.breadbot.framework.command.CommandPreprocessor;
 import com.github.breadmoirai.breadbot.framework.command.CommandPreprocessorFunction;
 import com.github.breadmoirai.breadbot.framework.command.CommandPreprocessorPredicate;
-import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
-import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Method;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Objects;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
-public interface CommandHandleBuilder extends CommandHandleBuilderFactory {
+public interface CommandHandleBuilder extends CommandHandleBuilderFactory<CommandHandleBuilder> {
 
     CommandHandleBuilder setKeys(String... key);
 

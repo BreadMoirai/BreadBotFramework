@@ -18,14 +18,12 @@ package com.github.breadmoirai.breadbot.framework.command.parameter;
 import com.github.breadmoirai.breadbot.framework.command.CommandArgumentList;
 import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 import java.util.function.Function;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.PARAMETER)
+@Inherited
 public @interface RegisterArgumentListFactory {
 
     Class<? extends Function<CommandEvent, CommandArgumentList>> listFactory();

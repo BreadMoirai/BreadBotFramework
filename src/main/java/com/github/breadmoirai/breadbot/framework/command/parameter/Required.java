@@ -20,8 +20,6 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.PARAMETER)
 @Inherited
-public @interface Index {
-
-    int value();
+public @interface Required {
 
 }
