@@ -15,9 +15,7 @@
  */
 package com.github.breadmoirai.breadbot.modules.owner;
 
-import com.github.breadmoirai.breadbot.framework.BreadBotClient;
 import com.github.breadmoirai.breadbot.framework.BreadBotClientBuilder;
-import com.github.breadmoirai.breadbot.framework.CommandEngineBuilder;
 import com.github.breadmoirai.breadbot.framework.CommandModule;
 import net.dv8tion.jda.core.entities.User;
 
@@ -35,17 +33,12 @@ public class OwnerModule implements CommandModule {
         this.ownerId = ownerId;
     }
 
-    @Override
-    public void init(CommandEngineBuilder config, BreadBotClient client) {
-//        config.addPostProcessPredicate(command -> !command.isMarkedWith(Owner.class) || isOwner(command.getEvent().getAuthor()));
-    }
-
     public boolean isOwner(User author) {
         return author.getIdLong() == ownerId;
     }
 
     @Override
     public void initialize(BreadBotClientBuilder builder) {
-        builder.ass
+        builder.associatePreprocessorPredicate("owner", Owner.class, event -> isOwner(event.getAuthor()));
     }
 }

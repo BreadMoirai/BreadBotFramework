@@ -21,7 +21,7 @@ import com.github.breadmoirai.breadbot.framework.CommandModule;
 public interface PrefixModule extends CommandModule {
 
     @Override
-    default void initialize(BreadBotClientBuilder client) throws NoSuchMethodException, IllegalAccessException {
+    default void initialize(BreadBotClientBuilder client) {
         client.createCommand(PrefixCommand.class);
     }
 

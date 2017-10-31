@@ -14,6 +14,7 @@
 */
 package com.github.breadmoirai.breadbot.framework.command.parameter;
 
+import com.github.breadmoirai.breadbot.framework.BreadBotClient;
 import com.github.breadmoirai.breadbot.framework.internal.ArgumentTypes;
 import com.github.breadmoirai.breadbot.framework.event.Arguments;
 import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
@@ -46,6 +47,14 @@ public interface CommandArgument {
      */
     String getArgument();
 
+    /**
+     * Returns the command client
+     *
+     * @return a BreadBotClient
+     */
+    default BreadBotClient getClient() {
+        return getEvent().getClient();
+    }
 
     /**
      * If this method returns {@code true}, that means this argument has been eagerly evaluated to a mention. This argument would be of type
@@ -69,30 +78,26 @@ public interface CommandArgument {
 //            * <p>If this argument is an {@link net.dv8tion.jda.core.entities.Emote}, the method will return {@code true}. However, if the {@link net.dv8tion.jda.core.entities.Emote} is not a valid {@link net.dv8tion.jda.core.JDA} entity, it will NOT be reflected in this method. Instead the object returned by {@link com.github.breadmoirai.bot.framework.event.args.CommandArgument#getEmote} will return an {@link net.dv8tion.jda.core.entities.Emote} with {@link net.dv8tion.jda.core.entities.IFakeable#isFake() isFake()} returning {@code true}
 
     /**
-     * @see ArgumentTypesImpl#isOfType(java.lang.Class, com.github.breadmoirai.breadbot.framework.command.parameter.CommandArgument)
-     *
      * @param type The type of argument to test for.
      *
      * @return {@code true} if this argument is of the type passed.
      */
     default boolean isOfType(Class<?> type) {
-        return ArgumentTypes.isOfType(type, this);
+        return getClient().getArgumentTypes().getParser(type).test(this);
     }
 
     /**
-     * @see ArgumentTypesImpl#isOfType(java.lang.Class, com.github.breadmoirai.breadbot.framework.command.parameter.CommandArgument, int)
-     *
      * @param type the argument type to test for
      * @param flags testing flags. {@link ArgumentFlags}
      *
      * @return {@code true} if this argument is of the type passed.
      */
     default boolean isOfType(Class<?> type, int flags) {
-        return ArgumentTypes.isOfType(type, this, flags);
+        return getClient().getArgumentTypes().getParser(type).test( this, flags);
     }
 
     default <T> Optional<T> getAsType(Class<T> type) {
-        return ArgumentTypes.getAsType(type, this);
+        return getClient().getArgumentTypes().getParser(type).parse(this, 0);
     }
 
     /**

@@ -49,7 +49,7 @@ public interface CommandHandleBuilder extends CommandHandleBuilderFactory<Comman
     CommandHandleBuilder putProperty(Object property);
 
     default <T> CommandHandleBuilder applyProperty(Class<? super T> type, T property) {
-        BiConsumer<? super T, CommandHandleBuilder> commandModifier = getClientBuilder().getCommandProperties().getCommandModifier(type);
+        BiConsumer<? super T, CommandHandleBuilder> commandModifier = getClientBuilder().getCommandModifier(type);
         if (commandModifier != null)
             commandModifier.accept(property, this);
         return putProperty(type, property);
@@ -57,7 +57,7 @@ public interface CommandHandleBuilder extends CommandHandleBuilderFactory<Comman
 
     default <T> CommandHandleBuilder applyProperty(T property) {
         @SuppressWarnings("unchecked") Class<T> type = (Class<T>) property.getClass();
-        BiConsumer<? super T, CommandHandleBuilder> commandModifier = getClientBuilder().getCommandProperties().getCommandModifier(type);
+        BiConsumer<? super T, CommandHandleBuilder> commandModifier = getClientBuilder().getCommandModifier(type);
         if (commandModifier != null)
             commandModifier.accept(property, this);
         return putProperty(type, property);

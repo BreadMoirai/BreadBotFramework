@@ -15,6 +15,7 @@
  */
 package com.github.breadmoirai.breadbot.modules.admin;
 
+import com.github.breadmoirai.breadbot.framework.BreadBotClientBuilder;
 import com.github.breadmoirai.breadbot.framework.CommandModule;
 import net.dv8tion.jda.core.entities.Member;
 
@@ -25,6 +26,10 @@ public interface AdminModule extends CommandModule {
         return "AdminModule";
     }
 
-
     boolean isAdmin(Member member);
+
+    @Override
+    default void initialize(BreadBotClientBuilder builder) {
+        builder.associatePreprocessorPredicate("admin", Admin.class, event -> isAdmin(event.getMember()));
+    }
 }

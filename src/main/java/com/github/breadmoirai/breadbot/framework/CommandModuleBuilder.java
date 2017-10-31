@@ -4,7 +4,8 @@ import com.github.breadmoirai.breadbot.modules.admin.AdminModule;
 import com.github.breadmoirai.breadbot.modules.admin.DefaultAdminModule;
 import com.github.breadmoirai.breadbot.modules.prefix.DefaultPrefixModule;
 import com.github.breadmoirai.breadbot.modules.prefix.PrefixModule;
-import com.github.breadmoirai.breadbot.modules.source.SourceModule;
+import com.github.breadmoirai.breadbot.modules.source.RestrictToGuild;
+import com.github.breadmoirai.breadbot.modules.source.GuildRestrictionModule;
 import net.dv8tion.jda.core.entities.Member;
 
 import java.util.Collection;
@@ -93,14 +94,14 @@ public interface CommandModuleBuilder<T> {
     }
 
     /**
-     * Adding this module will enable {@link com.github.breadmoirai.breadbot.modules.source.SourceGuild @SourceGuild} annotations on Commands.
+     * Adding this module will enable {@link RestrictToGuild @RestrictToGuild} annotations on Commands.
      * This ensures that some commands can only be used in certain guilds.
      *
      * @param sourceGuildId The guild id
      * @return this
      */
     default T addSourceModule(long sourceGuildId) {
-        return addModule(new SourceModule(sourceGuildId));
+        return addModule(new GuildRestrictionModule(sourceGuildId));
     }
 
 

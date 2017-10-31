@@ -1,5 +1,6 @@
 package com.github.breadmoirai.breadbot.framework.builder;
 
+import com.github.breadmoirai.breadbot.framework.BreadBotClientBuilder;
 import com.github.breadmoirai.breadbot.framework.internal.ArgumentTypes;
 import com.github.breadmoirai.breadbot.framework.command.CommandPropertyMap;
 import com.github.breadmoirai.breadbot.framework.command.impl.CommandParameterCollectionImpl;
@@ -33,14 +34,16 @@ public class CommandParameterBuilderImpl implements CommandParameterBuilder {
     private boolean mustBePresent = false;
     private boolean contiguous = true;
     private BiConsumer<CommandEvent, CommandParameter> onParamNotFound = null;
+    private final BreadBotClientBuilder clientBuilder;
 
-    public CommandParameterBuilderImpl(Parameter parameter, String methodName, CommandPropertyMap map) {
+    public CommandParameterBuilderImpl(BreadBotClientBuilder builder, Parameter parameter, String methodName, CommandPropertyMap map) {
         this.parameter = parameter;
         this.map = new CommandPropertyMapImpl(map);
         this.map.putAnnotations(parameter.getAnnotations());
         this.paramName = parameter.getName();
         this.paramType = parameter.getType();
         this.methodName = methodName;
+        this.clientBuilder = builder;
         if (paramType == List.class) {
             collectorSupplier = getToList();
             setActualTypeParameter(parameter);
@@ -52,7 +55,7 @@ public class CommandParameterBuilderImpl implements CommandParameterBuilder {
         } else {
             type = paramType;
         }
-        parser = ArgumentTypes.getParser(type);
+        parser = clientBuilder.getParser(type);
     }
 
     private void setActualTypeParameter(Parameter parameter) {
@@ -128,7 +131,7 @@ public class CommandParameterBuilderImpl implements CommandParameterBuilder {
 
     @Override
     public <T> CommandParameterBuilder setBaseType(Class<T> type) {
-        return setBaseType(type, ArgumentTypes.getParser(type));
+        return setBaseType(type, clientBuilder.getParser(type));
     }
 
     @Override

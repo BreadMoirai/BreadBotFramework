@@ -16,6 +16,7 @@
 package com.github.breadmoirai.breadbot.framework;
 
 import com.github.breadmoirai.breadbot.framework.command.CommandHandle;
+import com.github.breadmoirai.breadbot.framework.internal.ArgumentTypes;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
@@ -45,6 +46,8 @@ public interface BreadBotClient {
     JDA getJDA();
 
     IEventManager getEventManager();
+
+    ArgumentTypes getArgumentTypes();
 
     default void send(Response response) {
         send(response.getChannelId(), response);

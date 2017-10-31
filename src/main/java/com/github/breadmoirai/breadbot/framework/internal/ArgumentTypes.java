@@ -37,59 +37,6 @@ public interface ArgumentTypes {
     }
 
     /**
-     * Attempts to map the CommandArgument to the type provided using the flags and a registered ArgumentMapper.
-     * If an ArgumentMapper is not registered with the type requested, an empty Optional is returned.
-     *
-     * @param type  the intended type class
-     * @param arg   the argument to map from
-     * @param flags any {@link com.github.breadmoirai.breadbot.framework.command.parameter.ArgumentFlags flags}
-     * @param <T>   the type
-     * @return an Optional containing the result if successful. Otherwise empty.
-     */
-    default <T> Optional<T> getAsType(Class<T> type, CommandArgument arg, int flags) {
-        final ArgumentParser<T> parser = getParser(type);
-        if (parser == null) return Optional.empty();
-        return parser.parse(arg, flags);
-    }
-
-    /**
-     * Attempts to map the CommandArgument to the type provided using the flags and a registered ArgumentMapper.
-     * If an ArgumentMapper is not registered with the type requested, an empty Optional is returned.
-     *
-     * @param type the intended type class
-     * @param arg  the argument to map from
-     * @param <T>  the type
-     * @return an Optional containing the result if successful. Otherwise empty.
-     */
-    default <T> Optional<T> getAsType(Class<T> type, CommandArgument arg) {
-        return getAsType(type, arg, 0);
-    }
-
-    /**
-     * Checks if the passed arg is
-     * <pre><code>
-     *     {@link ArgumentTypes#getAsType(Class, CommandArgument, int) getAsType(type, arg, flags)}.isPresent();
-     * </code></pre>
-     */
-    default boolean isOfType(Class<?> type, CommandArgument arg, int flags) {
-        final ArgumentParser<?> parser = getParser(type);
-        if (parser == null) {
-            return false;
-        }
-        return parser.test(arg, flags);
-    }
-
-    /**
-     * Implemented as
-     * <pre><code>
-     *     {@link ArgumentTypes#isOfType(Class, CommandArgument, int) isOfType(type, arg, 0)}
-     * </code></pre>
-     */
-    default boolean isOfType(Class<?> type, CommandArgument arg) {
-        return isOfType(type, arg, 0);
-    }
-
-    /**
      * Returns the predicate mapper pair registered if found.
      *
      * @param type the class of the type as it was registered or one of the default types.

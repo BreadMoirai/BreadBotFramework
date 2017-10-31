@@ -45,7 +45,6 @@ public class BreadBotClientImpl implements BreadBotClient {
 
     private JDA jda;
 
-    private final CommandProperties commandProperties;
     private final ArgumentTypes argumentTypes;
     private final IEventManager eventManager;
     private final ICommandEventFactory eventFactory;
@@ -57,7 +56,6 @@ public class BreadBotClientImpl implements BreadBotClient {
 
     public BreadBotClientImpl(List<CommandModule> modules, List<CommandHandleBuilderInternal> commands, CommandProperties commandProperties, ArgumentTypes argumentTypes, IEventManager eventManager, ICommandEventFactory eventFactory, Predicate<Message> preProcessPredicate) {
         this.modules = Collections.unmodifiableList(modules);
-        this.commandProperties = commandProperties;
         this.argumentTypes = argumentTypes;
         this.eventManager = eventManager;
         this.eventFactory = eventFactory;
@@ -123,8 +121,13 @@ public class BreadBotClientImpl implements BreadBotClient {
     }
 
     @Override
+    public ArgumentTypes getArgumentTypes() {
+        return argumentTypes;
+    }
+
+    @Override
     public Map<String, CommandHandle> getCommandMap() {
-        return null;
+        return commandMap;
     }
 
     @Override

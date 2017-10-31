@@ -22,7 +22,7 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface SourceGuild {
+public @interface RestrictToGuild {
 
     long value() default 0;
 }

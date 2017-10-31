@@ -40,8 +40,8 @@ public class CommandParameterBuilderFactory {
         } else if (CommandModule.class.isAssignableFrom(type)) {
             return new CommandParameterBuilderSpecificImpl(parameter,"This parameter of type " + type.getSimpleName() + " is inconfigurable", () -> new CommandParameterFunctionImpl((commandArguments, commandParser) -> commandParser.getEvent().getClient().getModule(type)));
         } else {
-            CommandParameterBuilderImpl param = new CommandParameterBuilderImpl(parameter, methodName, map);
-            clientBuilder.getCommandProperties().applyModifiers(param);
+            CommandParameterBuilderImpl param = new CommandParameterBuilderImpl(clientBuilder, parameter, methodName, map);
+            clientBuilder.applyModifiers(param);
             return param;
         }
     }

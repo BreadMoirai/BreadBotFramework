@@ -43,8 +43,11 @@ public class CommandPropertiesImpl implements CommandProperties {
 
     @Override
     public <T> void appendCommandModifier(Class<T> propertyType, BiConsumer<T, CommandHandleBuilder> configurator) {
-        //noinspection unchecked
-        commandPropertyMap.merge(propertyType, configurator, BiConsumer::andThen);
+        commandPropertyMap.merge(propertyType, configurator, (c1, c2) -> {
+            @SuppressWarnings("unchecked") BiConsumer<Object, CommandHandleBuilder> cc1 = (BiConsumer<Object, CommandHandleBuilder>) c1;
+            @SuppressWarnings("unchecked") BiConsumer<Object, CommandHandleBuilder> cc2 = (BiConsumer<Object, CommandHandleBuilder>) c2;
+            return cc1.andThen(cc2);
+        });
     }
 
     @Override
@@ -54,8 +57,11 @@ public class CommandPropertiesImpl implements CommandProperties {
 
     @Override
     public <T> void appendParameterModifier(Class<T> propertyType, BiConsumer<T, CommandParameterBuilder> configurator) {
-        //noinspection unchecked
-        parameterPropertyMap.merge(propertyType, configurator, BiConsumer::andThen);
+        parameterPropertyMap.merge(propertyType, configurator, (c1, c2) -> {
+            @SuppressWarnings("unchecked") BiConsumer<Object, CommandParameterBuilder> cc1 = (BiConsumer<Object, CommandParameterBuilder>) c1;
+            @SuppressWarnings("unchecked") BiConsumer<Object, CommandParameterBuilder> cc2 = (BiConsumer<Object, CommandParameterBuilder>) c2;
+            return cc1.andThen(cc2);
+        });
     }
 
     @Override

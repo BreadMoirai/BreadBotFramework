@@ -15,33 +15,24 @@
  */
 package com.github.breadmoirai.breadbot.modules.source;
 
-import com.github.breadmoirai.breadbot.framework.BreadBotClient;
-import com.github.breadmoirai.breadbot.framework.CommandEngineBuilder;
-import com.github.breadmoirai.breadbot.framework.CommandModule;
 import com.github.breadmoirai.breadbot.framework.BreadBotClientBuilder;
+import com.github.breadmoirai.breadbot.framework.CommandModule;
+import com.github.breadmoirai.breadbot.framework.command.CommandPreprocessorPredicate;
 
-public class SourceModule implements CommandModule {
+public class GuildRestrictionModule implements CommandModule {
 
     private final long sourceGuildId;
 
-    public SourceModule(long sourceGuildId) {
+    public GuildRestrictionModule(long sourceGuildId) {
         this.sourceGuildId = sourceGuildId;
     }
 
     @Override
-    public void init(CommandEngineBuilder config, BreadBotClient client) {
-//        config.addPostProcessPredicate(command -> {
-//            if (command.isMarkedWith(SourceGuild.class)) {
-//                long value = command.getClass().getAnnotation(SourceGuild.class).value();
-//                if (value == 0) value = sourceGuildId;
-//                return value == command.getEvent().getGuildId();
-//            }
-//            return true;
-//        });
-    }
-
-    @Override
     public void initialize(BreadBotClientBuilder builder) {
-
+        builder.associatePreprocessorFactory("guild_restriction",
+                RestrictToGuild.class,
+                restrictToGuild ->
+                        (CommandPreprocessorPredicate) event ->
+                                event.getGuildId() == restrictToGuild.value());
     }
 }

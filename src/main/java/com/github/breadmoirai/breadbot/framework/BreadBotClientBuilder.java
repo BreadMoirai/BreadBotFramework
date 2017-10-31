@@ -47,7 +47,7 @@ public class BreadBotClientBuilder implements
         CommandHandleBuilderFactory<BreadBotClientBuilder>,
         CommandModuleBuilder<BreadBotClientBuilder>,
         CommandProperties,
-        ArgumentTypes {
+        ArgumentTypes{
 
     private static final Logger LOG = LoggerFactory.getLogger(BreadBotClientBuilder.class);
 
@@ -94,11 +94,11 @@ public class BreadBotClientBuilder implements
     public boolean hasModule(Class<? extends CommandModule> moduleClass) {
         return moduleClass != null && modules.stream().map(Object::getClass).anyMatch(moduleClass::isAssignableFrom);
     }
+
     @Override
     public <T extends CommandModule> T getModule(Class<T> moduleClass) {
         return moduleClass == null ? null : modules.stream().filter(module -> moduleClass.isAssignableFrom(module.getClass())).map(moduleClass::cast).findAny().orElse(null);
     }
-
     @Override
     public CommandHandleBuilder createCommand(Consumer<CommandEvent> onCommand) {
         CommandHandleBuilderInternal commandHandle = factory.createCommand(onCommand);
@@ -266,24 +266,19 @@ public class BreadBotClientBuilder implements
         return commandProperties.getPriorityComparator();
     }
 
-    /**
-     * Registers an ArgumentMapper with the type provided.
-     *  @param type   the Type class
-     * @param predicate may be null. This returns {@code true} if the {@link CommandArgument} can be mapped to the {@code type}. If the computation cost is similar to mapping the argument, leave this field null.
-     * @param mapper the mapper
-     */
+    @Override
     public <T> void registerArgumentMapper(Class<T> type, ArgumentTypePredicate predicate, ArgumentTypeMapper<T> mapper) {
         argumentTypes.registerArgumentMapper(type, predicate, mapper);
     }
 
-    /**
-     * This ignores flags. Use {@link ArgumentTypes#registerArgumentMapper} otherwise.
-     *  @param type      The type class
-     * @param isType    predicate to test if the argument can be parsed to the type provided. This param can be left {@code null} if the complexity is close to {@code getAsType.apply(arg) != null}
-     * @param getAsType A function to convert the argument to the type provided.
-     */
+    @Override
     public <T> void registerArgumentMapperSimple(Class<T> type, Predicate<CommandArgument> isType, Function<CommandArgument, T> getAsType) {
         argumentTypes.registerArgumentMapperSimple(type, isType, getAsType);
+    }
+
+    @Override
+    public <T> ArgumentParser<T> getParser(Class<T> type) {
+        return argumentTypes.getParser(type);
     }
 
     /**

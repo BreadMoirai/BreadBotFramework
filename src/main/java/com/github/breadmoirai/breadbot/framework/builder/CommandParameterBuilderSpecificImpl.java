@@ -14,10 +14,7 @@
 */
 package com.github.breadmoirai.breadbot.framework.builder;
 
-import com.github.breadmoirai.breadbot.framework.command.parameter.ArgumentTypeMapper;
-import com.github.breadmoirai.breadbot.framework.command.parameter.ArgumentTypePredicate;
-import com.github.breadmoirai.breadbot.framework.command.parameter.CommandParameter;
-import com.github.breadmoirai.breadbot.framework.command.parameter.MissingArgumentConsumer;
+import com.github.breadmoirai.breadbot.framework.command.parameter.*;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Parameter;
@@ -88,6 +85,11 @@ public class CommandParameterBuilderSpecificImpl implements CommandParameterBuil
 
     @Override
     public CommandParameterBuilder setOnParamNotFound(MissingArgumentConsumer onParamNotFound) {
+        throw new UnsupportedOperationException(error);
+    }
+
+    @Override
+    public ArgumentParser<?> getParser() {
         throw new UnsupportedOperationException(error);
     }
 
