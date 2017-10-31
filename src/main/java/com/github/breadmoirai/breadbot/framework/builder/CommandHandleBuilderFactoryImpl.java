@@ -223,7 +223,7 @@ public class CommandHandleBuilderFactoryImpl implements CommandHandleBuilderFact
                     factory,
                     prop);
         }
-        clientBuilder.getCommandProperties().applyModifiers(builder);
+        clientBuilder.get().applyModifiers(builder);
         setDefaultValues(aClass, builder);
         getSubCommands(commandObject, aClass, factory, prop, supplierReturnType, supplier).forEach(builder::putCommandHandle);
         return builder;

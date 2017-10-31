@@ -1,4 +1,4 @@
-package com.github.breadmoirai.breadbot.framework.command.parameter.impl;
+package com.github.breadmoirai.breadbot.framework.command.parameter.internal;
 
 import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
 import net.dv8tion.jda.core.entities.User;

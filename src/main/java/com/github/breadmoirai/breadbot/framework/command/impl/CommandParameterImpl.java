@@ -5,7 +5,7 @@ import com.github.breadmoirai.breadbot.framework.command.parameter.ArgumentTypeM
 import com.github.breadmoirai.breadbot.framework.command.parameter.CommandArgument;
 import com.github.breadmoirai.breadbot.framework.command.parameter.CommandParameter;
 import com.github.breadmoirai.breadbot.framework.command.parameter.CommandParser;
-import com.github.breadmoirai.breadbot.framework.command.parameter.impl.GenericCommandArgument;
+import com.github.breadmoirai.breadbot.framework.command.parameter.internal.GenericCommandArgument;
 import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
 
 import java.util.Optional;

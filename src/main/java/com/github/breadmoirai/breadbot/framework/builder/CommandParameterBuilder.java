@@ -15,6 +15,7 @@
 package com.github.breadmoirai.breadbot.framework.builder;
 
 import com.github.breadmoirai.breadbot.framework.command.parameter.*;
+import com.github.breadmoirai.breadbot.framework.internal.ArgumentTypesImpl;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Parameter;
@@ -71,8 +72,8 @@ public interface CommandParameterBuilder {
 
     /**
      * Sets the {@link ArgumentTypeMapper} to be used in mapping the {@link CommandParameter}.
-     * If an {@link ArgumentTypeMapper} is registered in {@link com.github.breadmoirai.breadbot.framework.command.parameter.ArgumentTypes}, it will not be used.
-     * The provided {@link ArgumentTypeMapper} will not be registered with {@link com.github.breadmoirai.breadbot.framework.command.parameter.ArgumentTypes}.
+     * If an {@link ArgumentTypeMapper} is registered in {@link ArgumentTypesImpl}, it will not be used.
+     * The provided {@link ArgumentTypeMapper} will not be registered with {@link ArgumentTypesImpl}.
      * It is generally recommended to prefer using different {@link com.github.breadmoirai.breadbot.framework.command.parameter.ArgumentFlags flags} on custom types to indicate that the {@link com.github.breadmoirai.breadbot.framework.command.parameter.CommandArgument} should be mapped differently.
      *
      * @param mapper a public class that implements {@link ArgumentTypeMapper} and contains a no-args public constructor.

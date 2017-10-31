@@ -14,8 +14,10 @@
 */
 package com.github.breadmoirai.breadbot.framework.command.parameter;
 
+import com.github.breadmoirai.breadbot.framework.internal.ArgumentTypes;
 import com.github.breadmoirai.breadbot.framework.event.Arguments;
 import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
+import com.github.breadmoirai.breadbot.framework.internal.ArgumentTypesImpl;
 import com.github.breadmoirai.breadbot.util.Emoji;
 import net.dv8tion.jda.core.entities.*;
 import org.jetbrains.annotations.NotNull;
@@ -67,7 +69,7 @@ public interface CommandArgument {
 //            * <p>If this argument is an {@link net.dv8tion.jda.core.entities.Emote}, the method will return {@code true}. However, if the {@link net.dv8tion.jda.core.entities.Emote} is not a valid {@link net.dv8tion.jda.core.JDA} entity, it will NOT be reflected in this method. Instead the object returned by {@link com.github.breadmoirai.bot.framework.event.args.CommandArgument#getEmote} will return an {@link net.dv8tion.jda.core.entities.Emote} with {@link net.dv8tion.jda.core.entities.IFakeable#isFake() isFake()} returning {@code true}
 
     /**
-     * @see com.github.breadmoirai.breadbot.framework.command.parameter.ArgumentTypes#isOfType(java.lang.Class, com.github.breadmoirai.breadbot.framework.command.parameter.CommandArgument)
+     * @see ArgumentTypesImpl#isOfType(java.lang.Class, com.github.breadmoirai.breadbot.framework.command.parameter.CommandArgument)
      *
      * @param type The type of argument to test for.
      *
@@ -78,7 +80,7 @@ public interface CommandArgument {
     }
 
     /**
-     * @see com.github.breadmoirai.breadbot.framework.command.parameter.ArgumentTypes#isOfType(java.lang.Class, com.github.breadmoirai.breadbot.framework.command.parameter.CommandArgument, int)
+     * @see ArgumentTypesImpl#isOfType(java.lang.Class, com.github.breadmoirai.breadbot.framework.command.parameter.CommandArgument, int)
      *
      * @param type the argument type to test for
      * @param flags testing flags. {@link ArgumentFlags}
@@ -289,7 +291,7 @@ public interface CommandArgument {
      * Checks if this argument is a {@link net.dv8tion.jda.core.entities.User} mention that can be correctly resolved to a {@link net.dv8tion.jda.core.entities.User}.
      * The result of this method is equivalent to checking this argument against a regex of {@code <@(!)?[0-9]+>} and then checking to see if {@link net.dv8tion.jda.core.JDA} has knowledge of a {@link net.dv8tion.jda.core.entities.User} with that id.
      *
-     * If this method returns {@code false} and {@link com.github.breadmoirai.breadbot.framework.command.parameter.CommandArgument#isUser} returns {@code true}, this CommandArgument is can be cast to an  {@link com.github.breadmoirai.breadbot.framework.command.parameter.impl.InvalidMentionArgument InvalidMentionArgument}
+     * If this method returns {@code false} and {@link com.github.breadmoirai.breadbot.framework.command.parameter.CommandArgument#isUser} returns {@code true}, this CommandArgument is can be cast to an  {@link com.github.breadmoirai.breadbot.framework.command.parameter.internal.InvalidMentionArgument InvalidMentionArgument}
      *
      * @return {@code true} if this is a formatted {@link net.dv8tion.jda.core.entities.User} mention that can be resolved to an entity.
      */
@@ -414,7 +416,7 @@ public interface CommandArgument {
      * Checks if this argument is a {@link net.dv8tion.jda.core.entities.TextChannel} mention that can be correctly resolved to a {@link net.dv8tion.jda.core.entities.TextChannel}.
      * The result of this method is equivalent to checking this argument against a regex of {@code <#[0-9]+>} and then checking to see if {@link net.dv8tion.jda.core.JDA} has knowledge of a {@link net.dv8tion.jda.core.entities.TextChannel} with that id.
      *
-     * If this method returns {@code false} and {@link com.github.breadmoirai.breadbot.framework.command.parameter.CommandArgument#isTextChannel()} returns {@code true}, this CommandArgument is can be cast to an  {@link com.github.breadmoirai.breadbot.framework.command.parameter.impl.InvalidMentionArgument InvalidMentionArgument}
+     * If this method returns {@code false} and {@link com.github.breadmoirai.breadbot.framework.command.parameter.CommandArgument#isTextChannel()} returns {@code true}, this CommandArgument is can be cast to an  {@link com.github.breadmoirai.breadbot.framework.command.parameter.internal.InvalidMentionArgument InvalidMentionArgument}
      *
      * @return {@code true} if this is a formatted {@link net.dv8tion.jda.core.entities.TextChannel} mention and can be correctly resolved to a JDA entity.
      */

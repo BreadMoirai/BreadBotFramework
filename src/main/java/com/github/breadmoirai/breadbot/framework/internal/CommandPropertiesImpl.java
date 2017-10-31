@@ -12,11 +12,14 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 */
-package com.github.breadmoirai.breadbot.framework.command;
+package com.github.breadmoirai.breadbot.framework.internal;
 
+import com.github.breadmoirai.breadbot.framework.CommandProperties;
 import com.github.breadmoirai.breadbot.framework.builder.CommandHandleBuilder;
 import com.github.breadmoirai.breadbot.framework.builder.CommandParameterBuilder;
-import com.github.breadmoirai.breadbot.framework.command.parameter.*;
+import com.github.breadmoirai.breadbot.framework.command.CommandPreprocessor;
+import com.github.breadmoirai.breadbot.framework.command.CommandPreprocessorFunction;
+import com.github.breadmoirai.breadbot.framework.command.CommandPreprocessorPredicate;
 
 import java.util.*;
 import java.util.function.BiConsumer;
@@ -30,23 +33,7 @@ public class CommandPropertiesImpl implements CommandProperties {
     private final Map<Class<?>, BiConsumer<?, CommandParameterBuilder>> parameterPropertyMap = new HashMap<>();
 
     public CommandPropertiesImpl() {
-        putParameterModifier(Flags.class, (p, builder) -> builder.setFlags(p.value()));
-        putParameterModifier(MissingArgumentConsumer.class, (p, builder) -> builder.setOnParamNotFound(p));
-        putParameterModifier(Required.class, (p, builder) -> builder.setRequired(true));
-        putParameterModifier(Index.class, (p, builder) -> builder.setIndex(p.value()));
-        putParameterModifier(MatchRegex.class, (p, builder) -> {
-            ArgumentParser<?> parser = builder.getParser();
-            ArgumentTypePredicate predicate;
-            if (parser.hasPredicate()) {
-                predicate = (arg, flags) -> arg.matches(p.value()) && parser.test(arg, flags);
-            }
-            else {
-                predicate = (arg, flags) -> arg.matches(p.value());
-            }
-            builder.setParser(predicate, parser.getMapper());
-        });
-        putParameterModifier(Width.class, (p, builder) -> builder.setWidth(p.value()));
-        putParameterModifier(Type.class, (p, builder) -> builder.setBaseType(p.value()));
+        new DefaultCommandProperties().initialize(this);
     }
 
     @Override
@@ -112,9 +99,6 @@ public class CommandPropertiesImpl implements CommandProperties {
         T property = builder.getProperty(propertyType);
         commandModifier.accept(property, builder);
     }
-
-
-
 
 
     private <T> void associatePreprocessor(Class<T> propertyType, Function<T, CommandPreprocessor> factory) {

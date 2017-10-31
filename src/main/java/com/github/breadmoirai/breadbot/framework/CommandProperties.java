@@ -1,7 +1,10 @@
-package com.github.breadmoirai.breadbot.framework.command;
+package com.github.breadmoirai.breadbot.framework;
 
 import com.github.breadmoirai.breadbot.framework.builder.CommandHandleBuilder;
 import com.github.breadmoirai.breadbot.framework.builder.CommandParameterBuilder;
+import com.github.breadmoirai.breadbot.framework.command.CommandPreprocessor;
+import com.github.breadmoirai.breadbot.framework.command.CommandPreprocessorFunction;
+import com.github.breadmoirai.breadbot.framework.command.CommandPreprocessorPredicate;
 
 import java.util.Comparator;
 import java.util.List;
@@ -9,6 +12,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 public interface CommandProperties {
+
     /**
      * The provided {@code configurator} is used to modify commands that possess the specified property.
      * If there is an existing modifier it is overridden.
@@ -139,8 +143,9 @@ public interface CommandProperties {
      * @param factory      a function that generates a preprocessor predicate based upon the value of the property
      * @param <T>          the property type
      */
-    <T> void associatePreprocessorPredicateFactory(String identifier, Class<T> propertyType, Function<T, CommandPreprocessorPredicate> factory);
+    default <T> void associatePreprocessorPredicateFactory(String identifier, Class<T> propertyType, Function<T, CommandPreprocessorPredicate> factory) {
 
+    }
     /**
      * Associates a preprocessor with a property. This does not replace any existing preprocessors associated with the property.
      *

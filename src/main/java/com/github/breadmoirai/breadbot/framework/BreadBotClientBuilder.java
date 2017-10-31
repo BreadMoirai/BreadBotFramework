@@ -15,16 +15,21 @@
  */
 package com.github.breadmoirai.breadbot.framework;
 
-import com.github.breadmoirai.breadbot.framework.builder.CommandHandleBuilder;
-import com.github.breadmoirai.breadbot.framework.builder.CommandHandleBuilderFactory;
-import com.github.breadmoirai.breadbot.framework.builder.CommandHandleBuilderFactoryImpl;
-import com.github.breadmoirai.breadbot.framework.builder.CommandHandleBuilderInternal;
-import com.github.breadmoirai.breadbot.framework.command.CommandProperties;
-import com.github.breadmoirai.breadbot.framework.command.CommandPropertiesImpl;
+import com.github.breadmoirai.breadbot.framework.builder.*;
+import com.github.breadmoirai.breadbot.framework.command.CommandPreprocessor;
+import com.github.breadmoirai.breadbot.framework.command.CommandPreprocessorFunction;
+import com.github.breadmoirai.breadbot.framework.command.CommandPreprocessorPredicate;
+import com.github.breadmoirai.breadbot.framework.command.parameter.ArgumentParser;
+import com.github.breadmoirai.breadbot.framework.command.parameter.ArgumentTypeMapper;
+import com.github.breadmoirai.breadbot.framework.command.parameter.ArgumentTypePredicate;
+import com.github.breadmoirai.breadbot.framework.command.parameter.CommandArgument;
+import com.github.breadmoirai.breadbot.framework.internal.ArgumentTypes;
+import com.github.breadmoirai.breadbot.framework.internal.ArgumentTypesImpl;
+import com.github.breadmoirai.breadbot.framework.internal.CommandPropertiesImpl;
 import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
 import com.github.breadmoirai.breadbot.framework.event.ICommandEventFactory;
 import com.github.breadmoirai.breadbot.framework.event.impl.CommandEventFactoryImpl;
-import com.github.breadmoirai.breadbot.framework.impl.BreadBotClientImpl;
+import com.github.breadmoirai.breadbot.framework.internal.BreadBotClientImpl;
 import com.github.breadmoirai.breadbot.modules.prefix.DefaultPrefixModule;
 import com.github.breadmoirai.breadbot.modules.prefix.PrefixModule;
 import net.dv8tion.jda.core.entities.Message;
@@ -35,28 +40,29 @@ import net.dv8tion.jda.core.utils.Checks;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
+import java.util.*;
+import java.util.function.*;
 
-public class BreadBotClientBuilder implements CommandHandleBuilderFactory<BreadBotClientBuilder>, CommandModuleBuilder<BreadBotClientBuilder> {
+public class BreadBotClientBuilder implements
+        CommandHandleBuilderFactory<BreadBotClientBuilder>,
+        CommandModuleBuilder<BreadBotClientBuilder>,
+        CommandProperties,
+        ArgumentTypes {
 
     private static final Logger LOG = LoggerFactory.getLogger(BreadBotClientBuilder.class);
 
     private final List<CommandModule> modules;
     private final CommandProperties commandProperties;
+    private final ArgumentTypes argumentTypes;
     private final CommandHandleBuilderFactoryImpl factory;
-    private final List<CommandHandleBuilder> commands;
+    private final List<CommandHandleBuilderInternal> commands;
     private Predicate<Message> preProcessPredicate;
     private ICommandEventFactory commandEventFactory;
 
     public BreadBotClientBuilder() {
         modules = new ArrayList<>();
         commandProperties = new CommandPropertiesImpl();
+        argumentTypes = new ArgumentTypesImpl();
         factory = new CommandHandleBuilderFactoryImpl(this);
         commands = new ArrayList<>();
     }
@@ -170,11 +176,131 @@ public class BreadBotClientBuilder implements CommandHandleBuilderFactory<BreadB
         return Collections.unmodifiableList(commandHandles);
     }
 
+    @Override
+    public <T> void putCommandModifier(Class<T> propertyType, BiConsumer<T, CommandHandleBuilder> configurator) {
+        commandProperties.putCommandModifier(propertyType, configurator);
+    }
+
+    @Override
+    public <T> void appendCommandModifier(Class<T> propertyType, BiConsumer<T, CommandHandleBuilder> configurator) {
+        commandProperties.appendCommandModifier(propertyType, configurator);
+    }
+
+    @Override
+    public <T> void putParameterModifier(Class<T> propertyType, BiConsumer<T, CommandParameterBuilder> configurator) {
+        commandProperties.putParameterModifier(propertyType, configurator);
+    }
+
+    @Override
+    public <T> void appendParameterModifier(Class<T> propertyType, BiConsumer<T, CommandParameterBuilder> configurator) {
+        commandProperties.appendParameterModifier(propertyType, configurator);
+    }
+
+    @Override
+    public void applyModifiers(CommandHandleBuilder builder) {
+        commandProperties.applyModifiers(builder);
+    }
+
+    @Override
+    public <T> BiConsumer<T, CommandHandleBuilder> getCommandModifier(Class<T> propertyType) {
+        return commandProperties.getCommandModifier(propertyType);
+    }
+
+    @Override
+    public <T> void applyCommandModifier(Class<T> propertyType, CommandHandleBuilder builder) {
+        commandProperties.applyCommandModifier(propertyType, builder);
+    }
+
+    @Override
+    public void applyModifiers(CommandParameterBuilder builder) {
+        commandProperties.applyModifiers(builder);
+    }
+
+    @Override
+    public <T> BiConsumer<T, CommandParameterBuilder> getParameterModifier(Class<T> propertyType) {
+        return commandProperties.getParameterModifier(propertyType);
+    }
+
+    @Override
+    public <T> void applyParameterModifier(Class<T> propertyType, CommandParameterBuilder builder) {
+        commandProperties.applyParameterModifier(propertyType, builder);
+    }
+
+    @Override
+    public <T> void associatePreprocessorFactory(String identifier, Class<T> propertyType, Function<T, CommandPreprocessorFunction> factory) {
+        commandProperties.associatePreprocessorFactory(identifier, propertyType, factory);
+    }
+
+    @Override
+    public <T> void associatePreprocessorPredicateFactory(String identifier, Class<T> propertyType, Function<T, CommandPreprocessorPredicate> factory) {
+        commandProperties.associatePreprocessorPredicateFactory(identifier, propertyType, factory);
+    }
+
+    @Override
+    public void associatePreprocessor(String identifier, Class<?> propertyType, CommandPreprocessorFunction function) {
+        commandProperties.associatePreprocessor(identifier, propertyType, function);
+    }
+
+    @Override
+    public void associatePreprocessorPredicate(String identifier, Class<?> propertyType, CommandPreprocessorPredicate predicate) {
+        commandProperties.associatePreprocessorPredicate(identifier, propertyType, predicate);
+    }
+
+    @Override
+    public List<String> getPreprocessorPriorityList() {
+        return commandProperties.getPreprocessorPriorityList();
+    }
+
+    @Override
+    public void setPreprocessorPriority(String... identifiers) {
+        commandProperties.setPreprocessorPriority(identifiers);
+    }
+
+    @Override
+    public void setPreprocessorPriority(List<String> identifierList) {
+        commandProperties.setPreprocessorPriority(identifierList);
+    }
+
+    @Override
+    public Comparator<CommandPreprocessor> getPriorityComparator() {
+        return commandProperties.getPriorityComparator();
+    }
+
+    /**
+     * Registers an ArgumentMapper with the type provided.
+     *  @param type   the Type class
+     * @param predicate may be null. This returns {@code true} if the {@link CommandArgument} can be mapped to the {@code type}. If the computation cost is similar to mapping the argument, leave this field null.
+     * @param mapper the mapper
+     */
+    public <T> void registerArgumentMapper(Class<T> type, ArgumentTypePredicate predicate, ArgumentTypeMapper<T> mapper) {
+        argumentTypes.registerArgumentMapper(type, predicate, mapper);
+    }
+
+    /**
+     * This ignores flags. Use {@link ArgumentTypes#registerArgumentMapper} otherwise.
+     *  @param type      The type class
+     * @param isType    predicate to test if the argument can be parsed to the type provided. This param can be left {@code null} if the complexity is close to {@code getAsType.apply(arg) != null}
+     * @param getAsType A function to convert the argument to the type provided.
+     */
+    public <T> void registerArgumentMapperSimple(Class<T> type, Predicate<CommandArgument> isType, Function<CommandArgument, T> getAsType) {
+        argumentTypes.registerArgumentMapperSimple(type, isType, getAsType);
+    }
+
+    /**
+     * Sets a predicate to be used on each message before processing it. This will override any existing predicates.
+     * @param predicate a predicate which returns {@code true} if a message should be processed as a command.
+     * @return this
+     */
     public BreadBotClientBuilder setPreProcessPredicate(Predicate<Message> predicate) {
         preProcessPredicate = predicate;
         return this;
     }
 
+    /**
+     * Appends a predicate to be used on each message before processing it.
+     * @param predicate a predicate which returns {@code true} if a message should be processed as a command.
+     * @return this
+     */
     public BreadBotClientBuilder addPreProcessPredicate(Predicate<Message> predicate) {
         if (preProcessPredicate == null) {
             preProcessPredicate = predicate;
@@ -183,12 +309,6 @@ public class BreadBotClientBuilder implements CommandHandleBuilderFactory<BreadB
         }
         return this;
     }
-
-    public CommandProperties getCommandProperties() {
-        return commandProperties;
-    }
-
-
 
     /**
      * Not much use for this at the moment.
@@ -239,7 +359,7 @@ public class BreadBotClientBuilder implements CommandHandleBuilderFactory<BreadB
         if (commandEventFactory == null)
             commandEventFactory = new CommandEventFactoryImpl(getModule(PrefixModule.class));
 
-        BreadBotClient client = new BreadBotClientImpl(modules, eventManager, commandEventFactory, factory, preProcessPredicate);
+        BreadBotClient client = new BreadBotClientImpl(modules, commands, commandProperties, argumentTypes, eventManager, commandEventFactory, preProcessPredicate);
         LOG.info("Top Level Commands registered: " + client.getCommandMap().values().size() + ".");
         LOG.info("CommandClient Initialized.");
         return client;

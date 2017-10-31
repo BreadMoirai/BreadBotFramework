@@ -174,7 +174,7 @@ public abstract class Response implements Serializable {
     /**
      * Sets the target of this response. I.E. where it's going. If any of the parameters passed are {@code 0} or {@code null} or the fields of this response are already set, it will not be overridden.
      * <p>Responses obtained from {@link CommandEvent#respond CommandEvent#respond...} will already have their fields set.
-     * @param authorId id of the author, depends on impl whether this is significant.
+     * @param authorId id of the author, depends on internal whether this is significant.
      * @param channelId id of the channel, a must have.
      * @param guildId id of the guild, optional.
      * @param messageId id of the message, required for reactionResponses, otherwise is automatically adjusted to the id of the message sent by this response.

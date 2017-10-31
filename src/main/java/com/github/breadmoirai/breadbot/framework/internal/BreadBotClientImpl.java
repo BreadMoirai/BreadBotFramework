@@ -13,12 +13,15 @@
  *   See the License for the specific language governing permissions and
  *   limitations under the License.
  */
-package com.github.breadmoirai.breadbot.framework.impl;
+package com.github.breadmoirai.breadbot.framework.internal;
 
 import com.github.breadmoirai.breadbot.framework.BreadBotClient;
 import com.github.breadmoirai.breadbot.framework.CommandEngine;
 import com.github.breadmoirai.breadbot.framework.CommandModule;
+import com.github.breadmoirai.breadbot.framework.CommandProperties;
 import com.github.breadmoirai.breadbot.framework.builder.CommandHandleBuilderFactoryImpl;
+import com.github.breadmoirai.breadbot.framework.builder.CommandHandleBuilderImpl;
+import com.github.breadmoirai.breadbot.framework.builder.CommandHandleBuilderInternal;
 import com.github.breadmoirai.breadbot.framework.command.CommandHandle;
 import com.github.breadmoirai.breadbot.framework.builder.CommandHandleBuilder;
 import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
@@ -42,6 +45,8 @@ public class BreadBotClientImpl implements BreadBotClient {
 
     private JDA jda;
 
+    private final CommandProperties commandProperties;
+    private final ArgumentTypes argumentTypes;
     private final IEventManager eventManager;
     private final ICommandEventFactory eventFactory;
     private final CommandEngine commandEngine;
@@ -50,15 +55,17 @@ public class BreadBotClientImpl implements BreadBotClient {
     private final Map<Type, CommandModule> moduleTypeMap;
     private final Map<String, CommandHandle> commandMap;
 
-    public BreadBotClientImpl(List<CommandModule> modules, IEventManager eventManager, ICommandEventFactory eventFactory, CommandHandleBuilderFactoryImpl commandFactory, Predicate<Message> preProcessPredicate) {
+    public BreadBotClientImpl(List<CommandModule> modules, List<CommandHandleBuilderInternal> commands, CommandProperties commandProperties, ArgumentTypes argumentTypes, IEventManager eventManager, ICommandEventFactory eventFactory, Predicate<Message> preProcessPredicate) {
         this.modules = Collections.unmodifiableList(modules);
+        this.commandProperties = commandProperties;
+        this.argumentTypes = argumentTypes;
         this.eventManager = eventManager;
         this.eventFactory = eventFactory;
         this.preProcessPredicate = preProcessPredicate;
 
         HashMap<String, CommandHandle> handleMap = new HashMap<>();
-        for (CommandHandleBuilder command : commandFactory.getBuilderList()) {
-            CommandHandle handle = command.build(this);
+        for (CommandHandleBuilderInternal command : commands) {
+            CommandHandle handle = command.build();
             for (String key : handle.getKeys()) {
                 handleMap.put(key, handle);
             }

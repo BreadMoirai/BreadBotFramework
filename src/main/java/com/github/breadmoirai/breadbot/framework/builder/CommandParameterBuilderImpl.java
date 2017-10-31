@@ -1,5 +1,6 @@
 package com.github.breadmoirai.breadbot.framework.builder;
 
+import com.github.breadmoirai.breadbot.framework.internal.ArgumentTypes;
 import com.github.breadmoirai.breadbot.framework.command.CommandPropertyMap;
 import com.github.breadmoirai.breadbot.framework.command.impl.CommandParameterCollectionImpl;
 import com.github.breadmoirai.breadbot.framework.command.impl.CommandParameterImpl;
