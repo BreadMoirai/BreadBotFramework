@@ -46,8 +46,8 @@ import java.util.function.*;
 public class BreadBotClientBuilder implements
         CommandHandleBuilderFactory<BreadBotClientBuilder>,
         CommandModuleBuilder<BreadBotClientBuilder>,
-        CommandProperties,
-        ArgumentTypes{
+        CommandPropertiesBuilder<BreadBotClientBuilder>,
+        ArgumentTypesBuilder<BreadBotClientBuilder> {
 
     private static final Logger LOG = LoggerFactory.getLogger(BreadBotClientBuilder.class);
 
@@ -99,6 +99,7 @@ public class BreadBotClientBuilder implements
     public <T extends CommandModule> T getModule(Class<T> moduleClass) {
         return moduleClass == null ? null : modules.stream().filter(module -> moduleClass.isAssignableFrom(module.getClass())).map(moduleClass::cast).findAny().orElse(null);
     }
+
     @Override
     public CommandHandleBuilder createCommand(Consumer<CommandEvent> onCommand) {
         CommandHandleBuilderInternal commandHandle = factory.createCommand(onCommand);
@@ -177,28 +178,33 @@ public class BreadBotClientBuilder implements
     }
 
     @Override
-    public <T> void putCommandModifier(Class<T> propertyType, BiConsumer<T, CommandHandleBuilder> configurator) {
+    public <T> BreadBotClientBuilder putCommandModifier(Class<T> propertyType, BiConsumer<T, CommandHandleBuilder> configurator) {
         commandProperties.putCommandModifier(propertyType, configurator);
+        return this;
     }
 
     @Override
-    public <T> void appendCommandModifier(Class<T> propertyType, BiConsumer<T, CommandHandleBuilder> configurator) {
+    public <T> BreadBotClientBuilder appendCommandModifier(Class<T> propertyType, BiConsumer<T, CommandHandleBuilder> configurator) {
         commandProperties.appendCommandModifier(propertyType, configurator);
+        return this;
     }
 
     @Override
-    public <T> void putParameterModifier(Class<T> propertyType, BiConsumer<T, CommandParameterBuilder> configurator) {
+    public <T> BreadBotClientBuilder putParameterModifier(Class<T> propertyType, BiConsumer<T, CommandParameterBuilder> configurator) {
         commandProperties.putParameterModifier(propertyType, configurator);
+        return this;
     }
 
     @Override
-    public <T> void appendParameterModifier(Class<T> propertyType, BiConsumer<T, CommandParameterBuilder> configurator) {
+    public <T> BreadBotClientBuilder appendParameterModifier(Class<T> propertyType, BiConsumer<T, CommandParameterBuilder> configurator) {
         commandProperties.appendParameterModifier(propertyType, configurator);
+        return this;
     }
 
     @Override
-    public void applyModifiers(CommandHandleBuilder builder) {
+    public BreadBotClientBuilder applyModifiers(CommandHandleBuilder builder) {
         commandProperties.applyModifiers(builder);
+        return this;
     }
 
     @Override
@@ -207,13 +213,15 @@ public class BreadBotClientBuilder implements
     }
 
     @Override
-    public <T> void applyCommandModifier(Class<T> propertyType, CommandHandleBuilder builder) {
+    public <T> BreadBotClientBuilder applyCommandModifier(Class<T> propertyType, CommandHandleBuilder builder) {
         commandProperties.applyCommandModifier(propertyType, builder);
+        return this;
     }
 
     @Override
-    public void applyModifiers(CommandParameterBuilder builder) {
+    public BreadBotClientBuilder applyModifiers(CommandParameterBuilder builder) {
         commandProperties.applyModifiers(builder);
+        return this;
     }
 
     @Override
@@ -222,28 +230,33 @@ public class BreadBotClientBuilder implements
     }
 
     @Override
-    public <T> void applyParameterModifier(Class<T> propertyType, CommandParameterBuilder builder) {
+    public <T> BreadBotClientBuilder applyParameterModifier(Class<T> propertyType, CommandParameterBuilder builder) {
         commandProperties.applyParameterModifier(propertyType, builder);
+        return this;
     }
 
     @Override
-    public <T> void associatePreprocessorFactory(String identifier, Class<T> propertyType, Function<T, CommandPreprocessorFunction> factory) {
+    public <T> BreadBotClientBuilder associatePreprocessorFactory(String identifier, Class<T> propertyType, Function<T, CommandPreprocessorFunction> factory) {
         commandProperties.associatePreprocessorFactory(identifier, propertyType, factory);
+        return this;
     }
 
     @Override
-    public <T> void associatePreprocessorPredicateFactory(String identifier, Class<T> propertyType, Function<T, CommandPreprocessorPredicate> factory) {
+    public <T> BreadBotClientBuilder associatePreprocessorPredicateFactory(String identifier, Class<T> propertyType, Function<T, CommandPreprocessorPredicate> factory) {
         commandProperties.associatePreprocessorPredicateFactory(identifier, propertyType, factory);
+        return this;
     }
 
     @Override
-    public void associatePreprocessor(String identifier, Class<?> propertyType, CommandPreprocessorFunction function) {
+    public BreadBotClientBuilder associatePreprocessor(String identifier, Class<?> propertyType, CommandPreprocessorFunction function) {
         commandProperties.associatePreprocessor(identifier, propertyType, function);
+        return this;
     }
 
     @Override
-    public void associatePreprocessorPredicate(String identifier, Class<?> propertyType, CommandPreprocessorPredicate predicate) {
+    public BreadBotClientBuilder associatePreprocessorPredicate(String identifier, Class<?> propertyType, CommandPreprocessorPredicate predicate) {
         commandProperties.associatePreprocessorPredicate(identifier, propertyType, predicate);
+        return this;
     }
 
     @Override
@@ -252,13 +265,15 @@ public class BreadBotClientBuilder implements
     }
 
     @Override
-    public void setPreprocessorPriority(String... identifiers) {
+    public BreadBotClientBuilder setPreprocessorPriority(String... identifiers) {
         commandProperties.setPreprocessorPriority(identifiers);
+        return this;
     }
 
     @Override
-    public void setPreprocessorPriority(List<String> identifierList) {
+    public BreadBotClientBuilder setPreprocessorPriority(List<String> identifierList) {
         commandProperties.setPreprocessorPriority(identifierList);
+        return this;
     }
 
     @Override
@@ -267,13 +282,15 @@ public class BreadBotClientBuilder implements
     }
 
     @Override
-    public <T> void registerArgumentMapper(Class<T> type, ArgumentTypePredicate predicate, ArgumentTypeMapper<T> mapper) {
+    public <T> BreadBotClientBuilder registerArgumentMapper(Class<T> type, ArgumentTypePredicate predicate, ArgumentTypeMapper<T> mapper) {
         argumentTypes.registerArgumentMapper(type, predicate, mapper);
+        return this;
     }
 
     @Override
-    public <T> void registerArgumentMapperSimple(Class<T> type, Predicate<CommandArgument> isType, Function<CommandArgument, T> getAsType) {
+    public <T> BreadBotClientBuilder registerArgumentMapperSimple(Class<T> type, Predicate<CommandArgument> isType, Function<CommandArgument, T> getAsType) {
         argumentTypes.registerArgumentMapperSimple(type, isType, getAsType);
+        return this;
     }
 
     @Override
@@ -283,6 +300,7 @@ public class BreadBotClientBuilder implements
 
     /**
      * Sets a predicate to be used on each message before processing it. This will override any existing predicates.
+     *
      * @param predicate a predicate which returns {@code true} if a message should be processed as a command.
      * @return this
      */
@@ -293,6 +311,7 @@ public class BreadBotClientBuilder implements
 
     /**
      * Appends a predicate to be used on each message before processing it.
+     *
      * @param predicate a predicate which returns {@code true} if a message should be processed as a command.
      * @return this
      */
