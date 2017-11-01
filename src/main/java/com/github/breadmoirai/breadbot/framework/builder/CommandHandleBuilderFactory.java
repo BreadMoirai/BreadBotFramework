@@ -14,7 +14,7 @@ import java.util.function.Supplier;
 public interface CommandHandleBuilderFactory<T> {
 
     /**
-     * the self. This is here so I can encapsulate out some methods.
+     * a self reference.
      *
      * @return this
      */
@@ -30,8 +30,18 @@ public interface CommandHandleBuilderFactory<T> {
         return self();
     }
 
+    default T addCommand(Class<?> commandClass) {
+        createCommand(commandClass);
+        return self();
+    }
+
     default T addCommand(Object commandObject, Consumer<CommandHandleBuilder> configurator) {
         configurator.accept(createCommand(commandObject));
+        return self();
+    }
+
+    default T addCommand(Object commandObject) {
+        createCommand(commandObject);
         return self();
     }
 
@@ -40,8 +50,18 @@ public interface CommandHandleBuilderFactory<T> {
         return self();
     }
 
+    default T addCommand(Supplier<?> commandSupplier) {
+        createCommand(commandSupplier);
+        return self();
+    }
+
     default T addCommands(Class<?> commandClass, Consumer<CommandHandleBuilder> configurator) {
         createCommands(commandClass).forEach(configurator);
+        return self();
+    }
+
+    default T addCommands(Class<?> commandClass) {
+        createCommands(commandClass);
         return self();
     }
 
@@ -50,8 +70,18 @@ public interface CommandHandleBuilderFactory<T> {
         return self();
     }
 
+    default T addCommands(Object commandObject) {
+        createCommands(commandObject);
+        return self();
+    }
+
     default T addCommands(Supplier<?> commandSupplier, Consumer<CommandHandleBuilder> configurator) {
         createCommands(commandSupplier).forEach(configurator);
+        return self();
+    }
+
+    default T addCommands(Supplier<?> commandSupplier) {
+        createCommands(commandSupplier);
         return self();
     }
 
@@ -60,8 +90,18 @@ public interface CommandHandleBuilderFactory<T> {
         return self();
     }
 
+    default T addCommands(String packageName) {
+        createCommands(packageName);
+        return self();
+    }
+
     default T addCommandsFromClasses(Consumer<CommandHandleBuilder> configurator, Class<?>... commandClasses) {
         createCommandsFromClasses(commandClasses).forEach(configurator);
+        return self();
+    }
+
+    default T addCommandsFromClasses(Class<?>... commandClasses) {
+        createCommandsFromClasses(commandClasses);
         return self();
     }
 
@@ -70,8 +110,18 @@ public interface CommandHandleBuilderFactory<T> {
         return self();
     }
 
+    default T addCommandsFromObjects(Object... commandObjects) {
+        createCommandsFromObjects(commandObjects);
+        return self();
+    }
+
     default T addCommandsFromSuppliers(Consumer<CommandHandleBuilder> configurator, Supplier<?>... commandSuppliers) {
         createCommandsFromSuppliers(commandSuppliers).forEach(configurator);
+        return self();
+    }
+
+    default T addCommandsFromSuppliers(Supplier<?>... commandSuppliers) {
+        createCommandsFromSuppliers(commandSuppliers);
         return self();
     }
 
@@ -80,13 +130,28 @@ public interface CommandHandleBuilderFactory<T> {
         return self();
     }
 
+    default T addCommandsFromClasses(Collection<Class<?>> commandClasses) {
+        createCommandsFromClasses(commandClasses);
+        return self();
+    }
+
     default T addCommandsFromObjects(Collection<?> commandObjects, Consumer<CommandHandleBuilder> configurator) {
         createCommandsFromObjects(commandObjects).forEach(configurator);
         return self();
     }
 
-    default T addCommandsFromSuppliers(Collection<Supplier<?>> commandSupplier, Consumer<CommandHandleBuilder> configurator) {
-        createCommandsFromSuppliers(commandSupplier).forEach(configurator);
+    default T addCommandsFromObjects(Collection<?> commandObjects) {
+        createCommandsFromObjects(commandObjects);
+        return self();
+    }
+
+    default T addCommandsFromSuppliers(Collection<Supplier<?>> commandSuppliers, Consumer<CommandHandleBuilder> configurator) {
+        createCommandsFromSuppliers(commandSuppliers).forEach(configurator);
+        return self();
+    }
+
+    default T addCommandsFromSuppliers(Collection<Supplier<?>> commandSuppliers) {
+        createCommandsFromSuppliers(commandSuppliers);
         return self();
     }
 
