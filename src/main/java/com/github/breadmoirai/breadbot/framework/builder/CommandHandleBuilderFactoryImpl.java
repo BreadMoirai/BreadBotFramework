@@ -138,7 +138,7 @@ public class CommandHandleBuilderFactoryImpl implements CommandHandleBuilderFact
         return getSubCommands(
                 commandObject,
                 commandClass,
-                getSupplierForClass(commandClass),
+                new CommandObjectFactory(() -> commandObject),
                 new CommandPropertyMapImpl(CommandPackageProperties.getPropertiesForPackage(commandClass.getPackage()), commandClass.getAnnotations()),
                 null,
                 null);
@@ -150,7 +150,7 @@ public class CommandHandleBuilderFactoryImpl implements CommandHandleBuilderFact
         return getSubCommands(
                 commandObject,
                 commandClass,
-                getSupplierForClass(commandClass),
+                new CommandObjectFactory(commandSupplier::get),
                 new CommandPropertyMapImpl(CommandPackageProperties.getPropertiesForPackage(commandClass.getPackage()), commandClass.getAnnotations()),
                 commandClass,
                 commandSupplier);

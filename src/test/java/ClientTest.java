@@ -100,7 +100,7 @@ public class ClientTest {
                         .sortPreprocessors())
                 .addCommand(CountCommand.class, builder -> builder.setPersistent(true))
                 .addCommand(CountCommand.class, builder -> builder.setKeys("cyunt"))
-                .addCommand(new CountCommand(10), builder -> builder
+                .addCommand(() -> new CountCommand(10), builder -> builder
                         .setPersistent(true).setKeys("coynt"))
                 .addCommand(NameCommand.class)
                 .buildInterfaced();

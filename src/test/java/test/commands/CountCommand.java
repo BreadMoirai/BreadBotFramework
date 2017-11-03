@@ -18,9 +18,10 @@ import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
 
 public class CountCommand {
 
-    private int i = 1;
+    private int i;
 
     public CountCommand() {
+        i = 1;
     }
 
     public CountCommand(int i) {
