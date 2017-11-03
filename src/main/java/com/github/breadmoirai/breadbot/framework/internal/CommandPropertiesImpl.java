@@ -67,7 +67,8 @@ public class CommandPropertiesImpl implements CommandProperties {
     @Override
     public void applyModifiers(CommandHandleBuilder builder) {
         for (Class<?> aClass : commandPropertyMap.keySet()) {
-            applyCommandModifier(aClass, builder);
+            if (builder.hasProperty(aClass))
+                applyCommandModifier(aClass, builder);
         }
     }
 
@@ -88,6 +89,7 @@ public class CommandPropertiesImpl implements CommandProperties {
     @Override
     public void applyModifiers(CommandParameterBuilder builder) {
         for (Class<?> aClass : parameterPropertyMap.keySet()) {
+            if (builder.hasProperty(aClass))
             applyParameterModifier(aClass, builder);
         }
     }

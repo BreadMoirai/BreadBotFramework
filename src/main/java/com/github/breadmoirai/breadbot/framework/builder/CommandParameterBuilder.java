@@ -107,5 +107,5 @@ public interface CommandParameterBuilder {
 
     <T> T getProperty(Class<T> propertyType);
 
-    boolean containsProperty(Class<?> propertyType);
+    boolean hasProperty(Class<?> propertyType);
 }

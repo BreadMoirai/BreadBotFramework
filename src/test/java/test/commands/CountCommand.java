@@ -1,4 +1,4 @@
-/*    Copyright 2017 Ton Ly
+package test.commands;/*    Copyright 2017 Ton Ly
  
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -13,6 +13,7 @@
   limitations under the License.
 */
 
+import com.github.breadmoirai.breadbot.framework.command.Command;
 import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
 
 public class CountCommand {
@@ -26,6 +27,7 @@ public class CountCommand {
         this.i = i;
     }
 
+    @Command
     public void count(CommandEvent event) {
         event.reply(String.valueOf(i++));
     }

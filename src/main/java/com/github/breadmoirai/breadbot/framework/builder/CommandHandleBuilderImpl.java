@@ -15,6 +15,7 @@
 package com.github.breadmoirai.breadbot.framework.builder;
 
 import com.github.breadmoirai.breadbot.framework.BreadBotClientBuilder;
+import com.github.breadmoirai.breadbot.framework.command.Command;
 import com.github.breadmoirai.breadbot.framework.command.CommandHandle;
 import com.github.breadmoirai.breadbot.framework.command.CommandPreprocessor;
 import com.github.breadmoirai.breadbot.framework.command.impl.CommandHandleImpl;
@@ -25,6 +26,8 @@ import com.github.breadmoirai.breadbot.framework.command.parameter.CommandParame
 
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public class CommandHandleBuilderImpl implements CommandHandleBuilderInternal {
 
@@ -41,6 +44,7 @@ public class CommandHandleBuilderImpl implements CommandHandleBuilderInternal {
     private final List<CommandPreprocessor> preprocessors;
     private final CommandPropertyMapImpl propertyMap;
     private transient CommandHandleBuilderFactoryImpl handleBuilderFactory;
+    private boolean isPersistent = false;
 
     public CommandHandleBuilderImpl(Object declaringObject,
                                     Class<?> declaringClass,
@@ -63,7 +67,7 @@ public class CommandHandleBuilderImpl implements CommandHandleBuilderInternal {
     }
 
     @Override
-    public boolean containsProperty(Class<?> propertyType) {
+    public boolean hasProperty(Class<?> propertyType) {
         return propertyMap.hasProperty(propertyType);
     }
 
@@ -146,6 +150,12 @@ public class CommandHandleBuilderImpl implements CommandHandleBuilderInternal {
     }
 
     @Override
+    public CommandHandleBuilder setPersistent(boolean isPersistent) {
+        this.isPersistent = isPersistent;
+        return this;
+    }
+
+    @Override
     public String[] getKeys() {
         return keys;
     }
@@ -199,6 +209,35 @@ public class CommandHandleBuilderImpl implements CommandHandleBuilderInternal {
     }
 
     @Override
+    public CommandHandleBuilder addCommand(Supplier<?> commandSupplier, Consumer<CommandHandleBuilder> configurator) {
+        Object o = commandSupplier.get();
+        if (o.getClass().isAnnotationPresent(Command.class)) {
+            CommandHandleBuilderInternal commandHandle = getCommandFactory().createCommand(commandSupplier, o);
+            configurator.accept(commandHandle);
+            subCommands.add(commandHandle);
+        } else {
+            List<CommandHandleBuilderInternal> commandHandles = getCommandFactory().createCommands(commandSupplier, o);
+            commandHandles.forEach(configurator);
+            subCommands.addAll(commandHandles);
+        }
+        return this;
+    }
+
+    @Override
+    public CommandHandleBuilder addCommand(Supplier<?> commandSupplier) {
+        Object o = commandSupplier.get();
+        if (o.getClass().isAnnotationPresent(Command.class)) {
+            CommandHandleBuilderInternal commandHandle = getCommandFactory().createCommand(commandSupplier, o);
+            subCommands.add(commandHandle);
+        } else {
+            List<CommandHandleBuilderInternal> commandHandles = getCommandFactory().createCommands(commandSupplier, o);
+            subCommands.addAll(commandHandles);
+        }
+        return this;
+    }
+
+
+    @Override
     public CommandHandle build() {
         Map<String, CommandHandle> subCommandMap;
         if (subCommands.isEmpty()) {
@@ -211,6 +250,13 @@ public class CommandHandleBuilderImpl implements CommandHandleBuilderInternal {
                     subCommandMap.put(key, command);
                 }
             }
+        }
+        CommandObjectFactory commandFactory;
+        if (isPersistent) {
+            final Object o = this.commandFactory.get();
+            commandFactory = new CommandObjectFactory(() -> o);
+        } else {
+            commandFactory = this.commandFactory;
         }
         final CommandParameter[] commandParameters = new CommandParameter[parameterBuilders.length];
         Arrays.setAll(commandParameters, value -> parameterBuilders[value].build());

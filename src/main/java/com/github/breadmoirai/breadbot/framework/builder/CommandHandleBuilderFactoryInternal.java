@@ -16,13 +16,13 @@ public interface CommandHandleBuilderFactoryInternal {
 
     CommandHandleBuilderInternal createCommand(Object commandObject);
 
-    CommandHandleBuilderInternal createCommand(Supplier<?> commandSupplier);
+    CommandHandleBuilderInternal createCommand(Supplier<?> commandSupplier, Object result);
 
     List<CommandHandleBuilderInternal> createCommands(Class<?> commandClass);
 
     List<CommandHandleBuilderInternal> createCommands(Object commandObject);
 
-    List<CommandHandleBuilderInternal> createCommands(Supplier<?> commandSupplier);
+    List<CommandHandleBuilderInternal> createCommands(Supplier<?> commandSupplier, Object result);
 
     List<CommandHandleBuilderInternal> createCommands(String packageName);
 

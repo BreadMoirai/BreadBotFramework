@@ -1,5 +1,6 @@
 package com.github.breadmoirai.breadbot.framework.builder;
 
+import com.github.breadmoirai.breadbot.framework.command.Command;
 import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
 
 import java.util.Arrays;
@@ -26,64 +27,44 @@ public interface CommandHandleBuilderFactory<T> {
     }
 
     default T addCommand(Class<?> commandClass, Consumer<CommandHandleBuilder> configurator) {
-        configurator.accept(createCommand(commandClass));
+        if (commandClass.isAnnotationPresent(Command.class)) {
+            configurator.accept(createCommand(commandClass));
+        } else {
+            createCommands(commandClass).forEach(configurator);
+        }
         return self();
     }
 
     default T addCommand(Class<?> commandClass) {
-        createCommand(commandClass);
+        if (commandClass.isAnnotationPresent(Command.class)) {
+            createCommand(commandClass);
+        } else {
+            createCommands(commandClass);
+        }
         return self();
     }
 
     default T addCommand(Object commandObject, Consumer<CommandHandleBuilder> configurator) {
-        configurator.accept(createCommand(commandObject));
+        if (commandObject.getClass().isAnnotationPresent(Command.class)) {
+            configurator.accept(createCommand(commandObject));
+        } else {
+            createCommands(commandObject).forEach(configurator);
+        }
         return self();
     }
 
     default T addCommand(Object commandObject) {
-        createCommand(commandObject);
+        if (commandObject.getClass().isAnnotationPresent(Command.class)) {
+            createCommand(commandObject);
+        } else {
+            createCommands(commandObject);
+        }
         return self();
     }
 
-    default T addCommand(Supplier<?> commandSupplier, Consumer<CommandHandleBuilder> configurator) {
-        configurator.accept(createCommand(commandSupplier));
-        return self();
-    }
+    T addCommand(Supplier<?> commandSupplier, Consumer<CommandHandleBuilder> configurator);
 
-    default T addCommand(Supplier<?> commandSupplier) {
-        createCommand(commandSupplier);
-        return self();
-    }
-
-    default T addCommands(Class<?> commandClass, Consumer<CommandHandleBuilder> configurator) {
-        createCommands(commandClass).forEach(configurator);
-        return self();
-    }
-
-    default T addCommands(Class<?> commandClass) {
-        createCommands(commandClass);
-        return self();
-    }
-
-    default T addCommands(Object commandObject, Consumer<CommandHandleBuilder> configurator) {
-        createCommands(commandObject).forEach(configurator);
-        return self();
-    }
-
-    default T addCommands(Object commandObject) {
-        createCommands(commandObject);
-        return self();
-    }
-
-    default T addCommands(Supplier<?> commandSupplier, Consumer<CommandHandleBuilder> configurator) {
-        createCommands(commandSupplier).forEach(configurator);
-        return self();
-    }
-
-    default T addCommands(Supplier<?> commandSupplier) {
-        createCommands(commandSupplier);
-        return self();
-    }
+    T addCommand(Supplier<?> commandSupplier);
 
     default T addCommands(String packageName, Consumer<CommandHandleBuilder> configurator) {
         createCommands(packageName).forEach(configurator);

@@ -16,6 +16,7 @@
 package com.github.breadmoirai.breadbot.framework;
 
 import com.github.breadmoirai.breadbot.framework.builder.*;
+import com.github.breadmoirai.breadbot.framework.command.Command;
 import com.github.breadmoirai.breadbot.framework.command.CommandPreprocessor;
 import com.github.breadmoirai.breadbot.framework.command.CommandPreprocessorFunction;
 import com.github.breadmoirai.breadbot.framework.command.CommandPreprocessorPredicate;
@@ -23,13 +24,13 @@ import com.github.breadmoirai.breadbot.framework.command.parameter.ArgumentParse
 import com.github.breadmoirai.breadbot.framework.command.parameter.ArgumentTypeMapper;
 import com.github.breadmoirai.breadbot.framework.command.parameter.ArgumentTypePredicate;
 import com.github.breadmoirai.breadbot.framework.command.parameter.CommandArgument;
-import com.github.breadmoirai.breadbot.framework.internal.ArgumentTypes;
-import com.github.breadmoirai.breadbot.framework.internal.ArgumentTypesImpl;
-import com.github.breadmoirai.breadbot.framework.internal.CommandPropertiesImpl;
 import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
 import com.github.breadmoirai.breadbot.framework.event.ICommandEventFactory;
 import com.github.breadmoirai.breadbot.framework.event.impl.CommandEventFactoryImpl;
+import com.github.breadmoirai.breadbot.framework.internal.ArgumentTypes;
+import com.github.breadmoirai.breadbot.framework.internal.ArgumentTypesImpl;
 import com.github.breadmoirai.breadbot.framework.internal.BreadBotClientImpl;
+import com.github.breadmoirai.breadbot.framework.internal.CommandPropertiesImpl;
 import com.github.breadmoirai.breadbot.modules.prefix.DefaultPrefixModule;
 import com.github.breadmoirai.breadbot.modules.prefix.PrefixModule;
 import net.dv8tion.jda.core.entities.Message;
@@ -98,6 +99,34 @@ public class BreadBotClientBuilder implements
     @Override
     public <T extends CommandModule> T getModule(Class<T> moduleClass) {
         return moduleClass == null ? null : modules.stream().filter(module -> moduleClass.isAssignableFrom(module.getClass())).map(moduleClass::cast).findAny().orElse(null);
+    }
+
+    @Override
+    public BreadBotClientBuilder addCommand(Supplier<?> commandSupplier, Consumer<CommandHandleBuilder> configurator) {
+        Object o = commandSupplier.get();
+        if (o.getClass().isAnnotationPresent(Command.class)) {
+            CommandHandleBuilderInternal commandHandle = factory.createCommand(commandSupplier, o);
+            configurator.accept(commandHandle);
+            commands.add(commandHandle);
+        } else {
+            List<CommandHandleBuilderInternal> commandHandles = factory.createCommands(commandSupplier, o);
+            commandHandles.forEach(configurator);
+            commands.addAll(commandHandles);
+        }
+        return this;
+    }
+
+    @Override
+    public BreadBotClientBuilder addCommand(Supplier<?> commandSupplier) {
+        Object o = commandSupplier.get();
+        if (o.getClass().isAnnotationPresent(Command.class)) {
+            CommandHandleBuilderInternal commandHandle = factory.createCommand(commandSupplier, o);
+            commands.add(commandHandle);
+        } else {
+            List<CommandHandleBuilderInternal> commandHandles = factory.createCommands(commandSupplier, o);
+            commands.addAll(commandHandles);
+        }
+        return this;
     }
 
     @Override

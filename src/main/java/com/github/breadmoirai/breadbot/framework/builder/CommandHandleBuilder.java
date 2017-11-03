@@ -18,11 +18,13 @@ import com.github.breadmoirai.breadbot.framework.BreadBotClientBuilder;
 import com.github.breadmoirai.breadbot.framework.command.CommandPreprocessor;
 import com.github.breadmoirai.breadbot.framework.command.CommandPreprocessorFunction;
 import com.github.breadmoirai.breadbot.framework.command.CommandPreprocessorPredicate;
+import com.github.breadmoirai.breadbot.framework.error.NoSuchCommandException;
 
 import java.lang.reflect.Method;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 public interface CommandHandleBuilder extends CommandHandleBuilderFactory<CommandHandleBuilder> {
 
@@ -34,13 +36,34 @@ public interface CommandHandleBuilder extends CommandHandleBuilderFactory<Comman
 
     CommandHandleBuilder setDescription(String description);
 
+    /**
+     * Attempts to find a subcommand by the specified name
+     *
+     * @param commandName the name of the command. By default this is the name of the method or the name of the inner class. If the subcommand is an inner class and its name ends in {@code "command"}, the name only includes the part preceding {@code "command"}.
+     * @return The CommandHandleBuilder of the sub command.
+     * @throws NoSuchCommandException when the subcommand is not found
+     */
     default CommandHandleBuilder getSubCommand(String commandName) {
-        return getSubCommands().stream().filter(commandHandleBuilder -> commandHandleBuilder.getName().equals(commandName)).findAny().orElse(null);
+        return getSubCommands().stream().filter(commandHandleBuilder -> commandHandleBuilder.getName().equals(commandName)).findAny().orElseThrow(() -> new NoSuchCommandException("A subcommand by the name of " + commandName + " was not found"));
+    }
+
+    /**
+     * Attempts to find a subcommand by the specified name and configure it.
+     *
+     * @param commandName  the name of the command. By default this is the name of the method or the name of the inner class. If the subcommand is an inner class and its name ends in {@code "command"}, the name only includes the part preceding {@code "command"}.
+     * @param configurator a consumer that is used to modify the subcommand specified
+     * @return this
+     * @throws NoSuchCommandException when the subcommand is not found
+     */
+    default CommandHandleBuilder configureSubCommand(String commandName, Consumer<CommandHandleBuilder> configurator) {
+        CommandHandleBuilder builder = getSubCommands().stream().filter(commandHandleBuilder -> commandHandleBuilder.getName().equals(commandName)).findAny().orElseThrow(() -> new NoSuchCommandException("A subcommand by the name of " + commandName + " was not found"));
+        configurator.accept(builder);
+        return this;
     }
 
     List<CommandHandleBuilder> getSubCommands();
 
-    boolean containsProperty(Class<?> propertyType);
+    boolean hasProperty(Class<?> propertyType);
 
     <T> T getProperty(Class<T> propertyType);
 
@@ -113,5 +136,11 @@ public interface CommandHandleBuilder extends CommandHandleBuilderFactory<Comman
     Object getDeclaringObject();
 
     BreadBotClientBuilder getClientBuilder();
+
+    default CommandHandleBuilder sortPreprocessors() {
+        return sortPreprocessors(getClientBuilder().getPriorityComparator());
+    }
+
+    CommandHandleBuilder setPersistent(boolean isPersistent);
 
 }

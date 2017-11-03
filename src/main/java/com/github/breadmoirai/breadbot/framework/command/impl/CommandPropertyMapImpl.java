@@ -43,10 +43,11 @@ public class CommandPropertyMapImpl implements Iterable<Object>, CommandProperty
     }
 
     public CommandPropertyMapImpl(CommandPropertyMap defaultMap, Annotation[] annotations) {
-        this.defaultProperties = defaultMap;
-        if (annotations != null)
-            putAnnotations(annotations);
         properties = new HashMap<>();
+        this.defaultProperties = defaultMap;
+        if (annotations != null) {
+            putAnnotations(annotations);
+        }
     }
 
     @Override

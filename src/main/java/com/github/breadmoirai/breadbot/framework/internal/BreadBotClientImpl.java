@@ -19,11 +19,8 @@ import com.github.breadmoirai.breadbot.framework.BreadBotClient;
 import com.github.breadmoirai.breadbot.framework.CommandEngine;
 import com.github.breadmoirai.breadbot.framework.CommandModule;
 import com.github.breadmoirai.breadbot.framework.CommandProperties;
-import com.github.breadmoirai.breadbot.framework.builder.CommandHandleBuilderFactoryImpl;
-import com.github.breadmoirai.breadbot.framework.builder.CommandHandleBuilderImpl;
 import com.github.breadmoirai.breadbot.framework.builder.CommandHandleBuilderInternal;
 import com.github.breadmoirai.breadbot.framework.command.CommandHandle;
-import com.github.breadmoirai.breadbot.framework.builder.CommandHandleBuilder;
 import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
 import com.github.breadmoirai.breadbot.framework.event.ICommandEventFactory;
 import com.github.breadmoirai.breadbot.util.EventStringIterator;
@@ -93,6 +90,8 @@ public class BreadBotClientImpl implements BreadBotClient {
                 commandHandle.handle(event, new EventStringIterator(event));
             }
         };
+
+        eventManager.register(new BreadBotEventListener(preProcessPredicate));
 
     }
 
@@ -178,11 +177,11 @@ public class BreadBotClientImpl implements BreadBotClient {
         return commandEngine;
     }
 
-    private class SamuraiEventListener extends ListenerAdapter {
+    private class BreadBotEventListener extends ListenerAdapter {
 
         private final Predicate<Message> preProcessPredicate;
 
-        SamuraiEventListener(Predicate<Message> preProcessPredicate) {
+        BreadBotEventListener(Predicate<Message> preProcessPredicate) {
             this.preProcessPredicate = preProcessPredicate == null ? message -> true : preProcessPredicate;
         }
 

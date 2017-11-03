@@ -79,8 +79,7 @@ public class CommandHandleBuilderFactoryImpl implements CommandHandleBuilderFact
     }
 
     @Override
-    public CommandHandleBuilderInternal createCommand(Supplier<?> commandSupplier) {
-        final Object o = commandSupplier.get();
+    public CommandHandleBuilderInternal createCommand(Supplier<?> commandSupplier, Object o) {
         final Class<?> aClass = o.getClass();
         final Method method = findDefaultMethod(aClass);
         final CommandObjectFactory factory = new CommandObjectFactory(commandSupplier::get);
@@ -146,8 +145,7 @@ public class CommandHandleBuilderFactoryImpl implements CommandHandleBuilderFact
     }
 
     @Override
-    public List<CommandHandleBuilderInternal> createCommands(Supplier<?> commandSupplier) {
-        Object commandObject = commandSupplier.get();
+    public List<CommandHandleBuilderInternal> createCommands(Supplier<?> commandSupplier, Object commandObject) {
         Class<?> commandClass = commandObject.getClass();
         return getSubCommands(
                 commandObject,
@@ -300,13 +298,17 @@ public class CommandHandleBuilderFactoryImpl implements CommandHandleBuilderFact
             builder.setName(simpleName);
         if (builder.getKeys() == null)
             builder.setKeys(simpleName);
-        String[] packageNames = method.getDeclaringClass().getPackage().getName().split("\\.");
-        String packageName = packageNames[packageNames.length - 1];
-        if (packageName.matches("(command|cmd)(s)?") && packageNames.length > 1) {
-            packageName = packageNames[packageNames.length - 2];
+        Package aPackage = method.getDeclaringClass().getPackage();
+        String[] packageNames;
+        if (aPackage != null) {
+            packageNames = aPackage.getName().split("\\.");
+            String packageName = packageNames[packageNames.length - 1];
+            if (packageName.matches("(command|cmd)(s)?") && packageNames.length > 1) {
+                packageName = packageNames[packageNames.length - 2];
+            }
+            if (builder.getGroup() == null)
+                builder.setGroup(packageName);
         }
-        if (builder.getGroup() == null)
-            builder.setGroup(packageName);
     }
 
     public CommandHandleBuilderInternal createHandleFromClass(Object obj, Class<?> commandClass, CommandObjectFactory objectFactory, CommandPropertyMapImpl map) {

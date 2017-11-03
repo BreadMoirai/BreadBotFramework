@@ -8,6 +8,7 @@ import com.github.breadmoirai.breadbot.framework.command.parameter.CommandParser
 import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
 import com.github.breadmoirai.breadbot.util.EventStringIterator;
 
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -45,7 +46,7 @@ public class CommandHandleImpl implements CommandHandle {
         this.commandSupplier = commandSupplier;
         this.commandParameters = commandParameters;
         this.invokableCommand = commandFunction;
-        this.subCommandMap = subCommandMap.isEmpty() ? null : subCommandMap;
+        this.subCommandMap = subCommandMap;
         this.preprocessors = preprocessors;
         this.propertyMap = propertyMap;
     }
@@ -105,6 +106,11 @@ public class CommandHandleImpl implements CommandHandle {
     @Override
     public CommandPropertyMap getPropertyMap() {
         return propertyMap;
+    }
+
+    @Override
+    public List<CommandPreprocessor> getPreprocessors() {
+        return Collections.unmodifiableList(preprocessors);
     }
 
     @Override

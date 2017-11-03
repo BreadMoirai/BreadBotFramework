@@ -104,7 +104,7 @@ public class CommandParameterBuilderSpecificImpl implements CommandParameterBuil
     }
 
     @Override
-    public boolean containsProperty(Class<?> propertyType) {
+    public boolean hasProperty(Class<?> propertyType) {
         return false;
     }
 

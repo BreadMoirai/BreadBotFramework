@@ -15,9 +15,9 @@
 package com.github.breadmoirai.breadbot.framework.command;
 
 import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
-import com.github.breadmoirai.breadbot.util.EventStringIterator;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -34,6 +34,8 @@ public interface CommandHandle {
     String getDescription();
 
     CommandPropertyMap getPropertyMap();
+
+    List<CommandPreprocessor> getPreprocessors();
 
     boolean handle(CommandEvent event);
 

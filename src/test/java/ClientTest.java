@@ -17,7 +17,6 @@ import com.github.breadmoirai.breadbot.framework.BreadBotClient;
 import com.github.breadmoirai.breadbot.framework.BreadBotClientBuilder;
 import com.github.breadmoirai.breadbot.framework.command.CommandHandle;
 import com.github.breadmoirai.breadbot.framework.command.CommandPreprocessor;
-import com.github.breadmoirai.breadbot.framework.command.CommandPreprocessorsStatic;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
@@ -32,6 +31,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.Timeout;
+import test.commands.CountCommand;
+import test.commands.NameCommand;
+import test.commands.PingCommand;
 
 import javax.security.auth.login.LoginException;
 import java.util.List;
@@ -69,46 +71,41 @@ public class ClientTest {
 
     @BeforeClass
     public static void setup() {
-        CommandPreprocessorsStatic.associatePreprocessor(String.class, s -> new CommandPreprocessor("reversal", (commandObj, targetHandle, event, processorStack) -> event.reply(s)));
-        CommandPreprocessorsStatic.associatePreprocessor(Integer.class, integer -> new CommandPreprocessor("repeater", (commandObj, targetHandle, event, processorStack) -> event.reply(IntStream.range(0, integer).mapToObj(value -> "pong").collect(Collectors.joining(" ")))));
-        CommandPreprocessorsStatic.setPreprocessorPriority("alpha", "beta");
         final BreadBotClientBuilder commandClientBuilder = new BreadBotClientBuilder();
         BreadBotClient client = commandClientBuilder
-                .registerCommand(PingCommand.class)
-                .registerCommand(PingCommand.class, builder -> builder
-                        .configureCommandMethod("ping", methodBuilder -> methodBuilder
-                                .setKeys("pang")
-                                .addPreprocessorFunction("doubledown", (commandObj, targetHandle, event, processQueue) -> {
-                                    event.reply("pung");
-                                })))
-                .registerCommand(PingCommand.class, builder -> builder
-                        .configureCommandMethod("ping", methodBuilder -> methodBuilder
-                                .setKeys("pyng")
-                                .putProperty("gnyp")
-                                .addAssociatedPreprocessors()))
-                .registerCommand(PingCommand.class, builder -> builder
-                        .configureCommandMethod("ping", methodBuilder -> methodBuilder
-                                .setKeys("poing"))
-                        .putProperty(Integer.valueOf(5))
-                        .addAssociatedPreprocessors())
-                .registerCommand(event -> event.reply("failed"), builder -> builder
+                .associatePreprocessorFactory("string", String.class, s -> (commandObj, targetHandle, event, processorStack) -> event.reply(s))
+                .associatePreprocessorFactory("repeat", Integer.class, i -> (commandObj, targetHandle, event, processorStack) -> event.reply(IntStream.range(0, i).mapToObj(value -> "pong").collect(Collectors.joining(" "))))
+                .addCommand(PingCommand.class)
+                .addCommand(PingCommand.class, builder -> builder
+                        .setKeys("pang")
+                        .addPreprocessorFunction("doubledown", (commandObj, targetHandle, event, processQueue) -> {
+                            event.reply("pung");
+                        }))
+                .addCommand(PingCommand.class, builder -> builder
+                        .setKeys("pyng")
+                        .applyProperty("gnyp"))
+                .addCommand(PingCommand.class, builder -> builder
+                        .setKeys("poing")
+                        .applyProperty(5))
+                .addCommand(event -> event.reply("failed"), builder -> builder
                         .setKeys("pnosort")
                         .setName("pnosort")
                         .addPreprocessorFunction("beta", (commandObj, targetHandle, event, processorStack) -> event.reply("beta"))
                         .addPreprocessorFunction("alpha", (commandObj, targetHandle, event, processorStack) -> event.reply("alpha")))
-                .registerCommand(event -> event.reply("failed"), builder -> builder
+                .addCommand(event -> event.reply("failed"), builder -> builder
                         .setKeys("ponsort")
                         .setName("ponsort")
                         .addPreprocessorFunction("beta", (commandObj, targetHandle, event, processorStack) -> event.reply("beta"))
                         .addPreprocessorFunction("alpha", (commandObj, targetHandle, event, processorStack) -> event.reply("alpha"))
                         .sortPreprocessors())
-                .registerCommand(CountCommand.class, builder -> builder.setPersistent(true))
-                .registerCommand(CountCommand.class, builder -> builder.configureCommandMethod("count", methodBuilder -> methodBuilder.setKeys("cyunt")))
-                .registerCommand(new CountCommand(10), builder -> builder.setPersistent(true).configureCommandMethod("count", methodBuilder -> methodBuilder.setKeys("coynt")))
-                .registerCommand(NameCommand.class)
+                .addCommand(CountCommand.class, builder -> builder.setPersistent(true))
+                .addCommand(CountCommand.class, builder -> builder.setKeys("cyunt"))
+                .addCommand(new CountCommand(10), builder -> builder
+                        .setPersistent(true).setKeys("coynt"))
+                .addCommand(NameCommand.class)
                 .buildInterfaced();
 
-        final Map<String, CommandHandle> commandMap = client.getCommandEngine().getCommandMap();
+        final Map<String, CommandHandle> commandMap = client.getCommandMap();
         for (Map.Entry<String, CommandHandle> stringCommandHandleEntry : commandMap.entrySet()) {
             final String key = stringCommandHandleEntry.getKey();
             System.out.println("key = " + key);
