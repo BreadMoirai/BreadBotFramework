@@ -165,7 +165,7 @@ public class CommandPropertyMapImpl implements Iterable<Object>, CommandProperty
 
     public CommandPropertyMapImpl putAnnotations(Annotation[] annotations) {
         for (Annotation annotation : annotations) {
-            final RegisterPropertyMapper propertyMapper = annotation.getClass().getAnnotation(RegisterPropertyMapper.class);
+            final RegisterPropertyMapper propertyMapper = annotation.annotationType().getAnnotation(RegisterPropertyMapper.class);
             if (propertyMapper != null) {
                 final Class<? extends Function<? extends Annotation, ?>> mapper = propertyMapper.mapper();
                 try {
