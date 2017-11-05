@@ -106,3 +106,4 @@ src/main/java/samurai7/SamuraiRunner.java
 /bintray.keys
 /MyDatabase/
 /github.token
+/src/test/resources/tokens.txt

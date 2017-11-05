@@ -14,11 +14,13 @@ package test.commands;/*    Copyright 2017 Ton Ly
 */
 
 import com.github.breadmoirai.breadbot.framework.command.Command;
+import com.github.breadmoirai.breadbot.framework.command.DefaultCommand;
 import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
 
+@Command
 public class PingCommand {
 
-    @Command
+    @DefaultCommand
     public void ping(CommandEvent event) {
         event.reply("pong");
     }
