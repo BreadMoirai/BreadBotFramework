@@ -92,7 +92,6 @@ public class BreadBotClientImpl implements BreadBotClient {
         };
 
         eventManager.register(new BreadBotEventListener(preProcessPredicate));
-
     }
 
     private List<Class<?>> getInterfaceHierarchy(Class<?> from, Class<?> toSuper) {
@@ -112,6 +111,11 @@ public class BreadBotClientImpl implements BreadBotClient {
     @Override
     public JDA getJDA() {
         return jda;
+    }
+
+    @Override
+    public void setJDA(JDA jda) {
+        this.jda = jda;
     }
 
     @Override
@@ -188,7 +192,7 @@ public class BreadBotClientImpl implements BreadBotClient {
         @SubscribeEvent
         @Override
         public void onReady(ReadyEvent event) {
-            BreadBotClientImpl.this.jda = event.getJDA();
+            setJDA(event.getJDA());
         }
 
         @SubscribeEvent

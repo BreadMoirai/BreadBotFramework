@@ -45,6 +45,8 @@ public interface BreadBotClient {
 
     JDA getJDA();
 
+    void setJDA(JDA jda);
+
     IEventManager getEventManager();
 
     ArgumentTypes getArgumentTypes();
