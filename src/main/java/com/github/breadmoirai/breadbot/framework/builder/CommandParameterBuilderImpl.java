@@ -1,7 +1,6 @@
 package com.github.breadmoirai.breadbot.framework.builder;
 
 import com.github.breadmoirai.breadbot.framework.BreadBotClientBuilder;
-import com.github.breadmoirai.breadbot.framework.internal.ArgumentTypes;
 import com.github.breadmoirai.breadbot.framework.command.CommandPropertyMap;
 import com.github.breadmoirai.breadbot.framework.command.impl.CommandParameterCollectionImpl;
 import com.github.breadmoirai.breadbot.framework.command.impl.CommandParameterImpl;
@@ -12,8 +11,7 @@ import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
 
 import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -35,6 +33,7 @@ public class CommandParameterBuilderImpl implements CommandParameterBuilder {
     private boolean contiguous = true;
     private BiConsumer<CommandEvent, CommandParameter> onParamNotFound = null;
     private final BreadBotClientBuilder clientBuilder;
+    private Function<Class<?>, Collector<?, ?, ?>> toDeque;
 
     public CommandParameterBuilderImpl(BreadBotClientBuilder builder, Parameter parameter, String methodName, CommandPropertyMap map) {
         this.parameter = parameter;
@@ -50,11 +49,17 @@ public class CommandParameterBuilderImpl implements CommandParameterBuilder {
         } else if (paramType == Stream.class) {
             collectorSupplier = getToStream();
             setActualTypeParameter(parameter);
-//        } else if (paramType == Optional.class) {
+        } else if (paramType == Deque.class || paramType == Queue.class) {
+            collectorSupplier = getToDeque();
+            setActualTypeParameter(parameter);
+//      } else if (paramType == Optional.class) {
 //            setActualTypeParameter(parameter);
-        } else {
+        } else
+
+        {
             type = paramType;
         }
+
         parser = clientBuilder.getParser(type);
     }
 
@@ -78,6 +83,12 @@ public class CommandParameterBuilderImpl implements CommandParameterBuilder {
         return f2;
     }
 
+    private <T> Function<Class<?>, Collector<?, ?, ?>> getToDeque() {
+        final Function<Class<T>, Collector<T, ?, Deque<T>>> f = tClass -> Collectors.toCollection(ArrayDeque::new);
+        @SuppressWarnings("unchecked") final Function<Class<?>, Collector<?, ?, ?>> f2 = (Function<Class<?>, Collector<?, ?, ?>>) (Function<?, ?>) f;
+        return f2;
+    }
+
     CommandParameterBuilder setMethodName(String methodName) {
         this.methodName = methodName;
         return this;
@@ -88,27 +99,27 @@ public class CommandParameterBuilderImpl implements CommandParameterBuilder {
         this.paramName = paramName;
         return this;
     }
-
+    //        return this;
+    //        this.paramType = paramType;
+    //    public CommandParameterBuilder setIntendedType(Class<?> paramType) {
+    //     */
+    //     * @return
+    //     *
+    //     * @param paramType
+    //     *
+    //     * </ul>
+    //     *     <li>List.class</li>
+    //     *     it is guaranteed that <code>{@link com.github.breadmoirai.bot.framework.command.arg.CommandArgument arg}.{@link com.github.breadmoirai.bot.framework.command.arg.CommandArgument#getAsType(Class) getAsType}(baseType).{@link java.util.Optional#isPresent() isPresent()}</code> returns {@code true}.
+    //     *         <p> - if the argument passed to this parameter is {@code not-null},
+    //     *         <p> - if the index is not set, it will be the first argument that matches the BaseType.
+    //     *     <li>{@link com.github.breadmoirai.bot.framework.command.arg.CommandArgument CommandArgument.class}</li>
+    //     *         <p> - if the index is not set, it will be the first argument that matches the BaseType.
+    //     *     <li>Base Type</li>
+    //     * <ul>
+    //     * The argument passed should be of one of the following types
+    //     * Sets the actual type of the parameter. This also determines the search criteria for this parameter. If this is not set, it will be the same as the base type.
 //    /**
-//     * Sets the actual type of the parameter. This also determines the search criteria for this parameter. If this is not set, it will be the same as the base type.
-//     * The argument passed should be of one of the following types
-//     * <ul>
-//     *     <li>Base Type</li>
-//     *         <p> - if the index is not set, it will be the first argument that matches the BaseType.
-//     *     <li>{@link com.github.breadmoirai.bot.framework.command.arg.CommandArgument CommandArgument.class}</li>
-//     *         <p> - if the index is not set, it will be the first argument that matches the BaseType.
-//     *         <p> - if the argument passed to this parameter is {@code not-null},
-//     *     it is guaranteed that <code>{@link com.github.breadmoirai.bot.framework.command.arg.CommandArgument arg}.{@link com.github.breadmoirai.bot.framework.command.arg.CommandArgument#getAsType(Class) getAsType}(baseType).{@link java.util.Optional#isPresent() isPresent()}</code> returns {@code true}.
-//     *     <li>List.class</li>
-//     * </ul>
-//     *
-//     * @param paramType
-//     *
-//     * @return
-//     */
-//    public CommandParameterBuilder setIntendedType(Class<?> paramType) {
-//        this.paramType = paramType;
-//        return this;
+
 //    }
 
     @Override
@@ -199,5 +210,4 @@ public class CommandParameterBuilderImpl implements CommandParameterBuilder {
         }
         return commandParameter;
     }
-
 }
