@@ -97,7 +97,7 @@ public interface CommandParameterBuilder {
      */
     CommandParameterBuilder setRequired(boolean mustBePresent);
 
-    CommandParameterBuilder setOnParamNotFound(MissingArgumentConsumer onParamNotFound);
+    CommandParameterBuilder setOnParamNotFound(MissingArgumentHandler onParamNotFound);
 
     ArgumentParser<?> getParser();
 

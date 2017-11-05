@@ -7,12 +7,10 @@ import com.github.breadmoirai.breadbot.framework.command.impl.CommandParameterIm
 import com.github.breadmoirai.breadbot.framework.command.impl.CommandPropertyMapImpl;
 import com.github.breadmoirai.breadbot.framework.command.parameter.*;
 import com.github.breadmoirai.breadbot.framework.error.MissingTypeMapperException;
-import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
 
 import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.util.*;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collector;
@@ -31,14 +29,13 @@ public class CommandParameterBuilderImpl implements CommandParameterBuilder {
     private ArgumentParser<?> parser;
     private boolean mustBePresent = false;
     private boolean contiguous = true;
-    private BiConsumer<CommandEvent, CommandParameter> onParamNotFound = null;
+    private MissingArgumentHandler onParamNotFound = null;
     private final BreadBotClientBuilder clientBuilder;
     private Function<Class<?>, Collector<?, ?, ?>> toDeque;
 
     public CommandParameterBuilderImpl(BreadBotClientBuilder builder, Parameter parameter, String methodName, CommandPropertyMap map) {
         this.parameter = parameter;
-        this.map = new CommandPropertyMapImpl(map);
-        this.map.putAnnotations(parameter.getAnnotations());
+        this.map = new CommandPropertyMapImpl(map, parameter.getAnnotations());
         this.paramName = parameter.getName();
         this.paramType = parameter.getType();
         this.methodName = methodName;
@@ -61,6 +58,7 @@ public class CommandParameterBuilderImpl implements CommandParameterBuilder {
         }
 
         parser = clientBuilder.getParser(type);
+        builder.applyModifiers(this);
     }
 
     private void setActualTypeParameter(Parameter parameter) {
@@ -165,7 +163,7 @@ public class CommandParameterBuilderImpl implements CommandParameterBuilder {
     }
 
     @Override
-    public CommandParameterBuilder setOnParamNotFound(MissingArgumentConsumer onParamNotFound) {
+    public CommandParameterBuilder setOnParamNotFound(MissingArgumentHandler onParamNotFound) {
         this.onParamNotFound = onParamNotFound;
         return this;
     }

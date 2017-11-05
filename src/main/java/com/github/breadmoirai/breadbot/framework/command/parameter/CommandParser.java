@@ -95,7 +95,7 @@ public class CommandParser {
      * signals to halt execution of command.
      */
     public void fail() {
-        fail = false;
+        fail = true;
     }
 
     public boolean hasFailed() {

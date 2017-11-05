@@ -1,16 +1,11 @@
 package com.github.breadmoirai.breadbot.framework.command.impl;
 
 import com.github.breadmoirai.breadbot.framework.command.CommandArgumentList;
-import com.github.breadmoirai.breadbot.framework.command.parameter.ArgumentTypeMapper;
-import com.github.breadmoirai.breadbot.framework.command.parameter.CommandArgument;
-import com.github.breadmoirai.breadbot.framework.command.parameter.CommandParameter;
-import com.github.breadmoirai.breadbot.framework.command.parameter.CommandParser;
+import com.github.breadmoirai.breadbot.framework.command.parameter.*;
 import com.github.breadmoirai.breadbot.framework.command.parameter.internal.GenericCommandArgument;
-import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
 
 import java.util.Optional;
 import java.util.StringJoiner;
-import java.util.function.BiConsumer;
 import java.util.stream.IntStream;
 
 public class CommandParameterImpl implements CommandParameter {
@@ -21,9 +16,9 @@ public class CommandParameterImpl implements CommandParameter {
     private int width;
     private ArgumentTypeMapper<?> mapper;
     private boolean mustBePresent;
-    private BiConsumer<CommandEvent, CommandParameter> onParamNotFound;
+    private MissingArgumentHandler onParamNotFound;
 
-    public CommandParameterImpl(Class<?> type, int flags, int index, int width, ArgumentTypeMapper<?> mapper, boolean mustBePresent, BiConsumer<CommandEvent, CommandParameter> onParamNotFound) {
+    public CommandParameterImpl(Class<?> type, int flags, int index, int width, ArgumentTypeMapper<?> mapper, boolean mustBePresent, MissingArgumentHandler onParamNotFound) {
         this.type = type;
         this.flags = flags;
         this.index = index;
@@ -77,7 +72,8 @@ public class CommandParameterImpl implements CommandParameter {
         }
 
         if (mustBePresent) {
-            onParamNotFound.accept(list.getEvent(), this);
+            if (onParamNotFound != null)
+                onParamNotFound.handle(list.getEvent(), this);
             set.fail();
         }
         return null;

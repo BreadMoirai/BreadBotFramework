@@ -18,7 +18,7 @@ import com.github.breadmoirai.breadbot.framework.command.parameter.IfNotFound;
 
 import java.util.function.Function;
 
-public class MissingArgumentConsumerInstantiator implements Function<IfNotFound, Object> {
+public class MissingArgumentHandleInstantiator implements Function<IfNotFound, Object> {
 
     /**
      * Applies this function to the given argument.

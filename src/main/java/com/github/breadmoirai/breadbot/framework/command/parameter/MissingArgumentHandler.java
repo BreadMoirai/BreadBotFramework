@@ -16,9 +16,8 @@ package com.github.breadmoirai.breadbot.framework.command.parameter;
 
 import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
 
-import java.util.function.BiConsumer;
-
 @FunctionalInterface
-public interface MissingArgumentConsumer extends BiConsumer<CommandEvent, CommandParameter> {
+public interface MissingArgumentHandler {
 
+    void handle(CommandEvent event, CommandParameter missing);
 }

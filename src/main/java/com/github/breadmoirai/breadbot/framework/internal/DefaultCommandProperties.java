@@ -6,7 +6,7 @@ public class DefaultCommandProperties {
 
     public void initialize(CommandPropertiesImpl cp) {
         cp.putParameterModifier(Flags.class, (p, builder) -> builder.setFlags(p.value()));
-        cp.putParameterModifier(MissingArgumentConsumer.class, (p, builder) -> builder.setOnParamNotFound(p));
+        cp.putParameterModifier(MissingArgumentHandler.class, (p, builder) -> builder.setOnParamNotFound(p));
         cp.putParameterModifier(Required.class, (p, builder) -> builder.setRequired(true));
         cp.putParameterModifier(Index.class, (p, builder) -> builder.setIndex(p.value()));
         cp.putParameterModifier(MatchRegex.class, (p, builder) -> {
