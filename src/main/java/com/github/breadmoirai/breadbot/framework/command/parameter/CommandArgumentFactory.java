@@ -103,9 +103,8 @@ public class CommandArgumentFactory {
             if (s.charAt(0) != '\uD83C') return null;
         } else if (s.length() == 2) {
             if (s.charAt(0) < '\uD83C' || s.charAt(0) > '\uD83E')
-                return null;
-            if (s.charAt(1) != '\u20E3')
-                return null;
+                if (s.charAt(1) != '\u20E3')
+                    return null;
         } else if (s.length() == 1) {
             char c = s.charAt(0);
             if (c == '\u00A9') return new EmojiArgument(event, s, Emoji.COPYRIGHT);

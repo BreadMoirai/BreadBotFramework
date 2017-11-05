@@ -1412,6 +1412,11 @@ public enum Emoji {
         }
     }
 
+    @Override
+    public String toString() {
+        return getUtf8();
+    }
+
     /**
      * Attempts to match an Emoji by their utf8 encoding.
      * If the emoji is postfixed with a skin-tone, the skin-tone is ignored.
@@ -1420,7 +1425,7 @@ public enum Emoji {
      * @return the Emoji if found. Else {@code null}
      */
     public static Emoji find(String s) {
-        if (s.charAt(s.length()-2) == '\uD83C') {
+        if (s.length() >= 2 && s.charAt(s.length() - 2) == '\uD83C') {
             char tone = s.charAt(s.length() - 1);
             if (tone >= '\uDFFC' && tone <= '\uDFFF') {
                 s = s.substring(0, s.length()-2);
@@ -1447,7 +1452,7 @@ public enum Emoji {
         int high = array.length - 1;
         while (low <= high) {
             int mid = low + ((high - low) / 2);
-            final int compare = comparator.compare(extractor.apply(array[mid]), key);
+            final int compare = comparator.compare(key, extractor.apply(array[mid]));
             if (compare < 0)
                 high = mid - 1;
             else if (compare > 0)
