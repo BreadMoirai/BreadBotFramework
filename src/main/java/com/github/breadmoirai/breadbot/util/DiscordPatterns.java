@@ -30,7 +30,7 @@ public class DiscordPatterns {
      * <p>This pattern splits on spaces, ignoring spaces which are enclosed by quotation marks {@code "}.
      * If there is an uneven number of quotation marks, the result is indeterministic.
      */
-    public static final Pattern ARGUMENT_SPLITTER = Pattern.compile("[\\s+](?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)");
+    public static final Pattern ARGUMENT_SPLITTER = Pattern.compile("(\\s+)(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)");
 
     public static final Pattern FLOAT_REGEX = Pattern.compile("[+-]?(" +
             "NaN|" +
