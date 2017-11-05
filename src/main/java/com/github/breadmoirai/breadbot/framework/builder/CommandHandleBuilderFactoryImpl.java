@@ -280,13 +280,15 @@ public class CommandHandleBuilderFactoryImpl implements CommandHandleBuilderFact
             builder.setName(simpleName);
         if (builder.getKeys() == null)
             builder.setKeys(simpleName);
-        String[] packageNames = commandClass.getPackage().getName().split("\\.");
-        String packageName = packageNames[packageNames.length - 1];
-        if (packageName.matches("(command|cmd)(s)?") && packageNames.length > 1) {
-            packageName = packageNames[packageNames.length - 2];
+        if (commandClass.getPackage() != null) {
+            String[] packageNames = commandClass.getPackage().getName().split("\\.");
+            String packageName = packageNames[packageNames.length - 1];
+            if (packageName.matches("(command|cmd)(s)?") && packageNames.length > 1) {
+                packageName = packageNames[packageNames.length - 2];
+            }
+            if (builder.getGroup() == null)
+                builder.setGroup(packageName);
         }
-        if (builder.getGroup() == null)
-            builder.setGroup(packageName);
     }
 
     private void setDefaultValues(Method method, CommandHandleBuilderInternal builder) {
