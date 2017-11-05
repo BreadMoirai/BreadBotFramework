@@ -143,4 +143,10 @@ public interface CommandHandleBuilder extends CommandHandleBuilderFactory<Comman
 
     CommandHandleBuilder setPersistent(boolean isPersistent);
 
+    default CommandHandleBuilder configureParameter(int parameterIndex, Consumer<CommandParameterBuilder> configurator) {
+        configurator.accept(getParameter(parameterIndex));
+        return this;
+    }
+
+    CommandParameterBuilder getParameter(int parameterIndex);
 }

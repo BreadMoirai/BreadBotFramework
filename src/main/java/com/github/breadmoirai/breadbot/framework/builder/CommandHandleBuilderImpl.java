@@ -156,6 +156,11 @@ public class CommandHandleBuilderImpl implements CommandHandleBuilderInternal {
     }
 
     @Override
+    public CommandParameterBuilder getParameter(int parameterIndex) {
+        return parameterBuilders[parameterIndex];
+    }
+
+    @Override
     public String[] getKeys() {
         return keys;
     }
