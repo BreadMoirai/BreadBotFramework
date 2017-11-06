@@ -18,6 +18,9 @@ package com.github.breadmoirai.breadbot.modules.prefix;
 import com.github.breadmoirai.breadbot.framework.BreadBotClientBuilder;
 import com.github.breadmoirai.breadbot.framework.CommandModule;
 
+/**
+ * This is a mandatory module. This will be included by the BreadBotClientBuilder if it is not present
+ */
 public interface PrefixModule extends CommandModule {
 
     @Override

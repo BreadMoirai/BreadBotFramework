@@ -31,5 +31,12 @@ public interface AdminModule extends CommandModule {
     @Override
     default void initialize(BreadBotClientBuilder builder) {
         builder.associatePreprocessorPredicate("admin", Admin.class, event -> isAdmin(event.getMember()));
+        /* equivalent to
+        builder.associatePreprocessor("admin", Admin.class, (commandObj, targetHandle, event, processorStack) -> {
+            if (isAdmin(event.getMember())) {
+                processorStack.runNext();
+            }
+        });
+        */
     }
 }
