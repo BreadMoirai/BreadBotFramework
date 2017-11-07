@@ -16,6 +16,7 @@ package com.github.breadmoirai.breadbot.framework.command;
 
 import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
 
+import java.lang.reflect.Method;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -44,5 +45,26 @@ public interface CommandHandle {
     }
 
     Map<String, CommandHandle> getSubCommandMap();
+
+    /**
+     * This method returns null if the command has been defined with a class or a supplier.
+     * If this command was defined with a Consumer or Object, it will return that object.
+     *
+     * @return the object supplied to create this command.
+     */
+    Object getDeclaringObject();
+
+    /**
+     * If this command is a top-level command
+     * then if this command was defined with a Class, that class is returned.
+     * Else if this command was defined with a Supplier, then the class of the result of that Supplier is returned.
+     * Else if this command was defined with an Object or Consumer, then the class of that Object is returned.
+     *
+     * If this command is not a top-level command
+     * @return
+     */
+    Class getDeclaringClass();
+
+    Method getDeclaringMethod();
 
 }

@@ -54,7 +54,7 @@ public class CommandHandleBuilderFactoryImpl implements CommandHandleBuilderFact
     public CommandHandleBuilderInternal createCommand(Consumer<CommandEvent> onCommand) {
         return new CommandHandleBuilderImpl(
                 onCommand,
-                null,
+                onCommand.getClass(),
                 null,
                 clientBuilder,
                 new CommandObjectFactory(() -> onCommand),
@@ -148,7 +148,7 @@ public class CommandHandleBuilderFactoryImpl implements CommandHandleBuilderFact
     public List<CommandHandleBuilderInternal> createCommands(Supplier<?> commandSupplier, Object commandObject) {
         Class<?> commandClass = commandObject.getClass();
         return getSubCommands(
-                commandObject,
+                null,
                 commandClass,
                 new CommandObjectFactory(commandSupplier::get),
                 new CommandPropertyMapImpl(CommandPackageProperties.getPropertiesForPackage(commandClass.getPackage()), commandClass.getAnnotations()),
@@ -192,7 +192,7 @@ public class CommandHandleBuilderFactoryImpl implements CommandHandleBuilderFact
                         return Stream.of(createCommandHandleBuilderInternal(null, commandClass, method, factory, commandClass, commandSupplier));
                     } else {
                         return getSubCommands(
-                                commandObject,
+                                null,
                                 commandClass,
                                 getSupplierForClass(commandClass),
                                 new CommandPropertyMapImpl(CommandPackageProperties.getPropertiesForPackage(commandClass.getPackage()), commandClass.getAnnotations()),
@@ -239,7 +239,7 @@ public class CommandHandleBuilderFactoryImpl implements CommandHandleBuilderFact
             if (!map.hasDeclaredProperty(Command.class)) continue;
             String[] keys = map.getDeclaredProperty(Command.class).value();
             if (keys.length == 1 && keys[0].isEmpty()) continue;
-            CommandHandleBuilderInternal handle = createHandleFromMethod(commandObject, commandClass, method, factory, map);
+            CommandHandleBuilderInternal handle = createHandleFromMethod(commandObject, null, method, factory, map);
             setDefaultValues(method, handle);
             builders.add(handle);
         }

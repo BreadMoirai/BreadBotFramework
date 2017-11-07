@@ -9,6 +9,7 @@ import com.github.breadmoirai.breadbot.framework.command.parameter.CommandParser
 import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
 import com.github.breadmoirai.breadbot.util.EventStringIterator;
 
+import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -20,7 +21,10 @@ public class CommandHandleImpl implements CommandHandle {
     private final String name;
     private final String group;
     private final String description;
-//    private final BreadBotClientImpl client;
+    private final Object declaringObject;
+    private final Class<?> declaringClass;
+    private final Method declaringMethod;
+    //    private final BreadBotClientImpl client;
     private final CommandObjectFactory commandSupplier;
     private final CommandParameter[] commandParameters;
     private final InvokableCommand invokableCommand;
@@ -32,6 +36,9 @@ public class CommandHandleImpl implements CommandHandle {
                              String name,
                              String group,
                              String description,
+                             Object declaringObject,
+                             Class<?> declaringClass,
+                             Method declaringMethod,
 //                             BreadBotClientImpl client,
                              CommandObjectFactory commandSupplier,
                              CommandParameter[] commandParameters,
@@ -43,6 +50,9 @@ public class CommandHandleImpl implements CommandHandle {
         this.name = name;
         this.group = group;
         this.description = description;
+        this.declaringObject = declaringObject;
+        this.declaringClass = declaringClass;
+        this.declaringMethod = declaringMethod;
 //        this.client = client;
         this.commandSupplier = commandSupplier;
         this.commandParameters = commandParameters;
@@ -102,6 +112,22 @@ public class CommandHandleImpl implements CommandHandle {
     @Override
     public String getDescription() {
         return description;
+    }
+
+
+    @Override
+    public Object getDeclaringObject() {
+        return declaringObject;
+    }
+
+    @Override
+    public Class<?> getDeclaringClass() {
+        return declaringClass;
+    }
+
+    @Override
+    public Method getDeclaringMethod() {
+        return declaringMethod;
     }
 
     @Override

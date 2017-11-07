@@ -21,6 +21,7 @@ import com.github.breadmoirai.breadbot.framework.CommandModule;
 import com.github.breadmoirai.breadbot.framework.CommandProperties;
 import com.github.breadmoirai.breadbot.framework.command.builder.CommandHandleBuilderInternal;
 import com.github.breadmoirai.breadbot.framework.command.CommandHandle;
+import com.github.breadmoirai.breadbot.framework.error.MissingCommandKeyException;
 import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
 import com.github.breadmoirai.breadbot.framework.event.ICommandEventFactory;
 import com.github.breadmoirai.breadbot.util.EventStringIterator;
@@ -61,7 +62,11 @@ public class BreadBotClientImpl implements BreadBotClient {
         HashMap<String, CommandHandle> handleMap = new HashMap<>();
         for (CommandHandleBuilderInternal command : commands) {
             CommandHandle handle = command.build();
-            for (String key : handle.getKeys()) {
+            String[] keys = handle.getKeys();
+            if (keys == null || keys.length == 0) {
+                throw new MissingCommandKeyException(handle);
+            }
+            for (String key : keys) {
                 handleMap.put(key, handle);
             }
         }

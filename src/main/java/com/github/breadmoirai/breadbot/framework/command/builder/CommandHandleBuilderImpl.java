@@ -265,7 +265,7 @@ public class CommandHandleBuilderImpl implements CommandHandleBuilderInternal {
         }
         final CommandParameter[] commandParameters = new CommandParameter[parameterBuilders.length];
         Arrays.setAll(commandParameters, value -> parameterBuilders[value].build());
-        return new CommandHandleImpl(keys, name, group, description, /*client,*/ commandFactory, commandParameters, commandFunction, subCommandMap, preprocessors, propertyMap);
+        return new CommandHandleImpl(keys, name, group, description,  declaringObject, declaringClass, declaringMethod,/*client,*/ commandFactory, commandParameters, commandFunction, subCommandMap, preprocessors, propertyMap);
     }
 
 }
