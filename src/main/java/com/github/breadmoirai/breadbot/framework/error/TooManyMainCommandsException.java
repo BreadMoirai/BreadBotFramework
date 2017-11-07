@@ -1,4 +1,4 @@
-package test.commands;/*    Copyright 2017 Ton Ly
+/*    Copyright 2017 Ton Ly
  
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -12,15 +12,11 @@ package test.commands;/*    Copyright 2017 Ton Ly
   See the License for the specific language governing permissions and
   limitations under the License.
 */
+package com.github.breadmoirai.breadbot.framework.error;
 
-import com.github.breadmoirai.breadbot.framework.command.MainCommand;
-import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
+public class TooManyMainCommandsException extends CommandInitializationException {
 
-public class PingCommand {
-
-    @MainCommand
-    public void ping(CommandEvent event) {
-        event.reply("pong");
+    public TooManyMainCommandsException(Class<?> commandClass) {
+        super(commandClass.getSimpleName() + " has multiple methods marked with @MainCommand. Only one method may have this annotation.");
     }
-
 }

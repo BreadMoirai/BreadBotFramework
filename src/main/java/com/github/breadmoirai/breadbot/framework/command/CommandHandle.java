@@ -20,6 +20,7 @@ import java.lang.reflect.Method;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 /**
  * Is a Command. May be a top-level class, an inner class, or a method.
@@ -55,16 +56,24 @@ public interface CommandHandle {
     Object getDeclaringObject();
 
     /**
-     * If this command is a top-level command
-     * then if this command was defined with a Class, that class is returned.
-     * Else if this command was defined with a Supplier, then the class of the result of that Supplier is returned.
-     * Else if this command was defined with an Object or Consumer, then the class of that Object is returned.
+     * This command returns the enclosing class of this command.
+     * <ul>
+     * <li>If this command was defined by a Consumer, the Class of that consumer is returned.</li>
+     * <li>If this command was defined by a Supplier, the Class of the result from that Supplier is returned.</li>
+     * <li>If this command was defined by an Object, the Class of that Object is returned.</li>
+     * <li>If this command was defined by a Class, then that Class is returned.</li>
+     * <li>If this command is a sub-command defined by a Method, then the Class or Inner Class enclosing that Method is returned.</li>
+     * </ul>
      *
-     * If this command is not a top-level command
-     * @return
+     * @return a Class.
      */
     Class getDeclaringClass();
 
+    /**
+     * Returns the method that is used to invoke this command.
+     * If this command was defined with a Consumer, this returns {@code null}.
+     * @return a Method
+     */
     Method getDeclaringMethod();
 
 }

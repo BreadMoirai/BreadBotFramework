@@ -1,4 +1,4 @@
-package test.commands;/*    Copyright 2017 Ton Ly
+/*    Copyright 2017 Ton Ly
  
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -12,15 +12,19 @@ package test.commands;/*    Copyright 2017 Ton Ly
   See the License for the specific language governing permissions and
   limitations under the License.
 */
+package com.github.breadmoirai.breadbot.framework.command;
 
-import com.github.breadmoirai.breadbot.framework.command.MainCommand;
-import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
+import java.lang.annotation.*;
 
-public class PingCommand {
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+@Inherited
+public @interface RequiredParameters {
 
-    @MainCommand
-    public void ping(CommandEvent event) {
-        event.reply("pong");
-    }
+    /**
+     * Indicates the indexes of which parameters that are required
+     * @return an array of ints
+     */
+    int[] value();
 
 }

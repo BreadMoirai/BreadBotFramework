@@ -1,11 +1,11 @@
 /*    Copyright 2017 Ton Ly
- 
+
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
- 
+
       http://www.apache.org/licenses/LICENSE-2.0
- 
+
   Unless required by applicable law or agreed to in writing, software
   distributed under the License is distributed on an "AS IS" BASIS,
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -14,15 +14,16 @@
 */
 package com.github.breadmoirai.breadbot.framework.command;
 
-import com.github.breadmoirai.breadbot.framework.command.parameter.RegisterPropertyMapper;
-
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
-@RegisterPropertyMapper(mapper = DefaultCommandPropertyMapper.class)
-public @interface DefaultCommand {
+@Target({ElementType.METHOD, ElementType.TYPE})
+@Inherited
+public @interface Description {
+
+    /**
+     * The description of the command defined by this method.
+     * @return a non-null, non-empty String
+     */
+    String value();
 }

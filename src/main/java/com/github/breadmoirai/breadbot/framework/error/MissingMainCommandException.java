@@ -1,4 +1,4 @@
-package test.commands;/*    Copyright 2017 Ton Ly
+/*    Copyright 2017 Ton Ly
  
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -12,15 +12,12 @@ package test.commands;/*    Copyright 2017 Ton Ly
   See the License for the specific language governing permissions and
   limitations under the License.
 */
+package com.github.breadmoirai.breadbot.framework.error;
 
-import com.github.breadmoirai.breadbot.framework.command.MainCommand;
-import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
+public class MissingMainCommandException extends CommandInitializationException {
 
-public class PingCommand {
-
-    @MainCommand
-    public void ping(CommandEvent event) {
-        event.reply("pong");
+    public MissingMainCommandException(Class<?> commandClass) {
+        super("If you want to register " + commandClass.getSimpleName() + " as a single command, you must add an @MainCommand annotation to one method." +
+                " Otherwise use #createCommands or #addCommands instead to register as multiple commands.");
     }
-
 }

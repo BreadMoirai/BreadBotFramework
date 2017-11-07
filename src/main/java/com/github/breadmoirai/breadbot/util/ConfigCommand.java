@@ -31,7 +31,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Admin
-@Command
 public class ConfigCommand {
 
     @Command

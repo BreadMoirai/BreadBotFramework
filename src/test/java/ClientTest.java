@@ -16,6 +16,7 @@
 import com.github.breadmoirai.breadbot.framework.BreadBotClient;
 import com.github.breadmoirai.breadbot.framework.BreadBotClientBuilder;
 import com.github.breadmoirai.breadbot.util.Emoji;
+import com.sun.deploy.pings.Pings;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
@@ -248,6 +249,13 @@ public class ClientTest {
         assertResponse("!emoji 5", "missing parameter: Emoji");
         assertResponse("!emoji " + Emoji.ANGER_RIGHT, Emoji.ANGER_RIGHT.getUrl());
         assertResponse("!emoji name " + Emoji.ARTICULATED_LORRY, "ARTICULATED LORRY");
+    }
+
+    @Test
+    public void alternativeSubCommandTest() {
+        setupBread(bread -> {
+            bread.addCommand(new StaticCommand("key1", "response1"));
+        });
     }
 
     private void setupBread(Consumer<BreadBotClientBuilder> config) {

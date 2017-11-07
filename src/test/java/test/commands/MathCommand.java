@@ -1,15 +1,13 @@
 package test.commands;
 
-import com.github.breadmoirai.breadbot.framework.command.Command;
-import com.github.breadmoirai.breadbot.framework.command.DefaultCommand;
+import com.github.breadmoirai.breadbot.framework.command.MainCommand;
 import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
 
 import java.util.Deque;
 
-@Command
 public class MathCommand {
 
-    @DefaultCommand
+    @MainCommand
     public void math(CommandEvent event, Deque<Double> operands, Deque<Operator> operators) {
         if (operands.size() != operators.size() + 1) {
             event.reply("invalid");

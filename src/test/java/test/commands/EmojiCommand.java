@@ -1,7 +1,7 @@
 package test.commands;
 
 import com.github.breadmoirai.breadbot.framework.command.Command;
-import com.github.breadmoirai.breadbot.framework.command.DefaultCommand;
+import com.github.breadmoirai.breadbot.framework.command.MainCommand;
 import com.github.breadmoirai.breadbot.framework.command.parameter.CommandParameter;
 import com.github.breadmoirai.breadbot.framework.command.parameter.IfNotFound;
 import com.github.breadmoirai.breadbot.framework.command.parameter.MissingArgumentHandler;
@@ -9,11 +9,10 @@ import com.github.breadmoirai.breadbot.framework.command.parameter.Required;
 import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
 import com.github.breadmoirai.breadbot.util.Emoji;
 
-@Command
 @IfNotFound(EmojiCommand.MissingEmojiAlert.class)
 public class EmojiCommand {
 
-    @DefaultCommand
+    @MainCommand
     public void emoji(CommandEvent event, @Required Emoji e) {
         event.reply(e.getUrl());
     }
