@@ -12,9 +12,10 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 */
-package com.github.breadmoirai.breadbot.framework.builder;
+package com.github.breadmoirai.breadbot.framework.command.builder;
 
 import com.github.breadmoirai.breadbot.framework.BreadBotClientBuilder;
+import com.github.breadmoirai.breadbot.framework.CommandHandleBuilderFactory;
 import com.github.breadmoirai.breadbot.framework.command.CommandPreprocessor;
 import com.github.breadmoirai.breadbot.framework.command.CommandPreprocessorFunction;
 import com.github.breadmoirai.breadbot.framework.command.CommandPreprocessorPredicate;

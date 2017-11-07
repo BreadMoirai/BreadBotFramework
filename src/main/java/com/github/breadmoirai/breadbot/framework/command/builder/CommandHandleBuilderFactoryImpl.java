@@ -12,16 +12,16 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 */
-package com.github.breadmoirai.breadbot.framework.builder;
+package com.github.breadmoirai.breadbot.framework.command.builder;
 
 import com.github.breadmoirai.breadbot.framework.BreadBotClientBuilder;
 import com.github.breadmoirai.breadbot.framework.command.Command;
 import com.github.breadmoirai.breadbot.framework.command.CommandPropertyMap;
 import com.github.breadmoirai.breadbot.framework.command.DefaultCommand;
-import com.github.breadmoirai.breadbot.framework.command.impl.CommandObjectFactory;
-import com.github.breadmoirai.breadbot.framework.command.impl.CommandPackageProperties;
-import com.github.breadmoirai.breadbot.framework.command.impl.CommandPropertyMapImpl;
-import com.github.breadmoirai.breadbot.framework.command.impl.InvokableCommandHandle;
+import com.github.breadmoirai.breadbot.framework.command.internal.CommandObjectFactory;
+import com.github.breadmoirai.breadbot.framework.command.CommandPackageProperties;
+import com.github.breadmoirai.breadbot.framework.command.internal.CommandPropertyMapImpl;
+import com.github.breadmoirai.breadbot.framework.command.internal.InvokableCommandHandle;
 import com.github.breadmoirai.breadbot.framework.command.parameter.CommandParameterFunctionImpl;
 import com.github.breadmoirai.breadbot.framework.error.BreadBotException;
 import com.github.breadmoirai.breadbot.framework.error.CommandInitializationException;

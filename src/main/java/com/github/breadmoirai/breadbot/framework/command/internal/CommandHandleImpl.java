@@ -1,7 +1,8 @@
-package com.github.breadmoirai.breadbot.framework.command.impl;
+package com.github.breadmoirai.breadbot.framework.command.internal;
 
 import com.github.breadmoirai.breadbot.framework.command.CommandHandle;
 import com.github.breadmoirai.breadbot.framework.command.CommandPreprocessor;
+import com.github.breadmoirai.breadbot.framework.command.CommandProcessStack;
 import com.github.breadmoirai.breadbot.framework.command.CommandPropertyMap;
 import com.github.breadmoirai.breadbot.framework.command.parameter.CommandParameter;
 import com.github.breadmoirai.breadbot.framework.command.parameter.CommandParser;

@@ -12,16 +12,16 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 */
-package com.github.breadmoirai.breadbot.framework.builder;
+package com.github.breadmoirai.breadbot.framework.command.builder;
 
 import com.github.breadmoirai.breadbot.framework.BreadBotClientBuilder;
 import com.github.breadmoirai.breadbot.framework.command.Command;
 import com.github.breadmoirai.breadbot.framework.command.CommandHandle;
 import com.github.breadmoirai.breadbot.framework.command.CommandPreprocessor;
-import com.github.breadmoirai.breadbot.framework.command.impl.CommandHandleImpl;
-import com.github.breadmoirai.breadbot.framework.command.impl.CommandObjectFactory;
-import com.github.breadmoirai.breadbot.framework.command.impl.CommandPropertyMapImpl;
-import com.github.breadmoirai.breadbot.framework.command.impl.InvokableCommand;
+import com.github.breadmoirai.breadbot.framework.command.internal.CommandHandleImpl;
+import com.github.breadmoirai.breadbot.framework.command.internal.CommandObjectFactory;
+import com.github.breadmoirai.breadbot.framework.command.internal.CommandPropertyMapImpl;
+import com.github.breadmoirai.breadbot.framework.command.internal.InvokableCommand;
 import com.github.breadmoirai.breadbot.framework.command.parameter.CommandParameter;
 
 import java.lang.reflect.Method;

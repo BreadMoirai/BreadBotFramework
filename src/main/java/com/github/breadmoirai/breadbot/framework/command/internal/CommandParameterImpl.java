@@ -1,4 +1,4 @@
-package com.github.breadmoirai.breadbot.framework.command.impl;
+package com.github.breadmoirai.breadbot.framework.command.internal;
 
 import com.github.breadmoirai.breadbot.framework.command.CommandArgumentList;
 import com.github.breadmoirai.breadbot.framework.command.parameter.*;

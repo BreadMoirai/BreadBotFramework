@@ -12,7 +12,7 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 */
-package com.github.breadmoirai.breadbot.framework.builder;
+package com.github.breadmoirai.breadbot.framework.command.builder;
 
 import com.github.breadmoirai.breadbot.framework.command.CommandArgumentList;
 import com.github.breadmoirai.breadbot.framework.command.parameter.CommandParameterFunctionImpl;

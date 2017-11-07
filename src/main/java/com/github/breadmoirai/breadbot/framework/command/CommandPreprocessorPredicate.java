@@ -14,7 +14,6 @@
 */
 package com.github.breadmoirai.breadbot.framework.command;
 
-import com.github.breadmoirai.breadbot.framework.command.impl.CommandProcessStack;
 import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
 
 import java.util.function.Predicate;

@@ -1,5 +1,6 @@
-package com.github.breadmoirai.breadbot.framework.builder;
+package com.github.breadmoirai.breadbot.framework;
 
+import com.github.breadmoirai.breadbot.framework.command.builder.CommandHandleBuilder;
 import com.github.breadmoirai.breadbot.framework.command.Command;
 import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
 

@@ -1,7 +1,7 @@
-package com.github.breadmoirai.breadbot.framework.builder;
+package com.github.breadmoirai.breadbot.framework.command.builder;
 
 import com.github.breadmoirai.breadbot.framework.command.CommandHandle;
-import com.github.breadmoirai.breadbot.framework.command.impl.CommandPropertyMapImpl;
+import com.github.breadmoirai.breadbot.framework.command.internal.CommandPropertyMapImpl;
 import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
 
 import java.util.Collection;

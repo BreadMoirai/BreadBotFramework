@@ -19,7 +19,7 @@ import com.github.breadmoirai.breadbot.framework.BreadBotClient;
 import com.github.breadmoirai.breadbot.framework.CommandEngine;
 import com.github.breadmoirai.breadbot.framework.CommandModule;
 import com.github.breadmoirai.breadbot.framework.CommandProperties;
-import com.github.breadmoirai.breadbot.framework.builder.CommandHandleBuilderInternal;
+import com.github.breadmoirai.breadbot.framework.command.builder.CommandHandleBuilderInternal;
 import com.github.breadmoirai.breadbot.framework.command.CommandHandle;
 import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
 import com.github.breadmoirai.breadbot.framework.event.ICommandEventFactory;

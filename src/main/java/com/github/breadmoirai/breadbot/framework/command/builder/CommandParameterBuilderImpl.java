@@ -1,10 +1,10 @@
-package com.github.breadmoirai.breadbot.framework.builder;
+package com.github.breadmoirai.breadbot.framework.command.builder;
 
 import com.github.breadmoirai.breadbot.framework.BreadBotClientBuilder;
 import com.github.breadmoirai.breadbot.framework.command.CommandPropertyMap;
-import com.github.breadmoirai.breadbot.framework.command.impl.CommandParameterCollectionImpl;
-import com.github.breadmoirai.breadbot.framework.command.impl.CommandParameterImpl;
-import com.github.breadmoirai.breadbot.framework.command.impl.CommandPropertyMapImpl;
+import com.github.breadmoirai.breadbot.framework.command.internal.CommandParameterCollectionImpl;
+import com.github.breadmoirai.breadbot.framework.command.internal.CommandParameterImpl;
+import com.github.breadmoirai.breadbot.framework.command.internal.CommandPropertyMapImpl;
 import com.github.breadmoirai.breadbot.framework.command.parameter.*;
 import com.github.breadmoirai.breadbot.framework.error.MissingTypeMapperException;
 

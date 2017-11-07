@@ -12,10 +12,20 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 */
-package com.github.breadmoirai.breadbot.framework.command.impl;
+package com.github.breadmoirai.breadbot.framework.command.internal;
 
-public interface InvokableCommand {
+import java.lang.invoke.MethodHandle;
 
-    void invoke(Object object, Object[] parameters) throws Throwable;
+public class InvokableCommandHandle implements InvokableCommand {
 
+    private final MethodHandle handle;
+
+    public InvokableCommandHandle(MethodHandle handle) {
+        this.handle = handle;
+    }
+
+    @Override
+    public void invoke(Object object, Object[] parameters) throws Throwable {
+        handle.invoke(object, parameters);
+    }
 }

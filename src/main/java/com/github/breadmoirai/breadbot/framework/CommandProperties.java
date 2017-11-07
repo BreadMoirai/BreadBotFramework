@@ -1,7 +1,7 @@
 package com.github.breadmoirai.breadbot.framework;
 
-import com.github.breadmoirai.breadbot.framework.builder.CommandHandleBuilder;
-import com.github.breadmoirai.breadbot.framework.builder.CommandParameterBuilder;
+import com.github.breadmoirai.breadbot.framework.command.builder.CommandHandleBuilder;
+import com.github.breadmoirai.breadbot.framework.command.builder.CommandParameterBuilder;
 import com.github.breadmoirai.breadbot.framework.command.CommandPreprocessor;
 import com.github.breadmoirai.breadbot.framework.command.CommandPreprocessorFunction;
 import com.github.breadmoirai.breadbot.framework.command.CommandPreprocessorPredicate;

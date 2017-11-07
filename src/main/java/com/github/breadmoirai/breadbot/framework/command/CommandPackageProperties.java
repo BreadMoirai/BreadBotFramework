@@ -12,9 +12,9 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 */
-package com.github.breadmoirai.breadbot.framework.command.impl;
+package com.github.breadmoirai.breadbot.framework.command;
 
-import com.github.breadmoirai.breadbot.framework.command.CommandPropertyMap;
+import com.github.breadmoirai.breadbot.framework.command.internal.CommandPropertyMapImpl;
 
 import java.lang.annotation.Annotation;
 import java.util.HashMap;
