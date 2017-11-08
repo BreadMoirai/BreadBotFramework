@@ -14,10 +14,6 @@
 */
 package com.github.breadmoirai.breadbot.framework.command.parameter;
 
-import org.jetbrains.annotations.NotNull;
-
-import java.util.Optional;
-
 public class ArgumentParser<T> implements ArgumentTypeMapper<T>, ArgumentTypePredicate {
 
     private final ArgumentTypePredicate predicate;
@@ -32,15 +28,14 @@ public class ArgumentParser<T> implements ArgumentTypeMapper<T>, ArgumentTypePre
         this(null, mapper);
     }
 
-    @NotNull
     @Override
-    public Optional<T> map(CommandArgument arg, int flags) {
+    public T map(CommandArgument arg, int flags) {
         return parse(arg, flags);
     }
 
     @Override
     public boolean test(CommandArgument arg, int flags) {
-        return predicate != null ? predicate.test(arg, flags) : mapper.map(arg, flags).isPresent();
+        return predicate != null ? predicate.test(arg, flags) : mapper.map(arg, flags) != null;
     }
 
     public boolean hasPredicate() {
@@ -54,10 +49,10 @@ public class ArgumentParser<T> implements ArgumentTypeMapper<T>, ArgumentTypePre
      * @param flags any flags
      * @return an optional
      */
-    public Optional<T> parse(CommandArgument arg, int flags) {
+    public T parse(CommandArgument arg, int flags) {
         if (hasPredicate()) {
             if (!predicate.test(arg, flags)) {
-                return Optional.empty();
+                return null;
             }
         }
         return mapper.map(arg, flags);

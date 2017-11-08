@@ -24,7 +24,6 @@ import java.util.function.Consumer;
 public interface CommandParameterBuilder {
 
     /**
-     *
      * @return the {@link java.lang.reflect.Parameter}
      */
     Parameter getDeclaringParameter();
@@ -50,7 +49,6 @@ public interface CommandParameterBuilder {
      * If number of arguments is less than the index  The default value of {@code -1}
      *
      * @param index
-     *
      * @return
      */
     CommandParameterBuilder setIndex(int index);
@@ -85,19 +83,35 @@ public interface CommandParameterBuilder {
     <T> CommandParameterBuilder setBaseType(Class<T> type, ArgumentTypePredicate predicate, ArgumentTypeMapper<T> mapper);
 
     /**
-     *
      * @param predicate may be null
-     * @param parser may not be null
+     * @param parser    may not be null
      * @return this
      */
     <T> CommandParameterBuilder setParser(@Nullable ArgumentTypePredicate predicate, ArgumentTypeMapper<T> parser);
 
     /**
      * @param mustBePresent {@code true} if the argument must be present. Otherwise an error message will be sent to the user with the default error or
+     * @return this
      */
     CommandParameterBuilder setRequired(boolean mustBePresent);
 
+    /**
+     * Defines the behavior to be executed when the parameter could not be mapped from any unmapped CommandEventArguments.
+     *
+     * @param onParamNotFound A MissingArgumentHandler which is a functional interface that is a BiConsumer of the CommandEvent and the CommandParameter that is missing
+     * @return this
+     */
     CommandParameterBuilder setOnParamNotFound(MissingArgumentHandler onParamNotFound);
+
+    /**
+     * This only affects parameters which are Collections.
+     * If contiguous is set to {@code true}, that means that only adjacent arguments will be provided in the parameter where the first element is the first unmapped argument that is of the Collection's Generic Type.
+     * If contiguous is set to {@code false}, then all unmapped arguments which can be mapped to this Collection's Generic Type will be present in this parameter.
+     * <p>By default, this field is set to {@code false}.
+     * @param isContiguous a boolean.
+     * @return this
+     */
+    CommandParameterBuilder setContiguous(boolean isContiguous);
 
     ArgumentParser<?> getParser();
 

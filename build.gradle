@@ -24,7 +24,7 @@ repositories {
 
 dependencies {
     //Discord Java Library
-    compileOnly 'net.dv8tion:JDA:3.3.1_284'
+    compileOnly 'net.dv8tion:JDA:3.3.1_303'
 
     //Database
 //    compile 'org.jdbi:jdbi3:3.0.0-beta1'
@@ -32,7 +32,7 @@ dependencies {
 //    compile 'org.jdbi:jdbi3-sqlobject:3.0.0-beta1'
 
     //slf4j
-    compile 'org.slf4j:slf4j-api:1.8.0-alpha2'
+    compile 'org.slf4j:slf4j-api:1.7.25'
 //    compile 'com.squareup.okhttp3:okhttp:3.8.1'
 //    compile 'com.j256.simplemagic:simplemagic:1.10'
     //Utility
@@ -48,7 +48,7 @@ dependencies {
 //    compile 'org.apache.derby:derby:10.13.1.1'
 //    compile 'com.google.api-client:google-api-client:1.22.0'
 //    compile 'com.google.apis:google-api-services-youtube:v3-rev183-1.22.0'
-
+    testCompile 'ch.qos.logback:logback-classic:1.2.3'
     testCompile('junit:junit:4.12') {
         exclude group: 'org.hamcrest'
     }

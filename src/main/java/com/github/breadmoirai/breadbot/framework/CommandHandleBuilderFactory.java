@@ -1,8 +1,8 @@
 package com.github.breadmoirai.breadbot.framework;
 
 import com.github.breadmoirai.breadbot.framework.command.builder.CommandHandleBuilder;
-import com.github.breadmoirai.breadbot.framework.command.Command;
 import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
+import net.dv8tion.jda.core.utils.Checks;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -23,43 +23,30 @@ public interface CommandHandleBuilderFactory<T> {
     T self();
 
     default T addCommand(Consumer<CommandEvent> onCommand, Consumer<CommandHandleBuilder> configurator) {
+        Checks.notNull(configurator, "configurator");
         configurator.accept(createCommand(onCommand));
         return self();
     }
 
     default T addCommand(Class<?> commandClass, Consumer<CommandHandleBuilder> configurator) {
-        if (commandClass.isAnnotationPresent(Command.class)) {
-            configurator.accept(createCommand(commandClass));
-        } else {
-            createCommands(commandClass).forEach(configurator);
-        }
+        Checks.notNull(configurator, "configurator");
+        createCommandsFromClasses(commandClass).forEach(configurator);
         return self();
     }
 
     default T addCommand(Class<?> commandClass) {
-        if (commandClass.isAnnotationPresent(Command.class)) {
-            createCommand(commandClass);
-        } else {
-            createCommands(commandClass);
-        }
+        createCommandsFromClasses(commandClass);
         return self();
     }
 
     default T addCommand(Object commandObject, Consumer<CommandHandleBuilder> configurator) {
-        if (commandObject.getClass().isAnnotationPresent(Command.class)) {
-            configurator.accept(createCommand(commandObject));
-        } else {
-            createCommands(commandObject).forEach(configurator);
-        }
+        Checks.notNull(configurator, "configurator");
+        createCommandsFromObjects(commandObject).forEach(configurator);
         return self();
     }
 
     default T addCommand(Object commandObject) {
-        if (commandObject.getClass().isAnnotationPresent(Command.class)) {
-            createCommand(commandObject);
-        } else {
-            createCommands(commandObject);
-        }
+        createCommandsFromObjects(commandObject);
         return self();
     }
 

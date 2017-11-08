@@ -9,6 +9,7 @@ import gnu.trove.impl.Constants;
 import gnu.trove.map.TObjectIntMap;
 import gnu.trove.map.hash.TObjectIntHashMap;
 import net.dv8tion.jda.core.entities.*;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.stream.IntStream;
@@ -18,7 +19,7 @@ import java.util.stream.StreamSupport;
 /**
  * A list implementation for {@link com.github.breadmoirai.breadbot.framework.command.parameter.CommandArgument CommandArguments} that includes a specialized iterator. All arguments are in lowercase.
  */
-public class CommandArgumentList extends AbstractList<CommandArgument> {
+public class CommandArgumentList extends AbstractList<CommandArgument> implements RandomAccess {
 
     private final CommandArgument[] arguments;
     private final CommandEvent event;
@@ -50,6 +51,26 @@ public class CommandArgumentList extends AbstractList<CommandArgument> {
     @Override
     public CommandArgument get(int index) {
         return arguments[index];
+    }
+
+    /**
+     * This method does not provide a new list with this list as a backing list.
+     * Instead this method copies the specified range of elements into a new CommandArgumentList.
+     * Changes in the new list will not be reflected in this list as both lists are unmodifiable.
+     *
+     * @param fromIndex the beginning index, inclusive
+     * @param toIndex the end index, exclusive
+     * @throws IndexOutOfBoundsException if an endpoint index value is out of range
+     *                                   {@code (fromIndex < 0 || toIndex > size)}
+     * @throws IllegalArgumentException  if the endpoint indices are out of order
+     *                                   {@code (fromIndex > toIndex)}
+     */
+    @NotNull
+    @Override
+    public CommandArgumentList subList(int fromIndex, int toIndex) {
+        if (fromIndex < 0 || toIndex > size()) throw new IndexOutOfBoundsException();
+        if (fromIndex > toIndex) throw new IllegalArgumentException("endpoint indices are out of order");
+        return new CommandArgumentList(Arrays.copyOfRange(arguments, fromIndex, toIndex), event);
     }
 
     @Override
@@ -438,4 +459,5 @@ public class CommandArgumentList extends AbstractList<CommandArgument> {
         }
 
     }
+
 }

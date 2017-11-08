@@ -16,7 +16,6 @@ package com.github.breadmoirai.breadbot.framework.command.builder;
 
 import com.github.breadmoirai.breadbot.framework.BreadBotClientBuilder;
 import com.github.breadmoirai.breadbot.framework.command.Command;
-import com.github.breadmoirai.breadbot.framework.command.CommandHandle;
 import com.github.breadmoirai.breadbot.framework.command.CommandPreprocessor;
 import com.github.breadmoirai.breadbot.framework.command.internal.CommandHandleImpl;
 import com.github.breadmoirai.breadbot.framework.command.internal.CommandObjectFactory;
@@ -209,6 +208,11 @@ public class CommandHandleBuilderImpl implements CommandHandleBuilderInternal {
     }
 
     @Override
+    public CommandObjectFactory getObjectFactory() {
+        return commandFactory;
+    }
+
+    @Override
     public CommandHandleBuilder self() {
         return this;
     }
@@ -243,14 +247,14 @@ public class CommandHandleBuilderImpl implements CommandHandleBuilderInternal {
 
 
     @Override
-    public CommandHandle build() {
-        Map<String, CommandHandle> subCommandMap;
+    public CommandHandleImpl build() {
+        Map<String, CommandHandleImpl> subCommandMap;
         if (subCommands.isEmpty()) {
             subCommandMap = null;
         } else {
             subCommandMap = new HashMap<>();
             for (CommandHandleBuilderInternal subCommand : subCommands) {
-                CommandHandle command = subCommand.build();
+                CommandHandleImpl command = subCommand.build();
                 for (String key : command.getKeys()) {
                     subCommandMap.put(key, command);
                 }

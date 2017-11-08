@@ -15,11 +15,13 @@
  */
 package com.github.breadmoirai.breadbot.framework;
 
-import com.github.breadmoirai.breadbot.framework.command.builder.*;
-import com.github.breadmoirai.breadbot.framework.command.Command;
 import com.github.breadmoirai.breadbot.framework.command.CommandPreprocessor;
 import com.github.breadmoirai.breadbot.framework.command.CommandPreprocessorFunction;
 import com.github.breadmoirai.breadbot.framework.command.CommandPreprocessorPredicate;
+import com.github.breadmoirai.breadbot.framework.command.builder.CommandHandleBuilder;
+import com.github.breadmoirai.breadbot.framework.command.builder.CommandHandleBuilderFactoryImpl;
+import com.github.breadmoirai.breadbot.framework.command.builder.CommandHandleBuilderInternal;
+import com.github.breadmoirai.breadbot.framework.command.builder.CommandParameterBuilder;
 import com.github.breadmoirai.breadbot.framework.command.parameter.ArgumentParser;
 import com.github.breadmoirai.breadbot.framework.command.parameter.ArgumentTypeMapper;
 import com.github.breadmoirai.breadbot.framework.command.parameter.ArgumentTypePredicate;
@@ -38,8 +40,6 @@ import net.dv8tion.jda.core.hooks.AnnotatedEventManager;
 import net.dv8tion.jda.core.hooks.IEventManager;
 import net.dv8tion.jda.core.hooks.InterfacedEventManager;
 import net.dv8tion.jda.core.utils.Checks;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.function.*;
@@ -50,7 +50,7 @@ public class BreadBotClientBuilder implements
         CommandPropertiesBuilder<BreadBotClientBuilder>,
         ArgumentTypesBuilder<BreadBotClientBuilder> {
 
-    private static final Logger LOG = LoggerFactory.getLogger(BreadBotClientBuilder.class);
+//    private static final Logger LOG = LoggerFactory.getLogger(BreadBotClientBuilder.class);
 
     private final List<CommandModule> modules;
     private final CommandProperties commandProperties;
@@ -103,29 +103,16 @@ public class BreadBotClientBuilder implements
 
     @Override
     public BreadBotClientBuilder addCommand(Supplier<?> commandSupplier, Consumer<CommandHandleBuilder> configurator) {
-        Object o = commandSupplier.get();
-        if (o.getClass().isAnnotationPresent(Command.class)) {
-            CommandHandleBuilderInternal commandHandle = factory.createCommand(commandSupplier, o);
-            configurator.accept(commandHandle);
-            commands.add(commandHandle);
-        } else {
-            List<CommandHandleBuilderInternal> commandHandles = factory.createCommands(commandSupplier, o);
-            commandHandles.forEach(configurator);
-            commands.addAll(commandHandles);
-        }
+        List<CommandHandleBuilderInternal> commandsFromSuppliers = factory.createCommandsFromSuppliers(commandSupplier);
+        commandsFromSuppliers.forEach(configurator);
+        commands.addAll(commandsFromSuppliers);
         return this;
     }
 
     @Override
     public BreadBotClientBuilder addCommand(Supplier<?> commandSupplier) {
-        Object o = commandSupplier.get();
-        if (o.getClass().isAnnotationPresent(Command.class)) {
-            CommandHandleBuilderInternal commandHandle = factory.createCommand(commandSupplier, o);
-            commands.add(commandHandle);
-        } else {
-            List<CommandHandleBuilderInternal> commandHandles = factory.createCommands(commandSupplier, o);
-            commands.addAll(commandHandles);
-        }
+        List<CommandHandleBuilderInternal> commandsFromSuppliers = factory.createCommandsFromSuppliers(commandSupplier);
+        commands.addAll(commandsFromSuppliers);
         return this;
     }
 
@@ -403,8 +390,6 @@ public class BreadBotClientBuilder implements
             commandEventFactory = new CommandEventFactoryImpl(getModule(PrefixModule.class));
 
         BreadBotClient client = new BreadBotClientImpl(modules, commands, commandProperties, argumentTypes, eventManager, commandEventFactory, preProcessPredicate);
-        LOG.info("Top Level Commands registered: " + client.getCommandMap().values().size() + ".");
-        LOG.info("CommandClient Initialized.");
         return client;
     }
 }

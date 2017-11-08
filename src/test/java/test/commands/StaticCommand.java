@@ -1,6 +1,5 @@
 package test.commands;
 
-import com.github.breadmoirai.breadbot.framework.command.Command;
 import com.github.breadmoirai.breadbot.framework.command.ConfigureCommand;
 import com.github.breadmoirai.breadbot.framework.command.MainCommand;
 import com.github.breadmoirai.breadbot.framework.command.builder.CommandHandleBuilder;
@@ -21,7 +20,7 @@ public class StaticCommand {
         event.reply(response);
     }
 
-    @ConfigureCommand("respond")
+    @ConfigureCommand
     public static void configure(CommandHandleBuilder handleBuilder) {
         handleBuilder.setKeys(key);
     }

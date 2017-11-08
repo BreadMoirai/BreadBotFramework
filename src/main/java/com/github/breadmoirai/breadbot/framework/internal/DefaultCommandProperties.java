@@ -2,6 +2,7 @@ package com.github.breadmoirai.breadbot.framework.internal;
 
 import com.github.breadmoirai.breadbot.framework.command.*;
 import com.github.breadmoirai.breadbot.framework.command.builder.CommandHandleBuilder;
+import com.github.breadmoirai.breadbot.framework.command.builder.CommandHandleBuilderInternal;
 import com.github.breadmoirai.breadbot.framework.command.internal.ConfigureCommands;
 import com.github.breadmoirai.breadbot.framework.command.parameter.*;
 import com.github.breadmoirai.breadbot.framework.error.BreadBotException;
@@ -50,26 +51,41 @@ public class DefaultCommandProperties {
             setGroupToPackage(builder, declaringClass);
         });
 
-        cp.appendCommandModifier(null, (o, builder) -> {
+        cp.appendCommandModifier(null, (nullO, builder) -> {
             Class<?> declaringClass = builder.getDeclaringClass();
             if (Consumer.class.isAssignableFrom(declaringClass))
                 return;
 
             for (Method method : builder.getDeclaringClass().getDeclaredMethods()) {
                 int modifiers = method.getModifiers();
-                if (!Modifier.isPublic(modifiers) || !Modifier.isStatic(modifiers))
+                if (!Modifier.isPublic(modifiers))
                     return;
                 if (method.getParameterCount() != 1)
                     return;
                 if (method.getParameters()[0].getType() != CommandHandleBuilder.class)
                     return;
-                if (!method.isAnnotationPresent(ConfigureCommands.class))
+                if (!method.isAnnotationPresent(ConfigureCommands.class) && !method.isAnnotationPresent(ConfigureCommand.class))
                     return;
+                final Object o;
+                Object declaringObject = builder.getDeclaringObject();
+                if (declaringObject != null && !(declaringObject instanceof Consumer)) {
+                    o = declaringObject;
+                } else if (Modifier.isStatic(modifiers)) {
+                    o = ((CommandHandleBuilderInternal) builder).getObjectFactory().get();
+                } else {
+                    o = null;
+                }
                 ConfigureCommands annotation = method.getAnnotation(ConfigureCommands.class);
-                for (ConfigureCommand configureCommand : annotation.value()) {
-                    if (configureCommand.value().equals(builder.getName())) {
+                ConfigureCommand[] value;
+                if (annotation != null) {
+                    value = annotation.value();
+                } else {
+                    value = new ConfigureCommand[]{method.getAnnotation(ConfigureCommand.class)};
+                }
+                for (ConfigureCommand configureCommand : value) {
+                    if (configureCommand.value().equals(builder.getName()) || configureCommand.value().isEmpty()) {
                         try {
-                            method.invoke(null, builder);
+                            method.invoke(o, builder);
                             break;
                         } catch (IllegalAccessException | InvocationTargetException e) {
                             String msg = String.format("An Error occurred when attempting to configure CommandHandleBuilder[%s] with method %s#%s",
@@ -97,6 +113,7 @@ public class DefaultCommandProperties {
         });
         cp.putParameterModifier(Width.class, (p, builder) -> builder.setWidth(p.value()));
         cp.putParameterModifier(Type.class, (p, builder) -> builder.setBaseType(p.value()));
+        cp.putParameterModifier(Contiguous.class, (p, builder) -> builder.setContiguous(p.value()));
     }
 
     private void setGroupToPackage(CommandHandleBuilder builder, Class<?> declaringClass) {

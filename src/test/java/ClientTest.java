@@ -15,8 +15,8 @@
 
 import com.github.breadmoirai.breadbot.framework.BreadBotClient;
 import com.github.breadmoirai.breadbot.framework.BreadBotClientBuilder;
+import com.github.breadmoirai.breadbot.framework.command.builder.CommandHandleBuilder;
 import com.github.breadmoirai.breadbot.util.Emoji;
-import com.sun.deploy.pings.Pings;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
@@ -252,10 +252,17 @@ public class ClientTest {
     }
 
     @Test
-    public void alternativeSubCommandTest() {
+    public void subCommandTest() {
         setupBread(bread -> {
-            bread.addCommand(new StaticCommand("key1", "response1"));
+            CommandHandleBuilder command = bread.createCommand(new StaticCommand("key0", "0"));
+            for (int i = 1; i < 5; i++) {
+                command = command.createCommand(new StaticCommand("key" + i, String.valueOf(i)));
+            }
         });
+
+        assertResponse("!key0", "0");
+        assertResponse("!key0 key1 key2 key3 key4", "4");
+        assertResponse("!key0 key1 key3 key4", "1");
     }
 
     private void setupBread(Consumer<BreadBotClientBuilder> config) {

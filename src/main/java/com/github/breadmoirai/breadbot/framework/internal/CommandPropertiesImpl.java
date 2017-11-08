@@ -15,11 +15,11 @@
 package com.github.breadmoirai.breadbot.framework.internal;
 
 import com.github.breadmoirai.breadbot.framework.CommandProperties;
-import com.github.breadmoirai.breadbot.framework.command.builder.CommandHandleBuilder;
-import com.github.breadmoirai.breadbot.framework.command.builder.CommandParameterBuilder;
 import com.github.breadmoirai.breadbot.framework.command.CommandPreprocessor;
 import com.github.breadmoirai.breadbot.framework.command.CommandPreprocessorFunction;
 import com.github.breadmoirai.breadbot.framework.command.CommandPreprocessorPredicate;
+import com.github.breadmoirai.breadbot.framework.command.builder.CommandHandleBuilder;
+import com.github.breadmoirai.breadbot.framework.command.builder.CommandParameterBuilder;
 
 import java.util.*;
 import java.util.function.BiConsumer;
@@ -33,6 +33,8 @@ public class CommandPropertiesImpl implements CommandProperties {
     private final Map<Class<?>, BiConsumer<?, CommandParameterBuilder>> parameterPropertyMap = new HashMap<>();
 
     public CommandPropertiesImpl() {
+        putCommandModifier(null, (o, b) -> {});
+        putParameterModifier(null, (o, b) -> {});
         new DefaultCommandProperties().initialize(this);
     }
 
@@ -43,10 +45,15 @@ public class CommandPropertiesImpl implements CommandProperties {
 
     @Override
     public <T> void appendCommandModifier(Class<T> propertyType, BiConsumer<T, CommandHandleBuilder> configurator) {
-        commandPropertyMap.merge(propertyType, configurator, (c1, c2) -> {
-            @SuppressWarnings("unchecked") BiConsumer<Object, CommandHandleBuilder> cc1 = (BiConsumer<Object, CommandHandleBuilder>) c1;
-            @SuppressWarnings("unchecked") BiConsumer<Object, CommandHandleBuilder> cc2 = (BiConsumer<Object, CommandHandleBuilder>) c2;
-            return cc1.andThen(cc2);
+        @SuppressWarnings("unchecked") BiConsumer<Object, CommandHandleBuilder> c1 = (BiConsumer<Object, CommandHandleBuilder>) commandPropertyMap.get(propertyType);
+        if (c1 == null) {
+            putCommandModifier(propertyType, configurator);
+            return;
+        }
+        @SuppressWarnings("unchecked") BiConsumer<Object, CommandHandleBuilder> c2 = (BiConsumer<Object, CommandHandleBuilder>) configurator;
+        commandPropertyMap.put(propertyType, (o, builder) -> {
+            c1.accept(o, builder);
+            c2.accept(o, builder);
         });
     }
 
@@ -57,10 +64,15 @@ public class CommandPropertiesImpl implements CommandProperties {
 
     @Override
     public <T> void appendParameterModifier(Class<T> propertyType, BiConsumer<T, CommandParameterBuilder> configurator) {
-        parameterPropertyMap.merge(propertyType, configurator, (c1, c2) -> {
-            @SuppressWarnings("unchecked") BiConsumer<Object, CommandParameterBuilder> cc1 = (BiConsumer<Object, CommandParameterBuilder>) c1;
-            @SuppressWarnings("unchecked") BiConsumer<Object, CommandParameterBuilder> cc2 = (BiConsumer<Object, CommandParameterBuilder>) c2;
-            return cc1.andThen(cc2);
+        @SuppressWarnings("unchecked") BiConsumer<Object, CommandParameterBuilder> c1 = (BiConsumer<Object, CommandParameterBuilder>) parameterPropertyMap.get(propertyType);
+        if (c1 == null) {
+            putParameterModifier(propertyType, configurator);
+            return;
+        }
+        @SuppressWarnings("unchecked") BiConsumer<Object, CommandParameterBuilder> c2 = (BiConsumer<Object, CommandParameterBuilder>) configurator;
+        parameterPropertyMap.put(propertyType, (o, builder) -> {
+            c1.accept(o, builder);
+            c2.accept(o, builder);
         });
     }
 
@@ -179,4 +191,6 @@ public class CommandPropertiesImpl implements CommandProperties {
             return getPriority(o1.getIdentifier(), identifierList) - getPriority(o2.getIdentifier(), identifierList);
         }
     }
+
+
 }

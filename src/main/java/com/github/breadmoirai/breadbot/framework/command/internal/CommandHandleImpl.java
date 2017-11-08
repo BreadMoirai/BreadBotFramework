@@ -10,10 +10,7 @@ import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
 import com.github.breadmoirai.breadbot.util.EventStringIterator;
 
 import java.lang.reflect.Method;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class CommandHandleImpl implements CommandHandle {
 
@@ -28,7 +25,7 @@ public class CommandHandleImpl implements CommandHandle {
     private final CommandObjectFactory commandSupplier;
     private final CommandParameter[] commandParameters;
     private final InvokableCommand invokableCommand;
-    private final Map<String, CommandHandle> subCommandMap;
+    private final Map<String, CommandHandleImpl> subCommandMap;
     private final List<CommandPreprocessor> preprocessors;
     private final CommandPropertyMap propertyMap;
 
@@ -43,7 +40,7 @@ public class CommandHandleImpl implements CommandHandle {
                              CommandObjectFactory commandSupplier,
                              CommandParameter[] commandParameters,
                              InvokableCommand commandFunction,
-                             Map<String, CommandHandle> subCommandMap,
+                             Map<String, CommandHandleImpl> subCommandMap,
                              List<CommandPreprocessor> preprocessors,
                              CommandPropertyMap propertyMap) {
         this.keys = keys;
@@ -142,6 +139,54 @@ public class CommandHandleImpl implements CommandHandle {
 
     @Override
     public Map<String, CommandHandle> getSubCommandMap() {
-        return subCommandMap;
+        return Collections.unmodifiableMap(subCommandMap);
+    }
+
+    @Override
+    public String toString() {
+        return toString(0);
+    }
+
+    private String toString(int indent) {
+        final StringBuilder sb = new StringBuilder();
+        sb.append("CommandHandle{\n");
+        tab(sb, indent + 2);
+        sb.append("keys: ").append(Arrays.toString(getKeys())).append('\n');
+        tab(sb, indent + 2);
+        sb.append("name: ").append(getName()).append('\n');
+        tab(sb, indent + 2);
+        sb.append("group: ").append(getGroup()).append('\n');
+        tab(sb, indent + 2);
+        sb.append("desc: ").append(getDescription()).append('\n');
+        tab(sb, indent + 2);
+        sb.append("source: ");
+        if (getDeclaringMethod() != null) {
+            sb.append(getDeclaringClass().getName()).append('#').append(getDeclaringMethod().getName());
+        } else {
+            sb.append(getDeclaringClass());
+        }
+        sb.append('\n');
+        if (subCommandMap != null) {
+            tab(sb, indent + 2);
+            sb.append("subcommands: [\n");
+            StringJoiner sj = new StringJoiner(",\n");
+            for (CommandHandleImpl commandHandle : subCommandMap.values()) {
+                sj.add(commandHandle.toString(indent + 4));
+            }
+            tab(sb, indent + 4);
+            sb.append(sj);
+            tab(sb, indent + 2);
+            sb.append("]\n");
+        }
+        tab(sb, indent);
+        sb.append("}");
+
+        return sb.toString();
+    }
+
+    private void tab(StringBuilder sb, int indent) {
+        for (int i = 0; i < indent; i++) {
+            sb.append(' ');
+        }
     }
 }

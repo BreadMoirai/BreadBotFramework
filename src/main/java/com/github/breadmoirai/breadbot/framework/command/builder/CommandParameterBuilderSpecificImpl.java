@@ -89,6 +89,11 @@ public class CommandParameterBuilderSpecificImpl implements CommandParameterBuil
     }
 
     @Override
+    public CommandParameterBuilder setContiguous(boolean isContiguous) {
+        throw new UnsupportedOperationException(error);
+    }
+
+    @Override
     public ArgumentParser<?> getParser() {
         throw new UnsupportedOperationException(error);
     }

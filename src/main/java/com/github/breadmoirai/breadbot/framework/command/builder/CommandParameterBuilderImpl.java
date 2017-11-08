@@ -28,10 +28,9 @@ public class CommandParameterBuilderImpl implements CommandParameterBuilder {
     private Class<?> type;
     private ArgumentParser<?> parser;
     private boolean mustBePresent = false;
-    private boolean contiguous = true;
+    private boolean contiguous = false;
     private MissingArgumentHandler onParamNotFound = null;
     private final BreadBotClientBuilder clientBuilder;
-    private Function<Class<?>, Collector<?, ?, ?>> toDeque;
 
     public CommandParameterBuilderImpl(BreadBotClientBuilder builder, Parameter parameter, String methodName, CommandPropertyMap map) {
         this.parameter = parameter;
@@ -169,6 +168,12 @@ public class CommandParameterBuilderImpl implements CommandParameterBuilder {
     }
 
     @Override
+    public CommandParameterBuilder setContiguous(boolean isContiguous) {
+        this.contiguous = isContiguous;
+        return this;
+    }
+
+    @Override
     public ArgumentParser<?> getParser() {
         return parser;
     }
@@ -204,7 +209,7 @@ public class CommandParameterBuilderImpl implements CommandParameterBuilder {
         final CommandParameterImpl commandParameter = new CommandParameterImpl(type, flags, index, width, mapper, mustBePresent, onParamNotFound);
         if (collectorSupplier != null) {
             @SuppressWarnings("unchecked") final Collector<Object, Object, Object> collector = (Collector<Object, Object, Object>) collectorSupplier.apply(commandParameter.getType());
-            return new CommandParameterCollectionImpl(commandParameter, collector);
+            return new CommandParameterCollectionImpl(commandParameter, collector, contiguous);
         }
         return commandParameter;
     }

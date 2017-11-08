@@ -20,7 +20,6 @@ import com.github.breadmoirai.breadbot.framework.command.parameter.ArgumentTypeP
 import com.github.breadmoirai.breadbot.framework.command.parameter.CommandArgument;
 import com.github.breadmoirai.breadbot.framework.internal.ArgumentTypes;
 
-import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -47,7 +46,7 @@ public interface ArgumentTypesBuilder<R> {
      */
     default <T> R registerArgumentMapperSimple(Class<T> type, Predicate<CommandArgument> isType, Function<CommandArgument, T> getAsType) {
         final ArgumentTypePredicate l = isType == null ? null : (arg, flags) -> isType.test(arg);
-        final ArgumentTypeMapper<T> r = (arg, flags) -> Optional.ofNullable(getAsType.apply(arg));
+        final ArgumentTypeMapper<T> r = (arg, flags) -> getAsType.apply(arg);
         return registerArgumentMapper(type, l, r);
     }
 

@@ -17,7 +17,7 @@ package com.github.breadmoirai.breadbot.framework.command;
 import java.lang.annotation.*;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.METHOD, ElementType.TYPE})
+@Target(ElementType.METHOD)
 @Inherited
 public @interface Description {
 

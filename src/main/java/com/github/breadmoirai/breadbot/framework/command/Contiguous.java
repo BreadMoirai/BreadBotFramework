@@ -12,17 +12,15 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 */
+package com.github.breadmoirai.breadbot.framework.command;
 
-import com.github.breadmoirai.breadbot.framework.BreadBotClientBuilder;
-import com.github.breadmoirai.breadbot.framework.error.MissingCommandKeyException;
-import org.junit.Test;
+import java.lang.annotation.*;
 
-public class BuilderTest {
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.METHOD, ElementType.TYPE})
+@Inherited
+public @interface Contiguous {
 
-    @Test(expected = MissingCommandKeyException.class)
-    public void missingKey() {
-        new BreadBotClientBuilder()
-                .addCommand(commandEvent -> {}, configurator -> {})
-                .buildInterfaced();
-    }
+     boolean value() default true;
+
 }

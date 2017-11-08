@@ -31,6 +31,8 @@ import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.reflections.Reflections;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -45,6 +47,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class CommandHandleBuilderFactoryImpl implements CommandHandleBuilderFactoryInternal {
+
+    private static final Logger log = LoggerFactory.getLogger("CommandBuilder");
 
     private final BreadBotClientBuilder clientBuilder;
 
@@ -199,7 +203,7 @@ public class CommandHandleBuilderFactoryImpl implements CommandHandleBuilderFact
                         return getSubCommands(
                                 null,
                                 commandClass,
-                                getSupplierForClass(commandClass),
+                                new CommandObjectFactory(commandSupplier::get),
                                 classPropertyMap,
                                 commandClass,
                                 commandSupplier).stream();
@@ -240,20 +244,19 @@ public class CommandHandleBuilderFactoryImpl implements CommandHandleBuilderFact
                                                               @Nullable Supplier<?> supplier) {
         ArrayList<CommandHandleBuilderInternal> builders = new ArrayList<>();
         for (Method method : commandClass.getMethods()) {
+            if (!method.isAnnotationPresent(Command.class)) continue;
             CommandPropertyMapImpl map = new CommandPropertyMapImpl(propertyMap, method.getAnnotations());
-            if (!map.hasDeclaredProperty(Command.class)) continue;
             String[] keys = map.getDeclaredProperty(Command.class).value();
-            if (keys.length == 1 && keys[0].isEmpty()) continue;
             CommandHandleBuilderInternal handle = createHandleFromMethod(commandObject, commandClass, method, factory, map);
             clientBuilder.applyModifiers(handle);
             builders.add(handle);
         }
 
         for (Class<?> inner : commandClass.getClasses()) {
-            final Method method = getMainMethod(commandClass, false);
+            final Method method = getMainMethod(inner, false);
             if (method == null) continue;
             CommandPropertyMapImpl map = new CommandPropertyMapImpl(propertyMap, inner.getAnnotations());
-            final CommandObjectFactory innerFactory = supplier != null ? getSupplierForObject(supplierReturnType, supplier, inner) : getSupplierForClass(commandClass);
+            final CommandObjectFactory innerFactory = supplier != null ? getSupplierForObject(supplierReturnType, supplier, inner) : getSupplierForClass(inner);
             CommandHandleBuilderInternal handle = createCommandHandleBuilderInternal(commandObject, commandClass, method, innerFactory, supplierReturnType, supplier, map);
             builders.add(handle);
         }
@@ -310,7 +313,9 @@ public class CommandHandleBuilderFactoryImpl implements CommandHandleBuilderFact
         ArrayDeque<MethodHandle> constructors = new ArrayDeque<>();
         Class<?> aClass = klass;
         while (aClass != null) {
-            final Class<?> outClass = Modifier.isStatic(klass.getModifiers()) ? null : klass.getDeclaringClass();
+            final Class<?> outClass;
+            if (Modifier.isStatic(klass.getModifiers())) outClass = null;
+            else outClass = klass.getDeclaringClass();
             if (outClass == null) {
                 try {
                     MethodHandle constructor = MethodHandles.publicLookup().findConstructor(aClass, MethodType.methodType(void.class));
@@ -336,6 +341,7 @@ public class CommandHandleBuilderFactoryImpl implements CommandHandleBuilderFact
             MethodHandle methodHandle = methodHandles[0];
             return new CommandObjectFactory(methodHandle::invoke);
         } else {
+            //noinspection Duplicates
             return new CommandObjectFactory(() -> {
                 Object o = methodHandles[0].invoke();
                 for (int i = 1; i < methodHandles.length; i++) {
@@ -349,8 +355,19 @@ public class CommandHandleBuilderFactoryImpl implements CommandHandleBuilderFact
     private CommandObjectFactory getSupplierForObject(Class<?> oClass, Supplier<?> supplier, Class<?> uClass) throws BreadBotException {
         ArrayDeque<MethodHandle> constructors = new ArrayDeque<>();
         Class<?> aClass = uClass;
+        boolean isStatic = false;
         while (aClass != oClass) {
-            final Class<?> outClass = Modifier.isStatic(uClass.getModifiers()) ? null : uClass.getDeclaringClass();
+            final Class<?> outClass;
+            if (Modifier.isStatic(uClass.getModifiers())) {
+                isStatic = true;
+                try {
+                    MethodHandle constructor = MethodHandles.publicLookup().findConstructor(aClass, MethodType.methodType(void.class));
+                    constructors.addFirst(constructor);
+                    break;
+                } catch (NoSuchMethodException | IllegalAccessException e) {
+                    throw new BreadBotException(aClass + " is registered as a command but does not have a public no-args constructor", e);
+                }
+            } else outClass = uClass.getDeclaringClass();
             if (outClass == null) {
                 throw new BreadBotException("SupplierForObject ClassMisMatch");
             } else {
@@ -368,15 +385,29 @@ public class CommandHandleBuilderFactoryImpl implements CommandHandleBuilderFact
 
         if (methodHandles.length == 1) {
             MethodHandle methodHandle = methodHandles[0];
-            return new CommandObjectFactory(() -> methodHandle.invoke(supplier.get()));
+            if (isStatic)
+                return new CommandObjectFactory(() -> methodHandle.invoke(supplier.get()));
+            else
+                return new CommandObjectFactory(methodHandle::invoke);
         } else {
-            return new CommandObjectFactory(() -> {
-                Object o = methodHandles[0].invoke(supplier.get());
-                for (int i = 1; i < methodHandles.length; i++) {
-                    o = methodHandles[i].invoke(o);
-                }
-                return o;
-            });
+            if (isStatic)
+                return new CommandObjectFactory(() -> {
+                    Object o = methodHandles[0].invoke(supplier.get());
+                    for (int i = 1; i < methodHandles.length; i++) {
+                        o = methodHandles[i].invoke(o);
+                    }
+                    return o;
+                });
+            else {
+                //noinspection Duplicates
+                return new CommandObjectFactory(() -> {
+                    Object o = methodHandles[0].invoke();
+                    for (int i = 1; i < methodHandles.length; i++) {
+                        o = methodHandles[i].invoke(o);
+                    }
+                    return o;
+                });
+            }
         }
     }
 

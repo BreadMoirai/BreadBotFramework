@@ -4,7 +4,6 @@ import com.github.breadmoirai.breadbot.framework.command.CommandArgumentList;
 import com.github.breadmoirai.breadbot.framework.command.parameter.*;
 import com.github.breadmoirai.breadbot.framework.command.parameter.internal.GenericCommandArgument;
 
-import java.util.Optional;
 import java.util.StringJoiner;
 import java.util.stream.IntStream;
 
@@ -64,10 +63,10 @@ public class CommandParameterImpl implements CommandParameter {
                 indexes = IntStream.range(i, i + width).toArray();
                 commandArgument = new GenericCommandArgument(set.getEvent(), sj.toString());
             }
-            final Optional<?> o = mapper.map(commandArgument, flags);
-            if (o.isPresent()) {
+            final Object o = mapper.map(commandArgument, flags);
+            if (o != null) {
                 set.addAll(indexes);
-                return o.get();
+                return o;
             }
         }
 

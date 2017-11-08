@@ -19,8 +19,8 @@ import com.github.breadmoirai.breadbot.framework.BreadBotClient;
 import com.github.breadmoirai.breadbot.framework.CommandEngine;
 import com.github.breadmoirai.breadbot.framework.CommandModule;
 import com.github.breadmoirai.breadbot.framework.CommandProperties;
-import com.github.breadmoirai.breadbot.framework.command.builder.CommandHandleBuilderInternal;
 import com.github.breadmoirai.breadbot.framework.command.CommandHandle;
+import com.github.breadmoirai.breadbot.framework.command.builder.CommandHandleBuilderInternal;
 import com.github.breadmoirai.breadbot.framework.error.MissingCommandKeyException;
 import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
 import com.github.breadmoirai.breadbot.framework.event.ICommandEventFactory;
@@ -34,12 +34,16 @@ import net.dv8tion.jda.core.events.message.guild.GuildMessageUpdateEvent;
 import net.dv8tion.jda.core.hooks.IEventManager;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 import net.dv8tion.jda.core.hooks.SubscribeEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Type;
 import java.util.*;
 import java.util.function.Predicate;
 
 public class BreadBotClientImpl implements BreadBotClient {
+
+    private static final Logger log = LoggerFactory.getLogger(BreadBotClient.class);
 
     private JDA jda;
 
@@ -69,8 +73,9 @@ public class BreadBotClientImpl implements BreadBotClient {
             for (String key : keys) {
                 handleMap.put(key, handle);
             }
+            log.info("Command Created: " + handle);
         }
-        this.commandMap = Collections.unmodifiableMap(handleMap);
+        this.commandMap = handleMap;
 
         final HashMap<Type, CommandModule> typeMap = new HashMap<>(modules.size());
         for (CommandModule module : modules) {
@@ -97,6 +102,8 @@ public class BreadBotClientImpl implements BreadBotClient {
         };
 
         eventManager.register(new BreadBotEventListener(preProcessPredicate));
+
+        log.debug("BreadBotClient Initialized");
     }
 
     private List<Class<?>> getInterfaceHierarchy(Class<?> from, Class<?> toSuper) {

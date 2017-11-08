@@ -9,7 +9,6 @@ import net.dv8tion.jda.core.entities.*;
 
 import java.time.Duration;
 import java.time.OffsetDateTime;
-import java.util.Optional;
 import java.util.stream.IntStream;
 
 public class DefaultArgumentTypes {
@@ -35,12 +34,12 @@ public class DefaultArgumentTypes {
             final boolean hex = ArgumentFlags.hasFlag(flags, ArgumentFlags.HEX);
             if (hex) {
                 try {
-                    return Optional.of(Integer.parseInt(Arguments.stripHexPrefix(arg.getArgument()), 16));
+                    return Integer.parseInt(Arguments.stripHexPrefix(arg.getArgument()), 16);
                 } catch (NumberFormatException ignored) {
-                    return Optional.empty();
+                    return null;
                 }
             } else {
-                return Optional.of(arg.parseInt());
+                return arg.parseInt();
             }
         };
         final ArgumentParser<Integer> intParser = new ArgumentParser<>(intPredicate, intType);
@@ -55,14 +54,14 @@ public class DefaultArgumentTypes {
             final boolean hex = ArgumentFlags.hasFlag(flags, ArgumentFlags.HEX);
             if (hex) {
                 try {
-                    return Optional.of(Long.parseLong(Arguments.stripHexPrefix(arg.getArgument()), 16));
+                    return Long.parseLong(Arguments.stripHexPrefix(arg.getArgument()), 16);
                 } catch (NumberFormatException ignored) {
 
                 }
             } else if (arg.isLong()) {
-                return Optional.of(arg.parseLong());
+                return arg.parseLong();
             }
-            return Optional.empty();
+            return null;
         });
         map.put(LONG, longParser);
         map.put(Long.class, longParser);
@@ -83,64 +82,64 @@ public class DefaultArgumentTypes {
             } else return arg.isInteger() || arg.isRange();
         }, (arg, flags) -> {
             if (ArgumentFlags.isStrict(flags)) {
-                return arg.isNumeric() ? Optional.empty() : Optional.of(arg.parseRange());
-            } else return Optional.of(arg.parseRange());
+                return arg.isNumeric() ?null : arg.parseRange();
+            } else return arg.parseRange();
         });
 
         map.registerArgumentMapper(USER, null, (arg, flags) -> {
             if (ArgumentFlags.isStrict(flags)) {
-                if (arg.isValidUser()) return Optional.of(arg.getUser());
-                else return Optional.empty();
+                if (arg.isValidUser()) return arg.getUser();
+                else return null;
             }
             if (arg.isLong()) {
                 long l = arg.parseLong();
                 User user = arg.getEvent().getJDA().getUserById(l);
-                return Optional.ofNullable(user);
+                return user;
             }
-            return arg.findMember().map(Member::getUser);
+            return arg.findMember().map(Member::getUser).orElse(null);
         });
 
         map.registerArgumentMapper(MEMBER, null, (arg, flags) -> {
             if (ArgumentFlags.isStrict(flags)) {
-                if (arg.isValidMember()) return Optional.of(arg.getMember());
-                else return Optional.empty();
+                if (arg.isValidMember()) return arg.getMember();
+                else return null;
             }
             if (arg.isLong()) {
                 long l = arg.parseLong();
                 Member member = arg.getEvent().getGuild().getMemberById(l);
-                return Optional.ofNullable(member);
+                return member;
             }
-            return arg.findMember();
+            return arg.findMember().orElse(null);
         });
 
         map.registerArgumentMapper(ROLE, null, (arg, flags) -> {
             if (ArgumentFlags.isStrict(flags)) {
-                if (arg.isValidRole()) return Optional.of(arg.getRole());
-                else return Optional.empty();
+                if (arg.isValidRole()) return arg.getRole();
+                else return null;
             }
             if (arg.isLong()) {
                 long l = arg.parseLong();
                 Role role = arg.getEvent().getGuild().getRoleById(l);
                 if (role != null) {
-                    return Optional.of(role);
+                    return role;
                 }
             }
-            return arg.findRole();
+            return arg.findRole().orElse(null);
         });
 
         map.registerArgumentMapper(TEXTCHANNEL, null, (arg, flags) -> {
             if (ArgumentFlags.isStrict(flags)) {
-                if (arg.isValidTextChannel()) return Optional.of(arg.getTextChannel());
-                else return Optional.empty();
+                if (arg.isValidTextChannel()) return arg.getTextChannel();
+                else return null;
             }
             if (arg.isLong()) {
                 long l = arg.parseLong();
                 TextChannel channel = arg.getEvent().getJDA().getTextChannelById(l);
                 if (channel != null) {
-                    return Optional.of(channel);
+                    return channel;
                 }
             }
-            return arg.findTextChannel();
+            return arg.findTextChannel().orElse(null);
         });
 
         map.registerArgumentMapperSimple(EMOTE, CommandArgument::isEmote, CommandArgument::getEmote);

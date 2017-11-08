@@ -15,10 +15,8 @@
 package com.github.breadmoirai.breadbot.framework.command.parameter;
 
 import com.github.breadmoirai.breadbot.framework.BreadBotClient;
-import com.github.breadmoirai.breadbot.framework.internal.ArgumentTypes;
 import com.github.breadmoirai.breadbot.framework.event.Arguments;
 import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
-import com.github.breadmoirai.breadbot.framework.internal.ArgumentTypesImpl;
 import com.github.breadmoirai.breadbot.util.Emoji;
 import net.dv8tion.jda.core.entities.*;
 import org.jetbrains.annotations.NotNull;
@@ -96,7 +94,7 @@ public interface CommandArgument {
         return getClient().getArgumentTypes().getParser(type).test( this, flags);
     }
 
-    default <T> Optional<T> getAsType(Class<T> type) {
+    default <T> T getAsType(Class<T> type) {
         return getClient().getArgumentTypes().getParser(type).parse(this, 0);
     }
 

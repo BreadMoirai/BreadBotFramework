@@ -22,20 +22,38 @@ import java.util.stream.Collector;
 import java.util.stream.Stream;
 
 public class CommandParameterCollectionImpl implements CommandParameter {
+
     private final CommandParameterImpl commandParameter;
     private final Collector<Object, Object, Object> collector;
+    private final boolean contiguous;
 
-    public CommandParameterCollectionImpl(CommandParameterImpl commandParameter, Collector<Object, Object, Object> collector) {
+    public CommandParameterCollectionImpl(CommandParameterImpl commandParameter, Collector<Object, Object, Object> collector, boolean contiguous) {
         this.commandParameter = commandParameter;
         this.collector = collector;
+        this.contiguous = contiguous;
     }
 
     @Override
     public Object map(CommandArgumentList list, CommandParser set) {
         final Stream.Builder<Object> builder = Stream.builder();
-        Object o;
-        while ((o = commandParameter.map(list, set)) != null) {
-            builder.accept(o);
+        if (!contiguous) {
+            Object o;
+            while ((o = commandParameter.map(list, set)) != null) {
+                builder.accept(o);
+            }
+        } else {
+            for (int i = 0; i < list.size(); i++) {
+                if (set.contains(i)) continue;
+                int j = i;
+                Object o;
+                while (j < list.size() &&
+                        !set.contains(j) &&
+                        (o = commandParameter.map(list.subList(j, j + 1), set)) != null) {
+                    builder.accept(o);
+                    j++;
+                }
+                if (j > i) break;
+            }
         }
         return builder.build().collect(collector);
     }

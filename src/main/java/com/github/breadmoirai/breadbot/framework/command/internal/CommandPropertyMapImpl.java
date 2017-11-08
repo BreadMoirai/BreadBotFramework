@@ -71,8 +71,9 @@ public class CommandPropertyMapImpl implements Iterable<Object>, CommandProperty
     public <T> T getProperty(Class<T> propertyType) {
         final Object obj = properties.get(propertyType);
         if (obj == null) {
-            if (defaultProperties != null)
+            if (defaultProperties != null) {
                 return defaultProperties.getProperty(propertyType);
+            }
             else return null;
         }
         return propertyType.cast(obj);
@@ -205,5 +206,14 @@ public class CommandPropertyMapImpl implements Iterable<Object>, CommandProperty
         } else {
             throw new ClassCastException();
         }
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("CommandPropertyMapImpl{");
+        sb.append("defaultProperties=").append(defaultProperties);
+        sb.append(", properties=").append(properties);
+        sb.append('}');
+        return sb.toString();
     }
 }
