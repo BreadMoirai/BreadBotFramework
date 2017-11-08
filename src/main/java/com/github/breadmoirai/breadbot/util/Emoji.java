@@ -1340,7 +1340,7 @@ public enum Emoji {
     }
 
     public int[] getCodePoints() {
-        return codePoints;
+        return Arrays.copyOf(codePoints, codePoints.length);
     }
 
     public String getUtf8() {

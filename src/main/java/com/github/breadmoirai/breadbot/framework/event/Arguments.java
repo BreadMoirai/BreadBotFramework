@@ -239,7 +239,7 @@ public class Arguments {
         return s;
     }
 
-    public static Pattern boolPattern = Pattern.compile("(true|yes|on)|(false|no|off)", Pattern.CASE_INSENSITIVE);
+    private static final Pattern boolPattern = Pattern.compile("(true|yes|on)|(false|no|off)", Pattern.CASE_INSENSITIVE);
 
 
     /**

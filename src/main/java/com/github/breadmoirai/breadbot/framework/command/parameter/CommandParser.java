@@ -55,7 +55,7 @@ public class CommandParser {
     }
 
     public CommandParameter[] getParameters() {
-        return parameters;
+        return Arrays.copyOf(parameters, parameters.length);
     }
 
     public List<CommandParameter> getUnmappedParameters() {

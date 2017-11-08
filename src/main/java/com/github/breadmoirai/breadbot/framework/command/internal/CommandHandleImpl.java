@@ -93,7 +93,7 @@ public class CommandHandleImpl implements CommandHandle {
 
     @Override
     public String[] getKeys() {
-        return keys;
+        return Arrays.copyOf(keys, keys.length);
     }
 
     @Override
