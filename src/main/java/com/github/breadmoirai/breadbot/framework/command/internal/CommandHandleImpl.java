@@ -8,11 +8,15 @@ import com.github.breadmoirai.breadbot.framework.command.parameter.CommandParame
 import com.github.breadmoirai.breadbot.framework.command.parameter.CommandParser;
 import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
 import com.github.breadmoirai.breadbot.util.EventStringIterator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
 import java.util.*;
 
 public class CommandHandleImpl implements CommandHandle {
+
+    private static final Logger log = LoggerFactory.getLogger(CommandHandle.class);
 
     private final String[] keys;
     private final String name;
@@ -83,8 +87,8 @@ public class CommandHandleImpl implements CommandHandle {
     private boolean runThis(CommandEvent event) {
         Object commandObj = commandSupplier.get();
         if (invokableCommand != null) {
-            final CommandParser parser = new CommandParser(event, this, event.getArguments(), commandParameters);
-            final CommandRunner runner = new CommandRunner(commandObj, event, invokableCommand, parser, Throwable::printStackTrace); //todo log this
+            final CommandParser parser = new CommandParser(event, this, event.getArguments(), getParameters());
+            final CommandRunner runner = new CommandRunner(commandObj, event, invokableCommand, parser, throwable -> log.error("An error ocurred while invoking a command:\n" + this, throwable));
             final CommandProcessStack commandProcessStack = new CommandProcessStack(commandObj, this, event, preprocessors, runner);
             commandProcessStack.runNext();
             return commandProcessStack.result();
@@ -140,6 +144,11 @@ public class CommandHandleImpl implements CommandHandle {
     @Override
     public Map<String, CommandHandle> getSubCommandMap() {
         return Collections.unmodifiableMap(subCommandMap);
+    }
+
+    @Override
+    public CommandParameter[] getParameters() {
+        return Arrays.copyOf(commandParameters, commandParameters.length);
     }
 
     @Override

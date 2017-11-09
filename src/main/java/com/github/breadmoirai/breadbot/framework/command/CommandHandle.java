@@ -14,16 +14,16 @@
 */
 package com.github.breadmoirai.breadbot.framework.command;
 
+import com.github.breadmoirai.breadbot.framework.command.parameter.CommandParameter;
 import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
 
 import java.lang.reflect.Method;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
 
 /**
- * Is a Command. May be a top-level class, an inner class, or a method.
+ * This is used to invoke a command
  */
 public interface CommandHandle {
 
@@ -76,4 +76,9 @@ public interface CommandHandle {
      */
     Method getDeclaringMethod();
 
+    /**
+     * Creates a copy of the backing array and returns the parameters of this Command
+     * @return an array of CommandParameters
+     */
+    CommandParameter[] getParameters();
 }
