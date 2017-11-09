@@ -161,6 +161,7 @@ public class CommandHandleBuilderImpl implements CommandHandleBuilderInternal {
 
     @Override
     public String[] getKeys() {
+        if (keys == null) return null;
         return Arrays.copyOf(keys, keys.length);
     }
 

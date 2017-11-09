@@ -97,6 +97,7 @@ public class CommandHandleImpl implements CommandHandle {
 
     @Override
     public String[] getKeys() {
+        if (keys == null) return null;
         return Arrays.copyOf(keys, keys.length);
     }
 
