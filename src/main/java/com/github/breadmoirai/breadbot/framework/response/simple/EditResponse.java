@@ -15,15 +15,19 @@
  */
 package com.github.breadmoirai.breadbot.framework.response.simple;
 
-import com.github.breadmoirai.breadbot.framework.Response;
+import com.github.breadmoirai.breadbot.framework.response.CommandResponse;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageChannel;
 
-public class EditResponse extends Response {
-    private final Response response;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
-    public EditResponse(Response response, long messageId) {
+public class EditResponse extends CommandResponse {
+    private final CommandResponse response;
+
+    public EditResponse(CommandResponse response, long messageId) {
         this.response = response;
+
         this.setAuthorId(response.getAuthorId());
         this.setGuildId(response.getGuildId());
         this.setChannelId(response.getChannelId());
@@ -31,11 +35,12 @@ public class EditResponse extends Response {
     }
 
     @Override
-    public void send(MessageChannel channel) {
+    public void sendTo(MessageChannel channel, BiConsumer<Message, CommandResponse> onSuccess, Consumer<Throwable> onFailure) {
         final Message message = buildMessage();
         if (message == null) return;
-        channel.editMessageById(getMessageId(), message).queue(this::onSend);
+        channel.editMessageById(getMessageId(), message).queue(m -> onSuccess.accept(m, response), this::onFailure);
     }
+
 
     @Override
     public Message buildMessage() {
@@ -47,9 +52,4 @@ public class EditResponse extends Response {
         response.onSend(message);
     }
 
-    @Override
-    public EditResponse replace(long messageId) {
-        setMessageId(messageId);
-        return this;
-    }
 }

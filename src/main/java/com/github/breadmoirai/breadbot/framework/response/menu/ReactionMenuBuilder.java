@@ -28,14 +28,14 @@ import java.util.function.BiPredicate;
 
 public class ReactionMenuBuilder extends MenuBuilder {
     private List<IMenuReaction> reactions = new ArrayList<>();
-    private BiPredicate<GenericGuildMessageReactionEvent, ResponseMenu> onReaction;
+    private BiPredicate<GenericGuildMessageReactionEvent, MenuResponse> onReaction;
 
-    public ReactionMenuBuilder addOption(String unicode, BiPredicate<GenericGuildMessageReactionEvent, ResponseMenu> onSelection) {
+    public ReactionMenuBuilder addOption(String unicode, BiPredicate<GenericGuildMessageReactionEvent, MenuResponse> onSelection) {
         return addOption(unicode, null, onSelection);
     }
 
 
-    public ReactionMenuBuilder addOption(Emote emote, BiPredicate<GenericGuildMessageReactionEvent, ResponseMenu> onSelection) {
+    public ReactionMenuBuilder addOption(Emote emote, BiPredicate<GenericGuildMessageReactionEvent, MenuResponse> onSelection) {
         return addOption(emote, null, onSelection);
     }
 
@@ -55,19 +55,19 @@ public class ReactionMenuBuilder extends MenuBuilder {
         return addOption(emote, option, null);
     }
 
-    public ReactionMenuBuilder addOption(String unicode, String option, BiPredicate<GenericGuildMessageReactionEvent, ResponseMenu> onSelection) {
+    public ReactionMenuBuilder addOption(String unicode, String option, BiPredicate<GenericGuildMessageReactionEvent, MenuResponse> onSelection) {
         Objects.requireNonNull(unicode, "Unicode Emoji");;
         reactions.add(new MenuEmoji(unicode, option, onSelection));
         return this;
     }
 
-    public ReactionMenuBuilder addOption(Emote emote, String option, BiPredicate<GenericGuildMessageReactionEvent, ResponseMenu> onSelection) {
+    public ReactionMenuBuilder addOption(Emote emote, String option, BiPredicate<GenericGuildMessageReactionEvent, MenuResponse> onSelection) {
         Objects.requireNonNull(emote, "Emote");
         reactions.add(new MenuEmote(emote, option, onSelection));
         return this;
     }
 
-    public ReactionMenuBuilder setOnReaction(BiPredicate<GenericGuildMessageReactionEvent, ResponseMenu> onReaction) {
+    public ReactionMenuBuilder setOnReaction(BiPredicate<GenericGuildMessageReactionEvent, MenuResponse> onReaction) {
         this.onReaction = onReaction;
         return this;
     }

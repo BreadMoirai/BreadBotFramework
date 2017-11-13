@@ -1,11 +1,5 @@
 package com.github.breadmoirai.breadbot.framework;
 
-import com.github.breadmoirai.breadbot.framework.command.builder.CommandHandleBuilder;
-import com.github.breadmoirai.breadbot.framework.command.builder.CommandParameterBuilder;
-import com.github.breadmoirai.breadbot.framework.command.CommandPreprocessor;
-import com.github.breadmoirai.breadbot.framework.command.CommandPreprocessorFunction;
-import com.github.breadmoirai.breadbot.framework.command.CommandPreprocessorPredicate;
-
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.BiConsumer;
@@ -158,7 +152,7 @@ public interface CommandPropertiesBuilder<R> {
      *
      * @param identifier   a name for the preprocessor
      * @param propertyType the property class
-     * @param predicate    a {@link java.util.function.Predicate Predicate}{@literal <}{@link com.github.breadmoirai.breadbot.framework.event.CommandEvent CommandEvent}{@literal >} that returns {@code true} when the command should continue to execute, {@code false} otherwise
+     * @param predicate    a {@link java.util.function.Predicate Predicate}{@literal <}{@link CommandEvent CommandEvent}{@literal >} that returns {@code true} when the command should continue to execute, {@code false} otherwise
      */
     R associatePreprocessorPredicate(String identifier, Class<?> propertyType, CommandPreprocessorPredicate predicate);
 

@@ -15,7 +15,7 @@
  */
 package com.github.breadmoirai.breadbot.framework.response.list;
 
-import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
+import com.github.breadmoirai.breadbot.framework.CommandEvent;
 
 import java.util.function.Function;
 import java.util.function.Predicate;

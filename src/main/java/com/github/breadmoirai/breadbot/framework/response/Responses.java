@@ -15,7 +15,6 @@
  */
 package com.github.breadmoirai.breadbot.framework.response;
 
-import com.github.breadmoirai.breadbot.framework.Response;
 import com.github.breadmoirai.breadbot.framework.response.menu.PromptBuilder;
 import com.github.breadmoirai.breadbot.framework.response.menu.ReactionMenuBuilder;
 import com.github.breadmoirai.breadbot.framework.response.simple.*;
@@ -52,7 +51,7 @@ public class Responses {
     }
 
     @Contract("_, null -> null; _, !null -> !null")
-    public static EditResponse edit(long targetMessageId, Response edit) {
+    public static EditResponse edit(long targetMessageId, CommandResponse edit) {
         if (edit == null) return null;
         return new EditResponse(edit, targetMessageId);
     }

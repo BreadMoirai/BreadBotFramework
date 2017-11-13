@@ -15,11 +15,11 @@
  */
 package com.github.breadmoirai.breadbot.framework.response.list;
 
-import com.github.breadmoirai.breadbot.framework.Response;
 import com.github.breadmoirai.breadbot.framework.response.CloseableResponse;
+import com.github.breadmoirai.breadbot.framework.response.CommandResponse;
 import net.dv8tion.jda.core.entities.Message;
 
-public class ResponseList extends Response implements CloseableResponse {
+public class ResponseList extends CommandResponse implements CloseableResponse {
 
 //    private transient final ListResponse;
     private transient Message message;
@@ -35,7 +35,7 @@ public class ResponseList extends Response implements CloseableResponse {
     }
 
     @Override
-    public void cancel(Response cancelMessage, boolean clearReactions) {
+    public void cancel(CommandResponse cancelMessage, boolean clearReactions) {
 
     }
 

@@ -15,7 +15,7 @@
  */
 package com.github.breadmoirai.breadbot.framework.response.menu.reactions;
 
-import com.github.breadmoirai.breadbot.framework.response.menu.ResponseMenu;
+import com.github.breadmoirai.breadbot.framework.response.menu.MenuResponse;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.events.message.guild.react.GenericGuildMessageReactionEvent;
@@ -33,7 +33,7 @@ public interface IMenuReaction {
 
     boolean hasPredicate();
 
-    boolean apply(GenericGuildMessageReactionEvent event, ResponseMenu menu);
+    boolean apply(GenericGuildMessageReactionEvent event, MenuResponse menu);
 
     String getDisplay();
 }

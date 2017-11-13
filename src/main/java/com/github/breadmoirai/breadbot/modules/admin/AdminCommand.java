@@ -15,9 +15,8 @@
  */
 package com.github.breadmoirai.breadbot.modules.admin;
 
-import com.github.breadmoirai.breadbot.framework.command.Command;
-import com.github.breadmoirai.breadbot.framework.command.MainCommand;
-import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
+import com.github.breadmoirai.breadbot.framework.CommandEvent;
+import com.github.breadmoirai.breadbot.framework.annotation.command.MainCommand;
 import net.dv8tion.jda.core.entities.Member;
 
 import java.util.stream.Collectors;

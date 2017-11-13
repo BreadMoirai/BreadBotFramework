@@ -31,8 +31,6 @@ public abstract class Menu {
     private TLongList acceptedRoles;
     private TLongList acceptedUsers;
 
-    private transient Message message;
-
     protected void setAcceptedRoles(Role... roles) {
         if (acceptedRoles == null) acceptedRoles = new TLongArrayList();
         acceptedRoles.addAll(Arrays.stream(roles).mapToLong(Role::getIdLong).toArray());
@@ -55,22 +53,15 @@ public abstract class Menu {
 
     abstract void attachOptions(EmbedBuilder embedBuilder);
 
-    abstract void waitForEvent(ResponseMenu responseMenu, EventWaiter waiter);
+    abstract void waitForEvent(MenuResponse responseMenu, EventWaiter waiter);
 
     abstract void addReactions(Message message);
 
-    abstract void onDelete(ResponseMenu menu);
+    abstract void onDelete(MenuResponse menu);
 
     protected boolean checkMember(Member member) {
         return (acceptedRoles == null || member.getRoles().stream().mapToLong(Role::getIdLong).anyMatch(acceptedRoles::contains))
                 && (acceptedUsers == null || acceptedUsers.contains(member.getUser().getIdLong()));
     }
 
-    Message getMessage() {
-        return message;
-    }
-
-    void setMessage(Message message) {
-        this.message = message;
-    }
 }

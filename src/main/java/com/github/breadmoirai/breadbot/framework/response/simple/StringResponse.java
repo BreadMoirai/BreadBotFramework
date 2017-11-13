@@ -16,12 +16,14 @@
 
 package com.github.breadmoirai.breadbot.framework.response.simple;
 
+import com.github.breadmoirai.breadbot.framework.response.CommandResponse;
 import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageChannel;
 
 import java.util.Iterator;
 import java.util.Queue;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public class StringResponse extends BasicResponse {
@@ -39,15 +41,15 @@ public class StringResponse extends BasicResponse {
     }
 
     @Override
-    protected void send(MessageChannel channel) {
+    public void sendTo(MessageChannel channel, BiConsumer<Message, CommandResponse> onSuccess, Consumer<Throwable> onFailure) {
         final Queue<Message> messages = new MessageBuilder().append(message).buildAll(policy);
         Iterator<Message> iterator = messages.iterator();
         while (iterator.hasNext()) {
             Message m = iterator.next();
             if (iterator.hasNext())
-                channel.sendMessage(m).queue();
+                channel.sendMessage(m).queue(null, onFailure);
             else
-                channel.sendMessage(m).queue(this::onSend);
+                channel.sendMessage(m).queue(m1 -> onSuccess.accept(m1, this), onFailure);
         }
     }
 

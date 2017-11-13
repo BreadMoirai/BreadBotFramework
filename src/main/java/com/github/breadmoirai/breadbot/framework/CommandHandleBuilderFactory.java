@@ -1,7 +1,5 @@
 package com.github.breadmoirai.breadbot.framework;
 
-import com.github.breadmoirai.breadbot.framework.command.builder.CommandHandleBuilder;
-import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
 import net.dv8tion.jda.core.utils.Checks;
 
 import java.util.Arrays;

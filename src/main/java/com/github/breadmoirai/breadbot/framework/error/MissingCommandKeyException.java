@@ -1,6 +1,6 @@
 package com.github.breadmoirai.breadbot.framework.error;
 
-import com.github.breadmoirai.breadbot.framework.command.CommandHandle;
+import com.github.breadmoirai.breadbot.framework.CommandHandle;
 
 public class MissingCommandKeyException extends BreadBotException {
     public MissingCommandKeyException(CommandHandle handle) {

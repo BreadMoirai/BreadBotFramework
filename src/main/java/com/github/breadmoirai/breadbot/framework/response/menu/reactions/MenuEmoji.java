@@ -15,7 +15,7 @@
  */
 package com.github.breadmoirai.breadbot.framework.response.menu.reactions;
 
-import com.github.breadmoirai.breadbot.framework.response.menu.ResponseMenu;
+import com.github.breadmoirai.breadbot.framework.response.menu.MenuResponse;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.events.message.guild.react.GenericGuildMessageReactionEvent;
@@ -27,9 +27,9 @@ public class MenuEmoji implements IMenuReaction {
 
     private final String e;
     private final String s;
-    private final BiPredicate<GenericGuildMessageReactionEvent, ResponseMenu> a;
+    private final BiPredicate<GenericGuildMessageReactionEvent, MenuResponse> a;
 
-    public MenuEmoji(String e, String s, BiPredicate<GenericGuildMessageReactionEvent, ResponseMenu> a) {
+    public MenuEmoji(String e, String s, BiPredicate<GenericGuildMessageReactionEvent, MenuResponse> a) {
         this.e = e;
         this.s = s;
         this.a = a;
@@ -62,7 +62,7 @@ public class MenuEmoji implements IMenuReaction {
     }
 
     @Override
-    public boolean apply(GenericGuildMessageReactionEvent event, ResponseMenu menu) {
+    public boolean apply(GenericGuildMessageReactionEvent event, MenuResponse menu) {
         return a.test(event, menu);
     }
 

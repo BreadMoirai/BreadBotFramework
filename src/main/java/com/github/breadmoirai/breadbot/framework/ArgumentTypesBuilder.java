@@ -14,11 +14,10 @@
 */
 package com.github.breadmoirai.breadbot.framework;
 
-import com.github.breadmoirai.breadbot.framework.command.parameter.ArgumentParser;
-import com.github.breadmoirai.breadbot.framework.command.parameter.ArgumentTypeMapper;
-import com.github.breadmoirai.breadbot.framework.command.parameter.ArgumentTypePredicate;
-import com.github.breadmoirai.breadbot.framework.command.parameter.CommandArgument;
-import com.github.breadmoirai.breadbot.framework.internal.ArgumentTypes;
+import com.github.breadmoirai.breadbot.framework.internal.parameter.ArgumentParser;
+import com.github.breadmoirai.breadbot.framework.internal.parameter.ArgumentTypeMapper;
+import com.github.breadmoirai.breadbot.framework.internal.parameter.ArgumentTypePredicate;
+import com.github.breadmoirai.breadbot.framework.internal.parameter.CommandArgument;
 
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -37,7 +36,7 @@ public interface ArgumentTypesBuilder<R> {
     <T> R registerArgumentMapper(Class<T> type, ArgumentTypePredicate predicate, ArgumentTypeMapper<T> mapper);
 
     /**
-     * This ignores flags. Use {@link ArgumentTypes#registerArgumentMapper} otherwise.
+     * This ignores flags. Use {@link ArgumentTypesBuilder#registerArgumentMapper} otherwise.
      *
      * @param type      The type class
      * @param isType    predicate to test if the argument can be parsed to the type provided. This param can be left {@code null} if the complexity is close to {@code getAsType.apply(arg) != null}

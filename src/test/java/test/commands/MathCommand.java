@@ -1,8 +1,8 @@
 package test.commands;
 
-import com.github.breadmoirai.breadbot.framework.command.Description;
-import com.github.breadmoirai.breadbot.framework.command.MainCommand;
-import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
+import com.github.breadmoirai.breadbot.framework.CommandEvent;
+import com.github.breadmoirai.breadbot.framework.annotation.command.Description;
+import com.github.breadmoirai.breadbot.framework.annotation.command.MainCommand;
 
 import java.util.Deque;
 

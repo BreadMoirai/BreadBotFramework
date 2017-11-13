@@ -15,7 +15,7 @@
 
 import com.github.breadmoirai.breadbot.framework.BreadBotClient;
 import com.github.breadmoirai.breadbot.framework.BreadBotClientBuilder;
-import com.github.breadmoirai.breadbot.framework.command.builder.CommandHandleBuilder;
+import com.github.breadmoirai.breadbot.framework.CommandHandleBuilder;
 import com.github.breadmoirai.breadbot.util.Emoji;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
@@ -215,6 +215,13 @@ public class ClientTest {
         assertResponse("!name a b c", "a b c");
         assertResponse("!first a b c", "a");
         assertResponse("!last a b c", "b c");
+    }
+
+    @Test
+    public void returnTypeTest() {
+        setupBread(bread -> bread.addCommand(ColorCommand::new).addCommand(MirrorCommand::new));
+        assertResponse("!reverse mirror", "rorrim");
+        assertResponse("!color BLUE", "60");
     }
 
     @Test

@@ -1,12 +1,12 @@
 package test.commands;
 
-import com.github.breadmoirai.breadbot.framework.command.Command;
-import com.github.breadmoirai.breadbot.framework.command.MainCommand;
-import com.github.breadmoirai.breadbot.framework.command.parameter.CommandParameter;
-import com.github.breadmoirai.breadbot.framework.command.parameter.IfNotFound;
-import com.github.breadmoirai.breadbot.framework.command.parameter.MissingArgumentHandler;
-import com.github.breadmoirai.breadbot.framework.command.parameter.Required;
-import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
+import com.github.breadmoirai.breadbot.framework.Command;
+import com.github.breadmoirai.breadbot.framework.CommandEvent;
+import com.github.breadmoirai.breadbot.framework.annotation.command.MainCommand;
+import com.github.breadmoirai.breadbot.framework.annotation.parameter.IfNotFound;
+import com.github.breadmoirai.breadbot.framework.annotation.parameter.Required;
+import com.github.breadmoirai.breadbot.framework.internal.parameter.CommandParameter;
+import com.github.breadmoirai.breadbot.framework.internal.parameter.MissingArgumentHandler;
 import com.github.breadmoirai.breadbot.util.Emoji;
 
 @IfNotFound(EmojiCommand.MissingEmojiAlert.class)

@@ -15,18 +15,15 @@
  */
 package com.github.breadmoirai.breadbot.framework.internal;
 
-import com.github.breadmoirai.breadbot.framework.BreadBotClient;
-import com.github.breadmoirai.breadbot.framework.CommandEngine;
-import com.github.breadmoirai.breadbot.framework.CommandModule;
-import com.github.breadmoirai.breadbot.framework.CommandProperties;
-import com.github.breadmoirai.breadbot.framework.command.CommandHandle;
-import com.github.breadmoirai.breadbot.framework.command.builder.CommandHandleBuilderInternal;
+import com.github.breadmoirai.breadbot.framework.*;
 import com.github.breadmoirai.breadbot.framework.error.MissingCommandKeyException;
-import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
-import com.github.breadmoirai.breadbot.framework.event.ICommandEventFactory;
+import com.github.breadmoirai.breadbot.framework.internal.command.builder.CommandHandleBuilderInternal;
+import com.github.breadmoirai.breadbot.framework.response.CommandResponse;
+import com.github.breadmoirai.breadbot.framework.response.CommandResponseManager;
 import com.github.breadmoirai.breadbot.util.EventStringIterator;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.events.ReadyEvent;
 import net.dv8tion.jda.core.events.message.guild.GenericGuildMessageEvent;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
@@ -34,6 +31,7 @@ import net.dv8tion.jda.core.events.message.guild.GuildMessageUpdateEvent;
 import net.dv8tion.jda.core.hooks.IEventManager;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 import net.dv8tion.jda.core.hooks.SubscribeEvent;
+import net.dv8tion.jda.core.utils.Checks;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,7 +45,8 @@ public class BreadBotClientImpl implements BreadBotClient {
 
     private JDA jda;
 
-    private final ArgumentTypes argumentTypes;
+    private final CommandResultManager resultManager;
+    private final ArgumentTypesManager argumentTypes;
     private final IEventManager eventManager;
     private final ICommandEventFactory eventFactory;
     private final CommandEngine commandEngine;
@@ -55,13 +54,16 @@ public class BreadBotClientImpl implements BreadBotClient {
     private final List<CommandModule> modules;
     private final Map<Type, CommandModule> moduleTypeMap;
     private final Map<String, CommandHandle> commandMap;
+    private final CommandResponseManager responseManager;
 
-    public BreadBotClientImpl(List<CommandModule> modules, List<CommandHandleBuilderInternal> commands, CommandProperties commandProperties, ArgumentTypes argumentTypes, IEventManager eventManager, ICommandEventFactory eventFactory, Predicate<Message> preProcessPredicate) {
+    public BreadBotClientImpl(List<CommandModule> modules, List<CommandHandleBuilderInternal> commands, CommandPropertiesManager commandProperties, CommandResultManager resultManager, ArgumentTypesManager argumentTypes, IEventManager eventManager, ICommandEventFactory eventFactory, Predicate<Message> preProcessPredicate, CommandResponseManager responseManager) {
         this.modules = Collections.unmodifiableList(modules);
+        this.resultManager = resultManager;
         this.argumentTypes = argumentTypes;
         this.eventManager = eventManager;
         this.eventFactory = eventFactory;
         this.preProcessPredicate = preProcessPredicate;
+        this.responseManager = responseManager;
 
         HashMap<String, CommandHandle> handleMap = new HashMap<>();
         for (CommandHandleBuilderInternal command : commands) {
@@ -136,8 +138,26 @@ public class BreadBotClientImpl implements BreadBotClient {
     }
 
     @Override
-    public ArgumentTypes getArgumentTypes() {
+    public ArgumentTypesManager getArgumentTypes() {
         return argumentTypes;
+    }
+
+    @Override
+    public CommandResponseManager getResponseManager() {
+        return responseManager;
+    }
+
+    @Override
+    public CommandResultManager getResultManager() {
+        return resultManager;
+    }
+
+    @Override
+    public void sendResponse(CommandResponse response, MessageChannel targetChannel) {
+        Checks.notNull(response, "response");
+        Checks.notNull(targetChannel, "targetChannel");
+        response.setClient(this);
+        getResponseManager().acceptResponse(new CommandResponsePacketImpl(null, response, targetChannel));
     }
 
     @Override

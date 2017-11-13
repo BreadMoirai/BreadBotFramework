@@ -31,9 +31,9 @@ import java.util.stream.Collectors;
 public class ReactionMenu extends Menu {
 
     private List<IMenuReaction> reactions = new ArrayList<>();
-    private BiPredicate<GenericGuildMessageReactionEvent, ResponseMenu> onReaction;
+    private BiPredicate<GenericGuildMessageReactionEvent, MenuResponse> onReaction;
 
-    ReactionMenu(List<IMenuReaction> reactions, BiPredicate<GenericGuildMessageReactionEvent, ResponseMenu> onReaction) {
+    ReactionMenu(List<IMenuReaction> reactions, BiPredicate<GenericGuildMessageReactionEvent, MenuResponse> onReaction) {
         this.reactions = reactions;
         this.onReaction = onReaction;
     }
@@ -46,7 +46,7 @@ public class ReactionMenu extends Menu {
     }
 
     @Override
-    void waitForEvent(ResponseMenu responseMenu, EventWaiter waiter) {
+    void waitForEvent(MenuResponse responseMenu, EventWaiter waiter) {
         waiter.waitForEvent(GuildMessageReactionAddEvent.class, event -> {
             if (event.getMessageIdLong() == responseMenu.getMessageId()) {
                 final Optional<IMenuReaction> any = reactions.stream().filter(r -> r.matches(event)).findAny();
@@ -66,7 +66,7 @@ public class ReactionMenu extends Menu {
     }
 
     @Override
-    void onDelete(ResponseMenu menu) {
+    void onDelete(MenuResponse menu) {
 
     }
 

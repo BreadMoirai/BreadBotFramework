@@ -15,8 +15,6 @@
  */
 package com.github.breadmoirai.breadbot.framework.response.menu;
 
-import com.github.breadmoirai.breadbot.framework.BreadBotClient;
-import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.entities.Message;
@@ -25,76 +23,30 @@ import java.util.function.Consumer;
 
 public abstract class MenuBuilder {
 
-    private long authorId;
-    private long channelId;
-    private long guildId;
-    private long messageId;
-    private BreadBotClient client;
-
-    public ResponseMenu buildResponse(Consumer<EmbedBuilder> embedCustomizer) {
+    public MenuResponse buildResponse(Consumer<EmbedBuilder> embedCustomizer) {
         final EmbedBuilder eb = new EmbedBuilder();
         embedCustomizer.accept(eb);
         return buildResponse(eb);
     }
 
-    public ResponseMenu buildResponse(EmbedBuilder embed) {
+    public MenuResponse buildResponse(EmbedBuilder embed) {
         final Menu menu = build();
         menu.attachOptions(embed);
-        menu.setMessage(new MessageBuilder().setEmbed(embed.build()).build());
-        final ResponseMenu r = new ResponseMenu(menu);
-        r.base(authorId, channelId, guildId, messageId, client);
-        return r;
+        return new MenuResponse(menu, new MessageBuilder().setEmbed(embed.build()).build(), false);
     }
 
-    public ResponseMenu buildResponse(Message message) {
+    public MenuResponse buildResponse(Message message) {
         final Menu menu = build();
-        menu.setMessage(message);
-        final ResponseMenu r = new ResponseMenu(menu);
-        r.base(authorId, channelId, guildId, messageId, client);
-        return r;
+        return new MenuResponse(menu, message, false);
     }
 
-    public ResponseMenu attachTo(Message message) {
+    public MenuResponse attachTo(Message message) {
         if (message.getChannel() == null) {
             throw new UnsupportedOperationException("This menu can not be attached to Messages created from a MessageBuilder.");
         }
-        final ResponseMenu responseMenu = new ResponseMenu(build());
-        responseMenu.onSend(message);
-        return responseMenu;
+        return new MenuResponse(build(), message, true);
     }
 
     protected abstract Menu build();
 
-    public final void base(CommandEvent event) {
-        final long authorId = event.getAuthorId();
-        final long channelId = event.getChannelId();
-        final long guildId = event.getGuildId();
-        final long messageId = event.getMessageId();
-        final BreadBotClient client = event.getClient();
-        setAuthorId(authorId);
-        setChannelId(channelId);
-        setGuildId(guildId);
-        setMessageId(messageId);
-        setClient(client);
-    }
-
-    public void setAuthorId(long authorId) {
-        this.authorId = authorId;
-    }
-
-    public void setChannelId(long channelId) {
-        this.channelId = channelId;
-    }
-
-    public void setGuildId(long guildId) {
-        this.guildId = guildId;
-    }
-
-    public void setMessageId(long messageId) {
-        this.messageId = messageId;
-    }
-
-    public void setClient(BreadBotClient client) {
-        this.client = client;
-    }
 }

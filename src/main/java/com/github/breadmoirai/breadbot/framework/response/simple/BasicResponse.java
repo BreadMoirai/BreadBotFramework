@@ -16,12 +16,12 @@
 
 package com.github.breadmoirai.breadbot.framework.response.simple;
 
-import com.github.breadmoirai.breadbot.framework.Response;
+import com.github.breadmoirai.breadbot.framework.response.CommandResponse;
 import net.dv8tion.jda.core.entities.Message;
 
 import java.util.function.Consumer;
 
-public abstract class BasicResponse extends Response {
+public abstract class BasicResponse extends CommandResponse {
 
     private Consumer<Message> onSuccess;
     private Consumer<Throwable> onFailure;
@@ -68,7 +68,7 @@ public abstract class BasicResponse extends Response {
 
     /**
      * appends failure behavior to any existing behavior
-     * @see Response#setDefaultFailure
+     * @see CommandResponse#setDefaultFailure
      */
     @SuppressWarnings("Duplicates")
     public BasicResponse withFailure(Consumer<Throwable> failureConsumer) {

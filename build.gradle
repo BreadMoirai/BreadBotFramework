@@ -6,13 +6,13 @@ plugins {
     id 'com.jfrog.bintray' version '1.7.3'
     id 'maven-publish'
     id 'signing'
-    id 'com.github.breadmoirai.github-release' version '1.0.9'
+    id 'com.github.breadmoirai.github-release' version '1.1.3'
 }
 
 final author = 'breadmoirai'
 final artifactId = 'breadbot-framework'
 group "com.github.${author}"
-version '0.6.0'
+version '0.7.0'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -63,18 +63,20 @@ task printBody {
 }
 
 githubRelease {
-//    token = getProperty('github.key').toString()
+    //if (hasProperty('github.key'))
+     token = getProperty('github.key').toString()
     String version = project.version
     it.body = body
     prerelease = true
     FilenameFilter filter = { dir, file -> file.contains(version) }
     releaseAssets = jar.destinationDir.listFiles filter
+//    println releaseAssets.findAll()
 }
 
 
 bintray {
     user = author
-//    key = getProperty('bintray.key').toString()
+    key = getProperty('bintray.key').toString()
     publications = ["BintrayRelease"]
     publish = true
     pkg {
@@ -125,25 +127,32 @@ task jarMake {
     dependsOn shadowJar
 }
 
-task javadocDir(type: Copy) {
-    delete('docs')
-    from javadoc.destinationDir
-    into 'docs'
+task docRepo() {
+    def docDir = file('../breaddocs')
+    def repoDir = file(docDir.getAbsolutePath() + '/breadbotframework')
+    if (docDir.mkdir() || (docDir.exists() && !repoDir.exists())) {
+        'git clone https://github.com/breadmoirai/breadbotframework.git'.execute(null, docDir).waitFor()
+        'git checkout --orphan gh-pages'.execute(null, repoDir).waitFor()
+    }
+    'git rm -rf .'.execute(null, repoDir)
 }
 
-task publishJavadoc(type: Exec) {
+task javadocDir(type: Copy) {
+    dependsOn docRepo
+    dependsOn javadoc
+    from javadoc.destinationDir
+    into '../breaddocs/breadbotframework'
+}
+
+task publishJavadoc() {
     //this doesn't work. Just gonna go manually for now. Ugh
     group 'publishing'
     dependsOn javadoc
     dependsOn javadocDir
-    commandLine 'cmd', "cd ${javadocDir.destinationDir.absolutePath}"
-    commandLine 'cmd', "git checkout -t origin/gh-pages"
-    commandLine 'cmd', "git add ."
-    commandLine 'cmd', "git add -u"
-    commandLine 'cmd', "git commit -m \"JavadocWebsite ver ${project.version} on ${new Date()}\""
-    commandLine 'cmd', "git push origin gh-pages"
-    commandLine 'cmd', "cd .."
-    commandLine 'cmd', "rm -rf ${javadocDir.destinationDir.absolutePath}"
+    def dir = file('../breaddocs/breadbotframework')
+    'git add .'.execute(null, dir)
+    "git commit -m \"JavadocWebsite ver ${project.version} on ${new Date()}\"".execute(null, dir)
+    'git push origin gh-pages'.execute(null, dir)
 }
 
 task wrapper(type: Wrapper) {

@@ -15,7 +15,7 @@
  */
 package com.github.breadmoirai.breadbot.framework.response.simple;
 
-import com.github.breadmoirai.breadbot.framework.Response;
+import com.github.breadmoirai.breadbot.framework.response.CommandResponse;
 import com.github.breadmoirai.breadbot.framework.response.menu.reactions.IMenuReaction;
 import com.github.breadmoirai.breadbot.framework.response.menu.reactions.MenuEmoji;
 import com.github.breadmoirai.breadbot.framework.response.menu.reactions.MenuEmote;
@@ -23,9 +23,10 @@ import net.dv8tion.jda.core.entities.Emote;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageChannel;
 
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-public class ReactionResponse extends Response {
+public class ReactionResponse extends CommandResponse {
 
     private Consumer<Void> onSuccess;
     private Consumer<Throwable> onFailure;
@@ -46,9 +47,10 @@ public class ReactionResponse extends Response {
         //hjirhh
     }
 
+
     @Override
-    protected void send(MessageChannel channel) {
-        reaction.addReactionTo(channel, getMessageId()).queue(this::onSend, this::onFailure);
+    public void sendTo(MessageChannel channel, BiConsumer<Message, CommandResponse> onSuccess, Consumer<Throwable> onFailure) {
+        reaction.addReactionTo(channel, getMessageId()).queue(null, onFailure);
     }
 
     private void onSend(Void nothing) {
@@ -64,18 +66,9 @@ public class ReactionResponse extends Response {
         } else onFailure.accept(t);
     }
 
-    public Consumer<Message> getAsConsumer() {
-        return message -> reaction.addReactionTo(message.getChannel(), message.getIdLong()).queue(this::onSend, this::onFailure);
-    }
-
     @Override
     public Message buildMessage() {
         return null;
-    }
-
-    @Override
-    public EditResponse replace(long messageId) {
-        throw new UnsupportedOperationException("You can't replace a reaction :thonk:");
     }
 
     public ReactionResponse uponSuccess(Consumer<Void> successConsumer) {
@@ -103,4 +96,5 @@ public class ReactionResponse extends Response {
         else onFailure = onFailure.andThen(failureConsumer);
         return this;
     }
+
 }

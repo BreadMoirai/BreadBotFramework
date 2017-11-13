@@ -13,8 +13,8 @@ package test.commands;/*    Copyright 2017 Ton Ly
   limitations under the License.
 */
 
-import com.github.breadmoirai.breadbot.framework.command.Command;
-import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
+import com.github.breadmoirai.breadbot.framework.Command;
+import com.github.breadmoirai.breadbot.framework.CommandEvent;
 
 public class CountCommand {
 
