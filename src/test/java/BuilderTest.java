@@ -23,6 +23,6 @@ public class BuilderTest {
     public void missingKey() {
         new BreadBotClientBuilder()
                 .addCommand(commandEvent -> {}, configurator -> {})
-                .buildInterfaced();
+                .build();
     }
 }

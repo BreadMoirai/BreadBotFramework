@@ -275,8 +275,8 @@ public class ClientTest {
     private void setupBread(Consumer<BreadBotClientBuilder> config) {
         BreadBotClientBuilder builder = new BreadBotClientBuilder();
         config.accept(builder);
-        BreadBotClient client = builder.buildInterfaced();
-        botApi.setEventManager(client.getEventManager());
+        BreadBotClient client = builder.build();
+        botApi.addEventListener(client);
         botApi.addEventListener(new MyEventListener());
         client.setJDA(botApi);
     }

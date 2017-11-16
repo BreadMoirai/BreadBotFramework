@@ -32,6 +32,7 @@ public class CommandEventFactoryImpl implements ICommandEventFactory {
     private static final SimpleLog LOG = SimpleLog.getLog("CommandEvent");
 
     private final PrefixModule prefixModule;
+    private String myId;
 
     public CommandEventFactoryImpl(PrefixModule prefixSupplier) {
         this.prefixModule = prefixSupplier;
@@ -42,7 +43,7 @@ public class CommandEventFactoryImpl implements ICommandEventFactory {
         String prefix = prefixModule.getPrefix(event.getGuild().getIdLong());
         String contentRaw = message.getRawContent();
         final Matcher matcher = DiscordPatterns.USER_MENTION_PREFIX.matcher(contentRaw);
-        if (matcher.find() && matcher.start() == 0 && matcher.group(1).equals(event.getJDA().getSelfUser().getId())) {
+        if (matcher.find() && matcher.start() == 0 && matcher.group(1).equals(getMyId(event))) {
             contentRaw = contentRaw.substring(matcher.end()).trim();
             return parseContent(event, message, client, prefix, contentRaw);
         } else {
@@ -54,13 +55,22 @@ public class CommandEventFactoryImpl implements ICommandEventFactory {
         }
     }
 
+    private String getMyId(GenericGuildMessageEvent event) {
+        if (myId == null) {
+            myId = event.getJDA().getSelfUser().getId();
+        }
+        return myId;
+    }
+
+
     @NotNull
     private CommandEvent parseContent(GenericGuildMessageEvent event, Message message, BreadBotClient client, String prefix, String contentRaw) {
         final String[] split = DiscordPatterns.WHITE_SPACE.split(contentRaw, 2);
         final String key = split[0];
         final String content = split.length > 1 ? split[1].trim() : null;
         if (key.equalsIgnoreCase("help")) {
-            if (content == null) return new MessageReceivedCommandEvent(client, event, message, prefix, "help", null, true);
+            if (content == null)
+                return new MessageReceivedCommandEvent(client, event, message, prefix, "help", null, true);
             else {
                 final String[] split2 = DiscordPatterns.WHITE_SPACE.split(content, 2);
                 final String key2 = split2[0];
