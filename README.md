@@ -22,12 +22,13 @@
 This is a framework for Discord Bots
 
 ### Features
- - CommandModules
- - idk just look at the examples
+ - Commands
+ - 
 ##### Planned Features
- - Being able to do things with CommandModules instead of just having access to them.
- - Being able to link sent messages with Response objects
- - logs
+ - Help Command Support
+ - Expand CommandResponses
+ - More Logs
+ - More Docs
 
 This framework is built ontop of [JDA](https://github.com/DV8FromTheWorld/JDA)
 ## Download
