@@ -15,10 +15,9 @@
  */
 package com.github.breadmoirai.breadbot.modules.prefix;
 
-import com.github.breadmoirai.breadbot.framework.command.Command;
-import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
+import com.github.breadmoirai.breadbot.framework.CommandEvent;
+import com.github.breadmoirai.breadbot.framework.annotation.command.MainCommand;
 
-@Command
 public class PrefixCommand {
 
 //    @Override
@@ -40,7 +39,8 @@ public class PrefixCommand {
 //        event.replyFormat("The current prefix is `%s`", module.getPrefix(event.getGuildId()));
 //    }
 
-    public void execute(CommandEvent event, PrefixModule module) {
+    @MainCommand
+    public void prefix(CommandEvent event, PrefixModule module) {
         event.replyFormat("The current prefix is `%s`", module.getPrefix(event.getGuildId()));
     }
 }

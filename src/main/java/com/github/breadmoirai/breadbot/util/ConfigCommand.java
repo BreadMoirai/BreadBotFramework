@@ -14,9 +14,9 @@
 */
 package com.github.breadmoirai.breadbot.util;
 
+import com.github.breadmoirai.breadbot.framework.Command;
+import com.github.breadmoirai.breadbot.framework.CommandEvent;
 import com.github.breadmoirai.breadbot.framework.CommandModule;
-import com.github.breadmoirai.breadbot.framework.command.Command;
-import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
 import com.github.breadmoirai.breadbot.modules.admin.Admin;
 import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.Permission;
@@ -31,7 +31,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Admin
-@Command
 public class ConfigCommand {
 
     @Command

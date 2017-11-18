@@ -15,57 +15,74 @@
  */
 package com.github.breadmoirai.breadbot.framework.internal;
 
-import com.github.breadmoirai.breadbot.framework.BreadBotClient;
-import com.github.breadmoirai.breadbot.framework.CommandEngine;
-import com.github.breadmoirai.breadbot.framework.CommandModule;
-import com.github.breadmoirai.breadbot.framework.CommandProperties;
-import com.github.breadmoirai.breadbot.framework.builder.CommandHandleBuilderInternal;
-import com.github.breadmoirai.breadbot.framework.command.CommandHandle;
-import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
-import com.github.breadmoirai.breadbot.framework.event.ICommandEventFactory;
+import com.github.breadmoirai.breadbot.framework.*;
+import com.github.breadmoirai.breadbot.framework.error.MissingCommandKeyException;
+import com.github.breadmoirai.breadbot.framework.internal.command.builder.CommandHandleBuilderInternal;
+import com.github.breadmoirai.breadbot.framework.response.CommandResponse;
+import com.github.breadmoirai.breadbot.framework.response.CommandResponseManager;
 import com.github.breadmoirai.breadbot.util.EventStringIterator;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.core.entities.MessageChannel;
+import net.dv8tion.jda.core.entities.impl.JDAImpl;
+import net.dv8tion.jda.core.events.Event;
 import net.dv8tion.jda.core.events.ReadyEvent;
 import net.dv8tion.jda.core.events.message.guild.GenericGuildMessageEvent;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageUpdateEvent;
+import net.dv8tion.jda.core.hooks.EventListener;
 import net.dv8tion.jda.core.hooks.IEventManager;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 import net.dv8tion.jda.core.hooks.SubscribeEvent;
+import net.dv8tion.jda.core.utils.Checks;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Type;
 import java.util.*;
 import java.util.function.Predicate;
 
-public class BreadBotClientImpl implements BreadBotClient {
+public class BreadBotClientImpl implements BreadBotClient, EventListener {
+
+    private static final Logger log = LoggerFactory.getLogger(BreadBotClient.class);
 
     private JDA jda;
 
-    private final ArgumentTypes argumentTypes;
-    private final IEventManager eventManager;
+    private final CommandResultManager resultManager;
+    private final ArgumentTypesManager argumentTypes;
+//    private final IEventManager eventManager;
     private final ICommandEventFactory eventFactory;
     private final CommandEngine commandEngine;
     private final Predicate<Message> preProcessPredicate;
     private final List<CommandModule> modules;
     private final Map<Type, CommandModule> moduleTypeMap;
     private final Map<String, CommandHandle> commandMap;
+    private final CommandResponseManager responseManager;
+    private final boolean shouldEvaluateCommandOnMessageUpdate;
 
-    public BreadBotClientImpl(List<CommandModule> modules, List<CommandHandleBuilderInternal> commands, CommandProperties commandProperties, ArgumentTypes argumentTypes, IEventManager eventManager, ICommandEventFactory eventFactory, Predicate<Message> preProcessPredicate) {
+    public BreadBotClientImpl(List<CommandModule> modules, List<CommandHandleBuilderInternal> commands, CommandPropertiesManager commandProperties, CommandResultManager resultManager, ArgumentTypesManager argumentTypes, ICommandEventFactory eventFactory, Predicate<Message> preProcessPredicate, CommandResponseManager responseManager, boolean shouldEvaluateCommandOnMessageUpdate) {
         this.modules = Collections.unmodifiableList(modules);
+        this.resultManager = resultManager;
         this.argumentTypes = argumentTypes;
-        this.eventManager = eventManager;
+//        this.eventManager = eventManager;
         this.eventFactory = eventFactory;
         this.preProcessPredicate = preProcessPredicate;
+        this.responseManager = responseManager;
+        this.shouldEvaluateCommandOnMessageUpdate = shouldEvaluateCommandOnMessageUpdate;
 
         HashMap<String, CommandHandle> handleMap = new HashMap<>();
         for (CommandHandleBuilderInternal command : commands) {
             CommandHandle handle = command.build();
-            for (String key : handle.getKeys()) {
+            String[] keys = handle.getKeys();
+            if (keys == null || keys.length == 0) {
+                throw new MissingCommandKeyException(handle);
+            }
+            for (String key : keys) {
                 handleMap.put(key, handle);
             }
+            log.info("Command Created: " + handle);
         }
-        this.commandMap = Collections.unmodifiableMap(handleMap);
+        this.commandMap = handleMap;
 
         final HashMap<Type, CommandModule> typeMap = new HashMap<>(modules.size());
         for (CommandModule module : modules) {
@@ -91,7 +108,7 @@ public class BreadBotClientImpl implements BreadBotClient {
             }
         };
 
-        eventManager.register(new BreadBotEventListener(preProcessPredicate));
+        log.info("BreadBotClient Initialized");
     }
 
     private List<Class<?>> getInterfaceHierarchy(Class<?> from, Class<?> toSuper) {
@@ -117,15 +134,33 @@ public class BreadBotClientImpl implements BreadBotClient {
     public void setJDA(JDA jda) {
         this.jda = jda;
     }
+//
+//    @Override
+//    public IEventManager getEventManager() {
+//        return eventManager;
+//    }
 
     @Override
-    public IEventManager getEventManager() {
-        return eventManager;
+    public ArgumentTypesManager getArgumentTypes() {
+        return argumentTypes;
     }
 
     @Override
-    public ArgumentTypes getArgumentTypes() {
-        return argumentTypes;
+    public CommandResponseManager getResponseManager() {
+        return responseManager;
+    }
+
+    @Override
+    public CommandResultManager getResultManager() {
+        return resultManager;
+    }
+
+    @Override
+    public void sendResponse(CommandResponse response, MessageChannel targetChannel) {
+        Checks.notNull(response, "response");
+        Checks.notNull(targetChannel, "targetChannel");
+        response.setClient(this);
+        getResponseManager().acceptResponse(new CommandResponsePacketImpl(null, response, targetChannel));
     }
 
     @Override
@@ -181,41 +216,40 @@ public class BreadBotClientImpl implements BreadBotClient {
         return commandEngine;
     }
 
-    private class BreadBotEventListener extends ListenerAdapter {
-
-        private final Predicate<Message> preProcessPredicate;
-
-        BreadBotEventListener(Predicate<Message> preProcessPredicate) {
-            this.preProcessPredicate = preProcessPredicate == null ? message -> true : preProcessPredicate;
+    @Override
+    public void onEvent(Event event) {
+        if (event instanceof GuildMessageReceivedEvent) {
+            onGuildMessageReceived(((GuildMessageReceivedEvent) event));
+        } else if (event instanceof ReadyEvent){
+            onReady(((ReadyEvent) event));
+        } else if (shouldEvaluateCommandOnMessageUpdate && event instanceof GuildMessageUpdateEvent){
+            onGuildMessageUpdate(((GuildMessageUpdateEvent) event));
         }
+    }
 
-        @SubscribeEvent
-        @Override
-        public void onReady(ReadyEvent event) {
-            setJDA(event.getJDA());
-        }
+    @SubscribeEvent
+    public void onReady(ReadyEvent event) {
+        setJDA(event.getJDA());
+    }
 
-        @SubscribeEvent
-        @Override
-        public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
-            onGuildMessageEvent(event, event.getMessage());
-        }
+    @SubscribeEvent
+    public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
+        onGuildMessageEvent(event, event.getMessage());
+    }
 
-        @SubscribeEvent
-        @Override
-        public void onGuildMessageUpdate(GuildMessageUpdateEvent event) {
-            if (event.getMessage().isPinned()) return;
-            onGuildMessageEvent(event, event.getMessage());
-        }
+    @SubscribeEvent
+    public void onGuildMessageUpdate(GuildMessageUpdateEvent event) {
+        if (event.getMessage().isPinned()) return;
+        onGuildMessageEvent(event, event.getMessage());
+    }
 
 
-        private void onGuildMessageEvent(GenericGuildMessageEvent event, Message message) {
-            if (preProcessPredicate.test(message)) {
-                final CommandEvent commandEvent = eventFactory.createEvent(event, message, BreadBotClientImpl.this);
-                if (commandEvent != null) {
-                    commandEngine.handle(commandEvent);
-                    eventManager.handle(commandEvent);
-                }
+    private void onGuildMessageEvent(GenericGuildMessageEvent event, Message message) {
+        if (preProcessPredicate.test(message)) {
+            final CommandEvent commandEvent = eventFactory.createEvent(event, message, BreadBotClientImpl.this);
+            if (commandEvent != null) {
+                commandEngine.handle(commandEvent);
+                ((JDAImpl) jda).getEventManager().handle(event);
             }
         }
     }

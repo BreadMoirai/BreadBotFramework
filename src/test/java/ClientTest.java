@@ -15,6 +15,7 @@
 
 import com.github.breadmoirai.breadbot.framework.BreadBotClient;
 import com.github.breadmoirai.breadbot.framework.BreadBotClientBuilder;
+import com.github.breadmoirai.breadbot.framework.CommandHandleBuilder;
 import com.github.breadmoirai.breadbot.util.Emoji;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
@@ -217,6 +218,13 @@ public class ClientTest {
     }
 
     @Test
+    public void returnTypeTest() {
+        setupBread(bread -> bread.addCommand(ColorCommand::new).addCommand(MirrorCommand::new));
+        assertResponse("!reverse mirror", "rorrim");
+        assertResponse("!color BLUE", "60");
+    }
+
+    @Test
     public void customParameterTest() {
         setupBread(bread -> bread
                 .registerArgumentMapperSimple(
@@ -250,11 +258,25 @@ public class ClientTest {
         assertResponse("!emoji name " + Emoji.ARTICULATED_LORRY, "ARTICULATED LORRY");
     }
 
+    @Test
+    public void subCommandTest() {
+        setupBread(bread -> {
+            CommandHandleBuilder command = bread.createCommand(new StaticCommand("key0", "0"));
+            for (int i = 1; i < 5; i++) {
+                command = command.createCommand(new StaticCommand("key" + i, String.valueOf(i)));
+            }
+        });
+
+        assertResponse("!key0", "0");
+        assertResponse("!key0 key1 key2 key3 key4", "4");
+        assertResponse("!key0 key1 key3 key4", "1");
+    }
+
     private void setupBread(Consumer<BreadBotClientBuilder> config) {
         BreadBotClientBuilder builder = new BreadBotClientBuilder();
         config.accept(builder);
-        BreadBotClient client = builder.buildInterfaced();
-        botApi.setEventManager(client.getEventManager());
+        BreadBotClient client = builder.build();
+        botApi.addEventListener(client);
         botApi.addEventListener(new MyEventListener());
         client.setJDA(botApi);
     }

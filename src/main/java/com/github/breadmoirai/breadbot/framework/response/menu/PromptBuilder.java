@@ -26,7 +26,7 @@ public class PromptBuilder extends MenuBuilder {
 
     private static String defaultYesEmoji = "\u2705", defaultNoEmoji = "\u274e";
     private static Emote defaultYesEmote, defaultNoEmote;
-    private static final Consumer<ResponseMenu> DEFAULT_NO_CONSUMER = ResponseMenu::cancel;
+    private static final Consumer<MenuResponse> DEFAULT_NO_CONSUMER = MenuResponse::cancel;
 
     private static void setDefaultYesEmoji(String unicode) {
         defaultYesEmoji = unicode;
@@ -48,18 +48,18 @@ public class PromptBuilder extends MenuBuilder {
         defaultNoEmoji = null;
     }
 
-    private Consumer<ResponseMenu> onYes, onNo;
+    private Consumer<MenuResponse> onYes, onNo;
     private String emojiYes, emojiNo;
     private Emote emoteYes, emoteNo;
     private String optionYes, optionNo;
 
-    public PromptBuilder onYes(Consumer<ResponseMenu> onYes, String option) {
+    public PromptBuilder onYes(Consumer<MenuResponse> onYes, String option) {
         this.onYes = onYes;
         this.optionYes = option;
         return this;
     }
 
-    public PromptBuilder onNo(Consumer<ResponseMenu> onNo, String option) {
+    public PromptBuilder onNo(Consumer<MenuResponse> onNo, String option) {
         this.onNo = onNo;
         this.optionYes = option;
         return this;
@@ -92,7 +92,7 @@ public class PromptBuilder extends MenuBuilder {
     @Override
     public Menu build() {
         final ReactionMenuBuilder mb = new ReactionMenuBuilder();
-        final BiPredicate<GenericGuildMessageReactionEvent, ResponseMenu> yesPredicate = (event, menu) -> {
+        final BiPredicate<GenericGuildMessageReactionEvent, MenuResponse> yesPredicate = (event, menu) -> {
             onYes.accept(menu);
             return true;
         };
@@ -102,7 +102,7 @@ public class PromptBuilder extends MenuBuilder {
         else if (defaultYesEmote != null) mb.addOption(defaultYesEmote, optionYes, yesPredicate);
         else mb.addOption(defaultYesEmoji, optionYes, yesPredicate);
 
-        final BiPredicate<GenericGuildMessageReactionEvent, ResponseMenu> noPredicate;
+        final BiPredicate<GenericGuildMessageReactionEvent, MenuResponse> noPredicate;
         if (onNo != null)
             noPredicate = (event, menu) -> {
                 onNo.accept(menu);

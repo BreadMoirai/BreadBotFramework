@@ -15,8 +15,7 @@
  */
 package com.github.breadmoirai.breadbot.framework.response;
 
-import com.github.breadmoirai.breadbot.framework.Response;
-import com.github.breadmoirai.breadbot.framework.response.menu.ResponseMenu;
+import com.github.breadmoirai.breadbot.framework.response.menu.MenuResponse;
 import com.github.breadmoirai.breadbot.framework.response.simple.StringResponse;
 
 public interface CloseableResponse {
@@ -27,10 +26,10 @@ public interface CloseableResponse {
      * @param cancelMessage  A Response to replace the menu with.
      * @param clearReactions this boolean indicates whether
      */
-    void cancel(Response cancelMessage, boolean clearReactions);
+    void cancel(CommandResponse cancelMessage, boolean clearReactions);
 
     /**
-     * Calls {@link ResponseMenu#cancel(Response, boolean) this#cancel} with param {@code "Action Cancelled", true}.
+     * Calls {@link MenuResponse#cancel(CommandResponse, boolean) this#cancel} with param {@code "Action Cancelled", true}.
      */
     default void cancel() {
         cancel(new StringResponse("Action Cancelled"), true);

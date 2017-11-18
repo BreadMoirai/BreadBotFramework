@@ -25,7 +25,7 @@ public interface PrefixModule extends CommandModule {
 
     @Override
     default void initialize(BreadBotClientBuilder client) {
-        client.createCommand(PrefixCommand.class);
+        client.addCommand(PrefixCommand.class);
     }
 
     @Override

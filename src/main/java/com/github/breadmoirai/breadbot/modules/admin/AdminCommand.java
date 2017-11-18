@@ -15,16 +15,17 @@
  */
 package com.github.breadmoirai.breadbot.modules.admin;
 
-import com.github.breadmoirai.breadbot.framework.command.Command;
-import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
+import com.github.breadmoirai.breadbot.framework.CommandEvent;
+import com.github.breadmoirai.breadbot.framework.annotation.command.MainCommand;
 import net.dv8tion.jda.core.entities.Member;
 
 import java.util.stream.Collectors;
 
-@Command
+
 public class AdminCommand {
 
-    public void execute(CommandEvent event, AdminModule module) {
+    @MainCommand
+    public void admin(CommandEvent event, AdminModule module) {
         event.reply("**Administrative Members:** " + event.getGuild().getMembers().stream().filter(module::isAdmin).map(Member::getEffectiveName).collect(Collectors.joining(", ")));
     }
 

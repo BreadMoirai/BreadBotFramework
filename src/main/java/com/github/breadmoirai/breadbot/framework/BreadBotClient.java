@@ -15,17 +15,15 @@
  */
 package com.github.breadmoirai.breadbot.framework;
 
-import com.github.breadmoirai.breadbot.framework.command.CommandHandle;
-import com.github.breadmoirai.breadbot.framework.internal.ArgumentTypes;
+import com.github.breadmoirai.breadbot.framework.response.CommandResponse;
+import com.github.breadmoirai.breadbot.framework.response.CommandResponseManager;
 import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.TextChannel;
-import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.hooks.IEventManager;
 
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 public interface BreadBotClient {
 
@@ -47,34 +45,15 @@ public interface BreadBotClient {
 
     void setJDA(JDA jda);
 
-    IEventManager getEventManager();
+//    IEventManager getEventManager();
 
-    ArgumentTypes getArgumentTypes();
+    ArgumentTypesManager getArgumentTypes();
 
-    default void send(Response response) {
-        send(response.getChannelId(), response);
-    }
+    CommandResponseManager getResponseManager();
 
-    default void send(long channeId, Response response) {
-        TextChannel textChannel = getJDA().getTextChannelById(channeId);
-        if (textChannel == null) return;
-        send(textChannel, response);
-    }
+    CommandResultManager getResultManager();
 
-
-    default void send(TextChannel textChannel, Response response) {
-        Objects.requireNonNull(textChannel, "TextChannel");
-        Objects.requireNonNull(response, "Response");
-        response.base(0, textChannel.getIdLong(), textChannel.getGuild().getIdLong(), 0, this);
-        response.send(textChannel);
-    }
-
-    default void send(User user, Response response) {
-        Objects.requireNonNull(user, "User");
-        Objects.requireNonNull(user, "Response");
-        response.setClient(this);
-        user.openPrivateChannel().queue(response::send);
-    }
+    void sendResponse(CommandResponse response, MessageChannel targetChannel);
 
     Map<String, CommandHandle> getCommandMap();
 }

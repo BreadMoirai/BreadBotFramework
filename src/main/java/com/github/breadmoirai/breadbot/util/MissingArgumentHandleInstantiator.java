@@ -14,7 +14,7 @@
 */
 package com.github.breadmoirai.breadbot.util;
 
-import com.github.breadmoirai.breadbot.framework.command.parameter.IfNotFound;
+import com.github.breadmoirai.breadbot.framework.annotation.parameter.IfNotFound;
 
 import java.util.function.Function;
 

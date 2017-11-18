@@ -15,22 +15,19 @@
  */
 package com.github.breadmoirai.breadbot.framework;
 
-import com.github.breadmoirai.breadbot.framework.builder.*;
-import com.github.breadmoirai.breadbot.framework.command.Command;
-import com.github.breadmoirai.breadbot.framework.command.CommandPreprocessor;
-import com.github.breadmoirai.breadbot.framework.command.CommandPreprocessorFunction;
-import com.github.breadmoirai.breadbot.framework.command.CommandPreprocessorPredicate;
-import com.github.breadmoirai.breadbot.framework.command.parameter.ArgumentParser;
-import com.github.breadmoirai.breadbot.framework.command.parameter.ArgumentTypeMapper;
-import com.github.breadmoirai.breadbot.framework.command.parameter.ArgumentTypePredicate;
-import com.github.breadmoirai.breadbot.framework.command.parameter.CommandArgument;
-import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
-import com.github.breadmoirai.breadbot.framework.event.ICommandEventFactory;
-import com.github.breadmoirai.breadbot.framework.event.impl.CommandEventFactoryImpl;
-import com.github.breadmoirai.breadbot.framework.internal.ArgumentTypes;
-import com.github.breadmoirai.breadbot.framework.internal.ArgumentTypesImpl;
+import com.github.breadmoirai.breadbot.framework.defaults.DefaultCommandResponseManager;
 import com.github.breadmoirai.breadbot.framework.internal.BreadBotClientImpl;
-import com.github.breadmoirai.breadbot.framework.internal.CommandPropertiesImpl;
+import com.github.breadmoirai.breadbot.framework.internal.argument.ArgumentTypesManagerImpl;
+import com.github.breadmoirai.breadbot.framework.internal.command.CommandPropertiesManagerImpl;
+import com.github.breadmoirai.breadbot.framework.internal.command.CommandResultManagerImpl;
+import com.github.breadmoirai.breadbot.framework.internal.command.builder.CommandHandleBuilderFactoryImpl;
+import com.github.breadmoirai.breadbot.framework.internal.command.builder.CommandHandleBuilderInternal;
+import com.github.breadmoirai.breadbot.framework.internal.event.CommandEventFactoryImpl;
+import com.github.breadmoirai.breadbot.framework.internal.parameter.ArgumentParser;
+import com.github.breadmoirai.breadbot.framework.internal.parameter.ArgumentTypeMapper;
+import com.github.breadmoirai.breadbot.framework.internal.parameter.ArgumentTypePredicate;
+import com.github.breadmoirai.breadbot.framework.internal.parameter.CommandArgument;
+import com.github.breadmoirai.breadbot.framework.response.CommandResponseManager;
 import com.github.breadmoirai.breadbot.modules.prefix.DefaultPrefixModule;
 import com.github.breadmoirai.breadbot.modules.prefix.PrefixModule;
 import net.dv8tion.jda.core.entities.Message;
@@ -38,8 +35,6 @@ import net.dv8tion.jda.core.hooks.AnnotatedEventManager;
 import net.dv8tion.jda.core.hooks.IEventManager;
 import net.dv8tion.jda.core.hooks.InterfacedEventManager;
 import net.dv8tion.jda.core.utils.Checks;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.function.*;
@@ -48,24 +43,30 @@ public class BreadBotClientBuilder implements
         CommandHandleBuilderFactory<BreadBotClientBuilder>,
         CommandModuleBuilder<BreadBotClientBuilder>,
         CommandPropertiesBuilder<BreadBotClientBuilder>,
-        ArgumentTypesBuilder<BreadBotClientBuilder> {
+        ArgumentTypesBuilder<BreadBotClientBuilder>,
+        CommandResultManagerBuilder<BreadBotClientBuilder> {
 
-    private static final Logger LOG = LoggerFactory.getLogger(BreadBotClientBuilder.class);
+//    private static final Logger LOG = LoggerFactory.getLogger(BreadBotClientBuilder.class);
 
     private final List<CommandModule> modules;
-    private final CommandProperties commandProperties;
-    private final ArgumentTypes argumentTypes;
+    private final CommandPropertiesManagerImpl commandProperties;
+    private final ArgumentTypesManagerImpl argumentTypes;
     private final CommandHandleBuilderFactoryImpl factory;
     private final List<CommandHandleBuilderInternal> commands;
+    private final CommandResultManagerImpl resultManager;
+    private CommandResponseManager responseManager;
     private Predicate<Message> preProcessPredicate;
     private ICommandEventFactory commandEventFactory;
+    private boolean shouldEvaluateCommandOnMessageUpdate = false;
 
     public BreadBotClientBuilder() {
         modules = new ArrayList<>();
-        commandProperties = new CommandPropertiesImpl();
-        argumentTypes = new ArgumentTypesImpl();
+        commandProperties = new CommandPropertiesManagerImpl();
+        argumentTypes = new ArgumentTypesManagerImpl();
         factory = new CommandHandleBuilderFactoryImpl(this);
         commands = new ArrayList<>();
+        resultManager = new CommandResultManagerImpl();
+        responseManager = new DefaultCommandResponseManager();
     }
 
     @Override
@@ -103,29 +104,16 @@ public class BreadBotClientBuilder implements
 
     @Override
     public BreadBotClientBuilder addCommand(Supplier<?> commandSupplier, Consumer<CommandHandleBuilder> configurator) {
-        Object o = commandSupplier.get();
-        if (o.getClass().isAnnotationPresent(Command.class)) {
-            CommandHandleBuilderInternal commandHandle = factory.createCommand(commandSupplier, o);
-            configurator.accept(commandHandle);
-            commands.add(commandHandle);
-        } else {
-            List<CommandHandleBuilderInternal> commandHandles = factory.createCommands(commandSupplier, o);
-            commandHandles.forEach(configurator);
-            commands.addAll(commandHandles);
-        }
+        List<CommandHandleBuilderInternal> commandsFromSuppliers = factory.createCommandsFromSuppliers(commandSupplier);
+        commandsFromSuppliers.forEach(configurator);
+        commands.addAll(commandsFromSuppliers);
         return this;
     }
 
     @Override
     public BreadBotClientBuilder addCommand(Supplier<?> commandSupplier) {
-        Object o = commandSupplier.get();
-        if (o.getClass().isAnnotationPresent(Command.class)) {
-            CommandHandleBuilderInternal commandHandle = factory.createCommand(commandSupplier, o);
-            commands.add(commandHandle);
-        } else {
-            List<CommandHandleBuilderInternal> commandHandles = factory.createCommands(commandSupplier, o);
-            commands.addAll(commandHandles);
-        }
+        List<CommandHandleBuilderInternal> commandsFromSuppliers = factory.createCommandsFromSuppliers(commandSupplier);
+        commands.addAll(commandsFromSuppliers);
         return this;
     }
 
@@ -327,6 +315,17 @@ public class BreadBotClientBuilder implements
         return argumentTypes.getParser(type);
     }
 
+    @Override
+    public <T> BreadBotClientBuilder registerResultHandler(Class<T> resultType, CommandResultHandler<T> handler) {
+        resultManager.registerResultHandler(resultType, handler);
+        return this;
+    }
+
+    @Override
+    public <T> CommandResultHandler<? super T> getResultHandler(Class<T> resultType) {
+        return resultManager.getResultHandler(resultType);
+    }
+
     /**
      * Sets a predicate to be used on each message before processing it. This will override any existing predicates.
      *
@@ -362,49 +361,66 @@ public class BreadBotClientBuilder implements
     }
 
     /**
-     * Builds a BreadBotClient with an {@link net.dv8tion.jda.core.hooks.AnnotatedEventManager}
-     * <p>
-     * This implementation is as follows:
-     * <pre><code>
-     *     return {@link BreadBotClientBuilder breadBotBuilder}.{@link BreadBotClientBuilder#build build}(new {@link net.dv8tion.jda.core.hooks.AnnotatedEventManager AnnotatedEventManager()});
-     * </code></pre>
+     * Sets the manager that handles sending responses. If this field is not set, the CommandResponseManager will default to {@link com.github.breadmoirai.breadbot.framework.defaults.DefaultCommandResponseManager}
      *
-     * @return The {@link com.github.breadmoirai.breadbot.framework.BreadBotClient} for use with {@link net.dv8tion.jda.core.JDABuilder#setEventManager(IEventManager) JDABuilder#setEventManager}({@link com.github.breadmoirai.breadbot.framework.BreadBotClient#getEventManager client.getEventManager()})
+     * @param responseManager An implementation of CommandResponseManager.
      */
-    public BreadBotClient buildAnnotated() {
-        return build(new AnnotatedEventManager());
+    public void setResponseManager(CommandResponseManager responseManager) {
+        this.responseManager = responseManager;
     }
 
     /**
-     * Builds a BreadBotClient with an {@link net.dv8tion.jda.core.hooks.InterfacedEventManager}
-     * <p>
-     * This implementation is as follows:
-     * <pre><code>
-     *     return {@link BreadBotClientBuilder breadBotBuilder}.{@link BreadBotClientBuilder#build build}(new {@link net.dv8tion.jda.core.hooks.InterfacedEventManager InterfacedEventManager()});
-     * </code></pre>
+     * This will allow messages to be re-evaluated on message edit.
+     * This will also evaluate commands that are unpinned.
+     * Will ignore messages that are pinned.
      *
-     * @return The {@link com.github.breadmoirai.breadbot.framework.BreadBotClient} for use with {@link net.dv8tion.jda.core.JDABuilder#setEventManager(IEventManager) JDABuilder#setEventManager}({@link com.github.breadmoirai.breadbot.framework.BreadBotClient#getEventManager client.getEventManager()})
+     * @param shouldEvaluateCommandOnMessageUpdate By default this is {@code true}.
+     * @return this
      */
-    public BreadBotClient buildInterfaced() {
-        return build(new InterfacedEventManager());
+    public BreadBotClientBuilder setEvaluateCommandOnMessageUpdate(boolean shouldEvaluateCommandOnMessageUpdate) {
+        this.shouldEvaluateCommandOnMessageUpdate = shouldEvaluateCommandOnMessageUpdate;
+        return this;
     }
+
+//    /**
+//     * Builds a BreadBotClient with an {@link net.dv8tion.jda.core.hooks.AnnotatedEventManager}
+//     * <p>
+//     * This implementation is as follows:
+//     * <pre><code>
+//     *     return {@link BreadBotClientBuilder breadBotBuilder}.{@link BreadBotClientBuilder#build build}(new {@link net.dv8tion.jda.core.hooks.AnnotatedEventManager AnnotatedEventManager()});
+//     * </code></pre>
+//     *
+//     * @return The {@link com.github.breadmoirai.breadbot.framework.BreadBotClient} for use with {@link net.dv8tion.jda.core.JDABuilder#setEventManager(IEventManager) JDABuilder#setEventManager}({@link com.github.breadmoirai.breadbot.framework.BreadBotClient#getEventManager client.getEventManager()})
+//     */
+//    public BreadBotClient buildAnnotated() {
+//        return build(new AnnotatedEventManager());
+//    }
+//
+//    /**
+//     * Builds a BreadBotClient with an {@link net.dv8tion.jda.core.hooks.InterfacedEventManager}
+//     * <p>
+//     * This implementation is as follows:
+//     * <pre><code>
+//     *     return {@link BreadBotClientBuilder breadBotBuilder}.{@link BreadBotClientBuilder#build build}(new {@link net.dv8tion.jda.core.hooks.InterfacedEventManager InterfacedEventManager()});
+//     * </code></pre>
+//     *
+//     * @return The {@link com.github.breadmoirai.breadbot.framework.BreadBotClient} for use with {@link net.dv8tion.jda.core.JDABuilder#setEventManager(IEventManager) JDABuilder#setEventManager}({@link com.github.breadmoirai.breadbot.framework.BreadBotClient#getEventManager client.getEventManager()})
+//     */
+//    public BreadBotClient buildInterfaced() {
+//        return build(new InterfacedEventManager());
+//    }
 
     /**
      * Builds the BreadBotClient with the provided EventManager.
-     * It is at this point that all Modules are initialized and Commands built.
      * If an {@link PrefixModule} has not been provided, a {@link com.github.breadmoirai.breadbot.modules.prefix.DefaultPrefixModule new DefaultPrefixModule("!")} is provided.
      *
-     * @param eventManager The IEventManager of which to attach all the listeners (CommandModules) to. If the module is an instanceof {@link net.dv8tion.jda.core.hooks.InterfacedEventManager} it will only use {@link IEventManager#register(Object)} on Modules that extend {@link net.dv8tion.jda.core.hooks.EventListener}. Otherwise, the BreadBotClient will register all the CommandModules as listeners.
-     * @return a new BreadBotClient.
+     * @return a new BreadBotClient. This must be added to JDA with {@link net.dv8tion.jda.core.JDABuilder#addEventListener(Object...)}
      */
-    public BreadBotClient build(IEventManager eventManager) {
+    public BreadBotClient build() {
         if (!hasModule(PrefixModule.class)) modules.add(new DefaultPrefixModule("!"));
         if (commandEventFactory == null)
             commandEventFactory = new CommandEventFactoryImpl(getModule(PrefixModule.class));
-
-        BreadBotClient client = new BreadBotClientImpl(modules, commands, commandProperties, argumentTypes, eventManager, commandEventFactory, preProcessPredicate);
-        LOG.info("Top Level Commands registered: " + client.getCommandMap().values().size() + ".");
-        LOG.info("CommandClient Initialized.");
+        BreadBotClient client = new BreadBotClientImpl(modules, commands, commandProperties, resultManager, argumentTypes, commandEventFactory, preProcessPredicate, responseManager, shouldEvaluateCommandOnMessageUpdate);
         return client;
     }
 }

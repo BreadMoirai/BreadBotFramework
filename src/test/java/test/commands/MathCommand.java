@@ -1,15 +1,15 @@
 package test.commands;
 
-import com.github.breadmoirai.breadbot.framework.command.Command;
-import com.github.breadmoirai.breadbot.framework.command.DefaultCommand;
-import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
+import com.github.breadmoirai.breadbot.framework.CommandEvent;
+import com.github.breadmoirai.breadbot.framework.annotation.command.Description;
+import com.github.breadmoirai.breadbot.framework.annotation.command.MainCommand;
 
 import java.util.Deque;
 
-@Command
 public class MathCommand {
 
-    @DefaultCommand
+    @MainCommand
+    @Description("This command can only use the 4 basic operators and evaluates expressions left to right disregarding any order of operations")
     public void math(CommandEvent event, Deque<Double> operands, Deque<Operator> operators) {
         if (operands.size() != operators.size() + 1) {
             event.reply("invalid");
