@@ -307,7 +307,6 @@ public abstract class CommandEvent extends Event {
                 .map(s -> s.replace('\"', ' '))
                 .map(String::trim)
                 .filter(s -> !s.isEmpty())
-                .map(String::toLowerCase)
                 .toArray(String[]::new);
         return new CommandArgumentList(strings, this);
     }

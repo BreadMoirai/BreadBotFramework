@@ -20,14 +20,16 @@ import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.entities.Message;
 
 import java.awt.*;
+import java.lang.reflect.Field;
 
 public class ColorCommand {
 
     @MainCommand
-    public Message color(String s) {
-        Color color = Color.getColor(s);
+    public Message color(String s) throws IllegalAccessException, NoSuchFieldException {
+        Field field = Color.class.getField(s);
+        Color color = (Color) field.get(null);
         if (color != null) {
-            return new MessageBuilder().setEmbed(new EmbedBuilder().setColor(color).addBlankField(true).build()).append(color.getRGB()).build();
+            return new MessageBuilder().setEmbed(new EmbedBuilder().setColor(color).addBlankField(true).build()).append(Integer.toHexString(color.getRGB())).build();
         }
         return null;
     }

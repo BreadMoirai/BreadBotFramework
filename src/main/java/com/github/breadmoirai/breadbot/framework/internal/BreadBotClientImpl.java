@@ -24,15 +24,12 @@ import com.github.breadmoirai.breadbot.util.EventStringIterator;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageChannel;
-import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.events.Event;
 import net.dv8tion.jda.core.events.ReadyEvent;
 import net.dv8tion.jda.core.events.message.guild.GenericGuildMessageEvent;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageUpdateEvent;
 import net.dv8tion.jda.core.hooks.EventListener;
-import net.dv8tion.jda.core.hooks.IEventManager;
-import net.dv8tion.jda.core.hooks.ListenerAdapter;
 import net.dv8tion.jda.core.hooks.SubscribeEvent;
 import net.dv8tion.jda.core.utils.Checks;
 import org.slf4j.Logger;
@@ -102,7 +99,7 @@ public class BreadBotClientImpl implements BreadBotClient, EventListener {
         this.moduleTypeMap = typeMap;
 
         commandEngine = event -> {
-            CommandHandle commandHandle = handleMap.get(event.getKey().toLowerCase());
+            CommandHandle commandHandle = commandMap.get(event.getKey().toLowerCase());
             if (commandHandle != null) {
                 commandHandle.handle(event, new EventStringIterator(event));
             }
@@ -245,11 +242,11 @@ public class BreadBotClientImpl implements BreadBotClient, EventListener {
 
 
     private void onGuildMessageEvent(GenericGuildMessageEvent event, Message message) {
-        if (preProcessPredicate.test(message)) {
+        if (preProcessPredicate == null || preProcessPredicate.test(message)) {
             final CommandEvent commandEvent = eventFactory.createEvent(event, message, BreadBotClientImpl.this);
             if (commandEvent != null) {
                 commandEngine.handle(commandEvent);
-                ((JDAImpl) jda).getEventManager().handle(event);
+//                ((JDAImpl) jda).getEventManager().handle(event);
             }
         }
     }

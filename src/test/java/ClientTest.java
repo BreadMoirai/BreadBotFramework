@@ -16,6 +16,7 @@
 import com.github.breadmoirai.breadbot.framework.BreadBotClient;
 import com.github.breadmoirai.breadbot.framework.BreadBotClientBuilder;
 import com.github.breadmoirai.breadbot.framework.CommandHandleBuilder;
+import com.github.breadmoirai.breadbot.framework.internal.BreadBotClientImpl;
 import com.github.breadmoirai.breadbot.util.Emoji;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
@@ -26,6 +27,7 @@ import net.dv8tion.jda.core.events.Event;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.hooks.EventListener;
+import net.dv8tion.jda.core.hooks.IEventManager;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -38,8 +40,9 @@ import javax.security.auth.login.LoginException;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.List;
+import java.util.concurrent.BlockingDeque;
+import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
@@ -55,7 +58,6 @@ public class ClientTest {
     private static final String BOT_TOKEN;
     private static final String CLIENT_TOKEN;
 
-
     static {
         try (BufferedReader br = new BufferedReader(
                 new InputStreamReader(
@@ -67,6 +69,7 @@ public class ClientTest {
             throw new RuntimeException("Token not found", e);
         }
     }
+
 
     @Rule
     public final Timeout globalTimeout = Timeout.seconds(600);
@@ -80,16 +83,18 @@ public class ClientTest {
 
     private static long clientId, botId;
 
-    private static BlockingQueue<Message> botQueue = new LinkedBlockingQueue<>();
-//    private static BlockingQueue<Message> clientQueue = new LinkedBlockingQueue<>();
+    private static MyEventManager manager;
+    private static BlockingDeque<Message> botQueue = new LinkedBlockingDeque<>();
 
 
     @BeforeClass
     public static void setupBot() {
+        manager = new MyEventManager();
         try {
             botApi = new JDABuilder(AccountType.BOT)
                     .setGame(Game.of("Testing"))
                     .setToken(BOT_TOKEN)
+                    .setEventManager(manager)
                     .buildBlocking();
         } catch (LoginException | RateLimitedException | InterruptedException e) {
             throw new RuntimeException(e);
@@ -221,7 +226,7 @@ public class ClientTest {
     public void returnTypeTest() {
         setupBread(bread -> bread.addCommand(ColorCommand::new).addCommand(MirrorCommand::new));
         assertResponse("!reverse mirror", "rorrim");
-        assertResponse("!color BLUE", "60");
+        assertResponse("!color BLUE", "ff0000ff");
     }
 
     @Test
@@ -276,8 +281,7 @@ public class ClientTest {
         BreadBotClientBuilder builder = new BreadBotClientBuilder();
         config.accept(builder);
         BreadBotClient client = builder.build();
-        botApi.addEventListener(client);
-        botApi.addEventListener(new MyEventListener());
+        manager.setBread(client);
         client.setJDA(botApi);
     }
 
@@ -294,6 +298,41 @@ public class ClientTest {
             return;
         }
         assertThat(poll.getRawContent(), is(response));
+    }
+
+    private static class MyEventManager implements IEventManager {
+
+        private BreadBotClient client;
+        private MyEventListener myEventListener;
+
+
+        public void setBread(BreadBotClient client) {
+            this.client = client;
+            myEventListener = new MyEventListener();
+        }
+
+        @Override
+        public void register(Object listener) {
+
+        }
+
+        @Override
+        public void unregister(Object listener) {
+
+        }
+
+        @Override
+        public void handle(Event event) {
+            if (client != null) {
+                ((BreadBotClientImpl) client).onEvent(event);
+                myEventListener.onEvent(event);
+            }
+        }
+
+        @Override
+        public List<Object> getRegisteredListeners() {
+            return null;
+        }
     }
 
     private static class MyEventListener implements EventListener {
