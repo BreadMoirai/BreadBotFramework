@@ -28,6 +28,7 @@ public class CommandHandleImpl implements CommandHandle {
     private final Map<String, CommandHandleImpl> subCommandMap;
     private final List<CommandPreprocessor> preprocessors;
     private final CommandPropertyMap propertyMap;
+    private final boolean isHelp;
 
     public CommandHandleImpl(String[] keys,
                              String name,
@@ -59,10 +60,14 @@ public class CommandHandleImpl implements CommandHandle {
         this.subCommandMap = subCommandMap;
         this.preprocessors = preprocessors;
         this.propertyMap = propertyMap;
+        this.isHelp = Arrays.stream(keys).anyMatch(s -> s.equalsIgnoreCase("help"));
     }
 
     @Override
     public boolean handle(CommandEvent event, Iterator<String> keyItr) {
+        if (isHelp && event.isHelpEvent()) {
+            return runThis(event);
+        }
         if (keyItr != null && keyItr.hasNext() && subCommandMap != null) {
             String next = keyItr.next().toLowerCase();
             if (subCommandMap.containsKey(next)) {
@@ -74,7 +79,11 @@ public class CommandHandleImpl implements CommandHandle {
                 }
             }
         }
-        return runThis(event);
+        if (event.isHelpEvent() && subCommandMap != null) {
+            return subCommandMap.containsKey("help") && subCommandMap.get("help").handle(event, null);
+        } else {
+            return runThis(event);
+        }
     }
 
     private boolean runThis(CommandEvent event) {

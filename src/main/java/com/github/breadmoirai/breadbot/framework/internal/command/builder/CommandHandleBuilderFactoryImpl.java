@@ -257,7 +257,7 @@ public class CommandHandleBuilderFactoryImpl implements CommandHandleBuilderFact
             if (method == null) continue;
             CommandPropertyMapImpl map = new CommandPropertyMapImpl(propertyMap, inner.getAnnotations());
             final CommandObjectFactory innerFactory = supplier != null ? getSupplierForObject(supplierReturnType, supplier, inner) : getSupplierForClass(inner);
-            CommandHandleBuilderInternal handle = createCommandHandleBuilderInternal(commandObject, commandClass, method, innerFactory, supplierReturnType, supplier, map);
+            CommandHandleBuilderInternal handle = createCommandHandleBuilderInternal(commandObject, inner, method, innerFactory, supplierReturnType, supplier, map);
             builders.add(handle);
         }
         return builders;
@@ -375,12 +375,12 @@ public class CommandHandleBuilderFactoryImpl implements CommandHandleBuilderFact
 
         if (methodHandles.length == 1) {
             MethodHandle methodHandle = methodHandles[0];
-            if (isStatic)
+            if (!isStatic)
                 return new CommandObjectFactory(() -> methodHandle.invoke(supplier.get()));
             else
                 return new CommandObjectFactory(methodHandle::invoke);
         } else {
-            if (isStatic)
+            if (!isStatic)
                 return new CommandObjectFactory(() -> {
                     Object o = methodHandles[0].invoke(supplier.get());
                     for (int i = 1; i < methodHandles.length; i++) {

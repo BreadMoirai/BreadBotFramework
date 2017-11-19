@@ -15,6 +15,7 @@
 package com.github.breadmoirai.breadbot.framework.internal.command;
 
 import com.github.breadmoirai.breadbot.util.ExceptionalSupplier;
+import org.slf4j.LoggerFactory;
 
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -22,15 +23,20 @@ import java.util.function.Consumer;
 public class CommandObjectFactory {
 
     private final ExceptionalSupplier<Object> supplier;
-    private Consumer<Throwable> exceptionHandler;
+    private static Consumer<Throwable> exceptionHandler;
+
+    static {
+        org.slf4j.Logger logger = LoggerFactory.getLogger(CommandObjectFactory.class);
+        exceptionHandler = t -> logger.error("An error occurred while attempting to retrieve an instance of a command object", t);
+    }
 
     public CommandObjectFactory(ExceptionalSupplier<Object> supplier) {
         this.supplier = supplier;
     }
 
-    public void setExceptionHandler(Consumer<Throwable> exceptionHandler) {
+    public static void setExceptionHandler(Consumer<Throwable> exceptionHandler) {
         Objects.requireNonNull(exceptionHandler, "ExceptionHandler must not be null.");
-        this.exceptionHandler = exceptionHandler;
+        CommandObjectFactory.exceptionHandler = exceptionHandler;
     }
 
     public Object get() {

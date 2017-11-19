@@ -277,6 +277,15 @@ public class ClientTest {
         assertResponse("!key0 key1 key3 key4", "1");
     }
 
+    @Test
+    public void helpTest() {
+        setupBread(bread -> bread.addCommand(HelpCommand::new));
+        assertResponse("!help", "sure");
+        assertResponse("!help awgnaoiwg", "sure");
+        assertResponse("!help me boi", "maybe");
+        assertResponse("!me help", "maybe");
+    }
+
     private void setupBread(Consumer<BreadBotClientBuilder> config) {
         BreadBotClientBuilder builder = new BreadBotClientBuilder();
         config.accept(builder);

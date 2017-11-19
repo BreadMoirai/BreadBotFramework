@@ -101,7 +101,21 @@ public class BreadBotClientImpl implements BreadBotClient, EventListener {
         commandEngine = event -> {
             CommandHandle commandHandle = commandMap.get(event.getKey().toLowerCase());
             if (commandHandle != null) {
-                commandHandle.handle(event, new EventStringIterator(event));
+                if (event.isHelpEvent()) {
+                    if (!commandHandle.handle(event, new EventStringIterator(event))) {
+                        CommandHandle help = commandMap.get("help");
+                        if (help != null) {
+                            help.handle(event, new EventStringIterator(event));
+                        }
+                    }
+                } else {
+                    commandHandle.handle(event, new EventStringIterator(event));
+                }
+            } else if (event.isHelpEvent()) {
+                CommandHandle help = commandMap.get("help");
+                if (help != null) {
+                    help.handle(event, new EventStringIterator(event));
+                }
             }
         };
 
