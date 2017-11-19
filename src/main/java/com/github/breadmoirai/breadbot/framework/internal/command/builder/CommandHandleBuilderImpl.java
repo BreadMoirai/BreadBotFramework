@@ -43,6 +43,7 @@ public class CommandHandleBuilderImpl implements CommandHandleBuilderInternal {
     private transient CommandHandleBuilderFactoryImpl handleBuilderFactory;
     private CommandResultHandler resultHandler;
     private boolean isPersistent = false;
+    private boolean shouldRetainProperties;
 
     public CommandHandleBuilderImpl(Object declaringObject,
                                     Class<?> declaringClass,
@@ -156,6 +157,12 @@ public class CommandHandleBuilderImpl implements CommandHandleBuilderInternal {
     @Override
     public CommandHandleBuilder setPersistent(boolean isPersistent) {
         this.isPersistent = isPersistent;
+        return this;
+    }
+
+    @Override
+    public CommandHandleBuilder setRetainProperties(boolean shouldRetainProperties) {
+        this.shouldRetainProperties = shouldRetainProperties;
         return this;
     }
 
@@ -278,7 +285,7 @@ public class CommandHandleBuilderImpl implements CommandHandleBuilderInternal {
             Class<?> returnType = declaringMethod.getReturnType();
             resultHandler = getClientBuilder().getResultHandler(returnType);
         }
-        return new CommandHandleImpl(keys, name, group, description, declaringObject, declaringClass, declaringMethod,/*client,*/ commandFactory, commandParameters, commandFunction, resultHandler, subCommandMap, preprocessors, propertyMap);
+        return new CommandHandleImpl(keys, name, group, description, declaringObject, declaringClass, declaringMethod,/*client,*/ commandFactory, commandParameters, commandFunction, resultHandler, subCommandMap, preprocessors, shouldRetainProperties ? propertyMap : null);
     }
 
 }

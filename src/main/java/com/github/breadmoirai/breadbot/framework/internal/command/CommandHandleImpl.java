@@ -1,6 +1,7 @@
 package com.github.breadmoirai.breadbot.framework.internal.command;
 
 import com.github.breadmoirai.breadbot.framework.*;
+import com.github.breadmoirai.breadbot.framework.error.MissingCommandKeyException;
 import com.github.breadmoirai.breadbot.framework.internal.parameter.CommandParameter;
 import com.github.breadmoirai.breadbot.framework.internal.parameter.CommandParser;
 import org.slf4j.Logger;
@@ -60,6 +61,9 @@ public class CommandHandleImpl implements CommandHandle {
         this.subCommandMap = subCommandMap;
         this.preprocessors = preprocessors;
         this.propertyMap = propertyMap;
+        if (keys == null || keys.length == 0) {
+            throw new MissingCommandKeyException(this);
+        }
         this.isHelp = Arrays.stream(keys).anyMatch(s -> s.equalsIgnoreCase("help"));
     }
 

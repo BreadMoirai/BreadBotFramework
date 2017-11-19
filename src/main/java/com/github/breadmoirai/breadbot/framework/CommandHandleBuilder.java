@@ -166,6 +166,14 @@ public interface CommandHandleBuilder extends CommandHandleBuilderFactory<Comman
 
     CommandHandleBuilder setPersistent(boolean isPersistent);
 
+    /**
+     * Sets whether the properties in this command should be retained after building.
+     *
+     * @param shouldRetainProperties this is by default {@code false}.
+     * @return this
+     */
+    CommandHandleBuilder setRetainProperties(boolean shouldRetainProperties);
+
     default CommandHandleBuilder configureParameter(int parameterIndex, Consumer<CommandParameterBuilder> configurator) {
         configurator.accept(getParameter(parameterIndex));
         return this;
