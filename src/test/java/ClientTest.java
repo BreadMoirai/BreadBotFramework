@@ -131,6 +131,12 @@ public class ClientTest {
     }
 
     @Test
+    public void ignoreSpacePrefix() {
+        setupBread(builder -> builder.addCommand(PingCommand::new));
+        assertResponse("! ping", "pong");
+    }
+
+    @Test
     public void basicPreprocessorTest() {
         setupBread(bread -> bread.addCommand(PingCommand.class, builder -> builder
                 .setKeys("pang")
