@@ -31,9 +31,6 @@ import com.github.breadmoirai.breadbot.framework.response.CommandResponseManager
 import com.github.breadmoirai.breadbot.modules.prefix.DefaultPrefixModule;
 import com.github.breadmoirai.breadbot.modules.prefix.PrefixModule;
 import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.hooks.AnnotatedEventManager;
-import net.dv8tion.jda.core.hooks.IEventManager;
-import net.dv8tion.jda.core.hooks.InterfacedEventManager;
 import net.dv8tion.jda.core.utils.Checks;
 
 import java.util.*;
@@ -56,7 +53,7 @@ public class BreadBotClientBuilder implements
     private final CommandResultManagerImpl resultManager;
     private CommandResponseManager responseManager;
     private Predicate<Message> preProcessPredicate;
-    private ICommandEventFactory commandEventFactory;
+    private CommandEventFactory commandEventFactory;
     private boolean shouldEvaluateCommandOnMessageUpdate = false;
 
     public BreadBotClientBuilder() {
@@ -355,7 +352,7 @@ public class BreadBotClientBuilder implements
     /**
      * Not much use for this at the moment.
      */
-    public BreadBotClientBuilder setEventFactory(ICommandEventFactory commandEventFactory) {
+    public BreadBotClientBuilder setEventFactory(CommandEventFactory commandEventFactory) {
         this.commandEventFactory = commandEventFactory;
         return this;
     }

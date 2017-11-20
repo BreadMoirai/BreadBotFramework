@@ -24,7 +24,7 @@ import net.dv8tion.jda.core.requests.RestAction;
 
 import java.util.function.BiPredicate;
 
-public class MenuEmote implements IMenuReaction {
+public class MenuEmote implements MenuReaction {
 
     private final Emote e;
     private final String s;

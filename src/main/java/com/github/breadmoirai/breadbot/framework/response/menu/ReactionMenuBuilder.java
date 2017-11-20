@@ -15,9 +15,9 @@
  */
 package com.github.breadmoirai.breadbot.framework.response.menu;
 
-import com.github.breadmoirai.breadbot.framework.response.menu.reactions.IMenuReaction;
 import com.github.breadmoirai.breadbot.framework.response.menu.reactions.MenuEmoji;
 import com.github.breadmoirai.breadbot.framework.response.menu.reactions.MenuEmote;
+import com.github.breadmoirai.breadbot.framework.response.menu.reactions.MenuReaction;
 import net.dv8tion.jda.core.entities.Emote;
 import net.dv8tion.jda.core.events.message.guild.react.GenericGuildMessageReactionEvent;
 
@@ -27,7 +27,7 @@ import java.util.Objects;
 import java.util.function.BiPredicate;
 
 public class ReactionMenuBuilder extends MenuBuilder {
-    private List<IMenuReaction> reactions = new ArrayList<>();
+    private List<MenuReaction> reactions = new ArrayList<>();
     private BiPredicate<GenericGuildMessageReactionEvent, MenuResponse> onReaction;
 
     public ReactionMenuBuilder addOption(String unicode, BiPredicate<GenericGuildMessageReactionEvent, MenuResponse> onSelection) {

@@ -16,9 +16,9 @@
 package com.github.breadmoirai.breadbot.framework.response.simple;
 
 import com.github.breadmoirai.breadbot.framework.response.CommandResponse;
-import com.github.breadmoirai.breadbot.framework.response.menu.reactions.IMenuReaction;
 import com.github.breadmoirai.breadbot.framework.response.menu.reactions.MenuEmoji;
 import com.github.breadmoirai.breadbot.framework.response.menu.reactions.MenuEmote;
+import com.github.breadmoirai.breadbot.framework.response.menu.reactions.MenuReaction;
 import net.dv8tion.jda.core.entities.Emote;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageChannel;
@@ -30,7 +30,7 @@ public class ReactionResponse extends CommandResponse {
 
     private Consumer<Void> onSuccess;
     private Consumer<Throwable> onFailure;
-    private final IMenuReaction reaction;
+    private final MenuReaction reaction;
 
     public ReactionResponse(long messageId, String unicode) {
         this.setMessageId(messageId);

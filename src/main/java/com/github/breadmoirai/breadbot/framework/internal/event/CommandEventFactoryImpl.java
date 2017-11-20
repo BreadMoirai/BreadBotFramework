@@ -17,7 +17,7 @@ package com.github.breadmoirai.breadbot.framework.internal.event;
 
 import com.github.breadmoirai.breadbot.framework.BreadBotClient;
 import com.github.breadmoirai.breadbot.framework.CommandEvent;
-import com.github.breadmoirai.breadbot.framework.ICommandEventFactory;
+import com.github.breadmoirai.breadbot.framework.CommandEventFactory;
 import com.github.breadmoirai.breadbot.modules.prefix.PrefixModule;
 import com.github.breadmoirai.breadbot.util.DiscordPatterns;
 import net.dv8tion.jda.core.entities.Message;
@@ -27,7 +27,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.regex.Matcher;
 
-public class CommandEventFactoryImpl implements ICommandEventFactory {
+public class CommandEventFactoryImpl implements CommandEventFactory {
 
     private static final SimpleLog LOG = SimpleLog.getLog("CommandEvent");
 

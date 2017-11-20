@@ -21,7 +21,7 @@ import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.events.message.guild.react.GenericGuildMessageReactionEvent;
 import net.dv8tion.jda.core.requests.RestAction;
 
-public interface IMenuReaction {
+public interface MenuReaction {
 
     boolean matches(GenericGuildMessageReactionEvent event);
 

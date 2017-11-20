@@ -23,7 +23,7 @@ import net.dv8tion.jda.core.requests.RestAction;
 
 import java.util.function.BiPredicate;
 
-public class MenuEmoji implements IMenuReaction {
+public class MenuEmoji implements MenuReaction {
 
     private final String e;
     private final String s;

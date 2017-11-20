@@ -21,7 +21,7 @@ import net.dv8tion.jda.core.events.message.guild.GenericGuildMessageEvent;
 /**
  * This creates Events from GuildMessageEvents and handles how Prefixes and Keys are parsed.
  */
-public interface ICommandEventFactory {
+public interface CommandEventFactory {
 
     CommandEvent createEvent(GenericGuildMessageEvent event, Message message, BreadBotClient client);
 }

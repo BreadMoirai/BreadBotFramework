@@ -15,7 +15,7 @@
  */
 package com.github.breadmoirai.breadbot.framework.response.menu;
 
-import com.github.breadmoirai.breadbot.framework.response.menu.reactions.IMenuReaction;
+import com.github.breadmoirai.breadbot.framework.response.menu.reactions.MenuReaction;
 import com.github.breadmoirai.breadbot.waiter.EventWaiter;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Message;
@@ -30,17 +30,17 @@ import java.util.stream.Collectors;
 
 public class ReactionMenu extends Menu {
 
-    private List<IMenuReaction> reactions = new ArrayList<>();
+    private List<MenuReaction> reactions = new ArrayList<>();
     private BiPredicate<GenericGuildMessageReactionEvent, MenuResponse> onReaction;
 
-    ReactionMenu(List<IMenuReaction> reactions, BiPredicate<GenericGuildMessageReactionEvent, MenuResponse> onReaction) {
+    ReactionMenu(List<MenuReaction> reactions, BiPredicate<GenericGuildMessageReactionEvent, MenuResponse> onReaction) {
         this.reactions = reactions;
         this.onReaction = onReaction;
     }
 
     @Override
     void attachOptions(EmbedBuilder embedBuilder) {
-        final String collect = reactions.stream().filter(IMenuReaction::hasOption).map(IMenuReaction::getDisplay).collect(Collectors.joining("\n"));
+        final String collect = reactions.stream().filter(MenuReaction::hasOption).map(MenuReaction::getDisplay).collect(Collectors.joining("\n"));
         if (!collect.isEmpty())
             embedBuilder.addField("", collect, false);
     }
@@ -49,9 +49,9 @@ public class ReactionMenu extends Menu {
     void waitForEvent(MenuResponse responseMenu, EventWaiter waiter) {
         waiter.waitForEvent(GuildMessageReactionAddEvent.class, event -> {
             if (event.getMessageIdLong() == responseMenu.getMessageId()) {
-                final Optional<IMenuReaction> any = reactions.stream().filter(r -> r.matches(event)).findAny();
+                final Optional<MenuReaction> any = reactions.stream().filter(r -> r.matches(event)).findAny();
                 if (any.isPresent()) {
-                    final IMenuReaction r = any.get();
+                    final MenuReaction r = any.get();
                     if (r.hasPredicate()) return r.apply(event, responseMenu);
                     else return onReaction != null && onReaction.test(event, responseMenu);
                 }

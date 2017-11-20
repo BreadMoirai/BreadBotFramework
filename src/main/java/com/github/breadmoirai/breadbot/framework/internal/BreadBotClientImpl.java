@@ -47,7 +47,7 @@ public class BreadBotClientImpl implements BreadBotClient, EventListener {
     private final CommandResultManager resultManager;
     private final ArgumentTypesManager argumentTypes;
 //    private final IEventManager eventManager;
-    private final ICommandEventFactory eventFactory;
+private final CommandEventFactory eventFactory;
     private final CommandEngine commandEngine;
     private final Predicate<Message> preProcessPredicate;
     private final List<CommandModule> modules;
@@ -56,7 +56,7 @@ public class BreadBotClientImpl implements BreadBotClient, EventListener {
     private final CommandResponseManager responseManager;
     private final boolean shouldEvaluateCommandOnMessageUpdate;
 
-    public BreadBotClientImpl(List<CommandModule> modules, List<CommandHandleBuilderInternal> commands, CommandPropertiesManager commandProperties, CommandResultManager resultManager, ArgumentTypesManager argumentTypes, ICommandEventFactory eventFactory, Predicate<Message> preProcessPredicate, CommandResponseManager responseManager, boolean shouldEvaluateCommandOnMessageUpdate) {
+    public BreadBotClientImpl(List<CommandModule> modules, List<CommandHandleBuilderInternal> commands, CommandPropertiesManager commandProperties, CommandResultManager resultManager, ArgumentTypesManager argumentTypes, CommandEventFactory eventFactory, Predicate<Message> preProcessPredicate, CommandResponseManager responseManager, boolean shouldEvaluateCommandOnMessageUpdate) {
         this.modules = Collections.unmodifiableList(modules);
         this.resultManager = resultManager;
         this.argumentTypes = argumentTypes;
