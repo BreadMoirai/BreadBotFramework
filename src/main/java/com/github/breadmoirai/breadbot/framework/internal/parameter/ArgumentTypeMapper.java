@@ -7,7 +7,7 @@ package com.github.breadmoirai.breadbot.framework.internal.parameter;
 @FunctionalInterface
 public interface ArgumentTypeMapper<T> {
 
-    static final ArgumentTypeMapper<Void> VOID_MAPPER = (arg, flags) -> null;
+    ArgumentTypeMapper<Void> VOID_MAPPER = (arg, flags) -> null;
 
     /**
      * Maps / Parses the {@link com.github.breadmoirai.breadbot.framework.internal.parameter.CommandArgument} to this given type.

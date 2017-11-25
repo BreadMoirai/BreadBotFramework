@@ -14,7 +14,11 @@
 */
 package com.github.breadmoirai.breadbot.framework.internal.command.builder;
 
-import com.github.breadmoirai.breadbot.framework.*;
+import com.github.breadmoirai.breadbot.framework.BreadBotClientBuilder;
+import com.github.breadmoirai.breadbot.framework.CommandEvent;
+import com.github.breadmoirai.breadbot.framework.CommandParameterBuilder;
+import com.github.breadmoirai.breadbot.framework.CommandPropertyMap;
+import com.github.breadmoirai.breadbot.framework.annotation.command.Command;
 import com.github.breadmoirai.breadbot.framework.annotation.command.MainCommand;
 import com.github.breadmoirai.breadbot.framework.error.BreadBotException;
 import com.github.breadmoirai.breadbot.framework.error.CommandInitializationException;

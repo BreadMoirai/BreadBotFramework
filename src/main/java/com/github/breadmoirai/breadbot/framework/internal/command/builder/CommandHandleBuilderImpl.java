@@ -15,6 +15,7 @@
 package com.github.breadmoirai.breadbot.framework.internal.command.builder;
 
 import com.github.breadmoirai.breadbot.framework.*;
+import com.github.breadmoirai.breadbot.framework.annotation.command.Command;
 import com.github.breadmoirai.breadbot.framework.internal.command.CommandHandleImpl;
 import com.github.breadmoirai.breadbot.framework.internal.command.CommandObjectFactory;
 import com.github.breadmoirai.breadbot.framework.internal.command.CommandPropertyMapImpl;

@@ -66,12 +66,10 @@ public class CommandResultManagerImpl implements CommandResultManager, CommandRe
                 .sorted(c)
                 .map(entry -> Pair.of(entry.getKey(), entry.getValue()))
                 .collect(Collectors.toList());
-        return (command, event, result) -> {
-            list.stream()
-                    .filter(pair -> pair.getLeft().isInstance(result))
-                    .findFirst()
-                    .ifPresent(pair -> CommandResultHandler.handleObject(pair.getRight(), command, event, result));
-        };
+        return (command, event, result) -> list.stream()
+                .filter(pair -> pair.getLeft().isInstance(result))
+                .findFirst()
+                .ifPresent(pair -> CommandResultHandler.handleObject(pair.getRight(), command, event, result));
     }
 
 }

@@ -68,7 +68,6 @@ public abstract class BasicResponse extends CommandResponse {
 
     /**
      * appends failure behavior to any existing behavior
-     * @see CommandResponse#setDefaultFailure
      */
     @SuppressWarnings("Duplicates")
     public BasicResponse withFailure(Consumer<Throwable> failureConsumer) {

@@ -38,7 +38,7 @@ public class MenuEmoji implements MenuReaction {
 
     @Override
     public boolean matches(GenericGuildMessageReactionEvent event) {
-        return event.getReactionEmote().getEmote() == null && e.equals(event.getReaction().getEmote().getName());
+        return event.getReactionEmote().getEmote() == null && e.equals(event.getReaction().getReactionEmote().getName());
     }
 
     @Override

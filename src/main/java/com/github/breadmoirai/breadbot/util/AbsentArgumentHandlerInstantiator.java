@@ -14,11 +14,11 @@
 */
 package com.github.breadmoirai.breadbot.util;
 
-import com.github.breadmoirai.breadbot.framework.annotation.parameter.IfNotFound;
+import com.github.breadmoirai.breadbot.framework.annotation.parameter.HandleAbsentArgument;
 
 import java.util.function.Function;
 
-public class MissingArgumentHandleInstantiator implements Function<IfNotFound, Object> {
+public class AbsentArgumentHandlerInstantiator implements Function<HandleAbsentArgument, Object> {
 
     /**
      * Applies this function to the given argument.
@@ -27,7 +27,7 @@ public class MissingArgumentHandleInstantiator implements Function<IfNotFound, O
      * @return the function result
      */
     @Override
-    public Object apply(IfNotFound ifNotFound) {
+    public Object apply(HandleAbsentArgument ifNotFound) {
         try {
             return ifNotFound.value().newInstance();
         } catch (InstantiationException | IllegalAccessException e) {

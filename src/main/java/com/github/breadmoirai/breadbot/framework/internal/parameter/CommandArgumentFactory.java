@@ -94,7 +94,7 @@ public class CommandArgumentFactory {
     }
 
     @Nullable
-    public CommandArgument tryEmoji(String s) {
+    private CommandArgument tryEmoji(String s) {
         if (s.length() > 11) {
             return null;
         } else if (s.length() > 4) {

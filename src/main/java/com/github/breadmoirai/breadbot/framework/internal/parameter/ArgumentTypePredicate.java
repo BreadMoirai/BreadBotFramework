@@ -14,10 +14,8 @@
 */
 package com.github.breadmoirai.breadbot.framework.internal.parameter;
 
-import java.util.function.Predicate;
-
 @FunctionalInterface
-public interface ArgumentTypePredicate extends Predicate<CommandArgument> {
+public interface ArgumentTypePredicate {
 
     boolean test(CommandArgument arg, int flags);
 

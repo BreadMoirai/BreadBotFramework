@@ -94,8 +94,7 @@ public class DefaultArgumentTypes {
             }
             if (arg.isLong()) {
                 long l = arg.parseLong();
-                User user = arg.getEvent().getJDA().getUserById(l);
-                return user;
+                return arg.getEvent().getJDA().getUserById(l);
             }
             return arg.findMember().map(Member::getUser).orElse(null);
         });
@@ -107,8 +106,7 @@ public class DefaultArgumentTypes {
             }
             if (arg.isLong()) {
                 long l = arg.parseLong();
-                Member member = arg.getEvent().getGuild().getMemberById(l);
-                return member;
+                return arg.getEvent().getGuild().getMemberById(l);
             }
             return arg.findMember().orElse(null);
         });

@@ -101,7 +101,7 @@ public interface CommandParameterBuilder {
      * @param onParamNotFound A MissingArgumentHandler which is a functional interface that is a BiConsumer of the CommandEvent and the CommandParameter that is missing
      * @return this
      */
-    CommandParameterBuilder setOnParamNotFound(MissingArgumentHandler onParamNotFound);
+    CommandParameterBuilder setOnAbsentArgument(AbsentArgumentHandler onParamNotFound);
 
     /**
      * This only affects parameters which are Collections.

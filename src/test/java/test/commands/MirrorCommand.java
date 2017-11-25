@@ -18,7 +18,7 @@ import com.github.breadmoirai.breadbot.framework.annotation.command.MainCommand;
 
 public class MirrorCommand {
 
-    private static final String reverseString(String s) {
+    private static String reverseString(String s) {
         StringBuilder sb = new StringBuilder();
         for (int i = s.length() - 1; i >= 0; i--) {
             sb.append(s.charAt(i));

@@ -15,17 +15,17 @@
  */
 package com.github.breadmoirai.breadbot.framework.annotation.parameter;
 
-import com.github.breadmoirai.breadbot.framework.internal.parameter.MissingArgumentHandler;
-import com.github.breadmoirai.breadbot.util.MissingArgumentHandleInstantiator;
+import com.github.breadmoirai.breadbot.framework.internal.parameter.AbsentArgumentHandler;
+import com.github.breadmoirai.breadbot.util.AbsentArgumentHandlerInstantiator;
 
 import java.lang.annotation.*;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.PARAMETER, ElementType.TYPE, ElementType.METHOD})
-@RegisterPropertyMapper(type = MissingArgumentHandler.class, mapper = MissingArgumentHandleInstantiator.class)
+@RegisterPropertyMapper(type = AbsentArgumentHandler.class, mapper = AbsentArgumentHandlerInstantiator.class)
 @Inherited
-public @interface IfNotFound {
+public @interface HandleAbsentArgument {
 
-    Class<? extends MissingArgumentHandler> value();
+    Class<? extends AbsentArgumentHandler> value();
 
 }

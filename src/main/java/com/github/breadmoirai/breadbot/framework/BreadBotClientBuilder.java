@@ -417,7 +417,6 @@ public class BreadBotClientBuilder implements
         if (!hasModule(PrefixModule.class)) modules.add(new DefaultPrefixModule("!"));
         if (commandEventFactory == null)
             commandEventFactory = new CommandEventFactoryImpl(getModule(PrefixModule.class));
-        BreadBotClient client = new BreadBotClientImpl(modules, commands, commandProperties, resultManager, argumentTypes, commandEventFactory, preProcessPredicate, responseManager, shouldEvaluateCommandOnMessageUpdate);
-        return client;
+        return new BreadBotClientImpl(modules, commands, commandProperties, resultManager, argumentTypes, commandEventFactory, preProcessPredicate, responseManager, shouldEvaluateCommandOnMessageUpdate);
     }
 }

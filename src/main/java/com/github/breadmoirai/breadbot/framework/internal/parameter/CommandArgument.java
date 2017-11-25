@@ -77,7 +77,6 @@ public interface CommandArgument {
 
     /**
      * @param type The type of argument to test for.
-     *
      * @return {@code true} if this argument is of the type passed.
      */
     default boolean isOfType(Class<?> type) {
@@ -85,17 +84,26 @@ public interface CommandArgument {
     }
 
     /**
-     * @param type the argument type to test for
+     * @param type  the argument type to test for
      * @param flags testing flags. {@link ArgumentFlags}
-     *
      * @return {@code true} if this argument is of the type passed.
      */
     default boolean isOfType(Class<?> type, int flags) {
-        return getClient().getArgumentTypes().getParser(type).test( this, flags);
+        return getClient().getArgumentTypes().getParser(type).test(this, flags);
     }
 
+    /**
+     * Grabs the corresponding parser from the BreadBotClient and attempts to parse this argument to the passed type. If successful, return the result.
+     *
+     * @param type the class of the type
+     * @param <T>  The type
+     * @return the result if can be parsed, otherwise {@code null}.
+     */
     default <T> T getAsType(Class<T> type) {
-        return getClient().getArgumentTypes().getParser(type).parse(this, 0);
+        ArgumentParser<T> parser = getClient().getArgumentTypes().getParser(type);
+        if (parser != null)
+            return parser.parse(this, 0);
+        else return null;
     }
 
     /**
@@ -293,7 +301,7 @@ public interface CommandArgument {
     /**
      * Checks if this argument is a {@link net.dv8tion.jda.core.entities.User} mention that can be correctly resolved to a {@link net.dv8tion.jda.core.entities.User}.
      * The result of this method is equivalent to checking this argument against a regex of {@code <@(!)?[0-9]+>} and then checking to see if {@link net.dv8tion.jda.core.JDA} has knowledge of a {@link net.dv8tion.jda.core.entities.User} with that id.
-     *
+     * <p>
      * If this method returns {@code false} and {@link com.github.breadmoirai.breadbot.framework.internal.parameter.CommandArgument#isUser} returns {@code true}, this CommandArgument is can be cast to an  {@link com.github.breadmoirai.breadbot.framework.internal.argument.InvalidMentionArgument InvalidMentionArgument}
      *
      * @return {@code true} if this is a formatted {@link net.dv8tion.jda.core.entities.User} mention that can be resolved to an entity.
@@ -304,7 +312,6 @@ public interface CommandArgument {
      * If this is a {@link net.dv8tion.jda.core.entities.User} mention, will return the specified user.
      *
      * @return The {@link net.dv8tion.jda.core.entities.User} if found by JDA.
-     *
      * @throws UnsupportedOperationException if {@link com.github.breadmoirai.breadbot.framework.internal.parameter.CommandArgument#isValidUser()} would return {@code false}
      */
     @NotNull
@@ -328,7 +335,6 @@ public interface CommandArgument {
      * The {@link net.dv8tion.jda.core.entities.Member} if it can be resolved.
      *
      * @return The {@link net.dv8tion.jda.core.entities.Member} if found.
-     *
      * @throws UnsupportedOperationException if {@link CommandArgument#isValidMember()} would return {@code false}
      */
     @NotNull
@@ -340,7 +346,7 @@ public interface CommandArgument {
      * Searches for a member in the {@link net.dv8tion.jda.core.entities.Guild} using the argument as criteria.
      * If it matches multiple users, the user whose name begins with the argument is given precedence. If multiple users match, the first one found is returned.
      * This attempts to match Username and Nickname.
-     *
+     * <p>
      * <p>If this argument is already a valid {@link net.dv8tion.jda.core.entities.Member} mention, that {@link net.dv8tion.jda.core.entities.Member} is returned within the {@link java.util.Optional}.
      *
      * @return the first {@link net.dv8tion.jda.core.entities.Member} found, otherwise an empty {@link java.util.Optional}
@@ -350,7 +356,7 @@ public interface CommandArgument {
 
     /**
      * Searches for members whose Username or Nickname contains this argument.
-     *
+     * <p>
      * <p>If this argument is already a valid {@link net.dv8tion.jda.core.entities.Member} mention, a {@link java.util.List} with only that element is returned.
      *
      * @return A never-null {@link java.util.List} of {@link net.dv8tion.jda.core.entities.Member Members}
@@ -379,7 +385,6 @@ public interface CommandArgument {
      * If {@link com.github.breadmoirai.breadbot.framework.internal.parameter.CommandArgument#isRole isRole()} would return true, it is guaranteed that this method returns a {@code non-null} value.
      *
      * @return {@link net.dv8tion.jda.core.entities.Role} if role is present within the {@link net.dv8tion.jda.core.entities.Guild}, otherwise {@code null}
-     *
      * @throws UnsupportedOperationException if {@link com.github.breadmoirai.breadbot.framework.internal.parameter.CommandArgument#isValidRole()} would return {@code false}
      */
     @NotNull
@@ -389,7 +394,7 @@ public interface CommandArgument {
 
     /**
      * Attempts to match this argument to a {@link net.dv8tion.jda.core.entities.Role} by name.
-     *
+     * <p>
      * <p>If this argument is already a valid {@link net.dv8tion.jda.core.entities.Role} mention, that {@link net.dv8tion.jda.core.entities.Role} is returned within the {@link java.util.Optional}.
      *
      * @return the first {@link net.dv8tion.jda.core.entities.Role} found, otherwise an empty {@link java.util.Optional}
@@ -399,7 +404,7 @@ public interface CommandArgument {
 
     /**
      * Returns a {@link java.util.List} of {@link net.dv8tion.jda.core.entities.Role Roles} that match this argument. The criteria being that the {@link net.dv8tion.jda.core.entities.Role} name should contain this argument.
-     *
+     * <p>
      * <p>If this argument is already a valid {@link net.dv8tion.jda.core.entities.Role} mention, a {@link java.util.List} with only that element is returned.
      *
      * @return A never-null {@link java.util.List} of {@link net.dv8tion.jda.core.entities.Role Roles}.
@@ -418,7 +423,7 @@ public interface CommandArgument {
     /**
      * Checks if this argument is a {@link net.dv8tion.jda.core.entities.TextChannel} mention that can be correctly resolved to a {@link net.dv8tion.jda.core.entities.TextChannel}.
      * The result of this method is equivalent to checking this argument against a regex of {@code <#[0-9]+>} and then checking to see if {@link net.dv8tion.jda.core.JDA} has knowledge of a {@link net.dv8tion.jda.core.entities.TextChannel} with that id.
-     *
+     * <p>
      * If this method returns {@code false} and {@link com.github.breadmoirai.breadbot.framework.internal.parameter.CommandArgument#isTextChannel()} returns {@code true}, this CommandArgument is can be cast to an  {@link com.github.breadmoirai.breadbot.framework.internal.argument.InvalidMentionArgument InvalidMentionArgument}
      *
      * @return {@code true} if this is a formatted {@link net.dv8tion.jda.core.entities.TextChannel} mention and can be correctly resolved to a JDA entity.
@@ -427,11 +432,10 @@ public interface CommandArgument {
 
     /**
      * Attempts to resolve this argument as a {@link net.dv8tion.jda.core.entities.TextChannel} mention to a {@link net.dv8tion.jda.core.entities.TextChannel} in the {@link net.dv8tion.jda.core.entities.Guild}.
-     *
+     * <p>
      * <p>If {@link com.github.breadmoirai.breadbot.framework.internal.parameter.CommandArgument#isTextChannel isTextChannel()} would return true, it is guaranteed that this method returns a {@code non-null} value.
      *
      * @return {@link net.dv8tion.jda.core.entities.TextChannel} if can be resolved to a JDA entity
-     *
      * @throws UnsupportedOperationException if {@link com.github.breadmoirai.breadbot.framework.internal.parameter.CommandArgument#isValidTextChannel()} would return {@code false}
      */
     @NotNull
@@ -450,7 +454,7 @@ public interface CommandArgument {
 
     /**
      * Returns a {@link java.util.List} of {@link net.dv8tion.jda.core.entities.TextChannel TextChannels} that match this argument. The criteria being that the {@link net.dv8tion.jda.core.entities.TextChannel} name should contain this argument.
-     *
+     * <p>
      * <p>If this argument is already a valid {@link net.dv8tion.jda.core.entities.TextChannel} mention, a {@link java.util.List} with only that element is returned.
      *
      * @return A never-null {@link java.util.List} of {@link net.dv8tion.jda.core.entities.TextChannel TextChannels}.
@@ -486,11 +490,10 @@ public interface CommandArgument {
      * If {@link #isEmote()} would return {@code true}, this method will always return a {@code not-null} value, {@code null} otherwise.
      * If the formatting is correct but {@link net.dv8tion.jda.core.JDA} cannot resolve the {@link net.dv8tion.jda.core.entities.Emote},
      * a {@link net.dv8tion.jda.core.entities.IFakeable Fake} {@link net.dv8tion.jda.core.entities.Emote} will be returned.
-     *
+     * <p>
      * <p>If {@link com.github.breadmoirai.breadbot.framework.internal.parameter.CommandArgument#isEmote isEmote()} would return true, it is guaranteed that this method returns a {@code non-null} value.
      *
      * @return An {@link net.dv8tion.jda.core.entities.Emote} if the formatting is correct. Otherwise {@code null}.
-     *
      * @throws UnsupportedOperationException if {@link com.github.breadmoirai.breadbot.framework.internal.parameter.CommandArgument#isEmote()} would return {@code false}
      */
     @NotNull
@@ -513,7 +516,6 @@ public interface CommandArgument {
      * Attempts to find a matching {@link com.github.breadmoirai.breadbot.util.Emoji} with {@link com.github.breadmoirai.breadbot.util.Emoji#find(String)}
      *
      * @return The {@link com.github.breadmoirai.breadbot.util.Emoji} if matched.
-     *
      * @throws UnsupportedOperationException if {@link com.github.breadmoirai.breadbot.framework.internal.parameter.CommandArgument#isEmoji()} would return {@code false}
      */
     @NotNull

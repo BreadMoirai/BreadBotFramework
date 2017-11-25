@@ -13,8 +13,8 @@ package test.commands;/*    Copyright 2017 Ton Ly
   limitations under the License.
 */
 
-import com.github.breadmoirai.breadbot.framework.Command;
 import com.github.breadmoirai.breadbot.framework.CommandEvent;
+import com.github.breadmoirai.breadbot.framework.annotation.command.Command;
 import com.github.breadmoirai.breadbot.framework.annotation.parameter.Index;
 import com.github.breadmoirai.breadbot.framework.annotation.parameter.Width;
 

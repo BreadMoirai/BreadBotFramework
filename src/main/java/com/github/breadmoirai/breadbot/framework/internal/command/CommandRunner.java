@@ -17,13 +17,13 @@ public class CommandRunner implements Runnable {
     private final CommandResultHandler<?> resultHandler;
     private Consumer<Throwable> onException;
 
-    public CommandRunner(Object o,
-                         CommandEvent event,
-                         InvokableCommand invokableCommand,
-                         CommandParser parser,
-                         CommandHandle commandHandle,
-                         CommandResultHandler<?> resultHandler,
-                         Consumer<Throwable> onException) {
+    CommandRunner(Object o,
+                  CommandEvent event,
+                  InvokableCommand invokableCommand,
+                  CommandParser parser,
+                  CommandHandle commandHandle,
+                  CommandResultHandler<?> resultHandler,
+                  Consumer<Throwable> onException) {
         this.o = o;
         this.event = event;
         this.invokableCommand = invokableCommand;
@@ -32,14 +32,6 @@ public class CommandRunner implements Runnable {
         //noinspection unchecked
         this.resultHandler = resultHandler;
         this.onException = onException;
-    }
-
-    public Object getCommandObject() {
-        return o;
-    }
-
-    public CommandEvent getCommandEvent() {
-        return event;
     }
 
     @Override

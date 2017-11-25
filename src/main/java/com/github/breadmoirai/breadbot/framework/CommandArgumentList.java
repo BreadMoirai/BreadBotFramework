@@ -3,11 +3,6 @@ package com.github.breadmoirai.breadbot.framework;
 import com.github.breadmoirai.breadbot.framework.internal.parameter.ArgumentTypeMapper;
 import com.github.breadmoirai.breadbot.framework.internal.parameter.CommandArgument;
 import com.github.breadmoirai.breadbot.framework.internal.parameter.CommandArgumentFactory;
-import com.github.breadmoirai.breadbot.util.Emoji;
-import gnu.trove.impl.Constants;
-import gnu.trove.map.TObjectIntMap;
-import gnu.trove.map.hash.TObjectIntHashMap;
-import net.dv8tion.jda.core.entities.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -16,7 +11,7 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 /**
- * A list implementation for {@link com.github.breadmoirai.breadbot.framework.internal.parameter.CommandArgument CommandArguments} that includes a specialized iterator. All arguments are in lowercase.
+ * A list implementation for {@link com.github.breadmoirai.breadbot.framework.internal.parameter.CommandArgument CommandArguments} that includes a specialized iterator.
  */
 public class CommandArgumentList extends AbstractList<CommandArgument> implements RandomAccess {
 
@@ -58,7 +53,7 @@ public class CommandArgumentList extends AbstractList<CommandArgument> implement
      * Changes in the new list will not be reflected in this list as both lists are unmodifiable.
      *
      * @param fromIndex the beginning index, inclusive
-     * @param toIndex the end index, exclusive
+     * @param toIndex   the end index, exclusive
      * @throws IndexOutOfBoundsException if an endpoint index value is out of range
      *                                   {@code (fromIndex < 0 || toIndex > size)}
      * @throws IllegalArgumentException  if the endpoint indices are out of order
@@ -85,11 +80,11 @@ public class CommandArgumentList extends AbstractList<CommandArgument> implement
     /**
      * Creates a {@link java.util.Spliterator} using {@link CommandArgumentList#typeIterator} as the base.
      *
-     * @param types the {@link java.util.Spliterator} will only see {@link com.github.breadmoirai.breadbot.framework.internal.parameter.CommandArgument CommandArguments} that satisfy at least one of the types provided.
+     * @param type the {@link java.util.Spliterator} will only see {@link com.github.breadmoirai.breadbot.framework.internal.parameter.CommandArgument CommandArguments} that satisfy at least one of the types provided.
      * @return a {@link java.util.Spliterator} of type CommandArgument.
      */
-    public Spliterator<CommandArgument> spliterator(Class<?>... types) {
-        return Spliterators.spliteratorUnknownSize(typeIterator(types), Spliterator.IMMUTABLE | Spliterator.NONNULL | Spliterator.ORDERED);
+    public <T> Spliterator<T> spliterator(Class<T> type) {
+        return Spliterators.spliteratorUnknownSize(typeIterator(type), Spliterator.IMMUTABLE | Spliterator.NONNULL | Spliterator.ORDERED);
     }
 
     /**
@@ -149,314 +144,313 @@ public class CommandArgumentList extends AbstractList<CommandArgument> implement
      * @return an ordered {@link java.util.stream.IntStream} in the order the user provided.
      */
     public IntStream ints() {
-        return stream(Integer.class, IntStream.class).flatMapToInt(CommandArgument::parseRange);
+        return stream().flatMapToInt(CommandArgument::parseRange);
     }
 
-    public Stream<CommandArgument> stream(Class<?>... types) {
-        return StreamSupport.stream(spliterator(types), false);
+    public <T> Stream<T> stream(Class<T> type) {
+        return StreamSupport.stream(spliterator(type), false);
+    }
+//
+//    public ArgumentIterator argumentIterator() {
+//        return new ArgumentIterator();
+//    }
+
+    /**
+     * returns an iterator that only checks for commandArguments that can be mapped to the passed type
+     *
+     * @param type the class of the type
+     * @param <T>  the type
+     * @return an iterator
+     */
+    public <T> ArgumentTypeIterator<T> typeIterator(Class<T> type) {
+        return new ArgumentTypeIterator<>(type);
     }
 
-    public ArgumentIterator argumentIterator() {
-        return new ArgumentIterator();
-    }
-
-    public ArgumentTypeIterator typeIterator(Class<?>... types) {
-        return new ArgumentTypeIterator(types);
-    }
-
-    public class ArgumentTypeIterator implements Iterator<CommandArgument> {
+    public class ArgumentTypeIterator<T> implements Iterator<T> {
         private int cursor;
-        private final Class<?>[] types;
+        private final Class<T> type;
 
-        private ArgumentTypeIterator(Class<?>[] types) {
-            this.types = types;
+        private ArgumentTypeIterator(Class<T> type) {
+            this.type = type;
         }
 
         /**
-         * Returns the index of the element that would be returned by a
-         * subsequent call to {@link #next}. (Returns {@code -1} if the list
-         * iterator is at the end of the list.)
+         * Note that in this specific implementation, depending on the parser for the type, this method may be redundant if the parser does not implement a {@link com.github.breadmoirai.breadbot.framework.internal.parameter.ArgumentParser#test(CommandArgument)} predicate
          *
-         * @return the index of the element that would be returned by a
-         * subsequent call to {@code next}, or {@code -1} if the list
-         * iterator is at the end of the list
+         * <p>{@inheritDoc}
+         *
+         * <p>Note that {@link #next()} will <b>not</b> throw an exception if there are no more elements
+         * @return
          */
-        public int nextIndex() {
-            for (int i = cursor; i < size(); i++) {
-                for (Class<?> type : types) {
-                    if (get(i).isOfType(type)) {
-                        return i;
-                    }
+        @Override
+        public boolean hasNext() {
+            for (; cursor < size(); cursor++) {
+                CommandArgument commandArgument = get(cursor);
+                if (commandArgument.isOfType(type)) {
+                    return true;
                 }
             }
-            return -1;
+            return false;
         }
 
-        /**
-         * Returns {@code true} if this list iterator has more elements when
-         * traversing the list in the forward direction. (In other words,
-         * returns {@code true} if {@link #next} would return an element rather
-         * than throwing an exception.)
-         *
-         * @return {@code true} if the list iterator has more elements when
-         * traversing the list in the forward direction
-         */
-        public boolean hasNext() {
-            return nextIndex() != -1;
-        }
-
-        /**
-         * Returns the next element in the list and advances the cursor position.
-         * This method may be called repeatedly to iterate through the list.
-         *
-         * @return
-         */
-        public CommandArgument next() {
-            final int i = nextIndex();
-            if (i == -1) throw new NoSuchElementException();
-            this.cursor = i + 1;
-            return get(i);
-        }
-
-        public CommandArgument current() {
-            if (cursor == 0 || cursor > size()) throw new NoSuchElementException();
-            return get(cursor - 1);
+        @Override
+        public T next() {
+            for (; cursor < size(); cursor++) {
+                CommandArgument commandArgument = get(cursor);
+                T asType = commandArgument.getAsType(type);
+                if (asType != null) {
+                    cursor++;
+                    return asType;
+                }
+            }
+            return null;
         }
     }
 
 
-    public class ArgumentIterator {
-
-        private final TObjectIntMap<Class<?>> cursorMap;
-
-        private ArgumentIterator() {
-            cursorMap = new TObjectIntHashMap<>(Constants.DEFAULT_CAPACITY, Constants.DEFAULT_LOAD_FACTOR, 0);
-        }
-
-        /**
-         * Returns the index of the element that would be returned by a
-         * subsequent call to {@link #next}. (Returns {@code -1} if the list
-         * iterator is at the end of the list.)
-         *
-         * @return the index of the element that would be returned by a
-         * subsequent call to {@code next}, or {@code -1} if the list
-         * iterator is at the end of the list
-         */
-        public int nextIndex(Class<?> type) {
-            final int cursor = this.cursorMap.putIfAbsent(type, 0);
-            return indexOfType(cursor, type);
-        }
-
-        /**
-         * Returns {@code true} if this list iterator has more elements when
-         * traversing the list in the forward direction. (In other words,
-         * returns {@code true} if {@link #next} would return an element rather
-         * than throwing an exception.)
-         *
-         * @param type
-         * @return {@code true} if the list iterator has more elements when
-         * traversing the list in the forward direction
-         */
-        public boolean hasNext(Class<?> type) {
-            return nextIndex(type) != -1;
-        }
-
-        /**
-         * Returns the next element in the list and advances the cursor position.
-         * This method may be called repeatedly to iterate through the list.
-         *
-         * @param type
-         * @return
-         */
-        public CommandArgument next(Class<?> type) {
-            final int i = nextIndex(type);
-            if (i == -1) throw new NoSuchElementException();
-            this.cursorMap.put(type, i + 1);
-            return get(i);
-        }
-
-        public CommandArgument current(Class<?> type) {
-            final int cursor = this.cursorMap.putIfAbsent(type, 0);
-            if (cursor <= 0 || cursor > size()) throw new NoSuchElementException();
-            return get(cursor - 1);
-        }
-
-        public int nextIntegerIndex() {
-            return nextIndex(Integer.TYPE);
-        }
-
-        public int nextLongIndex() {
-            return nextIndex(Long.TYPE);
-        }
-
-        public int nextFloatIndex() {
-            return nextIndex(Float.TYPE);
-        }
-
-        public int nextDoubleIndex() {
-            return nextIndex(Double.TYPE);
-        }
-
-        public int nextRangeIndex() {
-            return nextIndex(IntStream.class);
-        }
-
-        public int nextUserIndex() {
-            return nextIndex(User.class);
-        }
-
-        public int nextMemberIndex() {
-            return nextIndex(Member.class);
-        }
-
-        public int nextRoleIndex() {
-            return nextIndex(Role.class);
-        }
-
-        public int nextTextChannelIndex() {
-            return nextIndex(TextChannel.class);
-        }
-
-        public int nextEmoteIndex() {
-            return nextIndex(Emote.class);
-        }
-
-        public int nextEmojiIndex() {
-            return nextIndex(Emoji.class);
-        }
-
-        public boolean hasNextInteger() {
-            return hasNext(Integer.TYPE);
-        }
-
-        public boolean hasNextLong() {
-            return hasNext(Long.TYPE);
-        }
-
-        public boolean hasNextFloat() {
-            return hasNext(Float.TYPE);
-        }
-
-        public boolean hasNextDouble() {
-            return hasNext(Double.TYPE);
-        }
-
-        public boolean hasNextRange() {
-            return hasNext(IntStream.class);
-        }
-
-        public boolean hasNextUser() {
-            return hasNext(User.class);
-        }
-
-        public boolean hasNextMember() {
-            return hasNext(Member.class);
-        }
-
-        public boolean hasNextRole() {
-            return hasNext(Role.class);
-        }
-
-        public boolean hasNextTextChannel() {
-            return hasNext(TextChannel.class);
-        }
-
-        public boolean hasNextEmote() {
-            return hasNext(Emote.class);
-        }
-
-        public boolean hasNextEmoji() {
-            return hasNext(Emoji.class);
-        }
-
-        public CommandArgument nextInteger() {
-            return next(Integer.TYPE);
-        }
-
-        public CommandArgument nextLong() {
-            return next(Long.TYPE);
-        }
-
-        public CommandArgument nextFloat() {
-            return next(Float.TYPE);
-        }
-
-        public CommandArgument nextDouble() {
-            return next(Double.TYPE);
-        }
-
-        public CommandArgument nextRange() {
-            return next(IntStream.class);
-        }
-
-        public CommandArgument nextUser() {
-            return next(User.class);
-        }
-
-        public CommandArgument nextMember() {
-            return next(Member.class);
-        }
-
-        public CommandArgument nextRole() {
-            return next(Role.class);
-        }
-
-        public CommandArgument nextTextChannel() {
-            return next(TextChannel.class);
-        }
-
-        public CommandArgument nextEmote() {
-            return next(Emote.class);
-        }
-
-        public CommandArgument nextEmoji() {
-            return next(Emoji.class);
-        }
-
-        public CommandArgument currentInteger() {
-            return current(Integer.TYPE);
-        }
-
-        public CommandArgument currentLong() {
-            return current(Long.TYPE);
-        }
-
-        public CommandArgument currentFloat() {
-            return current(Float.TYPE);
-        }
-
-        public CommandArgument currentDouble() {
-            return current(Double.TYPE);
-        }
-
-        public CommandArgument currentRange() {
-            return current(IntStream.class);
-        }
-
-        public CommandArgument currentUser() {
-            return current(User.class);
-        }
-
-        public CommandArgument currentMember() {
-            return current(Member.class);
-        }
-
-        public CommandArgument currentRole() {
-            return current(Role.class);
-        }
-
-        public CommandArgument currentTextChannel() {
-            return current(TextChannel.class);
-        }
-
-        public CommandArgument currentEmote() {
-            return current(Emote.class);
-        }
-
-        public CommandArgument currentEmoji() {
-            return current(Emoji.class);
-        }
-
-    }
+//    public class ArgumentIterator {
+//
+//        private final TObjectIntMap<Class<?>> cursorMap;
+//
+//        private ArgumentIterator() {
+//            cursorMap = new TObjectIntHashMap<>(Constants.DEFAULT_CAPACITY, Constants.DEFAULT_LOAD_FACTOR, 0);
+//        }
+//
+//        /**
+//         * Returns the index of the element that would be returned by a
+//         * subsequent call to {@link #next}. (Returns {@code -1} if the list
+//         * iterator is at the end of the list.)
+//         *
+//         * @return the index of the element that would be returned by a
+//         * subsequent call to {@code next}, or {@code -1} if the list
+//         * iterator is at the end of the list
+//         */
+//        public int nextIndex(Class<?> type) {
+//            final int cursor = this.cursorMap.putIfAbsent(type, 0);
+//            return indexOfType(cursor, type);
+//        }
+//
+//        /**
+//         * Returns {@code true} if this list iterator has more elements when
+//         * traversing the list in the forward direction. (In other words,
+//         * returns {@code true} if {@link #next} would return an element rather
+//         * than throwing an exception.)
+//         *
+//         * @param type the class of type of CommandArgument to be used by it's corresponding {@link ArgumentParser#test(CommandArgument)}
+//         * @return {@code true} if the list iterator has more elements when
+//         * traversing the list in the forward direction
+//         */
+//        public boolean hasNext(Class<?> type) {
+//            return nextIndex(type) != -1;
+//        }
+//
+//        /**
+//         * Returns the next element in the list and advances the cursor position.
+//         * This method may be called repeatedly to iterate through the list.
+//         *
+//         * @param  type the class of type of CommandArgument to be used by it's corresponding {@link ArgumentParser#test(CommandArgument)}
+//         * @return the next CommandArgument that is of this type.
+//         * @throws NoSuchElementException if a commandArgument
+//         */
+//        public CommandArgument next(Class<?> type) {
+//            final int i = nextIndex(type);
+//            if (i == -1) throw new NoSuchElementException();
+//            this.cursorMap.put(type, i + 1);
+//            return get(i);
+//        }
+//
+//        public <T> T getNext(Class<T> type) {
+//            final int cursor = this.cursorMap.putIfAbsent(type, 0);
+//            for (int i = cursor; i < size(); i++) {
+//                CommandArgument arg = get(i);
+//                T asType = arg.getAsType(type);
+//                if (asType != null) return asType;
+//            }
+//            return null;
+//        }
+//
+//        public CommandArgument current(Class<?> type) {
+//            final int cursor = this.cursorMap.putIfAbsent(type, 0);
+//            if (cursor <= 0 || cursor > size()) throw new NoSuchElementException();
+//            return get(cursor - 1);
+//        }
+//
+//        public int nextIntegerIndex() {
+//            return nextIndex(Integer.TYPE);
+//        }
+//
+//        public int nextLongIndex() {
+//            return nextIndex(Long.TYPE);
+//        }
+//
+//        public int nextFloatIndex() {
+//            return nextIndex(Float.TYPE);
+//        }
+//
+//        public int nextDoubleIndex() {
+//            return nextIndex(Double.TYPE);
+//        }
+//
+//        public int nextRangeIndex() {
+//            return nextIndex(IntStream.class);
+//        }
+//
+//        public int nextUserIndex() {
+//            return nextIndex(User.class);
+//        }
+//
+//        public int nextMemberIndex() {
+//            return nextIndex(Member.class);
+//        }
+//
+//        public int nextRoleIndex() {
+//            return nextIndex(Role.class);
+//        }
+//
+//        public int nextTextChannelIndex() {
+//            return nextIndex(TextChannel.class);
+//        }
+//
+//        public int nextEmoteIndex() {
+//            return nextIndex(Emote.class);
+//        }
+//
+//        public int nextEmojiIndex() {
+//            return nextIndex(Emoji.class);
+//        }
+//
+//        public boolean hasNextInteger() {
+//            return hasNext(Integer.TYPE);
+//        }
+//
+//        public boolean hasNextLong() {
+//            return hasNext(Long.TYPE);
+//        }
+//
+//        public boolean hasNextFloat() {
+//            return hasNext(Float.TYPE);
+//        }
+//
+//        public boolean hasNextDouble() {
+//            return hasNext(Double.TYPE);
+//        }
+//
+//        public boolean hasNextRange() {
+//            return hasNext(IntStream.class);
+//        }
+//
+//        public boolean hasNextUser() {
+//            return hasNext(User.class);
+//        }
+//
+//        public boolean hasNextMember() {
+//            return hasNext(Member.class);
+//        }
+//
+//        public boolean hasNextRole() {
+//            return hasNext(Role.class);
+//        }
+//
+//        public boolean hasNextTextChannel() {
+//            return hasNext(TextChannel.class);
+//        }
+//
+//        public boolean hasNextEmote() {
+//            return hasNext(Emote.class);
+//        }
+//
+//        public boolean hasNextEmoji() {
+//            return hasNext(Emoji.class);
+//        }
+//
+//        public CommandArgument nextInteger() {
+//            return next(Integer.TYPE);
+//        }
+//
+//        public CommandArgument nextLong() {
+//            return next(Long.TYPE);
+//        }
+//
+//        public CommandArgument nextFloat() {
+//            return next(Float.TYPE);
+//        }
+//
+//        public CommandArgument nextDouble() {
+//            return next(Double.TYPE);
+//        }
+//
+//        public CommandArgument nextRange() {
+//            return next(IntStream.class);
+//        }
+//
+//        public CommandArgument nextUser() {
+//            return next(User.class);
+//        }
+//
+//        public CommandArgument nextMember() {
+//            return next(Member.class);
+//        }
+//
+//        public CommandArgument nextRole() {
+//            return next(Role.class);
+//        }
+//
+//        public CommandArgument nextTextChannel() {
+//            return next(TextChannel.class);
+//        }
+//
+//        public CommandArgument nextEmote() {
+//            return next(Emote.class);
+//        }
+//
+//        public CommandArgument nextEmoji() {
+//            return next(Emoji.class);
+//        }
+//
+//        public CommandArgument currentInteger() {
+//            return current(Integer.TYPE);
+//        }
+//
+//        public CommandArgument currentLong() {
+//            return current(Long.TYPE);
+//        }
+//
+//        public CommandArgument currentFloat() {
+//            return current(Float.TYPE);
+//        }
+//
+//        public CommandArgument currentDouble() {
+//            return current(Double.TYPE);
+//        }
+//
+//        public CommandArgument currentRange() {
+//            return current(IntStream.class);
+//        }
+//
+//        public CommandArgument currentUser() {
+//            return current(User.class);
+//        }
+//
+//        public CommandArgument currentMember() {
+//            return current(Member.class);
+//        }
+//
+//        public CommandArgument currentRole() {
+//            return current(Role.class);
+//        }
+//
+//        public CommandArgument currentTextChannel() {
+//            return current(TextChannel.class);
+//        }
+//
+//        public CommandArgument currentEmote() {
+//            return current(Emote.class);
+//        }
+//
+//        public CommandArgument currentEmoji() {
+//            return current(Emoji.class);
+//        }
+//
+//    }
 
 }

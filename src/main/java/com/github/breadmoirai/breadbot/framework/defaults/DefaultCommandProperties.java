@@ -3,14 +3,17 @@ package com.github.breadmoirai.breadbot.framework.defaults;
 import com.github.breadmoirai.breadbot.framework.CommandHandleBuilder;
 import com.github.breadmoirai.breadbot.framework.annotation.ConfigureCommand;
 import com.github.breadmoirai.breadbot.framework.annotation.ConfigureCommands;
-import com.github.breadmoirai.breadbot.framework.annotation.command.*;
+import com.github.breadmoirai.breadbot.framework.annotation.command.Description;
+import com.github.breadmoirai.breadbot.framework.annotation.command.Group;
+import com.github.breadmoirai.breadbot.framework.annotation.command.Name;
+import com.github.breadmoirai.breadbot.framework.annotation.command.RequiredParameters;
 import com.github.breadmoirai.breadbot.framework.annotation.parameter.*;
 import com.github.breadmoirai.breadbot.framework.error.BreadBotException;
 import com.github.breadmoirai.breadbot.framework.internal.command.CommandPropertiesManagerImpl;
 import com.github.breadmoirai.breadbot.framework.internal.command.builder.CommandHandleBuilderInternal;
+import com.github.breadmoirai.breadbot.framework.internal.parameter.AbsentArgumentHandler;
 import com.github.breadmoirai.breadbot.framework.internal.parameter.ArgumentParser;
 import com.github.breadmoirai.breadbot.framework.internal.parameter.ArgumentTypePredicate;
-import com.github.breadmoirai.breadbot.framework.internal.parameter.MissingArgumentHandler;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -103,7 +106,7 @@ public class DefaultCommandProperties {
         });
 
         cp.putParameterModifier(Flags.class, (p, builder) -> builder.setFlags(p.value()));
-        cp.putParameterModifier(MissingArgumentHandler.class, (p, builder) -> builder.setOnParamNotFound(p));
+        cp.putParameterModifier(AbsentArgumentHandler.class, (p, builder) -> builder.setOnAbsentArgument(p));
         cp.putParameterModifier(Required.class, (p, builder) -> builder.setRequired(true));
         cp.putParameterModifier(Index.class, (p, builder) -> builder.setIndex(p.value()));
         cp.putParameterModifier(MatchRegex.class, (p, builder) -> {

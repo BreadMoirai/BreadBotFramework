@@ -85,7 +85,7 @@ public class CommandParameterBuilderSpecificImpl implements CommandParameterBuil
     }
 
     @Override
-    public CommandParameterBuilder setOnParamNotFound(MissingArgumentHandler onParamNotFound) {
+    public CommandParameterBuilder setOnAbsentArgument(AbsentArgumentHandler onParamNotFound) {
         throw new UnsupportedOperationException(error);
     }
 

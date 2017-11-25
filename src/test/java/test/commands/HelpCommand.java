@@ -1,6 +1,6 @@
 package test.commands;
 
-import com.github.breadmoirai.breadbot.framework.Command;
+import com.github.breadmoirai.breadbot.framework.annotation.command.Command;
 import com.github.breadmoirai.breadbot.framework.annotation.command.MainCommand;
 
 public class HelpCommand {

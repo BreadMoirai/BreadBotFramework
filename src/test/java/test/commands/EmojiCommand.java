@@ -1,15 +1,15 @@
 package test.commands;
 
-import com.github.breadmoirai.breadbot.framework.Command;
 import com.github.breadmoirai.breadbot.framework.CommandEvent;
+import com.github.breadmoirai.breadbot.framework.annotation.command.Command;
 import com.github.breadmoirai.breadbot.framework.annotation.command.MainCommand;
-import com.github.breadmoirai.breadbot.framework.annotation.parameter.IfNotFound;
+import com.github.breadmoirai.breadbot.framework.annotation.parameter.HandleAbsentArgument;
 import com.github.breadmoirai.breadbot.framework.annotation.parameter.Required;
+import com.github.breadmoirai.breadbot.framework.internal.parameter.AbsentArgumentHandler;
 import com.github.breadmoirai.breadbot.framework.internal.parameter.CommandParameter;
-import com.github.breadmoirai.breadbot.framework.internal.parameter.MissingArgumentHandler;
 import com.github.breadmoirai.breadbot.util.Emoji;
 
-@IfNotFound(EmojiCommand.MissingEmojiAlert.class)
+@HandleAbsentArgument(EmojiCommand.MissingEmojiAlert.class)
 public class EmojiCommand {
 
     @MainCommand
@@ -23,7 +23,7 @@ public class EmojiCommand {
     }
 
 
-    public static class MissingEmojiAlert implements MissingArgumentHandler {
+    public static class MissingEmojiAlert implements AbsentArgumentHandler {
 
         @Override
         public void handle(CommandEvent commandEvent, CommandParameter commandParameter) {

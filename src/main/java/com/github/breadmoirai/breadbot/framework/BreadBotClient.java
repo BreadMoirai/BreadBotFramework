@@ -19,7 +19,6 @@ import com.github.breadmoirai.breadbot.framework.response.CommandResponse;
 import com.github.breadmoirai.breadbot.framework.response.CommandResponseManager;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.MessageChannel;
-import net.dv8tion.jda.core.hooks.IEventManager;
 
 import java.lang.reflect.Type;
 import java.util.List;

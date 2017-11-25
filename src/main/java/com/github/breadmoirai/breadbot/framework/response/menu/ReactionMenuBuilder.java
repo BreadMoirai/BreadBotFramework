@@ -56,7 +56,7 @@ public class ReactionMenuBuilder extends MenuBuilder {
     }
 
     public ReactionMenuBuilder addOption(String unicode, String option, BiPredicate<GenericGuildMessageReactionEvent, MenuResponse> onSelection) {
-        Objects.requireNonNull(unicode, "Unicode Emoji");;
+        Objects.requireNonNull(unicode, "Unicode Emoji");
         reactions.add(new MenuEmoji(unicode, option, onSelection));
         return this;
     }

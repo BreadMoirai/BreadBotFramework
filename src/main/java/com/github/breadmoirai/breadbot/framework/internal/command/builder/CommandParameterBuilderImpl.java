@@ -28,7 +28,7 @@ public class CommandParameterBuilderImpl implements CommandParameterBuilder {
     private ArgumentParser<?> parser;
     private boolean mustBePresent = false;
     private boolean contiguous = false;
-    private MissingArgumentHandler onParamNotFound = null;
+    private AbsentArgumentHandler absentArgumentHandler = null;
     private final BreadBotClientBuilder clientBuilder;
 
     public CommandParameterBuilderImpl(BreadBotClientBuilder builder, Parameter parameter, String methodName, CommandPropertyMap map) {
@@ -150,7 +150,7 @@ public class CommandParameterBuilderImpl implements CommandParameterBuilder {
 
     @Override
     public <T> CommandParameterBuilder setParser(ArgumentTypePredicate predicate, ArgumentTypeMapper<T> mapper) {
-        this.parser = new ArgumentParser<T>(predicate, mapper);
+        this.parser = new ArgumentParser<>(predicate, mapper);
         return this;
     }
 
@@ -161,8 +161,8 @@ public class CommandParameterBuilderImpl implements CommandParameterBuilder {
     }
 
     @Override
-    public CommandParameterBuilder setOnParamNotFound(MissingArgumentHandler onParamNotFound) {
-        this.onParamNotFound = onParamNotFound;
+    public CommandParameterBuilder setOnAbsentArgument(AbsentArgumentHandler onParamNotFound) {
+        this.absentArgumentHandler = onParamNotFound;
         return this;
     }
 
@@ -205,7 +205,7 @@ public class CommandParameterBuilderImpl implements CommandParameterBuilder {
         if (paramType == CommandArgument.class) {
             mapper = (arg, flags1) -> parser.test(arg, flags1) ? Optional.of(arg) : Optional.empty();
         }
-        final CommandParameterImpl commandParameter = new CommandParameterImpl(type, flags, index, width, mapper, mustBePresent, onParamNotFound);
+        final CommandParameterImpl commandParameter = new CommandParameterImpl(type, flags, index, width, mapper, mustBePresent, absentArgumentHandler);
         if (collectorSupplier != null) {
             @SuppressWarnings("unchecked") final Collector<Object, Object, Object> collector = (Collector<Object, Object, Object>) collectorSupplier.apply(commandParameter.getType());
             return new CommandParameterCollectionImpl(commandParameter, collector, contiguous);

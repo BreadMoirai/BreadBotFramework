@@ -13,7 +13,7 @@
  *   See the License for the specific language governing permissions and
  *   limitations under the License.
  */
-package com.github.breadmoirai.breadbot.framework;
+package com.github.breadmoirai.breadbot.framework.annotation.command;
 
 import java.lang.annotation.*;
 

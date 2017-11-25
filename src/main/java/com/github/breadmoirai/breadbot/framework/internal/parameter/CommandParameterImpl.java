@@ -14,16 +14,16 @@ public class CommandParameterImpl implements CommandParameter {
     private int width;
     private ArgumentTypeMapper<?> mapper;
     private boolean mustBePresent;
-    private MissingArgumentHandler onParamNotFound;
+    private AbsentArgumentHandler absentArgumentHandler;
 
-    public CommandParameterImpl(Class<?> type, int flags, int index, int width, ArgumentTypeMapper<?> mapper, boolean mustBePresent, MissingArgumentHandler onParamNotFound) {
+    public CommandParameterImpl(Class<?> type, int flags, int index, int width, ArgumentTypeMapper<?> mapper, boolean mustBePresent, AbsentArgumentHandler absentArgumentHandler) {
         this.type = type;
         this.flags = flags;
         this.index = index;
         this.width = width;
         this.mapper = mapper;
         this.mustBePresent = mustBePresent;
-        this.onParamNotFound = onParamNotFound;
+        this.absentArgumentHandler = absentArgumentHandler;
     }
 
     @Override
@@ -69,11 +69,9 @@ public class CommandParameterImpl implements CommandParameter {
             }
         }
 
-        if (mustBePresent) {
-            if (onParamNotFound != null)
-                onParamNotFound.handle(list.getEvent(), this);
-            set.fail();
-        }
+        if (mustBePresent) set.fail();
+        if (absentArgumentHandler != null)
+            absentArgumentHandler.handle(list.getEvent(), this);
         return null;
     }
 

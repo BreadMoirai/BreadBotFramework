@@ -17,7 +17,7 @@ package com.github.breadmoirai.breadbot.framework.internal.parameter;
 import com.github.breadmoirai.breadbot.framework.CommandEvent;
 
 @FunctionalInterface
-public interface MissingArgumentHandler {
+public interface AbsentArgumentHandler {
 
     void handle(CommandEvent event, CommandParameter missing);
 }

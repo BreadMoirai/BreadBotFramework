@@ -141,9 +141,7 @@ public class CommandPropertyMapImpl implements Iterable<Object>, CommandProperty
 
         CommandPropertyMapImpl objects = (CommandPropertyMapImpl) o;
 
-        if (defaultProperties != null ? !defaultProperties.equals(objects.defaultProperties) : objects.defaultProperties != null)
-            return false;
-        return properties != null ? properties.equals(objects.properties) : objects.properties == null;
+        return (defaultProperties != null ? defaultProperties.equals(objects.defaultProperties) : objects.defaultProperties == null) && (properties != null ? properties.equals(objects.properties) : objects.properties == null);
     }
 
     @Override
