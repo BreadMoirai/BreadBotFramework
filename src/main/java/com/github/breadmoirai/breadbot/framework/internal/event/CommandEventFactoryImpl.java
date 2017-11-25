@@ -22,14 +22,15 @@ import com.github.breadmoirai.breadbot.modules.prefix.PrefixModule;
 import com.github.breadmoirai.breadbot.util.DiscordPatterns;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.events.message.guild.GenericGuildMessageEvent;
-import net.dv8tion.jda.core.utils.SimpleLog;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.regex.Matcher;
 
 public class CommandEventFactoryImpl implements CommandEventFactory {
 
-    private static final SimpleLog LOG = SimpleLog.getLog("CommandEvent");
+    private static final Logger LOG = LoggerFactory.getLogger(CommandEventFactory.class);
 
     private final PrefixModule prefixModule;
     private String myId;
@@ -79,7 +80,7 @@ public class CommandEventFactoryImpl implements CommandEventFactory {
             }
         }
         final CommandEvent commandEvent = new MessageReceivedCommandEvent(client, event, message, prefix, key, content, false);
-        LOG.trace(commandEvent);
+        LOG.trace(commandEvent.toString());
         return commandEvent;
     }
 

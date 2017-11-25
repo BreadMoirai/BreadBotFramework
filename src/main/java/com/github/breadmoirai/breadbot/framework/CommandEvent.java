@@ -32,11 +32,9 @@ import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 /**
  * This holds the context of a command including arguments.
@@ -180,31 +178,31 @@ public abstract class CommandEvent extends Event {
      */
     public abstract List<Member> getMentionedMembers();
 
-    /**
-     * I think {@link CommandEvent#getArguments(int)} is more useful than this. idk.
-     * <p>
-     * <p>Parses {@link CommandEvent#getContent() getContent()} as a list of arguments that are space delimited.
-     * Code block formatting is stripped and no formatted content is passed such as Mentions.
-     * Phrases contained within quotation marks are not separated.
-     * Formatted input and mentions are ignored.
-     * If message content contains an uneven number of {@code "}, the result is not predictable.
-     * <p>
-     * <p>For example, if {@link CommandEvent#getContent() getContent()} returns
-     * <pre>{@code hello, 1 23 <@12341482523> "say no more" @everyone}</pre>
-     * <p>Then this method will return a list with elements
-     * <pre>{@code ["hello,", "1", "23", "say no more"]}</pre>
-     *
-     * @return An immutable list of args.
-     */
-    @Deprecated
-    public synchronized List<String> getArgs() {
-        if (args == null) {
-            args = hasContent()
-                    ? Arrays.stream(DiscordPatterns.ARGUMENT_SPLITTER.split(getContent().replace('`', '\"'))).filter((s) -> !s.isEmpty()).filter(s -> !((s.startsWith("<") && s.endsWith(">")) || s.equals("@everyone") || s.equals("@here"))).map(s -> s.replace('\"', ' ')).map(String::trim).map(String::toLowerCase).collect(Collectors.toList())
-                    : Collections.emptyList();
-        }
-        return args;
-    }
+//    /**
+//     * I think {@link CommandEvent#getArguments(int)} is more useful than this. idk.
+//     * <p>
+//     * <p>Parses {@link CommandEvent#getContent() getContent()} as a list of arguments that are space delimited.
+//     * Code block formatting is stripped and no formatted content is passed such as Mentions.
+//     * Phrases contained within quotation marks are not separated.
+//     * Formatted input and mentions are ignored.
+//     * If message content contains an uneven number of {@code "}, the result is not predictable.
+//     * <p>
+//     * <p>For example, if {@link CommandEvent#getContent() getContent()} returns
+//     * <pre>{@code hello, 1 23 <@12341482523> "say no more" @everyone}</pre>
+//     * <p>Then this method will return a list with elements
+//     * <pre>{@code ["hello,", "1", "23", "say no more"]}</pre>
+//     *
+//     * @return An immutable list of args.
+//     */
+//    @Deprecated
+//    public synchronized List<String> getArgs() {
+//        if (args == null) {
+//            args = hasContent()
+//                    ? Arrays.stream(DiscordPatterns.ARGUMENT_SPLITTER.split(getContent().replace('`', '\"'))).filter((s) -> !s.isEmpty()).filter(s -> !((s.startsWith("<") && s.endsWith(">")) || s.equals("@everyone") || s.equals("@here"))).map(s -> s.replace('\"', ' ')).map(String::trim).map(String::toLowerCase).collect(Collectors.toList())
+//                    : Collections.emptyList();
+//        }
+//        return args;
+//    }
 
     /**
      * @return the number of arguments provided.
@@ -356,7 +354,7 @@ public abstract class CommandEvent extends Event {
 
     @Override
     public String toString() {
-        return String.format("CommandEvent{ Guild=%d, Channel=%d, Author=%d, Content=%s }", getGuildId(), getChannelId(), getAuthorId(), getContent());
+        return String.format("CommandEvent{ Guild=%d, Channel=%d, Author=%d, Prefix=%s, Key=%s, Content=%s }", getGuildId(), getChannelId(), getAuthorId(), getPrefix(), getKey(), getContent());
     }
 
     /**
