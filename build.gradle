@@ -56,8 +56,8 @@ dependencies {
 }
 
 githubRelease {
-    //if (hasProperty('github.key'))
-    token = getProperty('github.key').toString()
+    if (hasProperty('github.key'))
+        token = getProperty('github.key').toString()
     String version = project.version
     it.body = "\n## Adding as Dependency\n### Gradle\n```gradle\nrepositories {\n  jcenter()\n}\n\ndependencies {\n  compile '$project.group:$artifactId:$project.version'\n}\n```\n\n### Maven\n```xml\n<repository>\n  <id>jcenter</id>\n  <name>jcenter</name>\n  <url>http://jcenter.bintray.com/</url>\n</repository>\n\n<dependency>\n  <groupId>$project.group</groupId>\n  <artifactId>$artifactId</artifactId>\n  <version>$project.version</version>\n  <type>pom</type>\n</dependency>\n```"
     FilenameFilter filter = { dir, file -> file.contains(version) }
