@@ -84,7 +84,8 @@ gitPublishReset {
 
 bintray {
     user = author
-    key = getProperty('bintray.key').toString()
+    if (hasProperty('bintray.key'))
+        key = getProperty('bintray.key').toString()
     publications = ["BintrayRelease"]
     publish = true
     pkg {
