@@ -67,13 +67,13 @@ public class DefaultCommandProperties {
             for (Method method : builder.getDeclaringClass().getDeclaredMethods()) {
                 int modifiers = method.getModifiers();
                 if (!Modifier.isPublic(modifiers))
-                    return;
+                    continue;
                 if (method.getParameterCount() != 1)
-                    return;
+                    continue;
                 if (method.getParameters()[0].getType() != CommandHandleBuilder.class)
-                    return;
+                    continue;
                 if (!method.isAnnotationPresent(ConfigureCommands.class) && !method.isAnnotationPresent(ConfigureCommand.class))
-                    return;
+                    continue;
                 final Object o;
                 Object declaringObject = builder.getDeclaringObject();
                 if (declaringObject != null && !(declaringObject instanceof Consumer)) {
