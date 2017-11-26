@@ -1,5 +1,9 @@
 [bintrayImage]: https://api.bintray.com/packages/breadmoirai/maven/breadbot-framework/images/download.svg
 [bintrayLink]: https://bintray.com/breadmoirai/maven/BreadBotFramework/_latestVersion
+[codecovImage]: https://codecov.io/gh/BreadMoirai/BreadBotFramework/branch/master/graph/badge.svg
+[codecovLink]: https://codecov.io/gh/BreadMoirai/BreadBotFramework
+[travisImage]: https://travis-ci.org/BreadMoirai/BreadBotFramework.svg?branch=master
+[travisLink]: https://travis-ci.org/BreadMoirai/BreadBotFramework
 [contributorsImage]: https://img.shields.io/github/contributors/BreadMoirai/BreadBotFramework.svg
 [contributorsLink]: https://github.com/BreadMoirai/BreadBotFramework/graphs/contributors
 [issuesImage]: https://img.shields.io/github/issues-raw/BreadMoirai/BreadBotFramework.svg
@@ -11,7 +15,9 @@
 [docsImage]: https://img.shields.io/badge/docs-here-yellow.svg
 [docsLink]: https://breadmoirai.github.io/BreadBotFramework/
 
-[ ![bintrayImage][] ][bintrayLink] 
+[ ![bintrayImage][] ][bintrayLink]
+[ ![codecovImage][]][codecovLink]
+[ ![travisImage][]][travisLink]
 [ ![contributorsImage][] ][contributorsLink]
 [ ![issuesImage][] ][issuesLink]
 [ ![discordWidget][] ][discordInvite]
