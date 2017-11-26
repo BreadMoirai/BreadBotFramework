@@ -40,7 +40,7 @@ import java.util.function.Predicate;
 
 public class BreadBotClientImpl implements BreadBotClient, EventListener {
 
-    private static final Logger log = LoggerFactory.getLogger(BreadBotClient.class);
+    private static final Logger LOG = LoggerFactory.getLogger(BreadBotClient.class);
 
     private JDA jda;
 
@@ -73,7 +73,7 @@ private final CommandEventFactory eventFactory;
             for (String key : keys) {
                 handleMap.put(key, handle);
             }
-            log.info("Command Created: " + handle);
+            LOG.info("Command Created: " + handle);
         }
         this.commandMap = handleMap;
 
@@ -115,7 +115,7 @@ private final CommandEventFactory eventFactory;
             }
         };
 
-        log.info("BreadBotClient Initialized");
+        LOG.info("BreadBotClient Initialized");
     }
 
     private List<Class<?>> getInterfaceHierarchy(Class<?> from, Class<?> toSuper) {
@@ -255,6 +255,7 @@ private final CommandEventFactory eventFactory;
         if (preProcessPredicate == null || preProcessPredicate.test(message)) {
             final CommandEvent commandEvent = eventFactory.createEvent(event, message, BreadBotClientImpl.this);
             if (commandEvent != null) {
+                LOG.trace(commandEvent.toString());
                 commandEngine.handle(commandEvent);
 //                ((JDAImpl) jda).getEventManager().handle(event);
             }

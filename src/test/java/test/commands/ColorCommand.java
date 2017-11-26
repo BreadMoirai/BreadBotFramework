@@ -15,9 +15,6 @@
 package test.commands;
 
 import com.github.breadmoirai.breadbot.framework.annotation.command.MainCommand;
-import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.MessageBuilder;
-import net.dv8tion.jda.core.entities.Message;
 
 import java.awt.*;
 import java.lang.reflect.Field;
@@ -25,12 +22,8 @@ import java.lang.reflect.Field;
 public class ColorCommand {
 
     @MainCommand
-    public Message color(String s) throws IllegalAccessException, NoSuchFieldException {
+    public Color color(String s) throws IllegalAccessException, NoSuchFieldException {
         Field field = Color.class.getField(s);
-        Color color = (Color) field.get(null);
-        if (color != null) {
-            return new MessageBuilder().setEmbed(new EmbedBuilder().setColor(color).addBlankField(true).build()).append(Integer.toHexString(color.getRGB())).build();
-        }
-        return null;
+        return (Color) field.get(null);
     }
 }

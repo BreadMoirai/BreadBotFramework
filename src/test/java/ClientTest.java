@@ -15,104 +15,31 @@
 
 import com.github.breadmoirai.breadbot.framework.BreadBotClient;
 import com.github.breadmoirai.breadbot.framework.BreadBotClientBuilder;
+import com.github.breadmoirai.breadbot.framework.CommandEvent;
 import com.github.breadmoirai.breadbot.framework.CommandHandleBuilder;
-import com.github.breadmoirai.breadbot.framework.internal.BreadBotClientImpl;
+import com.github.breadmoirai.breadbot.framework.internal.event.CommandEventFactoryImpl;
+import com.github.breadmoirai.breadbot.modules.prefix.DefaultPrefixModule;
+import com.github.breadmoirai.breadbot.util.DiscordPatterns;
 import com.github.breadmoirai.breadbot.util.Emoji;
-import net.dv8tion.jda.core.AccountType;
-import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.JDABuilder;
-import net.dv8tion.jda.core.entities.Game;
+import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.events.Event;
-import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
-import net.dv8tion.jda.core.exceptions.RateLimitedException;
-import net.dv8tion.jda.core.hooks.EventListener;
-import net.dv8tion.jda.core.hooks.IEventManager;
+import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.core.events.message.guild.GenericGuildMessageEvent;
 import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.rules.Timeout;
 import test.commands.*;
 
-import javax.security.auth.login.LoginException;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.List;
-import java.util.concurrent.BlockingDeque;
-import java.util.concurrent.LinkedBlockingDeque;
-import java.util.concurrent.TimeUnit;
+import java.awt.*;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.*;
 
 public class ClientTest {
 
-    private static final long TEST_CHANNEL = 376827325960028170L;
-    private static final String BOT_TOKEN;
-    private static final String CLIENT_TOKEN;
-
-    static {
-        try (BufferedReader br = new BufferedReader(
-                new InputStreamReader(
-                        ClientTest.class.getResourceAsStream("tokens.txt"))
-        )) {
-            BOT_TOKEN = br.readLine();
-            CLIENT_TOKEN = br.readLine();
-        } catch (IOException e) {
-            throw new RuntimeException("Token not found", e);
-        }
-    }
-
-
-    @Rule
-    public final Timeout globalTimeout = Timeout.seconds(600);
-    @Rule
-    public final ExpectedException exception = ExpectedException.none();
-
-    private final static long RESPONSE_TIMEOUT = 10;
-
-    private static ClientSender clientSender;
-    private static JDA botApi, clientApi;
-
-    private static long clientId, botId;
-
-    private static MyEventManager manager;
-    private static BlockingDeque<Message> botQueue = new LinkedBlockingDeque<>();
-
-
-    @BeforeClass
-    public static void setupBot() {
-        manager = new MyEventManager();
-        try {
-            botApi = new JDABuilder(AccountType.BOT)
-                    .setGame(Game.of("Testing"))
-                    .setToken(BOT_TOKEN)
-                    .setEventManager(manager)
-                    .buildBlocking();
-        } catch (LoginException | RateLimitedException | InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-
-        try {
-            clientApi = new JDABuilder(AccountType.CLIENT)
-                    .setToken(CLIENT_TOKEN)
-                    .setGame(Game.of("Testing"))
-                    .buildBlocking();
-        } catch (LoginException | InterruptedException | RateLimitedException e) {
-            throw new RuntimeException(e);
-        }
-        clientSender = new ClientSender(clientApi, TEST_CHANNEL);
-
-        botId = botApi.getSelfUser().getIdLong();
-        clientId = clientApi.getSelfUser().getIdLong();
-    }
+    private BreadBotClient client;
 
     @Test
     public void basicCommandTest() {
@@ -230,7 +157,10 @@ public class ClientTest {
 
     @Test
     public void returnTypeTest() {
-        setupBread(bread -> bread.addCommand(ColorCommand::new).addCommand(MirrorCommand::new));
+        setupBread(bread -> bread
+                .registerResultHandler(Color.class, (command, event, result) -> event.reply(Integer.toHexString(result.getRGB())))
+                .addCommand(ColorCommand::new)
+                .addCommand(MirrorCommand::new));
         assertResponse("!reverse mirror", "rorrim");
         assertResponse("!color BLUE", "ff0000ff");
     }
@@ -295,75 +225,51 @@ public class ClientTest {
     private void setupBread(Consumer<BreadBotClientBuilder> config) {
         BreadBotClientBuilder builder = new BreadBotClientBuilder();
         config.accept(builder);
-        BreadBotClient client = builder.build();
-        manager.setBread(client);
-        client.setJDA(botApi);
+        client = builder.build();
     }
 
-    private void assertResponse(String message, String response) {
-        clientSender.sendMessage(message);
-        final Message poll;
-        try {
-            poll = botQueue.poll(RESPONSE_TIMEOUT, TimeUnit.SECONDS);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-        if (poll == null) {
-            Assert.fail("No response from Bot");
-            return;
-        }
-        assertThat(poll.getRawContent(), is(response));
-    }
+    private void assertResponse(final String input, final String expected) {
+//        GenericGuildMessageEvent mockInput = mock(GenericGuildMessageEvent.class);
+//        Guild mockGuild = mock(Guild.class);
+//        when(mockGuild.getIdLong()).thenReturn(0L);
+//        when(mockInput.getGuild()).thenReturn(mockGuild);
+//
 
-    private static class MyEventManager implements IEventManager {
+        final String[] split = DiscordPatterns.WHITE_SPACE.split(input.substring(1), 2);
+        final String key = split[0];
+        final String content = split.length > 1 ? split[1].trim() : null;
 
-        private BreadBotClient client;
-        private MyEventListener myEventListener;
+        CommandEventFactoryImpl eventFactory = new CommandEventFactoryImpl(new DefaultPrefixModule("!"));
+
+        GenericGuildMessageEvent mockEvent = mock(GenericGuildMessageEvent.class);
+
+        Guild mockGuild = mock(Guild.class);
+        when(mockEvent.getGuild()).thenReturn(mockGuild);
+        User mockUser = mock(User.class);
+//        TextChannel mockChannel = mock(TextChannel.class);
+        Message mockMessage = mock(Message.class);
+        when(mockMessage.getRawContent()).thenReturn(input);
+        CommandEvent event = eventFactory.createEvent(mockEvent, mockMessage, client);
+
+        CommandEvent spy = spy(event);
+
+        //when(spy.getChannel()).thenReturn(mockChannel);
+        doReturn(0L).when(spy).getChannelId();
+        when(spy.getAuthor()).thenReturn(mockUser);
+        //doNothing().when(spy).reply(anyString());
 
 
-        public void setBread(BreadBotClient client) {
-            this.client = client;
-            myEventListener = new MyEventListener();
-        }
-
-        @Override
-        public void register(Object listener) {
-
-        }
-
-        @Override
-        public void unregister(Object listener) {
-
-        }
-
-        @Override
-        public void handle(Event event) {
-            if (client != null) {
-                ((BreadBotClientImpl) client).onEvent(event);
-                myEventListener.onEvent(event);
-            }
-        }
-
-        @Override
-        public List<Object> getRegisteredListeners() {
+        doAnswer(invocation -> {
+            String argument = invocation.getArgument(0);
+            if (!argument.equalsIgnoreCase(expected))
+                Assert.fail(String.format("Expected: \"%s\", Actual: \"%s\"", expected, argument));
             return null;
-        }
+        }).when(spy).reply(anyString());
+
+        client.getCommandEngine().handle(spy);
+
+        verify(spy).reply(expected);
     }
 
-    private static class MyEventListener implements EventListener {
-        @Override
-        public void onEvent(Event event) {
-            if (event instanceof GuildMessageReceivedEvent) {
-                final GuildMessageReceivedEvent messageReceivedEvent = (GuildMessageReceivedEvent) event;
-                final long idLong = messageReceivedEvent.getAuthor().getIdLong();
-                final Message message = messageReceivedEvent.getMessage();
-                if (idLong == botId) {
-                    botQueue.add(message);
-                } else if (idLong == clientId) {
-//                                clientQueue.add(message);
-                }
-            }
-        }
-    }
 
 }

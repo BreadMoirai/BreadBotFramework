@@ -70,7 +70,7 @@ public class MessageReceivedCommandEvent extends CommandEvent {
 
     @Override
     public User getAuthor() {
-        return message.getAuthor();
+        return getMessage().getAuthor();
     }
 
     @Override
@@ -95,7 +95,7 @@ public class MessageReceivedCommandEvent extends CommandEvent {
 
     @Override
     public long getMessageId() {
-        return message.getIdLong();
+        return getMessage().getIdLong();
     }
 
     @Override
@@ -120,7 +120,7 @@ public class MessageReceivedCommandEvent extends CommandEvent {
 
     @Override
     public OffsetDateTime getTime() {
-        return message.isEdited() ? message.getEditedTime() : message.getCreationTime();
+        return getMessage().isEdited() ? getMessage().getEditedTime() : getMessage().getCreationTime();
     }
 
     @Override
