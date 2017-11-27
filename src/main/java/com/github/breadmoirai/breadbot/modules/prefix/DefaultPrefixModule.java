@@ -15,6 +15,8 @@
  */
 package com.github.breadmoirai.breadbot.modules.prefix;
 
+import net.dv8tion.jda.core.entities.Guild;
+
 /**
  * Provides the same prefix for all guilds as it was specified in the constructor. Non-configurable.
  */
@@ -27,7 +29,7 @@ public class DefaultPrefixModule implements PrefixModule {
     }
 
     @Override
-    public String getPrefix(long guildId) {
+    public String getPrefix(Guild guild) {
         return defaultPrefix;
     }
 
