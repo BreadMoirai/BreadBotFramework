@@ -28,7 +28,6 @@ import java.util.function.BiPredicate;
 
 public class ReactionMenuBuilder extends MenuBuilder {
     private List<MenuReaction> reactions = new ArrayList<>();
-    private BiPredicate<GenericGuildMessageReactionEvent, MenuResponse> onReaction;
 
     public ReactionMenuBuilder addOption(String unicode, BiPredicate<GenericGuildMessageReactionEvent, MenuResponse> onSelection) {
         return addOption(unicode, null, onSelection);
@@ -67,13 +66,8 @@ public class ReactionMenuBuilder extends MenuBuilder {
         return this;
     }
 
-    public ReactionMenuBuilder setOnReaction(BiPredicate<GenericGuildMessageReactionEvent, MenuResponse> onReaction) {
-        this.onReaction = onReaction;
-        return this;
-    }
-
     @Override
     protected Menu build() {
-        return new ReactionMenu(reactions, onReaction);
+        return new ReactionMenu(reactions);
     }
 }

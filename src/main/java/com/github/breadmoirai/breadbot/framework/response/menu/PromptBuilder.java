@@ -53,15 +53,16 @@ public class PromptBuilder extends MenuBuilder {
     private Emote emoteYes, emoteNo;
     private String optionYes, optionNo;
 
-    public PromptBuilder onYes(Consumer<MenuResponse> onYes, String option) {
+
+    public PromptBuilder onYes(String display, Consumer<MenuResponse> onYes) {
         this.onYes = onYes;
-        this.optionYes = option;
+        this.optionYes = display;
         return this;
     }
 
-    public PromptBuilder onNo(Consumer<MenuResponse> onNo, String option) {
+    public PromptBuilder onNo(String display, Consumer<MenuResponse> onNo) {
         this.onNo = onNo;
-        this.optionYes = option;
+        this.optionYes = display;
         return this;
     }
 
@@ -90,7 +91,7 @@ public class PromptBuilder extends MenuBuilder {
     }
 
     @Override
-    public Menu build() {
+    protected Menu build() {
         final ReactionMenuBuilder mb = new ReactionMenuBuilder();
         final BiPredicate<GenericGuildMessageReactionEvent, MenuResponse> yesPredicate = (event, menu) -> {
             onYes.accept(menu);

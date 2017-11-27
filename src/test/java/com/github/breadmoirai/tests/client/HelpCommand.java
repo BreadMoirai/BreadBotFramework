@@ -1,4 +1,4 @@
-package test.commands;
+package com.github.breadmoirai.tests.client;
 
 import com.github.breadmoirai.breadbot.framework.annotation.command.Command;
 import com.github.breadmoirai.breadbot.framework.annotation.command.MainCommand;

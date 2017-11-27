@@ -12,7 +12,7 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 */
-package test.commands;
+package com.github.breadmoirai.tests.client;
 
 import com.github.breadmoirai.breadbot.framework.annotation.command.MainCommand;
 

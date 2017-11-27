@@ -12,22 +12,18 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 */
+package com.github.breadmoirai.tests.client;
 
-import net.dv8tion.jda.core.JDA;
+import com.github.breadmoirai.breadbot.framework.annotation.command.MainCommand;
 
-public class ClientSender {
+import java.awt.*;
+import java.lang.reflect.Field;
 
-    private final JDA api;
-    private final long channelId;
+public class ColorCommand {
 
-
-    public ClientSender(JDA clientApi, long channelId) {
-        this.api = clientApi;
-        this.channelId = channelId;
+    @MainCommand
+    public Color color(String s) throws IllegalAccessException, NoSuchFieldException {
+        Field field = Color.class.getField(s);
+        return (Color) field.get(null);
     }
-
-    public void sendMessage(String message) {
-        api.getTextChannelById(channelId).sendMessage(message).queue();
-    }
-
 }

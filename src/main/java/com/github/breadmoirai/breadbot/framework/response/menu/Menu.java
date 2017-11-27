@@ -15,40 +15,21 @@
  */
 package com.github.breadmoirai.breadbot.framework.response.menu;
 
+import com.github.breadmoirai.breadbot.framework.response.menu.reactions.MenuReaction;
 import com.github.breadmoirai.breadbot.waiter.EventWaiterB;
-import gnu.trove.list.TLongList;
-import gnu.trove.list.array.TLongArrayList;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.Role;
-import net.dv8tion.jda.core.entities.User;
 
-import java.util.Arrays;
+import java.util.List;
+import java.util.function.Predicate;
 
 public abstract class Menu {
 
-    private TLongList acceptedRoles;
-    private TLongList acceptedUsers;
+    private final Predicate<Member> criteria;
 
-    protected void setAcceptedRoles(Role... roles) {
-        if (acceptedRoles == null) acceptedRoles = new TLongArrayList();
-        acceptedRoles.addAll(Arrays.stream(roles).mapToLong(Role::getIdLong).toArray());
-    }
-
-    protected void setAcceptedRoles(long... roles) {
-        if (acceptedRoles == null) acceptedRoles = new TLongArrayList();
-        acceptedRoles.addAll(roles);
-    }
-
-    protected void setAcceptedUsers(User... users) {
-        if (acceptedUsers == null) acceptedUsers = new TLongArrayList();
-        acceptedUsers.addAll(Arrays.stream(users).mapToLong(User::getIdLong).toArray());
-    }
-
-    protected void setAcceptedUsers(long... users) {
-        if (acceptedUsers == null) acceptedUsers = new TLongArrayList();
-        acceptedUsers.addAll(users);
+    public Menu(Predicate<Member> criteria) {
+        this.criteria = criteria;
     }
 
     abstract void attachOptions(EmbedBuilder embedBuilder);
@@ -57,11 +38,9 @@ public abstract class Menu {
 
     abstract void addReactions(Message message);
 
-    abstract void onDelete(MenuResponse menu);
-
     protected boolean checkMember(Member member) {
-        return (acceptedRoles == null || member.getRoles().stream().mapToLong(Role::getIdLong).anyMatch(acceptedRoles::contains))
-                && (acceptedUsers == null || acceptedUsers.contains(member.getUser().getIdLong()));
+        return criteria.test(member);
     }
 
+    public abstract List<MenuReaction> getOptions();
 }

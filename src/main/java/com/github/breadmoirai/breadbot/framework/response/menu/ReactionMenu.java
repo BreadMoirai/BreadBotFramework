@@ -19,23 +19,19 @@ import com.github.breadmoirai.breadbot.framework.response.menu.reactions.MenuRea
 import com.github.breadmoirai.breadbot.waiter.EventWaiterB;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.events.message.guild.react.GenericGuildMessageReactionEvent;
 import net.dv8tion.jda.core.events.message.guild.react.GuildMessageReactionAddEvent;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.BiPredicate;
 import java.util.stream.Collectors;
 
 public class ReactionMenu extends Menu {
 
-    private List<MenuReaction> reactions = new ArrayList<>();
-    private BiPredicate<GenericGuildMessageReactionEvent, MenuResponse> onReaction;
+    private List<MenuReaction> reactions;
 
-    ReactionMenu(List<MenuReaction> reactions, BiPredicate<GenericGuildMessageReactionEvent, MenuResponse> onReaction) {
+    ReactionMenu(List<MenuReaction> reactions) {
         this.reactions = reactions;
-        this.onReaction = onReaction;
     }
 
     @Override
@@ -53,7 +49,6 @@ public class ReactionMenu extends Menu {
                 if (any.isPresent()) {
                     final MenuReaction r = any.get();
                     if (r.hasPredicate()) return r.apply(event, responseMenu);
-                    else return onReaction != null && onReaction.test(event, responseMenu);
                 }
             }
             return false;
@@ -66,9 +61,8 @@ public class ReactionMenu extends Menu {
     }
 
     @Override
-    void onDelete(MenuResponse menu) {
-
+    public List<MenuReaction> getOptions() {
+        return Collections.unmodifiableList(reactions);
     }
-
 
 }
