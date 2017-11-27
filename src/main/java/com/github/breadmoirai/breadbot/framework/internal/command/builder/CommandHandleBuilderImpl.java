@@ -26,6 +26,7 @@ import java.lang.reflect.Method;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.util.regex.Pattern;
 
 public class CommandHandleBuilderImpl implements CommandHandleBuilderInternal {
 
@@ -45,6 +46,8 @@ public class CommandHandleBuilderImpl implements CommandHandleBuilderInternal {
     private CommandResultHandler resultHandler;
     private boolean isPersistent = false;
     private boolean shouldRetainProperties;
+    private Pattern splitRegex;
+    private int splitLimit;
 
     public CommandHandleBuilderImpl(Object declaringObject,
                                     Class<?> declaringClass,
@@ -158,6 +161,13 @@ public class CommandHandleBuilderImpl implements CommandHandleBuilderInternal {
     @Override
     public CommandHandleBuilder setPersistent(boolean isPersistent) {
         this.isPersistent = isPersistent;
+        return this;
+    }
+
+    @Override
+    public CommandHandleBuilder setSplitRegex(Pattern splitRegex, int splitLimit) {
+        this.splitRegex = splitRegex;
+        this.splitLimit = splitLimit;
         return this;
     }
 
@@ -286,7 +296,6 @@ public class CommandHandleBuilderImpl implements CommandHandleBuilderInternal {
             Class<?> returnType = declaringMethod.getReturnType();
             resultHandler = getClientBuilder().getResultHandler(returnType);
         }
-        return new CommandHandleImpl(keys, name, group, description, declaringObject, declaringClass, declaringMethod,/*client,*/ commandFactory, commandParameters, commandFunction, resultHandler, subCommandMap, preprocessors, shouldRetainProperties ? propertyMap : null);
+        return new CommandHandleImpl(keys, name, group, description, declaringObject, declaringClass, declaringMethod,/*client,*/ commandFactory, commandParameters, commandFunction, resultHandler, subCommandMap, preprocessors, shouldRetainProperties ? propertyMap : null, splitRegex, splitLimit);
     }
-
 }

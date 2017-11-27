@@ -39,25 +39,11 @@ import java.util.stream.Collectors;
  * <p>The EventWaiter is capable of handling specialized forms of {@link net.dv8tion.jda.core.events.Event Event}
  * that must meet criteria not normally specifiable without implementation of an {@link net.dv8tion.jda.core.hooks.EventListener EventListener}.
  *
- * <p>There is a singleton option available with {@link com.github.breadmoirai.breadbot.waiter.EventWaiter#get} for ease of access but it is not required and this class can be instantiated normally.
+ * The change is that the test predicate is optional and the action is a predicate which only stops receiving events of the specified type when it returns {@code true}
  *
  * @author John Grosh (jagrosh); Modified by Ton Ly (BreadMoirai)
  */
-public class EventWaiter implements EventListener {
-
-    private static final EventWaiter INSTANCE;
-
-    static {
-        INSTANCE = new EventWaiter();
-    }
-
-    /**
-     * Retrieves the singleton instance of an EventWaiter.
-     */
-    public static EventWaiter get() {
-        return INSTANCE;
-    }
-
+public class EventWaiterB implements EventListener {
 
     private final HashMap<Class<?>, List<Predicate>> waitingEvents;
 
@@ -66,7 +52,7 @@ public class EventWaiter implements EventListener {
     /**
      * Constructs an empty EventWaiter.
      */
-    public EventWaiter() {
+    public EventWaiterB() {
         waitingEvents = new HashMap<>();
         threadpool = Executors.newSingleThreadScheduledExecutor();
     }
@@ -190,12 +176,11 @@ public class EventWaiter implements EventListener {
     @Override
     public final void onEvent(Event event) {
         Class c = event.getClass();
-        while (c.getSuperclass() != null) {
+        while (c != Object.class) {
             if (waitingEvents.containsKey(c)) {
                 List<Predicate> list = waitingEvents.get(c);
-                List<Predicate> ulist = new ArrayList<>(list);
                 //noinspection unchecked
-                list.removeAll(ulist.stream().filter(i -> i.test(event)).collect(Collectors.toList()));
+                list.removeAll(list.stream().filter(i -> i.test(event)).collect(Collectors.toList()));
             }
             if (event instanceof ShutdownEvent) {
                 threadpool.shutdown();

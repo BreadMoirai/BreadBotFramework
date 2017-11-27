@@ -15,7 +15,7 @@
  */
 package com.github.breadmoirai.breadbot.framework.response.menu;
 
-import com.github.breadmoirai.breadbot.waiter.EventWaiter;
+import com.github.breadmoirai.breadbot.waiter.EventWaiterB;
 import gnu.trove.list.TLongList;
 import gnu.trove.list.array.TLongArrayList;
 import net.dv8tion.jda.core.EmbedBuilder;
@@ -53,7 +53,7 @@ public abstract class Menu {
 
     abstract void attachOptions(EmbedBuilder embedBuilder);
 
-    abstract void waitForEvent(MenuResponse responseMenu, EventWaiter waiter);
+    abstract void waitForEvent(MenuResponse responseMenu, EventWaiterB waiter);
 
     abstract void addReactions(Message message);
 

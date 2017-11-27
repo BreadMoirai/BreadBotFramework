@@ -17,7 +17,7 @@ package com.github.breadmoirai.breadbot.framework.response.menu;
 
 import com.github.breadmoirai.breadbot.framework.response.CloseableResponse;
 import com.github.breadmoirai.breadbot.framework.response.CommandResponse;
-import com.github.breadmoirai.breadbot.waiter.EventWaiter;
+import com.github.breadmoirai.breadbot.waiter.EventWaiterB;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageChannel;
 
@@ -57,7 +57,7 @@ public class MenuResponse extends CommandResponse implements CloseableResponse {
     public final void onSend(Message message) {
         this.message = message;
         menu.addReactions(message);
-        menu.waitForEvent(this, EventWaiter.get());
+        menu.waitForEvent(this, EventWaiterB.get());
     }
 
     /**

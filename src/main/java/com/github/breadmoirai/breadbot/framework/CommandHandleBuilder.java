@@ -21,6 +21,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.regex.Pattern;
 
 public interface CommandHandleBuilder extends CommandHandleBuilderFactory<CommandHandleBuilder> {
 
@@ -96,6 +97,26 @@ public interface CommandHandleBuilder extends CommandHandleBuilderFactory<Comman
     }
 
     CommandHandleBuilder setResultHandler(CommandResultHandler handle);
+
+    /**
+     * Sets the delimiter to be used when parsing user input into command parameters.
+     *
+     * @param splitRegex a Pattern specifying where to split the message content not including the key.
+     * @param splitLimit the split limit. For details see {@link Pattern#split(CharSequence, int)}. For default behavior set this value to {@code 0}.
+     * @return this
+     */
+    CommandHandleBuilder setSplitRegex(Pattern splitRegex, int splitLimit);
+
+    /**
+     * Sets the delimiter to be used when parsing user input into command parameters.
+     *
+     * @param splitRegex a String specifying where to split the message content not including the key.
+     * @param splitLimit the split limit. For details see {@link Pattern#split(CharSequence, int)}. For default behavior set this value to {@code 0}.
+     * @return this
+     */
+    default CommandHandleBuilder setSplitRegex(String splitRegex, int splitLimit) {
+        return setSplitRegex(Pattern.compile(splitRegex), splitLimit);
+    }
 
     List<CommandPreprocessor> getPreprocessors();
 

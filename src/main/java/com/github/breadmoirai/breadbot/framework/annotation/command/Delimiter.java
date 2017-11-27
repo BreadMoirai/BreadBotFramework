@@ -13,17 +13,17 @@
  *   See the License for the specific language governing permissions and
  *   limitations under the License.
  */
-package com.github.breadmoirai.breadbot.framework.annotation.parameter;
+package com.github.breadmoirai.breadbot.framework.annotation.command;
 
 import java.lang.annotation.*;
-import java.util.function.Function;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.ANNOTATION_TYPE)
+@Target({ElementType.METHOD, ElementType.TYPE, ElementType.PACKAGE})
 @Inherited
-public @interface RegisterPropertyMapper {
+public @interface Delimiter {
 
-    Class<? extends Function<? extends Annotation, ?>> mapper();
+    String regex();
 
-    Class<?> type() default Object.class;
+    int limit() default 0;
+
 }

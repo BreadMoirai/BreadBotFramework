@@ -16,7 +16,7 @@
 package com.github.breadmoirai.breadbot.framework.response.menu;
 
 import com.github.breadmoirai.breadbot.framework.response.menu.reactions.MenuReaction;
-import com.github.breadmoirai.breadbot.waiter.EventWaiter;
+import com.github.breadmoirai.breadbot.waiter.EventWaiterB;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.events.message.guild.react.GenericGuildMessageReactionEvent;
@@ -46,7 +46,7 @@ public class ReactionMenu extends Menu {
     }
 
     @Override
-    void waitForEvent(MenuResponse responseMenu, EventWaiter waiter) {
+    void waitForEvent(MenuResponse responseMenu, EventWaiterB waiter) {
         waiter.waitForEvent(GuildMessageReactionAddEvent.class, event -> {
             if (event.getMessageIdLong() == responseMenu.getMessageId()) {
                 final Optional<MenuReaction> any = reactions.stream().filter(r -> r.matches(event)).findAny();

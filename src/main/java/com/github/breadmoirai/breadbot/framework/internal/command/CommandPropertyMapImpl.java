@@ -15,7 +15,7 @@
 package com.github.breadmoirai.breadbot.framework.internal.command;
 
 import com.github.breadmoirai.breadbot.framework.CommandPropertyMap;
-import com.github.breadmoirai.breadbot.framework.annotation.parameter.RegisterPropertyMapper;
+import com.github.breadmoirai.breadbot.framework.annotation.RegisterPropertyMapper;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.annotation.Annotation;

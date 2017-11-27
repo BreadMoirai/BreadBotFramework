@@ -15,6 +15,7 @@
  */
 package com.github.breadmoirai.breadbot.framework.annotation.parameter;
 
+import com.github.breadmoirai.breadbot.framework.annotation.RegisterPropertyMapper;
 import com.github.breadmoirai.breadbot.framework.internal.parameter.AbsentArgumentHandler;
 import com.github.breadmoirai.breadbot.util.AbsentArgumentHandlerInstantiator;
 

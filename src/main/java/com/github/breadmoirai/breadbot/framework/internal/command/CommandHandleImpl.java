@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.regex.Pattern;
 
 public class CommandHandleImpl implements CommandHandle {
 
@@ -29,6 +30,8 @@ public class CommandHandleImpl implements CommandHandle {
     private final Map<String, CommandHandleImpl> subCommandMap;
     private final List<CommandPreprocessor> preprocessors;
     private final CommandPropertyMap propertyMap;
+    private final Pattern splitRegex;
+    private final int splitLimit;
     private final boolean isHelp;
 
     public CommandHandleImpl(String[] keys,
@@ -45,7 +48,9 @@ public class CommandHandleImpl implements CommandHandle {
                              CommandResultHandler<?> resultHandler,
                              Map<String, CommandHandleImpl> subCommandMap,
                              List<CommandPreprocessor> preprocessors,
-                             CommandPropertyMap propertyMap) {
+                             CommandPropertyMap propertyMap,
+                             Pattern splitRegex,
+                             int splitLimit) {
         this.keys = keys;
         this.name = name;
         this.group = group;
@@ -61,6 +66,8 @@ public class CommandHandleImpl implements CommandHandle {
         this.subCommandMap = subCommandMap;
         this.preprocessors = preprocessors;
         this.propertyMap = propertyMap;
+        this.splitRegex = splitRegex;
+        this.splitLimit = splitLimit;
         if (keys == null || keys.length == 0) {
             throw new MissingCommandKeyException(this);
         }
@@ -93,7 +100,7 @@ public class CommandHandleImpl implements CommandHandle {
     private boolean runThis(CommandEvent event) {
         Object commandObj = commandSupplier.get();
         if (invokableCommand != null) {
-            final CommandParser parser = new CommandParser(event, this, event.getArguments(), getParameters());
+            final CommandParser parser = new CommandParser(event, this, splitRegex == null ? event.getArguments() : event.createNewArgumentList(splitRegex, splitLimit), getParameters());
             final CommandRunner runner = new CommandRunner(commandObj, event, invokableCommand, parser, this, resultHandler, throwable -> log.error("An error ocurred while invoking a command:\n" + this, throwable));
             final CommandProcessStack commandProcessStack = new CommandProcessStack(commandObj, this, event, preprocessors, runner);
             commandProcessStack.runNext();

@@ -3,10 +3,7 @@ package com.github.breadmoirai.breadbot.framework.defaults;
 import com.github.breadmoirai.breadbot.framework.CommandHandleBuilder;
 import com.github.breadmoirai.breadbot.framework.annotation.ConfigureCommand;
 import com.github.breadmoirai.breadbot.framework.annotation.ConfigureCommands;
-import com.github.breadmoirai.breadbot.framework.annotation.command.Description;
-import com.github.breadmoirai.breadbot.framework.annotation.command.Group;
-import com.github.breadmoirai.breadbot.framework.annotation.command.Name;
-import com.github.breadmoirai.breadbot.framework.annotation.command.RequiredParameters;
+import com.github.breadmoirai.breadbot.framework.annotation.command.*;
 import com.github.breadmoirai.breadbot.framework.annotation.parameter.*;
 import com.github.breadmoirai.breadbot.framework.error.BreadBotException;
 import com.github.breadmoirai.breadbot.framework.internal.command.CommandPropertiesManagerImpl;
@@ -36,6 +33,10 @@ public class DefaultCommandProperties {
             }
         });
         cp.putCommandModifier(Description.class, (p, builder) -> builder.setDescription(p.value()));
+        cp.putCommandModifier(Delimiter.class, (p, builder) -> {
+            builder.setSplitRegex(p.regex(), p.limit());
+        });
+
 
         cp.putCommandModifier(null, (o, builder) -> {
             Class<?> declaringClass = builder.getDeclaringClass();

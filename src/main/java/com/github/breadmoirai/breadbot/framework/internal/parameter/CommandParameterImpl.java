@@ -47,8 +47,8 @@ public class CommandParameterImpl implements CommandParameter {
                 commandArgument = list.get(i);
             } else if (width < 1) {
                 final StringJoiner sj = new StringJoiner(" ");
-                int j;
-                for (j = i; j < list.size(); j++) {
+                int j = i;
+                for (; j < list.size(); j++) {
                     if (set.contains(j)) break;
                     sj.add(list.get(j).getArgument());
                 }
@@ -56,7 +56,10 @@ public class CommandParameterImpl implements CommandParameter {
                 commandArgument = new GenericCommandArgument(set.getEvent(), sj.toString());
             } else {
                 final StringJoiner sj = new StringJoiner(" ");
+                if (i + width >= list.size())
+                    continue;
                 for (int j = i; j < i + width && j < list.size(); j++) {
+                    if (set.contains(i)) break;
                     sj.add(list.get(i).getArgument());
                 }
                 indexes = IntStream.range(i, i + width).toArray();
