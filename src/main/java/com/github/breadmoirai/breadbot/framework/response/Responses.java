@@ -15,8 +15,6 @@
  */
 package com.github.breadmoirai.breadbot.framework.response;
 
-import com.github.breadmoirai.breadbot.framework.response.menu.PromptBuilder;
-import com.github.breadmoirai.breadbot.framework.response.menu.ReactionMenuBuilder;
 import com.github.breadmoirai.breadbot.framework.response.simple.*;
 import net.dv8tion.jda.core.entities.Emote;
 import net.dv8tion.jda.core.entities.Message;
@@ -67,14 +65,14 @@ public class Responses {
         return new ReactionResponse(targetMessageId, emote);
     }
 
-    public static ReactionMenuBuilder newReactionMenu() {
-        return new ReactionMenuBuilder();
-    }
-
-    public static PromptBuilder newPrompt() {
-        return new PromptBuilder();
-    }
-
+//    public static ReactionMenuBuilder newReactionMenu() {
+//        return new ReactionMenuBuilder();
+//    }
+//
+//    public static PromptBuilder newPrompt() {
+//        return new PromptBuilder();
+//    }
+//
 //    public static <T> ListBuilder<T> newList() {
 //        return new ListBuilder<>();
 //    }

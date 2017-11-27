@@ -15,7 +15,7 @@
 package com.github.breadmoirai.breadbot.framework.defaults;
 
 import com.github.breadmoirai.breadbot.framework.internal.command.CommandResultManagerImpl;
-import com.github.breadmoirai.breadbot.framework.response.menu.Menu;
+import com.github.breadmoirai.breadbot.util.Emoji;
 import net.dv8tion.jda.core.entities.Emote;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageEmbed;
@@ -30,7 +30,7 @@ public class DefaultCommandResultHandlers {
                 (command, event, result) -> event.reply(result));
         manager.registerResultHandler(Emote.class,
                 (command, event, result) -> event.replyReaction(result));
-        manager.registerResultHandler(Menu.class,
-                (command, event, result) -> event.replyWith());
+        manager.registerResultHandler(Emoji.class,
+                (command, event, result) -> event.replyReaction(result.getUtf8()));
     }
 }
