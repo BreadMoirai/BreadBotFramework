@@ -20,6 +20,7 @@ import com.github.breadmoirai.breadbot.framework.internal.command.builder.Comman
 import com.github.breadmoirai.breadbot.framework.response.CommandResponse;
 import com.github.breadmoirai.breadbot.framework.response.CommandResponseManager;
 import com.github.breadmoirai.breadbot.util.EventStringIterator;
+import com.github.breadmoirai.breadbot.waiter.EventWaiterB;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageChannel;
@@ -46,8 +47,8 @@ public class BreadBotClientImpl implements BreadBotClient, EventListener {
 
     private final CommandResultManager resultManager;
     private final ArgumentTypesManager argumentTypes;
-//    private final IEventManager eventManager;
-private final CommandEventFactory eventFactory;
+    //    private final IEventManager eventManager;
+    private final CommandEventFactory eventFactory;
     private final CommandEngine commandEngine;
     private final Predicate<Message> preProcessPredicate;
     private final List<CommandModule> modules;
@@ -55,6 +56,7 @@ private final CommandEventFactory eventFactory;
     private final Map<String, CommandHandle> commandMap;
     private final CommandResponseManager responseManager;
     private final boolean shouldEvaluateCommandOnMessageUpdate;
+    private EventWaiterB eventWaiter;
 
     public BreadBotClientImpl(List<CommandModule> modules, List<CommandHandleBuilderInternal> commands, CommandPropertiesManager commandProperties, CommandResultManager resultManager, ArgumentTypesManager argumentTypes, CommandEventFactory eventFactory, Predicate<Message> preProcessPredicate, CommandResponseManager responseManager, boolean shouldEvaluateCommandOnMessageUpdate) {
         this.modules = Collections.unmodifiableList(modules);
@@ -227,9 +229,9 @@ private final CommandEventFactory eventFactory;
     public void onEvent(Event event) {
         if (event instanceof GuildMessageReceivedEvent) {
             onGuildMessageReceived(((GuildMessageReceivedEvent) event));
-        } else if (event instanceof ReadyEvent){
+        } else if (event instanceof ReadyEvent) {
             onReady(((ReadyEvent) event));
-        } else if (shouldEvaluateCommandOnMessageUpdate && event instanceof GuildMessageUpdateEvent){
+        } else if (shouldEvaluateCommandOnMessageUpdate && event instanceof GuildMessageUpdateEvent) {
             onGuildMessageUpdate(((GuildMessageUpdateEvent) event));
         }
     }
@@ -260,5 +262,13 @@ private final CommandEventFactory eventFactory;
 //                ((JDAImpl) jda).getEventManager().handle(event);
             }
         }
+    }
+
+    public EventWaiterB getEventWaiter() {
+        if (eventWaiter == null) {
+            eventWaiter = new EventWaiterB();
+            getJDA().addEventListener(eventWaiter);
+        }
+        return eventWaiter;
     }
 }
