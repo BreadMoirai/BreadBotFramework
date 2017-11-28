@@ -15,7 +15,6 @@
  */
 package com.github.breadmoirai.breadbot.framework;
 
-import com.github.breadmoirai.breadbot.framework.defaults.DefaultCommandResponseManager;
 import com.github.breadmoirai.breadbot.framework.internal.BreadBotClientImpl;
 import com.github.breadmoirai.breadbot.framework.internal.argument.CommandParameterTypeManagerImpl;
 import com.github.breadmoirai.breadbot.framework.internal.command.CommandPropertiesManagerImpl;
@@ -27,7 +26,6 @@ import com.github.breadmoirai.breadbot.framework.internal.parameter.ArgumentPars
 import com.github.breadmoirai.breadbot.framework.internal.parameter.ArgumentTypeMapper;
 import com.github.breadmoirai.breadbot.framework.internal.parameter.ArgumentTypePredicate;
 import com.github.breadmoirai.breadbot.framework.internal.parameter.CommandArgument;
-import com.github.breadmoirai.breadbot.framework.response.CommandResponseManager;
 import com.github.breadmoirai.breadbot.modules.prefix.DefaultPrefixModule;
 import com.github.breadmoirai.breadbot.modules.prefix.PrefixModule;
 import net.dv8tion.jda.core.entities.Message;
@@ -51,7 +49,6 @@ public class BreadBotClientBuilder implements
     private final CommandHandleBuilderFactoryImpl factory;
     private final List<CommandHandleBuilderInternal> commands;
     private final CommandResultManagerImpl resultManager;
-    private CommandResponseManager responseManager;
     private Predicate<Message> preProcessPredicate;
     private CommandEventFactory commandEventFactory;
     private boolean shouldEvaluateCommandOnMessageUpdate = false;
@@ -63,7 +60,6 @@ public class BreadBotClientBuilder implements
         factory = new CommandHandleBuilderFactoryImpl(this);
         commands = new ArrayList<>();
         resultManager = new CommandResultManagerImpl();
-        responseManager = new DefaultCommandResponseManager();
     }
 
     @Override
@@ -358,15 +354,6 @@ public class BreadBotClientBuilder implements
     }
 
     /**
-     * Sets the manager that handles sending responses. If this field is not set, the CommandResponseManager will default to {@link com.github.breadmoirai.breadbot.framework.defaults.DefaultCommandResponseManager}
-     *
-     * @param responseManager An implementation of CommandResponseManager.
-     */
-    public void setResponseManager(CommandResponseManager responseManager) {
-        this.responseManager = responseManager;
-    }
-
-    /**
      * This will allow messages to be re-evaluated on message edit.
      * This will also evaluate commands that are unpinned.
      * Will ignore messages that are pinned.
@@ -417,6 +404,6 @@ public class BreadBotClientBuilder implements
         if (!hasModule(PrefixModule.class)) modules.add(new DefaultPrefixModule("!"));
         if (commandEventFactory == null)
             commandEventFactory = new CommandEventFactoryImpl(getModule(PrefixModule.class));
-        return new BreadBotClientImpl(modules, commands, commandProperties, resultManager, argumentTypes, commandEventFactory, preProcessPredicate, responseManager, shouldEvaluateCommandOnMessageUpdate);
+        return new BreadBotClientImpl(modules, commands, commandProperties, resultManager, argumentTypes, commandEventFactory, preProcessPredicate, shouldEvaluateCommandOnMessageUpdate);
     }
 }

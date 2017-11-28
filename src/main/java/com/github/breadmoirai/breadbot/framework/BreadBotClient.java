@@ -15,10 +15,7 @@
  */
 package com.github.breadmoirai.breadbot.framework;
 
-import com.github.breadmoirai.breadbot.framework.response.CommandResponse;
-import com.github.breadmoirai.breadbot.framework.response.CommandResponseManager;
 import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.MessageChannel;
 
 import java.lang.reflect.Type;
 import java.util.List;
@@ -48,11 +45,9 @@ public interface BreadBotClient {
 
     CommandParameterTypeManager getArgumentTypes();
 
-    CommandResponseManager getResponseManager();
 
     CommandResultManager getResultManager();
 
-    void sendResponse(CommandResponse response, MessageChannel targetChannel);
 
     Map<String, CommandHandle> getCommandMap();
 }

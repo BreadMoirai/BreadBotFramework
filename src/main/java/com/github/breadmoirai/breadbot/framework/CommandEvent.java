@@ -15,11 +15,8 @@
  */
 package com.github.breadmoirai.breadbot.framework;
 
-import com.github.breadmoirai.breadbot.framework.internal.CommandResponsePacketImpl;
 import com.github.breadmoirai.breadbot.framework.internal.parameter.CommandArgument;
-import com.github.breadmoirai.breadbot.framework.response.CommandResponse;
 import com.github.breadmoirai.breadbot.util.DiscordPatterns;
-import com.github.breadmoirai.breadbot.util.MissingPermissionResponse;
 import com.github.breadmoirai.breadbot.util.UnknownEmote;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
@@ -352,11 +349,6 @@ public abstract class CommandEvent extends Event {
         reply(String.format(format, args));
     }
 
-    @Override
-    public String toString() {
-        return String.format("CommandEvent{ Guild=%d, Channel=%d, Author=%d, Prefix=%s, Key=%s, Content=%s }", getGuildId(), getChannelId(), getAuthorId(), getPrefix(), getKey(), getContent());
-    }
-
     /**
      * Checks to see if the bot has the permissions required.
      *
@@ -368,26 +360,32 @@ public abstract class CommandEvent extends Event {
         return PermissionUtil.checkPermission(getChannel(), getSelfMember(), permission);
     }
 
-    /**
-     * Checks to see if the bot has the permissions required. If the permissions required are not found, the user is notified with a {@link com.github.breadmoirai.breadbot.util.MissingPermissionResponse}.
-     *
-     * @param permission any permissions required.
-     *
-     * @return {@code true} if the bot has the permissions required. {@code false} otherwise.
-     */
-    public boolean requirePermission(Permission... permission) {
-        if (!checkPermission(permission)) {
-            getClient().getResponseManager().acceptResponse(new CommandResponsePacketImpl(this, new MissingPermissionResponse(this, permission), getChannel()));
-            return false;
-        }
-        return true;
-    }
+//    /**
+//     * Checks to see if the bot has the permissions required. If the permissions required are not found, the user is notified with a {@link com.github.breadmoirai.breadbot.util.MissingPermissionResponse}.
+//     *
+//     * @param permission any permissions required.
+//     *
+//     * @return {@code true} if the bot has the permissions required. {@code false} otherwise.
+//     */
+//    public boolean requirePermission(Permission... permission) {
+//        if (!checkPermission(permission)) {
+//            getClient().getResponseManager().acceptResponse(new CommandResponsePacketImpl(this, new MissingPermissionResponse(this, permission), getChannel()));
+//            return false;
+//        }
+//        return true;
+//    }
 
     public boolean isHelpEvent() {
         return isHelpEvent;
     }
 
-    public void replyWith(CommandResponse response) {
-        getClient().getResponseManager().acceptResponse(new CommandResponsePacketImpl(this, response, getChannel()));
+//    public void replyWith(CommandResponse response) {
+//        getClient().getResponseManager().acceptResponse(new CommandResponsePacketImpl(this, response, getChannel()));
+//    }
+
+    @Override
+    public String toString() {
+        return String.format("CommandEvent{ Guild=%d, Channel=%d, Author=%d, Prefix=%s, Key=%s, Content=%s }", getGuildId(), getChannelId(), getAuthorId(), getPrefix(), getKey(), getContent());
     }
+
 }

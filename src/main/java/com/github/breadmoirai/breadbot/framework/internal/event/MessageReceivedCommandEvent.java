@@ -17,10 +17,6 @@ package com.github.breadmoirai.breadbot.framework.internal.event;
 
 import com.github.breadmoirai.breadbot.framework.BreadBotClient;
 import com.github.breadmoirai.breadbot.framework.CommandEvent;
-import com.github.breadmoirai.breadbot.framework.response.simple.EmbedResponse;
-import com.github.breadmoirai.breadbot.framework.response.simple.MessageResponse;
-import com.github.breadmoirai.breadbot.framework.response.simple.ReactionResponse;
-import com.github.breadmoirai.breadbot.framework.response.simple.StringResponse;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.message.guild.GenericGuildMessageEvent;
@@ -155,27 +151,27 @@ public class MessageReceivedCommandEvent extends CommandEvent {
 
     @Override
     public void reply(String message) {
-        replyWith(new StringResponse(message));
+        getChannel().sendMessage(message).queue();
     }
 
     @Override
     public void reply(MessageEmbed message) {
-        replyWith(new EmbedResponse(message));
+        getChannel().sendMessage(message).queue();
     }
 
     @Override
     public void reply(Message message) {
-        replyWith(new MessageResponse(message));
+        getChannel().sendMessage(message).queue();
     }
 
     @Override
     public void replyReaction(Emote emote) {
-        replyWith(new ReactionResponse(getMessageId(), emote));
+        getMessage().addReaction(emote).queue();
     }
 
     @Override
     public void replyReaction(String emoji) {
-        replyWith(new ReactionResponse(getMessageId(), emoji));
+        getMessage().addReaction(emoji).queue();
     }
 
 //    @Override

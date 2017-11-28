@@ -81,7 +81,7 @@ public class ClientTest {
                             event.reply(targetHandle.getGroup() + "." + commandObj.getClass().getSimpleName() + ".class");
                         })
                 ));
-        assertResponse("!ping?", "test.PingCommand.class");
+        assertResponse("!ping?", "client.PingCommand.class");
     }
 
     @Test

@@ -17,13 +17,10 @@ package com.github.breadmoirai.breadbot.framework.internal;
 
 import com.github.breadmoirai.breadbot.framework.*;
 import com.github.breadmoirai.breadbot.framework.internal.command.builder.CommandHandleBuilderInternal;
-import com.github.breadmoirai.breadbot.framework.response.CommandResponse;
-import com.github.breadmoirai.breadbot.framework.response.CommandResponseManager;
 import com.github.breadmoirai.breadbot.util.EventStringIterator;
 import com.github.breadmoirai.breadbot.waiter.EventWaiterB;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.events.Event;
 import net.dv8tion.jda.core.events.ReadyEvent;
 import net.dv8tion.jda.core.events.message.guild.GenericGuildMessageEvent;
@@ -31,7 +28,6 @@ import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageUpdateEvent;
 import net.dv8tion.jda.core.hooks.EventListener;
 import net.dv8tion.jda.core.hooks.SubscribeEvent;
-import net.dv8tion.jda.core.utils.Checks;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,18 +50,24 @@ public class BreadBotClientImpl implements BreadBotClient, EventListener {
     private final List<CommandModule> modules;
     private final Map<Type, CommandModule> moduleTypeMap;
     private final Map<String, CommandHandle> commandMap;
-    private final CommandResponseManager responseManager;
     private final boolean shouldEvaluateCommandOnMessageUpdate;
     private EventWaiterB eventWaiter;
 
-    public BreadBotClientImpl(List<CommandModule> modules, List<CommandHandleBuilderInternal> commands, CommandPropertiesManager commandProperties, CommandResultManager resultManager, CommandParameterTypeManager argumentTypes, CommandEventFactory eventFactory, Predicate<Message> preProcessPredicate, CommandResponseManager responseManager, boolean shouldEvaluateCommandOnMessageUpdate) {
+    public BreadBotClientImpl(
+            List<CommandModule> modules,
+            List<CommandHandleBuilderInternal> commands,
+            CommandPropertiesManager commandProperties,
+            CommandResultManager resultManager,
+            CommandParameterTypeManager argumentTypes,
+            CommandEventFactory eventFactory,
+            Predicate<Message> preProcessPredicate,
+            boolean shouldEvaluateCommandOnMessageUpdate) {
         this.modules = Collections.unmodifiableList(modules);
         this.resultManager = resultManager;
         this.argumentTypes = argumentTypes;
 //        this.eventManager = eventManager;
         this.eventFactory = eventFactory;
         this.preProcessPredicate = preProcessPredicate;
-        this.responseManager = responseManager;
         this.shouldEvaluateCommandOnMessageUpdate = shouldEvaluateCommandOnMessageUpdate;
 
         HashMap<String, CommandHandle> handleMap = new HashMap<>();
@@ -154,24 +156,10 @@ public class BreadBotClientImpl implements BreadBotClient, EventListener {
         return argumentTypes;
     }
 
-    @Override
-    public CommandResponseManager getResponseManager() {
-        return responseManager;
-    }
-
-    @Override
+       @Override
     public CommandResultManager getResultManager() {
         return resultManager;
     }
-
-    @Override
-    public void sendResponse(CommandResponse response, MessageChannel targetChannel) {
-        Checks.notNull(response, "response");
-        Checks.notNull(targetChannel, "targetChannel");
-        response.setClient(this);
-        getResponseManager().acceptResponse(new CommandResponsePacketImpl(null, response, targetChannel));
-    }
-
     @Override
     public Map<String, CommandHandle> getCommandMap() {
         return commandMap;

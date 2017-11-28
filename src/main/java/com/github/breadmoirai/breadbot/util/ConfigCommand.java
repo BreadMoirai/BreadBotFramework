@@ -43,9 +43,10 @@ public class ConfigCommand {
         }
         if (jsonObject.toString().isEmpty()) {
             event.reply("Am no a configurable.");
+            return;
         }
-        if (!event.requirePermission(Permission.MESSAGE_ATTACH_FILES)) {
-            event.replyWith(new MissingPermissionResponse(event, Permission.MESSAGE_ATTACH_FILES));
+        if (!event.checkPermission(Permission.MESSAGE_ATTACH_FILES)) {
+            event.reply("I need permission to attach files.");
         }
 
         try (final PipedInputStream in = new PipedInputStream();
