@@ -1,5 +1,5 @@
 [bintrayImage]: https://api.bintray.com/packages/breadmoirai/maven/breadbot-framework/images/download.svg
-[bintrayLink]: https://bintray.com/breadmoirai/maven/BreadBotFramework/_latestVersion
+[bintrayLink]: https://bintray.com/breadmoirai/maven/breadbot-framework/_latestVersion
 [codecovImage]: https://codecov.io/gh/BreadMoirai/BreadBotFramework/branch/master/graph/badge.svg
 [codecovLink]: https://codecov.io/gh/BreadMoirai/BreadBotFramework
 [travisImage]: https://travis-ci.org/BreadMoirai/BreadBotFramework.svg?branch=master
@@ -25,16 +25,12 @@
 [ ![docsImage][]][docsLink]
 
 # BreadBotFramework
-This is a framework for Discord Bots
 
 ### Features
- - Commands
- - 
-##### Planned Features
- - Help Command Support
- - Expand CommandResponses
- - More Logs
- - More Docs
+ - [x] Commands
+ - [ ] Documentation
+ - [ ] Logging
+
 
 This framework is built ontop of [JDA](https://github.com/DV8FromTheWorld/JDA)
 ## Download
