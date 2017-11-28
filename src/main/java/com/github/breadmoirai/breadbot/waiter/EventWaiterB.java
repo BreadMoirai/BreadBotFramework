@@ -38,7 +38,7 @@ import java.util.stream.Collectors;
  * <p>
  * <p>The EventWaiter is capable of handling specialized forms of {@link net.dv8tion.jda.core.events.Event Event}
  * that must meet criteria not normally specifiable without implementation of an {@link net.dv8tion.jda.core.hooks.EventListener EventListener}.
- *
+ * <p>
  * The change is that the test predicate is optional and the action is a predicate which only stops receiving events of the specified type when it returns {@code true}
  *
  * @author John Grosh (jagrosh); Modified by Ton Ly (BreadMoirai)
@@ -127,7 +127,7 @@ public class EventWaiterB implements EventListener {
      * @param <T>           The type of Event to wait for
      * @param eventType     The {@link java.lang.Class} of the Event to wait for
      * @param condition     The Predicate that tests the Event
-     * @param action        The Predicate that is run when {@code condition} returns {@code true}, returning {@code true} if it is satisfied
+     * @param action        The Consumer that is run when {@code condition} returns {@code true}
      * @param timeout       The maximum amount of time to wait for
      * @param unit          The {@link java.util.concurrent.TimeUnit TimeUnit} measurement of the timeout
      * @param timeoutAction The Runnable to run if the time runs out before a correct Event is thrown
@@ -149,12 +149,12 @@ public class EventWaiterB implements EventListener {
     /**
      * Waits a predetermined amount of time for an {@link net.dv8tion.jda.core.events.Event Event} that is of the specified {@code eventType} and uses the provided {@link java.util.function.Predicate} {@code action}. If {@code action} returns {@code true}, it will be removed from this EventWaiter. If {@code action} returns {@code false}, Events of the same type will continue to be passed to it.
      * <p>
-     * <p>If by the time it times out and {@code action} has not yet returned {@code true}, the {@code timeoutAction} will be executed.
+     * <p>If by the time it times out and {@code condition} has not yet returned {@code true}, the {@code timeoutAction} will be executed.
      *
      * @param <T>           The type of Event to wait for
      * @param eventType     The {@link java.lang.Class} of the Event to wait for
      * @param condition     The Predicate that tests the Event
-     * @param action        The Consumer that is run when {@code condition} returns {@code true}
+     * @param action        The Predicate that is run when {@code condition} returns {@code true}, returning {@code true} if it is satisfied
      * @param timeout       The maximum amount of time to wait for
      * @param unit          The {@link java.util.concurrent.TimeUnit TimeUnit} measurement of the timeout
      * @param timeoutAction The Runnable to run if the time runs out before a correct Event is thrown
