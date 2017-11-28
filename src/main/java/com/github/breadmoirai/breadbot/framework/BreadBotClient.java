@@ -46,7 +46,7 @@ public interface BreadBotClient {
 
 //    IEventManager getEventManager();
 
-    ArgumentTypesManager getArgumentTypes();
+    CommandParameterTypeManager getArgumentTypes();
 
     CommandResponseManager getResponseManager();
 

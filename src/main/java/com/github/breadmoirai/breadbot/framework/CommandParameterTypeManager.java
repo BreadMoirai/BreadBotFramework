@@ -2,7 +2,7 @@ package com.github.breadmoirai.breadbot.framework;
 
 import com.github.breadmoirai.breadbot.framework.internal.parameter.ArgumentParser;
 
-public interface ArgumentTypesManager {
+public interface CommandParameterTypeManager {
 
     /**
      * Returns the predicate mapper pair registered if found.

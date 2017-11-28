@@ -14,9 +14,9 @@
 */
 package com.github.breadmoirai.breadbot.framework.internal.argument;
 
-import com.github.breadmoirai.breadbot.framework.ArgumentTypesBuilder;
-import com.github.breadmoirai.breadbot.framework.ArgumentTypesManager;
-import com.github.breadmoirai.breadbot.framework.defaults.DefaultArgumentTypes;
+import com.github.breadmoirai.breadbot.framework.CommandParameterManagerBuilder;
+import com.github.breadmoirai.breadbot.framework.CommandParameterTypeManager;
+import com.github.breadmoirai.breadbot.framework.defaults.DefaultCommandParameters;
 import com.github.breadmoirai.breadbot.framework.internal.parameter.ArgumentParser;
 import com.github.breadmoirai.breadbot.framework.internal.parameter.ArgumentTypeMapper;
 import com.github.breadmoirai.breadbot.framework.internal.parameter.ArgumentTypePredicate;
@@ -28,13 +28,13 @@ import java.util.Map;
  * Does argument Mapping.
  * Is basically a heterogeneous map of Class<?> to ArgumentMapper<?>
  */
-public final class ArgumentTypesManagerImpl implements ArgumentTypesManager, ArgumentTypesBuilder<Void> {
+public final class CommandParameterTypeManagerImpl implements CommandParameterTypeManager, CommandParameterManagerBuilder<Void> {
 
     private final Map<Class<?>, ArgumentParser<?>> map;
 
-    public ArgumentTypesManagerImpl() {
+    public CommandParameterTypeManagerImpl() {
         map = new HashMap<>();
-        new DefaultArgumentTypes().initialize(this);
+        new DefaultCommandParameters().initialize(this);
     }
 
     @Override

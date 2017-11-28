@@ -17,7 +17,7 @@ package com.github.breadmoirai.breadbot.framework;
 
 import com.github.breadmoirai.breadbot.framework.defaults.DefaultCommandResponseManager;
 import com.github.breadmoirai.breadbot.framework.internal.BreadBotClientImpl;
-import com.github.breadmoirai.breadbot.framework.internal.argument.ArgumentTypesManagerImpl;
+import com.github.breadmoirai.breadbot.framework.internal.argument.CommandParameterTypeManagerImpl;
 import com.github.breadmoirai.breadbot.framework.internal.command.CommandPropertiesManagerImpl;
 import com.github.breadmoirai.breadbot.framework.internal.command.CommandResultManagerImpl;
 import com.github.breadmoirai.breadbot.framework.internal.command.builder.CommandHandleBuilderFactoryImpl;
@@ -40,14 +40,14 @@ public class BreadBotClientBuilder implements
         CommandHandleBuilderFactory<BreadBotClientBuilder>,
         CommandModuleBuilder<BreadBotClientBuilder>,
         CommandPropertiesBuilder<BreadBotClientBuilder>,
-        ArgumentTypesBuilder<BreadBotClientBuilder>,
+        CommandParameterManagerBuilder<BreadBotClientBuilder>,
         CommandResultManagerBuilder<BreadBotClientBuilder> {
 
 //    private static final Logger LOG = LoggerFactory.getLogger(BreadBotClientBuilder.class);
 
     private final List<CommandModule> modules;
     private final CommandPropertiesManagerImpl commandProperties;
-    private final ArgumentTypesManagerImpl argumentTypes;
+    private final CommandParameterTypeManagerImpl argumentTypes;
     private final CommandHandleBuilderFactoryImpl factory;
     private final List<CommandHandleBuilderInternal> commands;
     private final CommandResultManagerImpl resultManager;
@@ -59,7 +59,7 @@ public class BreadBotClientBuilder implements
     public BreadBotClientBuilder() {
         modules = new ArrayList<>();
         commandProperties = new CommandPropertiesManagerImpl();
-        argumentTypes = new ArgumentTypesManagerImpl();
+        argumentTypes = new CommandParameterTypeManagerImpl();
         factory = new CommandHandleBuilderFactoryImpl(this);
         commands = new ArrayList<>();
         resultManager = new CommandResultManagerImpl();

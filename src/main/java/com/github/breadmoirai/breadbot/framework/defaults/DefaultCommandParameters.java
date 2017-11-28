@@ -1,6 +1,6 @@
 package com.github.breadmoirai.breadbot.framework.defaults;
 
-import com.github.breadmoirai.breadbot.framework.internal.argument.ArgumentTypesManagerImpl;
+import com.github.breadmoirai.breadbot.framework.internal.argument.CommandParameterTypeManagerImpl;
 import com.github.breadmoirai.breadbot.framework.internal.parameter.*;
 import com.github.breadmoirai.breadbot.util.Arguments;
 import com.github.breadmoirai.breadbot.util.DateTimeMapper;
@@ -12,7 +12,7 @@ import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.util.stream.IntStream;
 
-public class DefaultArgumentTypes {
+public class DefaultCommandParameters {
     public static final Class<Integer> INTEGER = Integer.TYPE;
     public static final Class<Long> LONG = Long.TYPE;
     public static final Class<Float> FLOAT = Float.TYPE;
@@ -26,7 +26,7 @@ public class DefaultArgumentTypes {
     public static final Class<Emote> EMOTE = Emote.class;
     public static final Class<Emoji> EMOJI = Emoji.class;
 
-    public void initialize(ArgumentTypesManagerImpl map) {
+    public void initialize(CommandParameterTypeManagerImpl map) {
         final ArgumentTypePredicate intPredicate = (arg, flags) -> {
             final boolean hex = ArgumentFlags.hasFlag(flags, ArgumentFlags.HEX);
             return hex ? arg.isHex() : arg.isInteger();
