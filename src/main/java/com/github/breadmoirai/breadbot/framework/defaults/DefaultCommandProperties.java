@@ -16,6 +16,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -123,6 +124,16 @@ public class DefaultCommandProperties {
         cp.putParameterModifier(Width.class, (p, builder) -> builder.setWidth(p.value()));
         cp.putParameterModifier(Type.class, (p, builder) -> builder.setBaseType(p.value()));
         cp.putParameterModifier(Contiguous.class, (p, builder) -> builder.setContiguous(p.value()));
+        cp.putParameterModifier(Numeric.class, (p, builder) -> {
+            if (!(builder instanceof Function)) {
+                final ArgumentParser<?> parser = builder.getParser();
+                if (parser.hasPredicate()) {
+                    builder.setParser(parser.getPredicate().and((arg, flags) -> arg.isNumeric()), parser.getMapper());
+                } else {
+                    builder.setParser((arg, flags) -> arg.isNumeric(), parser.getMapper());
+                }
+            }
+        });
     }
 
     private void setGroupToPackage(CommandHandleBuilder builder, Class<?> declaringClass) {
