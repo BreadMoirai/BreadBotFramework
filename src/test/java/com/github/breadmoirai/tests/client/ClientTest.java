@@ -233,6 +233,13 @@ public class ClientTest {
         assertResponse("!name Mary Shellstrop", "James");
     }
 
+    @Test
+    public void typeTest() {
+        setupBread(bread -> bread.addCommand(TypeTestKeyTest::new));
+        assertResponse("!10plus 2", "12");
+        assertResponse("!10plus 10", "21");
+    }
+
     private void setupBread(Consumer<BreadBotClientBuilder> config) {
         BreadBotClientBuilder builder = new BreadBotClientBuilder();
         config.accept(builder);
