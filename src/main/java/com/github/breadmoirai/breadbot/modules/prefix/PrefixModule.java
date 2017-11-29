@@ -15,8 +15,8 @@
  */
 package com.github.breadmoirai.breadbot.modules.prefix;
 
-import com.github.breadmoirai.breadbot.framework.BreadBotClientBuilder;
 import com.github.breadmoirai.breadbot.framework.CommandModule;
+import com.github.breadmoirai.breadbot.framework.builder.BreadBotClientBuilder;
 import net.dv8tion.jda.core.entities.Guild;
 
 /**

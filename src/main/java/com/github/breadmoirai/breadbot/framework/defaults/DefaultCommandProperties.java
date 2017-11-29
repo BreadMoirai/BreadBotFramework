@@ -1,16 +1,16 @@
 package com.github.breadmoirai.breadbot.framework.defaults;
 
-import com.github.breadmoirai.breadbot.framework.CommandHandleBuilder;
 import com.github.breadmoirai.breadbot.framework.annotation.ConfigureCommand;
 import com.github.breadmoirai.breadbot.framework.annotation.ConfigureCommands;
 import com.github.breadmoirai.breadbot.framework.annotation.command.*;
 import com.github.breadmoirai.breadbot.framework.annotation.parameter.*;
+import com.github.breadmoirai.breadbot.framework.builder.CommandHandleBuilder;
 import com.github.breadmoirai.breadbot.framework.error.BreadBotException;
 import com.github.breadmoirai.breadbot.framework.internal.command.CommandPropertiesManagerImpl;
 import com.github.breadmoirai.breadbot.framework.internal.command.builder.CommandHandleBuilderInternal;
-import com.github.breadmoirai.breadbot.framework.internal.parameter.AbsentArgumentHandler;
-import com.github.breadmoirai.breadbot.framework.internal.parameter.ArgumentParser;
-import com.github.breadmoirai.breadbot.framework.internal.parameter.ArgumentTypePredicate;
+import com.github.breadmoirai.breadbot.framework.parameter.AbsentArgumentHandler;
+import com.github.breadmoirai.breadbot.framework.parameter.ArgumentParser;
+import com.github.breadmoirai.breadbot.framework.parameter.ArgumentTypePredicate;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

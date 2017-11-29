@@ -14,8 +14,9 @@
 */
 package com.github.breadmoirai.breadbot.framework.internal.command.builder;
 
-import com.github.breadmoirai.breadbot.framework.CommandParameterBuilder;
-import com.github.breadmoirai.breadbot.framework.internal.parameter.*;
+import com.github.breadmoirai.breadbot.framework.builder.CommandParameterBuilder;
+import com.github.breadmoirai.breadbot.framework.internal.parameter.CommandParameterFunctionImpl;
+import com.github.breadmoirai.breadbot.framework.parameter.*;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Parameter;

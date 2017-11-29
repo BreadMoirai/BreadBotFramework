@@ -14,7 +14,7 @@
 */
 package com.github.breadmoirai.breadbot.framework.internal.command;
 
-import com.github.breadmoirai.breadbot.framework.CommandPropertyMap;
+import com.github.breadmoirai.breadbot.framework.command.CommandPropertyMap;
 
 import java.lang.annotation.Annotation;
 import java.util.HashMap;

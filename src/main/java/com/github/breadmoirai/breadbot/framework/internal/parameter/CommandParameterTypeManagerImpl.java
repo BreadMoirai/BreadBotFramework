@@ -14,9 +14,12 @@
 */
 package com.github.breadmoirai.breadbot.framework.internal.parameter;
 
-import com.github.breadmoirai.breadbot.framework.CommandParameterManagerBuilder;
-import com.github.breadmoirai.breadbot.framework.CommandParameterTypeManager;
+import com.github.breadmoirai.breadbot.framework.builder.CommandParameterManagerBuilder;
 import com.github.breadmoirai.breadbot.framework.defaults.DefaultCommandParameters;
+import com.github.breadmoirai.breadbot.framework.parameter.ArgumentParser;
+import com.github.breadmoirai.breadbot.framework.parameter.ArgumentTypeMapper;
+import com.github.breadmoirai.breadbot.framework.parameter.ArgumentTypePredicate;
+import com.github.breadmoirai.breadbot.framework.parameter.CommandParameterTypeManager;
 
 import java.util.HashMap;
 import java.util.Map;

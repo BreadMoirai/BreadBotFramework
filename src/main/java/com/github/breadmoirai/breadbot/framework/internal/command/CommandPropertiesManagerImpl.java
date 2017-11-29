@@ -14,7 +14,12 @@
 */
 package com.github.breadmoirai.breadbot.framework.internal.command;
 
-import com.github.breadmoirai.breadbot.framework.*;
+import com.github.breadmoirai.breadbot.framework.builder.CommandHandleBuilder;
+import com.github.breadmoirai.breadbot.framework.builder.CommandParameterBuilder;
+import com.github.breadmoirai.breadbot.framework.command.CommandPreprocessor;
+import com.github.breadmoirai.breadbot.framework.command.CommandPreprocessorFunction;
+import com.github.breadmoirai.breadbot.framework.command.CommandPreprocessorPredicate;
+import com.github.breadmoirai.breadbot.framework.command.CommandPropertiesManager;
 import com.github.breadmoirai.breadbot.framework.defaults.DefaultCommandProperties;
 
 import java.util.*;

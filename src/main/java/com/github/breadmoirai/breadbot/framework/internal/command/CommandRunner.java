@@ -1,9 +1,9 @@
 package com.github.breadmoirai.breadbot.framework.internal.command;
 
 import com.github.breadmoirai.breadbot.framework.CommandEvent;
-import com.github.breadmoirai.breadbot.framework.CommandHandle;
-import com.github.breadmoirai.breadbot.framework.CommandResultHandler;
-import com.github.breadmoirai.breadbot.framework.internal.parameter.CommandParser;
+import com.github.breadmoirai.breadbot.framework.command.CommandHandle;
+import com.github.breadmoirai.breadbot.framework.command.CommandResultHandler;
+import com.github.breadmoirai.breadbot.framework.parameter.CommandParser;
 
 import java.util.function.Consumer;
 

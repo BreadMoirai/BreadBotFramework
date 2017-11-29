@@ -14,14 +14,18 @@
 */
 package com.github.breadmoirai.breadbot.framework.internal.command.builder;
 
-import com.github.breadmoirai.breadbot.framework.*;
 import com.github.breadmoirai.breadbot.framework.annotation.command.Command;
+import com.github.breadmoirai.breadbot.framework.builder.BreadBotClientBuilder;
+import com.github.breadmoirai.breadbot.framework.builder.CommandHandleBuilder;
+import com.github.breadmoirai.breadbot.framework.builder.CommandParameterBuilder;
+import com.github.breadmoirai.breadbot.framework.command.CommandPreprocessor;
+import com.github.breadmoirai.breadbot.framework.command.CommandResultHandler;
 import com.github.breadmoirai.breadbot.framework.internal.command.CommandHandleImpl;
 import com.github.breadmoirai.breadbot.framework.internal.command.CommandObjectFactory;
 import com.github.breadmoirai.breadbot.framework.internal.command.CommandPropertyMapImpl;
 import com.github.breadmoirai.breadbot.framework.internal.command.InvokableCommand;
-import com.github.breadmoirai.breadbot.framework.internal.parameter.CommandParameter;
-import com.github.breadmoirai.breadbot.framework.internal.parameter.CommandParser;
+import com.github.breadmoirai.breadbot.framework.parameter.CommandParameter;
+import com.github.breadmoirai.breadbot.framework.parameter.CommandParser;
 import net.dv8tion.jda.core.utils.Checks;
 
 import java.lang.reflect.Method;

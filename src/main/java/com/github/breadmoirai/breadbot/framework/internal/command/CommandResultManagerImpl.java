@@ -14,9 +14,9 @@
 */
 package com.github.breadmoirai.breadbot.framework.internal.command;
 
-import com.github.breadmoirai.breadbot.framework.CommandResultHandler;
-import com.github.breadmoirai.breadbot.framework.CommandResultManager;
-import com.github.breadmoirai.breadbot.framework.CommandResultManagerBuilder;
+import com.github.breadmoirai.breadbot.framework.builder.CommandResultManagerBuilder;
+import com.github.breadmoirai.breadbot.framework.command.CommandResultHandler;
+import com.github.breadmoirai.breadbot.framework.command.CommandResultManager;
 import com.github.breadmoirai.breadbot.framework.defaults.DefaultCommandResultHandlers;
 import net.dv8tion.jda.core.utils.tuple.Pair;
 

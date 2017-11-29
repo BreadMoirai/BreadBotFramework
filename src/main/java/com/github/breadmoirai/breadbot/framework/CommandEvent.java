@@ -15,7 +15,8 @@
  */
 package com.github.breadmoirai.breadbot.framework;
 
-import com.github.breadmoirai.breadbot.framework.internal.parameter.CommandArgument;
+import com.github.breadmoirai.breadbot.framework.parameter.CommandArgument;
+import com.github.breadmoirai.breadbot.framework.parameter.CommandArgumentList;
 import com.github.breadmoirai.breadbot.util.DiscordPatterns;
 import com.github.breadmoirai.breadbot.util.UnknownEmote;
 import net.dv8tion.jda.core.JDA;
@@ -209,7 +210,7 @@ public abstract class CommandEvent extends Event {
     }
 
     /**
-     * retrieves a {@link com.github.breadmoirai.breadbot.framework.internal.parameter.CommandArgument} from the {@link CommandArgumentList} returned by {@link CommandEvent#getArguments()}
+     * retrieves a {@link CommandArgument} from the {@link CommandArgumentList} returned by {@link CommandEvent#getArguments()}
      *
      * @param index the index of the argument starting at 0. This does not include the key.
      * @return the non-null CommandArgument

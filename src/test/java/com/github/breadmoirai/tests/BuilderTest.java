@@ -13,7 +13,7 @@ package com.github.breadmoirai.tests;/*    Copyright 2017 Ton Ly
   limitations under the License.
 */
 
-import com.github.breadmoirai.breadbot.framework.BreadBotClientBuilder;
+import com.github.breadmoirai.breadbot.framework.builder.BreadBotClientBuilder;
 import com.github.breadmoirai.breadbot.framework.error.MissingCommandKeyException;
 import org.junit.Test;
 

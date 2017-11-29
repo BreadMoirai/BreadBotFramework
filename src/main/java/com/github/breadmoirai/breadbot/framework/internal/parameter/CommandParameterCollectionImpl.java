@@ -14,7 +14,9 @@
 */
 package com.github.breadmoirai.breadbot.framework.internal.parameter;
 
-import com.github.breadmoirai.breadbot.framework.CommandArgumentList;
+import com.github.breadmoirai.breadbot.framework.parameter.CommandArgumentList;
+import com.github.breadmoirai.breadbot.framework.parameter.CommandParameter;
+import com.github.breadmoirai.breadbot.framework.parameter.CommandParser;
 
 import java.util.stream.Collector;
 import java.util.stream.Stream;

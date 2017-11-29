@@ -14,12 +14,12 @@
 */
 package com.github.breadmoirai.breadbot.framework.internal.command.builder;
 
-import com.github.breadmoirai.breadbot.framework.BreadBotClientBuilder;
 import com.github.breadmoirai.breadbot.framework.CommandEvent;
-import com.github.breadmoirai.breadbot.framework.CommandParameterBuilder;
-import com.github.breadmoirai.breadbot.framework.CommandPropertyMap;
 import com.github.breadmoirai.breadbot.framework.annotation.command.Command;
 import com.github.breadmoirai.breadbot.framework.annotation.command.MainCommand;
+import com.github.breadmoirai.breadbot.framework.builder.BreadBotClientBuilder;
+import com.github.breadmoirai.breadbot.framework.builder.CommandParameterBuilder;
+import com.github.breadmoirai.breadbot.framework.command.CommandPropertyMap;
 import com.github.breadmoirai.breadbot.framework.error.BreadBotException;
 import com.github.breadmoirai.breadbot.framework.error.CommandInitializationException;
 import com.github.breadmoirai.breadbot.framework.error.MissingMainCommandException;
@@ -28,7 +28,7 @@ import com.github.breadmoirai.breadbot.framework.internal.command.CommandObjectF
 import com.github.breadmoirai.breadbot.framework.internal.command.CommandPackageProperties;
 import com.github.breadmoirai.breadbot.framework.internal.command.CommandPropertyMapImpl;
 import com.github.breadmoirai.breadbot.framework.internal.command.InvokableCommandHandle;
-import com.github.breadmoirai.breadbot.framework.internal.parameter.CommandParser;
+import com.github.breadmoirai.breadbot.framework.parameter.CommandParser;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.reflections.Reflections;

@@ -14,8 +14,12 @@
 */
 package com.github.breadmoirai.breadbot.framework.internal.command.builder;
 
-import com.github.breadmoirai.breadbot.framework.*;
-import com.github.breadmoirai.breadbot.framework.internal.parameter.CommandParser;
+import com.github.breadmoirai.breadbot.framework.CommandEvent;
+import com.github.breadmoirai.breadbot.framework.CommandModule;
+import com.github.breadmoirai.breadbot.framework.builder.BreadBotClientBuilder;
+import com.github.breadmoirai.breadbot.framework.builder.CommandParameterBuilder;
+import com.github.breadmoirai.breadbot.framework.command.CommandPropertyMap;
+import com.github.breadmoirai.breadbot.framework.parameter.CommandParser;
 
 import java.lang.reflect.Parameter;
 

@@ -15,6 +15,9 @@
  */
 package com.github.breadmoirai.breadbot.framework;
 
+import com.github.breadmoirai.breadbot.framework.command.CommandHandle;
+import com.github.breadmoirai.breadbot.framework.command.CommandResultManager;
+import com.github.breadmoirai.breadbot.framework.parameter.CommandParameterTypeManager;
 import net.dv8tion.jda.core.JDA;
 
 import java.lang.reflect.Type;

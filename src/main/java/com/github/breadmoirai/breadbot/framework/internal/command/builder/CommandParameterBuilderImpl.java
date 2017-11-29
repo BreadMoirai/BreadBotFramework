@@ -1,11 +1,13 @@
 package com.github.breadmoirai.breadbot.framework.internal.command.builder;
 
-import com.github.breadmoirai.breadbot.framework.BreadBotClientBuilder;
-import com.github.breadmoirai.breadbot.framework.CommandParameterBuilder;
-import com.github.breadmoirai.breadbot.framework.CommandPropertyMap;
+import com.github.breadmoirai.breadbot.framework.builder.BreadBotClientBuilder;
+import com.github.breadmoirai.breadbot.framework.builder.CommandParameterBuilder;
+import com.github.breadmoirai.breadbot.framework.command.CommandPropertyMap;
 import com.github.breadmoirai.breadbot.framework.error.MissingTypeMapperException;
 import com.github.breadmoirai.breadbot.framework.internal.command.CommandPropertyMapImpl;
-import com.github.breadmoirai.breadbot.framework.internal.parameter.*;
+import com.github.breadmoirai.breadbot.framework.internal.parameter.CommandParameterCollectionImpl;
+import com.github.breadmoirai.breadbot.framework.internal.parameter.CommandParameterImpl;
+import com.github.breadmoirai.breadbot.framework.parameter.*;
 
 import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;

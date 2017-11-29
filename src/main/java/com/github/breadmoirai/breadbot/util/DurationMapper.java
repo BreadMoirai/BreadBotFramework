@@ -14,7 +14,7 @@
 */
 package com.github.breadmoirai.breadbot.util;
 
-import com.github.breadmoirai.breadbot.framework.internal.parameter.CommandArgument;
+import com.github.breadmoirai.breadbot.framework.parameter.CommandArgument;
 
 import java.time.Duration;
 import java.util.function.Function;

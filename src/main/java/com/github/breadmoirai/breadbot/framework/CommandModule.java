@@ -15,6 +15,7 @@
  */
 package com.github.breadmoirai.breadbot.framework;
 
+import com.github.breadmoirai.breadbot.framework.builder.BreadBotClientBuilder;
 import org.json.JSONObject;
 
 public interface CommandModule {

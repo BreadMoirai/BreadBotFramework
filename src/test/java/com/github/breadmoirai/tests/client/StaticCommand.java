@@ -1,9 +1,9 @@
 package com.github.breadmoirai.tests.client;
 
 import com.github.breadmoirai.breadbot.framework.CommandEvent;
-import com.github.breadmoirai.breadbot.framework.CommandHandleBuilder;
 import com.github.breadmoirai.breadbot.framework.annotation.ConfigureCommand;
 import com.github.breadmoirai.breadbot.framework.annotation.command.MainCommand;
+import com.github.breadmoirai.breadbot.framework.builder.CommandHandleBuilder;
 
 public class StaticCommand {
 

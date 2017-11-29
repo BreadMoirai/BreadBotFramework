@@ -15,7 +15,7 @@
  */
 package com.github.breadmoirai.breadbot.framework.annotation.parameter;
 
-import com.github.breadmoirai.breadbot.framework.internal.parameter.ArgumentTypeMapper;
+import com.github.breadmoirai.breadbot.framework.parameter.ArgumentTypeMapper;
 
 import java.lang.annotation.*;
 

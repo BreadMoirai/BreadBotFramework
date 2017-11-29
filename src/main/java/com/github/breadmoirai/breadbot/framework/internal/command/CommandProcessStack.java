@@ -1,8 +1,8 @@
 package com.github.breadmoirai.breadbot.framework.internal.command;
 
 import com.github.breadmoirai.breadbot.framework.CommandEvent;
-import com.github.breadmoirai.breadbot.framework.CommandHandle;
-import com.github.breadmoirai.breadbot.framework.CommandPreprocessor;
+import com.github.breadmoirai.breadbot.framework.command.CommandHandle;
+import com.github.breadmoirai.breadbot.framework.command.CommandPreprocessor;
 
 import java.util.ArrayDeque;
 import java.util.Collection;

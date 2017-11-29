@@ -15,9 +15,9 @@
  */
 package com.github.breadmoirai.breadbot.modules.source;
 
-import com.github.breadmoirai.breadbot.framework.BreadBotClientBuilder;
 import com.github.breadmoirai.breadbot.framework.CommandModule;
-import com.github.breadmoirai.breadbot.framework.CommandPreprocessorPredicate;
+import com.github.breadmoirai.breadbot.framework.builder.BreadBotClientBuilder;
+import com.github.breadmoirai.breadbot.framework.command.CommandPreprocessorPredicate;
 
 public class GuildRestrictionModule implements CommandModule {
 

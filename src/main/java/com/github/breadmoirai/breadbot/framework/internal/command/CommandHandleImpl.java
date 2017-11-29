@@ -1,9 +1,13 @@
 package com.github.breadmoirai.breadbot.framework.internal.command;
 
-import com.github.breadmoirai.breadbot.framework.*;
+import com.github.breadmoirai.breadbot.framework.CommandEvent;
+import com.github.breadmoirai.breadbot.framework.command.CommandHandle;
+import com.github.breadmoirai.breadbot.framework.command.CommandPreprocessor;
+import com.github.breadmoirai.breadbot.framework.command.CommandPropertyMap;
+import com.github.breadmoirai.breadbot.framework.command.CommandResultHandler;
 import com.github.breadmoirai.breadbot.framework.error.MissingCommandKeyException;
-import com.github.breadmoirai.breadbot.framework.internal.parameter.CommandParameter;
-import com.github.breadmoirai.breadbot.framework.internal.parameter.CommandParser;
+import com.github.breadmoirai.breadbot.framework.parameter.CommandParameter;
+import com.github.breadmoirai.breadbot.framework.parameter.CommandParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
