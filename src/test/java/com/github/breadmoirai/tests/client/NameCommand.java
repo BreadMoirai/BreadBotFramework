@@ -13,7 +13,6 @@ package com.github.breadmoirai.tests.client;/*    Copyright 2017 Ton Ly
   limitations under the License.
 */
 
-import com.github.breadmoirai.breadbot.framework.CommandEvent;
 import com.github.breadmoirai.breadbot.framework.annotation.command.Command;
 import com.github.breadmoirai.breadbot.framework.annotation.parameter.Index;
 import com.github.breadmoirai.breadbot.framework.annotation.parameter.Width;
@@ -21,18 +20,18 @@ import com.github.breadmoirai.breadbot.framework.annotation.parameter.Width;
 public class NameCommand {
 
     @Command
-    public void name(CommandEvent event, @Width(-1) String name) {
-        event.reply(name);
+    public String name(@Width(-1) String name) {
+        return name;
     }
 
     @Command
-    public void first(CommandEvent event, @Index(0) @Width(1) String name) {
-        event.reply(name);
+    public String first(@Index(0) @Width(1) String name) {
+        return name;
     }
 
     @Command
-    public void last(CommandEvent event, @Index(1) @Width(-1) String name) {
-        event.reply(name);
+    public String last(@Index(1) @Width(-1) String name) {
+        return name;
     }
 
 }

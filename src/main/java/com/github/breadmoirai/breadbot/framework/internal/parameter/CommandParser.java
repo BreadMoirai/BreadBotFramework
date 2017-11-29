@@ -17,12 +17,10 @@ package com.github.breadmoirai.breadbot.framework.internal.parameter;
 import com.github.breadmoirai.breadbot.framework.CommandArgumentList;
 import com.github.breadmoirai.breadbot.framework.CommandEvent;
 import com.github.breadmoirai.breadbot.framework.CommandHandle;
-import gnu.trove.TIntCollection;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 
 public class CommandParser {
@@ -86,7 +84,7 @@ public class CommandParser {
 
     public void mapNext() {
         if (!fail) {
-            results[pointer] = parameters[pointer].map(getArgumentList(), this);
+            results[pointer] = parameters[pointer].map(this);
             pointer++;
         }
     }
@@ -111,35 +109,19 @@ public class CommandParser {
         return size;
     }
 
-    public boolean contains(int entry) {
-        return set.contains(entry);
+    public boolean hasMappedArgument(int index) {
+        return set.contains(index);
     }
 
-    public boolean add(int entry) {
-        return set.add(entry);
+    public boolean markMappedArgument(int index) {
+        return set.add(index);
     }
 
-    public boolean containsAll(Collection<?> collection) {
-        return set.containsAll(collection);
-    }
-
-    public boolean containsAll(TIntCollection collection) {
-        return set.containsAll(collection);
-    }
-
-    public boolean containsAll(int[] array) {
+    public boolean hasMappedArguments(int[] array) {
         return set.containsAll(array);
     }
 
-    public boolean addAll(Collection<? extends Integer> collection) {
-        return set.addAll(collection);
-    }
-
-    public boolean addAll(TIntCollection collection) {
-        return set.addAll(collection);
-    }
-
-    public boolean addAll(int[] array) {
+    public boolean markMappedArguments(int[] array) {
         return set.addAll(array);
     }
 

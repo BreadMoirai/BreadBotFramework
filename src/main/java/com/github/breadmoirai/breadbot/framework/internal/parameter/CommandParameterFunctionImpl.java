@@ -16,19 +16,24 @@ package com.github.breadmoirai.breadbot.framework.internal.parameter;
 
 import com.github.breadmoirai.breadbot.framework.CommandArgumentList;
 
-import java.util.function.BiFunction;
+import java.util.function.Function;
 
 public class CommandParameterFunctionImpl implements CommandParameter {
 
-    private final BiFunction<CommandArgumentList, CommandParser, ?> function;
+    private final Function<CommandParser, ?> function;
 
-    public CommandParameterFunctionImpl(BiFunction<CommandArgumentList, CommandParser, ?> function) {
+    public CommandParameterFunctionImpl(Function<CommandParser, ?> function) {
         this.function = function;
     }
 
     @Override
-    public Object map(CommandArgumentList list, CommandParser set) {
-        return function.apply(list, set);
+    public Object map(CommandParser set) {
+        return function.apply(set);
+    }
+
+    @Override
+    public Object map(CommandArgumentList list, CommandParser parser) {
+        return map(parser);
     }
 
     @Override
@@ -38,7 +43,7 @@ public class CommandParameterFunctionImpl implements CommandParameter {
 
     @Override
     public int getFlags() {
-        return 0;
+        return -1;
     }
 
     @Override

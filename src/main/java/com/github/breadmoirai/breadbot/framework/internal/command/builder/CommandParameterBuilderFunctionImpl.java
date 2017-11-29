@@ -14,15 +14,14 @@
 */
 package com.github.breadmoirai.breadbot.framework.internal.command.builder;
 
-import com.github.breadmoirai.breadbot.framework.CommandArgumentList;
 import com.github.breadmoirai.breadbot.framework.internal.parameter.CommandParameterFunctionImpl;
 import com.github.breadmoirai.breadbot.framework.internal.parameter.CommandParser;
 
-import java.util.function.BiFunction;
+import java.util.function.Function;
 
 public class CommandParameterBuilderFunctionImpl extends CommandParameterBuilderSpecificImpl {
 
-    public CommandParameterBuilderFunctionImpl(BiFunction<CommandArgumentList, CommandParser, ?> function) {
+    public CommandParameterBuilderFunctionImpl(Function<CommandParser, ?> function) {
         super(null, "This CommandParameterBuilder has been defined with a function.", () -> new CommandParameterFunctionImpl(function));
     }
 

@@ -221,6 +221,18 @@ public class ClientTest {
         assertResponse("!me help", "maybe");
     }
 
+    @Test
+    public void parameterOverrideTest() {
+        setupBread(bread -> {
+            for (CommandHandleBuilder command : bread.createCommands(NameCommand::new)) {
+                if (command.getName().equals("name")) {
+                    command.setParameter(0, parser -> "James");
+                }
+            }
+        });
+        assertResponse("!name Mary Shellstrop", "James");
+    }
+
     private void setupBread(Consumer<BreadBotClientBuilder> config) {
         BreadBotClientBuilder builder = new BreadBotClientBuilder();
         config.accept(builder);

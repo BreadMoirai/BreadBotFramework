@@ -36,16 +36,16 @@ public class CommandParameterCollectionImpl implements CommandParameter {
         final Stream.Builder<Object> builder = Stream.builder();
         if (!contiguous) {
             Object o;
-            while ((o = commandParameter.map(list, set)) != null) {
+            while ((o = commandParameter.map(set)) != null) {
                 builder.accept(o);
             }
         } else {
             for (int i = 0; i < list.size(); i++) {
-                if (set.contains(i)) continue;
+                if (set.hasMappedArgument(i)) continue;
                 int j = i;
                 Object o;
                 while (j < list.size() &&
-                        !set.contains(j) &&
+                        !set.hasMappedArgument(j) &&
                         (o = commandParameter.map(list.subList(j, j + 1), set)) != null) {
                     builder.accept(o);
                     j++;

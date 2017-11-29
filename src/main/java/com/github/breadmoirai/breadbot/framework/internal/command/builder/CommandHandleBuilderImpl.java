@@ -21,10 +21,13 @@ import com.github.breadmoirai.breadbot.framework.internal.command.CommandObjectF
 import com.github.breadmoirai.breadbot.framework.internal.command.CommandPropertyMapImpl;
 import com.github.breadmoirai.breadbot.framework.internal.command.InvokableCommand;
 import com.github.breadmoirai.breadbot.framework.internal.parameter.CommandParameter;
+import com.github.breadmoirai.breadbot.framework.internal.parameter.CommandParser;
+import net.dv8tion.jda.core.utils.Checks;
 
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
 
@@ -180,6 +183,13 @@ public class CommandHandleBuilderImpl implements CommandHandleBuilderInternal {
     @Override
     public CommandParameterBuilder getParameter(int parameterIndex) {
         return parameterBuilders[parameterIndex];
+    }
+
+    @Override
+    public CommandHandleBuilder setParameter(int parameterIndex, Function<CommandParser, ?> mapper) {
+        Checks.notNull(mapper, "mapper");
+        parameterBuilders[parameterIndex] = new CommandParameterBuilderFunctionImpl(mapper);
+        return this;
     }
 
     @Override

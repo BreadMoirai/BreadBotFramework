@@ -161,7 +161,7 @@ public class BreadBotClientBuilder implements
 
     @Override
     public List<CommandHandleBuilder> createCommands(Supplier<?> commandSupplier) {
-        List<CommandHandleBuilderInternal> commandHandles = factory.createCommands(commandSupplier);
+        List<CommandHandleBuilderInternal> commandHandles = factory.createCommands(commandSupplier, commandSupplier.get());
         commands.addAll(commandHandles);
         return Collections.unmodifiableList(commandHandles);
     }

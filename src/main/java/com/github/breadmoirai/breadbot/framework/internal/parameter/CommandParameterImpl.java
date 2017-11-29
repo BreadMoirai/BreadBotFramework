@@ -27,7 +27,7 @@ public class CommandParameterImpl implements CommandParameter {
     }
 
     @Override
-    public Object map(CommandArgumentList list, CommandParser set) {
+    public Object map(CommandArgumentList list, CommandParser parser) {
         int i;
         final int limit;
         if (index >= 0) {
@@ -39,7 +39,7 @@ public class CommandParameterImpl implements CommandParameter {
         }
 
         for (; i < limit; i++) {
-            if (set.contains(i)) continue;
+            if (parser.hasMappedArgument(i)) continue;
             int[] indexes;
             final CommandArgument commandArgument;
             if (width == 1) {
@@ -49,30 +49,30 @@ public class CommandParameterImpl implements CommandParameter {
                 final StringJoiner sj = new StringJoiner(" ");
                 int j = i;
                 for (; j < list.size(); j++) {
-                    if (set.contains(j)) break;
+                    if (parser.hasMappedArgument(j)) break;
                     sj.add(list.get(j).getArgument());
                 }
                 indexes = IntStream.range(i, j).toArray();
-                commandArgument = new GenericCommandArgument(set.getEvent(), sj.toString());
+                commandArgument = new GenericCommandArgument(parser.getEvent(), sj.toString());
             } else {
                 final StringJoiner sj = new StringJoiner(" ");
                 if (i + width >= list.size())
                     continue;
                 for (int j = i; j < i + width && j < list.size(); j++) {
-                    if (set.contains(i)) break;
+                    if (parser.hasMappedArgument(i)) break;
                     sj.add(list.get(i).getArgument());
                 }
                 indexes = IntStream.range(i, i + width).toArray();
-                commandArgument = new GenericCommandArgument(set.getEvent(), sj.toString());
+                commandArgument = new GenericCommandArgument(parser.getEvent(), sj.toString());
             }
             final Object o = mapper.map(commandArgument, flags);
             if (o != null) {
-                set.addAll(indexes);
+                parser.markMappedArguments(indexes);
                 return o;
             }
         }
 
-        if (mustBePresent) set.fail();
+        if (mustBePresent) parser.fail();
         if (absentArgumentHandler != null)
             absentArgumentHandler.handle(list.getEvent(), this);
         return null;

@@ -15,12 +15,14 @@
 package com.github.breadmoirai.breadbot.framework;
 
 import com.github.breadmoirai.breadbot.framework.error.NoSuchCommandException;
+import com.github.breadmoirai.breadbot.framework.internal.parameter.CommandParser;
 
 import java.lang.reflect.Method;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.regex.Pattern;
 
 public interface CommandHandleBuilder extends CommandHandleBuilderFactory<CommandHandleBuilder> {
@@ -185,6 +187,12 @@ public interface CommandHandleBuilder extends CommandHandleBuilderFactory<Comman
         return sortPreprocessors(getClientBuilder().getPriorityComparator());
     }
 
+    /**
+     * If set to {@code true}, this command will use the same object to invoke its methods each time it is called. This has no effect on commands built with a consumer or instantiated object.
+     *
+     * @param isPersistent by default this is false
+     * @return this
+     */
     CommandHandleBuilder setPersistent(boolean isPersistent);
 
     /**
@@ -201,4 +209,13 @@ public interface CommandHandleBuilder extends CommandHandleBuilderFactory<Comman
     }
 
     CommandParameterBuilder getParameter(int parameterIndex);
+
+    /**
+     * Sets the specified parameter to use a specific function to map its argument
+     *
+     * @param parameterIndex the index of the parameter starting from {@code 0} as it was declared
+     * @param mapper         a Function that takes the parser and returns an object that can be casted to the parameter type.
+     * @return this
+     */
+    CommandHandleBuilder setParameter(int parameterIndex, Function<CommandParser, ?> mapper);
 }
