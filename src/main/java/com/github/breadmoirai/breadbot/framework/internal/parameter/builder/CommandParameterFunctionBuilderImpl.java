@@ -12,7 +12,7 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 */
-package com.github.breadmoirai.breadbot.framework.internal.command.builder;
+package com.github.breadmoirai.breadbot.framework.internal.parameter.builder;
 
 import com.github.breadmoirai.breadbot.framework.builder.CommandParameterBuilder;
 import com.github.breadmoirai.breadbot.framework.internal.parameter.CommandParameterFunctionImpl;

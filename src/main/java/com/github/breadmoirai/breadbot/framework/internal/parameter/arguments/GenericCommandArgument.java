@@ -1,4 +1,4 @@
-package com.github.breadmoirai.breadbot.framework.internal.parameter.argumentimpl;
+package com.github.breadmoirai.breadbot.framework.internal.parameter.arguments;
 
 import com.github.breadmoirai.breadbot.framework.CommandEvent;
 import com.github.breadmoirai.breadbot.framework.parameter.CommandArgument;

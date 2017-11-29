@@ -1,7 +1,7 @@
 package com.github.breadmoirai.breadbot.framework.internal.parameter;
 
 import com.github.breadmoirai.breadbot.framework.CommandEvent;
-import com.github.breadmoirai.breadbot.framework.internal.parameter.argumentimpl.*;
+import com.github.breadmoirai.breadbot.framework.internal.parameter.arguments.*;
 import com.github.breadmoirai.breadbot.framework.parameter.CommandArgument;
 import com.github.breadmoirai.breadbot.util.Arguments;
 import com.github.breadmoirai.breadbot.util.Emoji;

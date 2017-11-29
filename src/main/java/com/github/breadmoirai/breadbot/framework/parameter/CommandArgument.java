@@ -302,7 +302,7 @@ public interface CommandArgument {
      * Checks if this argument is a {@link net.dv8tion.jda.core.entities.User} mention that can be correctly resolved to a {@link net.dv8tion.jda.core.entities.User}.
      * The result of this method is equivalent to checking this argument against a regex of {@code <@(!)?[0-9]+>} and then checking to see if {@link net.dv8tion.jda.core.JDA} has knowledge of a {@link net.dv8tion.jda.core.entities.User} with that id.
      * <p>
-     * If this method returns {@code false} and {@link CommandArgument#isUser} returns {@code true}, this CommandArgument is can be cast to an  {@link com.github.breadmoirai.breadbot.framework.internal.parameter.argumentimpl.InvalidMentionArgument InvalidMentionArgument}
+     * If this method returns {@code false} and {@link CommandArgument#isUser} returns {@code true}, this CommandArgument is can be cast to an  {@link com.github.breadmoirai.breadbot.framework.internal.parameter.arguments.InvalidMentionArgument InvalidMentionArgument}
      *
      * @return {@code true} if this is a formatted {@link net.dv8tion.jda.core.entities.User} mention that can be resolved to an entity.
      */
@@ -424,7 +424,7 @@ public interface CommandArgument {
      * Checks if this argument is a {@link net.dv8tion.jda.core.entities.TextChannel} mention that can be correctly resolved to a {@link net.dv8tion.jda.core.entities.TextChannel}.
      * The result of this method is equivalent to checking this argument against a regex of {@code <#[0-9]+>} and then checking to see if {@link net.dv8tion.jda.core.JDA} has knowledge of a {@link net.dv8tion.jda.core.entities.TextChannel} with that id.
      * <p>
-     * If this method returns {@code false} and {@link CommandArgument#isTextChannel()} returns {@code true}, this CommandArgument is can be cast to an  {@link com.github.breadmoirai.breadbot.framework.internal.parameter.argumentimpl.InvalidMentionArgument InvalidMentionArgument}
+     * If this method returns {@code false} and {@link CommandArgument#isTextChannel()} returns {@code true}, this CommandArgument is can be cast to an  {@link com.github.breadmoirai.breadbot.framework.internal.parameter.arguments.InvalidMentionArgument InvalidMentionArgument}
      *
      * @return {@code true} if this is a formatted {@link net.dv8tion.jda.core.entities.TextChannel} mention and can be correctly resolved to a JDA entity.
      */

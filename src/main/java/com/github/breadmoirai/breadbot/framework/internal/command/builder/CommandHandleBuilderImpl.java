@@ -24,6 +24,7 @@ import com.github.breadmoirai.breadbot.framework.internal.command.CommandHandleI
 import com.github.breadmoirai.breadbot.framework.internal.command.CommandObjectFactory;
 import com.github.breadmoirai.breadbot.framework.internal.command.CommandPropertyMapImpl;
 import com.github.breadmoirai.breadbot.framework.internal.command.InvokableCommand;
+import com.github.breadmoirai.breadbot.framework.internal.parameter.builder.CommandParameterFunctionBuilderImpl;
 import com.github.breadmoirai.breadbot.framework.parameter.CommandParameter;
 import com.github.breadmoirai.breadbot.framework.parameter.CommandParser;
 import net.dv8tion.jda.core.utils.Checks;

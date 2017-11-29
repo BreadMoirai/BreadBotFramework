@@ -12,18 +12,18 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 */
-package com.github.breadmoirai.breadbot.framework.internal.parameter.argumentimpl;
+package com.github.breadmoirai.breadbot.framework.internal.parameter.arguments;
 
 import com.github.breadmoirai.breadbot.framework.CommandEvent;
 
-public class InvalidUserArgument extends InvalidMentionArgument {
+public class InvalidTextChannelArgument extends InvalidMentionArgument {
 
-    public InvalidUserArgument(CommandEvent event, String s, long idLong) {
+    public InvalidTextChannelArgument(CommandEvent event, String s, long idLong) {
         super(event, s, idLong);
     }
 
     @Override
-    public boolean isUser() {
+    public boolean isTextChannel() {
         return true;
     }
 }

@@ -1,6 +1,6 @@
 package com.github.breadmoirai.breadbot.framework.internal.parameter;
 
-import com.github.breadmoirai.breadbot.framework.internal.parameter.argumentimpl.GenericCommandArgument;
+import com.github.breadmoirai.breadbot.framework.internal.parameter.arguments.GenericCommandArgument;
 import com.github.breadmoirai.breadbot.framework.parameter.*;
 
 import java.util.StringJoiner;

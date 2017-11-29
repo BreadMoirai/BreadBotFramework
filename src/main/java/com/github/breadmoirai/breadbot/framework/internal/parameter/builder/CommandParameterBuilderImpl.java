@@ -1,4 +1,4 @@
-package com.github.breadmoirai.breadbot.framework.internal.command.builder;
+package com.github.breadmoirai.breadbot.framework.internal.parameter.builder;
 
 import com.github.breadmoirai.breadbot.framework.builder.BreadBotClientBuilder;
 import com.github.breadmoirai.breadbot.framework.builder.CommandParameterBuilder;
@@ -11,7 +11,10 @@ import com.github.breadmoirai.breadbot.framework.parameter.*;
 
 import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.List;
+import java.util.Queue;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collector;
@@ -205,7 +208,7 @@ public class CommandParameterBuilderImpl implements CommandParameterBuilder {
         if (parser == null) throw new MissingTypeMapperException(methodName, paramName);
         ArgumentTypeMapper<?> mapper = parser;
         if (paramType == CommandArgument.class) {
-            mapper = (arg, flags1) -> parser.test(arg, flags1) ? Optional.of(arg) : Optional.empty();
+            mapper = (arg, flags1) -> parser.test(arg, flags1) ? arg : null;
         }
         final CommandParameterImpl commandParameter = new CommandParameterImpl(type, flags, index, width, mapper, mustBePresent, absentArgumentHandler);
         if (collectorSupplier != null) {

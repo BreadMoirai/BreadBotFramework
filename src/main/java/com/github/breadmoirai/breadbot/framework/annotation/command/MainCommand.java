@@ -26,4 +26,6 @@ import java.lang.annotation.*;
 @Target(ElementType.METHOD)
 @Inherited
 public @interface MainCommand {
+
+    String[] value() default {};
 }

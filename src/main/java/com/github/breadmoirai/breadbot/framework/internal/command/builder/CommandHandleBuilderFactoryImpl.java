@@ -28,6 +28,8 @@ import com.github.breadmoirai.breadbot.framework.internal.command.CommandObjectF
 import com.github.breadmoirai.breadbot.framework.internal.command.CommandPackageProperties;
 import com.github.breadmoirai.breadbot.framework.internal.command.CommandPropertyMapImpl;
 import com.github.breadmoirai.breadbot.framework.internal.command.InvokableCommandHandle;
+import com.github.breadmoirai.breadbot.framework.internal.parameter.builder.CommandParameterBuilderFactory;
+import com.github.breadmoirai.breadbot.framework.internal.parameter.builder.CommandParameterFunctionBuilderImpl;
 import com.github.breadmoirai.breadbot.framework.parameter.CommandParser;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
