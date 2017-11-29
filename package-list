@@ -10,14 +10,8 @@ com.github.breadmoirai.breadbot.framework.internal.command
 com.github.breadmoirai.breadbot.framework.internal.command.builder
 com.github.breadmoirai.breadbot.framework.internal.event
 com.github.breadmoirai.breadbot.framework.internal.parameter
-com.github.breadmoirai.breadbot.framework.response
-com.github.breadmoirai.breadbot.framework.response.list
-com.github.breadmoirai.breadbot.framework.response.menu
-com.github.breadmoirai.breadbot.framework.response.menu.reactions
-com.github.breadmoirai.breadbot.framework.response.simple
 com.github.breadmoirai.breadbot.modules.admin
 com.github.breadmoirai.breadbot.modules.owner
 com.github.breadmoirai.breadbot.modules.prefix
 com.github.breadmoirai.breadbot.modules.source
 com.github.breadmoirai.breadbot.util
-com.github.breadmoirai.breadbot.waiter
