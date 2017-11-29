@@ -25,6 +25,12 @@ public class DefaultCommandProperties {
     private static final Pattern COMMAND_PATTERN = Pattern.compile(".+(command|cmd)(s)?");
 
     public void initialize(CommandPropertiesManagerImpl cp) {
+        cp.putCommandModifier(Command.class, (p, builder) -> {
+            if (p.value().length != 0) builder.setKeys(p.value());
+        });
+        cp.putCommandModifier(MainCommand.class, (p, builder) -> {
+            if (p.value().length != 0) builder.setKeys(p.value());
+        });
         cp.putCommandModifier(Name.class, (p, builder) -> builder.setName(p.value()));
         cp.putCommandModifier(Group.class, (p, builder) -> builder.setGroup(p.value()));
         cp.putCommandModifier(Description.class, (p, builder) -> builder.setDescription(p.value()));
@@ -37,7 +43,6 @@ public class DefaultCommandProperties {
         cp.putCommandModifier(Delimiter.class, (p, builder) -> {
             builder.setSplitRegex(p.regex(), p.limit());
         });
-
 
         cp.putCommandModifier(null, (o, builder) -> {
             Class<?> declaringClass = builder.getDeclaringClass();
