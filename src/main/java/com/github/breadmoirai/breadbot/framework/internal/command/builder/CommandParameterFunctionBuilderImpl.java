@@ -20,17 +20,17 @@ import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Parameter;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
+import java.util.function.Function;
 
-public class CommandParameterBuilderSpecificImpl implements CommandParameterBuilder {
+public class CommandParameterFunctionBuilderImpl implements CommandParameterBuilder, Function<CommandParser, Object> {
 
     private Parameter parameter;
-    private final Supplier<CommandParameter> supplier;
+    private final Function<CommandParser, ?> function;
     private final String error;
 
-    public CommandParameterBuilderSpecificImpl(Parameter parameter, String error, Supplier<CommandParameter> supplier) {
+    public CommandParameterFunctionBuilderImpl(Parameter parameter, String error, Function<CommandParser, ?> function) {
         this.parameter = parameter;
-        this.supplier = supplier;
+        this.function = function;
         this.error = error;
     }
 
@@ -116,7 +116,11 @@ public class CommandParameterBuilderSpecificImpl implements CommandParameterBuil
 
     @Override
     public CommandParameter build() {
-        return supplier.get();
+        return new CommandParameterFunctionImpl(function);
     }
 
+    @Override
+    public Object apply(CommandParser parser) {
+        return function.apply(parser);
+    }
 }

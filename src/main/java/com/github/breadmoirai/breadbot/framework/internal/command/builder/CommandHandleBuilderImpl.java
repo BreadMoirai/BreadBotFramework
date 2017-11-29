@@ -188,7 +188,8 @@ public class CommandHandleBuilderImpl implements CommandHandleBuilderInternal {
     @Override
     public CommandHandleBuilder setParameter(int parameterIndex, Function<CommandParser, ?> mapper) {
         Checks.notNull(mapper, "mapper");
-        parameterBuilders[parameterIndex] = new CommandParameterBuilderFunctionImpl(mapper);
+        final CommandParameterBuilder parameter = parameterBuilders[parameterIndex];
+        parameterBuilders[parameterIndex] = new CommandParameterFunctionBuilderImpl(parameter.getDeclaringParameter(), "You have defined this parameter with a function. Further modifications are useless.", mapper);
         return this;
     }
 

@@ -28,7 +28,6 @@ import com.github.breadmoirai.breadbot.framework.internal.command.CommandObjectF
 import com.github.breadmoirai.breadbot.framework.internal.command.CommandPackageProperties;
 import com.github.breadmoirai.breadbot.framework.internal.command.CommandPropertyMapImpl;
 import com.github.breadmoirai.breadbot.framework.internal.command.InvokableCommandHandle;
-import com.github.breadmoirai.breadbot.framework.internal.parameter.CommandParameterFunctionImpl;
 import com.github.breadmoirai.breadbot.framework.internal.parameter.CommandParser;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -66,7 +65,7 @@ public class CommandHandleBuilderFactoryImpl implements CommandHandleBuilderFact
                 null,
                 clientBuilder,
                 new CommandObjectFactory(() -> onCommand),
-                new CommandParameterBuilder[]{new CommandParameterBuilderSpecificImpl(null, "This parameter of type CommandEvent is inconfigurable", () -> new CommandParameterFunctionImpl(CommandParser::getEvent))},
+                new CommandParameterBuilder[]{new CommandParameterFunctionBuilderImpl(null, "This parameter of type CommandEvent is inconfigurable", CommandParser::getEvent)},
                 (o, objects) -> {
                     onCommand.accept(((CommandEvent) objects[0]));
                     return null;
