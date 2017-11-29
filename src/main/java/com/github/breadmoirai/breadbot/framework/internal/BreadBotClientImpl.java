@@ -18,7 +18,6 @@ package com.github.breadmoirai.breadbot.framework.internal;
 import com.github.breadmoirai.breadbot.framework.*;
 import com.github.breadmoirai.breadbot.framework.internal.command.builder.CommandHandleBuilderInternal;
 import com.github.breadmoirai.breadbot.util.EventStringIterator;
-import com.github.breadmoirai.breadbot.waiter.EventWaiterB;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.events.Event;
@@ -51,7 +50,6 @@ public class BreadBotClientImpl implements BreadBotClient, EventListener {
     private final Map<Type, CommandModule> moduleTypeMap;
     private final Map<String, CommandHandle> commandMap;
     private final boolean shouldEvaluateCommandOnMessageUpdate;
-    private EventWaiterB eventWaiter;
 
     public BreadBotClientImpl(
             List<CommandModule> modules,
@@ -156,10 +154,11 @@ public class BreadBotClientImpl implements BreadBotClient, EventListener {
         return argumentTypes;
     }
 
-       @Override
+    @Override
     public CommandResultManager getResultManager() {
         return resultManager;
     }
+
     @Override
     public Map<String, CommandHandle> getCommandMap() {
         return commandMap;
@@ -252,11 +251,5 @@ public class BreadBotClientImpl implements BreadBotClient, EventListener {
         }
     }
 
-    public EventWaiterB getEventWaiter() {
-        if (eventWaiter == null) {
-            eventWaiter = new EventWaiterB();
-            getJDA().addEventListener(eventWaiter);
-        }
-        return eventWaiter;
-    }
+
 }
