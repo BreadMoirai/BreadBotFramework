@@ -16,16 +16,12 @@
 package com.github.breadmoirai.breadbot.framework;
 
 import com.github.breadmoirai.breadbot.framework.internal.BreadBotClientImpl;
-import com.github.breadmoirai.breadbot.framework.internal.argument.CommandParameterTypeManagerImpl;
 import com.github.breadmoirai.breadbot.framework.internal.command.CommandPropertiesManagerImpl;
 import com.github.breadmoirai.breadbot.framework.internal.command.CommandResultManagerImpl;
 import com.github.breadmoirai.breadbot.framework.internal.command.builder.CommandHandleBuilderFactoryImpl;
 import com.github.breadmoirai.breadbot.framework.internal.command.builder.CommandHandleBuilderInternal;
 import com.github.breadmoirai.breadbot.framework.internal.event.CommandEventFactoryImpl;
-import com.github.breadmoirai.breadbot.framework.internal.parameter.ArgumentParser;
-import com.github.breadmoirai.breadbot.framework.internal.parameter.ArgumentTypeMapper;
-import com.github.breadmoirai.breadbot.framework.internal.parameter.ArgumentTypePredicate;
-import com.github.breadmoirai.breadbot.framework.internal.parameter.CommandArgument;
+import com.github.breadmoirai.breadbot.framework.internal.parameter.*;
 import com.github.breadmoirai.breadbot.modules.prefix.DefaultPrefixModule;
 import com.github.breadmoirai.breadbot.modules.prefix.PrefixModule;
 import net.dv8tion.jda.core.entities.Message;

@@ -14,7 +14,6 @@
 */
 package com.github.breadmoirai.breadbot.framework;
 
-import com.github.breadmoirai.breadbot.framework.internal.argument.CommandParameterTypeManagerImpl;
 import com.github.breadmoirai.breadbot.framework.internal.parameter.*;
 import org.jetbrains.annotations.Nullable;
 

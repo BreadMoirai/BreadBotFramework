@@ -12,14 +12,11 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 */
-package com.github.breadmoirai.breadbot.framework.internal.argument;
+package com.github.breadmoirai.breadbot.framework.internal.parameter;
 
 import com.github.breadmoirai.breadbot.framework.CommandParameterManagerBuilder;
 import com.github.breadmoirai.breadbot.framework.CommandParameterTypeManager;
 import com.github.breadmoirai.breadbot.framework.defaults.DefaultCommandParameters;
-import com.github.breadmoirai.breadbot.framework.internal.parameter.ArgumentParser;
-import com.github.breadmoirai.breadbot.framework.internal.parameter.ArgumentTypeMapper;
-import com.github.breadmoirai.breadbot.framework.internal.parameter.ArgumentTypePredicate;
 
 import java.util.HashMap;
 import java.util.Map;

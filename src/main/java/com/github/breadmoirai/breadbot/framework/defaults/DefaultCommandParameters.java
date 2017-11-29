@@ -1,6 +1,5 @@
 package com.github.breadmoirai.breadbot.framework.defaults;
 
-import com.github.breadmoirai.breadbot.framework.internal.argument.CommandParameterTypeManagerImpl;
 import com.github.breadmoirai.breadbot.framework.internal.parameter.*;
 import com.github.breadmoirai.breadbot.util.Arguments;
 import com.github.breadmoirai.breadbot.util.DateTimeMapper;
