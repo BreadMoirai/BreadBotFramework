@@ -159,6 +159,20 @@ jacocoTestReport {
     }
 }
 
+//task aonoengoeiioa {
+//
+//    def tree = fileTree('src').include('**/*.java')
+//    tree.each { File file ->
+//        if (!file.isDirectory()) {
+//            def lines = file.readLines()
+//            if (lines.get(15).length() != 0) {
+//                lines.add(15, '')
+//                file.write(lines.stream().collect(Collectors.joining('\n')));
+//            }
+//        }
+//    }
+//}
+
 //System.setProperty('java.awt.headless', 'false')
 //import groovy.swing.SwingBuilder
 //
