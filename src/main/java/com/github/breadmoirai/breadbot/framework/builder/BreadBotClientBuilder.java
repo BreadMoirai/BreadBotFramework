@@ -105,22 +105,8 @@ public class BreadBotClientBuilder implements
     }
 
     @Override
-    public BreadBotClientBuilder addCommand(Supplier<?> commandSupplier, Consumer<CommandHandleBuilder> configurator) {
-        List<CommandHandleBuilderInternal> commandsFromSuppliers = factory.createCommandsFromSuppliers(commandSupplier);
-        commandsFromSuppliers.forEach(configurator);
-        commands.addAll(commandsFromSuppliers);
-        return this;
-    }
-
-    @Override
-    public BreadBotClientBuilder addCommand(Supplier<?> commandSupplier) {
-        List<CommandHandleBuilderInternal> commandsFromSuppliers = factory.createCommandsFromSuppliers(commandSupplier);
-        commands.addAll(commandsFromSuppliers);
-        return this;
-    }
-
-    @Override
     public CommandHandleBuilder createCommand(Consumer<CommandEvent> onCommand) {
+        Checks.notNull(onCommand, "onCommand");
         CommandHandleBuilderInternal commandHandle = factory.createCommand(onCommand);
         commands.add(commandHandle);
         return commandHandle;
@@ -128,6 +114,7 @@ public class BreadBotClientBuilder implements
 
     @Override
     public CommandHandleBuilder createCommand(Class<?> commandClass) {
+        Checks.notNull(commandClass, "commandClass");
         CommandHandleBuilderInternal commandHandle = factory.createCommand(commandClass);
         commands.add(commandHandle);
         return commandHandle;
@@ -135,6 +122,7 @@ public class BreadBotClientBuilder implements
 
     @Override
     public CommandHandleBuilder createCommand(Object commandObject) {
+        Checks.notNull(commandObject, "commandObject");
         CommandHandleBuilderInternal commandHandle = factory.createCommand(commandObject);
         commands.add(commandHandle);
         return commandHandle;
@@ -142,6 +130,7 @@ public class BreadBotClientBuilder implements
 
     @Override
     public CommandHandleBuilder createCommand(Supplier<?> commandSupplier) {
+        Checks.notNull(commandSupplier, "commandSupplier");
         CommandHandleBuilderInternal commandHandle = factory.createCommand(commandSupplier);
         commands.add(commandHandle);
         return commandHandle;
@@ -149,6 +138,7 @@ public class BreadBotClientBuilder implements
 
     @Override
     public List<CommandHandleBuilder> createCommands(String packageName) {
+        Checks.notNull(packageName, "packageName");
         List<CommandHandleBuilderInternal> commandHandles = factory.createCommands(packageName);
         commands.addAll(commandHandles);
         return Collections.unmodifiableList(commandHandles);
@@ -156,6 +146,7 @@ public class BreadBotClientBuilder implements
 
     @Override
     public List<CommandHandleBuilder> createCommands(Class<?> commandClass) {
+        Checks.notNull(commandClass, "commandClass");
         List<CommandHandleBuilderInternal> commandHandles = factory.createCommands(commandClass);
         commands.addAll(commandHandles);
         return Collections.unmodifiableList(commandHandles);
@@ -163,6 +154,7 @@ public class BreadBotClientBuilder implements
 
     @Override
     public List<CommandHandleBuilder> createCommands(Object commandObject) {
+        Checks.notNull(commandObject, "commandObject");
         List<CommandHandleBuilderInternal> commandHandles = factory.createCommands(commandObject);
         commands.addAll(commandHandles);
         return Collections.unmodifiableList(commandHandles);
@@ -170,6 +162,7 @@ public class BreadBotClientBuilder implements
 
     @Override
     public List<CommandHandleBuilder> createCommands(Supplier<?> commandSupplier) {
+        Checks.notNull(commandSupplier, "commandSupplier");
         List<CommandHandleBuilderInternal> commandHandles = factory.createCommands(commandSupplier, commandSupplier.get());
         commands.addAll(commandHandles);
         return Collections.unmodifiableList(commandHandles);
@@ -177,6 +170,7 @@ public class BreadBotClientBuilder implements
 
     @Override
     public List<CommandHandleBuilder> createCommandsFromClasses(Collection<Class<?>> commandClasses) {
+        Checks.noneNull(commandClasses, "commandClasses");
         List<CommandHandleBuilderInternal> commandHandles = factory.createCommandsFromClasses(commandClasses);
         commands.addAll(commandHandles);
         return Collections.unmodifiableList(commandHandles);
@@ -184,6 +178,7 @@ public class BreadBotClientBuilder implements
 
     @Override
     public List<CommandHandleBuilder> createCommandsFromObjects(Collection<?> commandObjects) {
+        Checks.noneNull(commandObjects, "commandObjects");
         List<CommandHandleBuilderInternal> commandHandles = factory.createCommandsFromObjects(commandObjects);
         commands.addAll(commandHandles);
         return Collections.unmodifiableList(commandHandles);
@@ -191,6 +186,7 @@ public class BreadBotClientBuilder implements
 
     @Override
     public List<CommandHandleBuilder> createCommandsFromSuppliers(Collection<Supplier<?>> commandSupplier) {
+        Checks.noneNull(commandSupplier, "commandSuppliers");
         List<CommandHandleBuilderInternal> commandHandles = factory.createCommandsFromSuppliers(commandSupplier);
         commands.addAll(commandHandles);
         return Collections.unmodifiableList(commandHandles);
@@ -198,24 +194,28 @@ public class BreadBotClientBuilder implements
 
     @Override
     public <T> BreadBotClientBuilder putCommandModifier(Class<T> propertyType, BiConsumer<T, CommandHandleBuilder> configurator) {
+        Checks.notNull(configurator, "configurator");
         commandProperties.putCommandModifier(propertyType, configurator);
         return this;
     }
 
     @Override
     public <T> BreadBotClientBuilder appendCommandModifier(Class<T> propertyType, BiConsumer<T, CommandHandleBuilder> configurator) {
+        Checks.notNull(configurator, "configurator");
         commandProperties.appendCommandModifier(propertyType, configurator);
         return this;
     }
 
     @Override
     public <T> BreadBotClientBuilder putParameterModifier(Class<T> propertyType, BiConsumer<T, CommandParameterBuilder> configurator) {
+        Checks.notNull(configurator, "configurator");
         commandProperties.putParameterModifier(propertyType, configurator);
         return this;
     }
 
     @Override
     public <T> BreadBotClientBuilder appendParameterModifier(Class<T> propertyType, BiConsumer<T, CommandParameterBuilder> configurator) {
+        Checks.notNull(configurator, "configurator");
         commandProperties.appendParameterModifier(propertyType, configurator);
         return this;
     }

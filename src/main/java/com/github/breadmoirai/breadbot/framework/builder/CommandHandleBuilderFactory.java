@@ -28,7 +28,7 @@ import java.util.function.Supplier;
 /**
  * Todo write docs
  */
-public interface CommandHandleBuilderFactory<T> {
+public interface CommandHandleBuilderFactory<T extends CommandHandleBuilderFactory> {
 
     /**
      * a self reference.
@@ -65,11 +65,20 @@ public interface CommandHandleBuilderFactory<T> {
         return self();
     }
 
-    T addCommand(Supplier<?> commandSupplier, Consumer<CommandHandleBuilder> configurator);
+    default T addCommand(Supplier<?> commandSupplier, Consumer<CommandHandleBuilder> configurator) {
+        Checks.notNull(configurator, "configurator");
+        final List<CommandHandleBuilder> commands = createCommandsFromSuppliers(commandSupplier);
+        commands.forEach(configurator);
+        return self();
+    }
 
-    T addCommand(Supplier<?> commandSupplier);
+    default T addCommand(Supplier<?> commandSupplier) {
+        createCommandsFromSuppliers(commandSupplier);
+        return self();
+    }
 
     default T addCommands(String packageName, Consumer<CommandHandleBuilder> configurator) {
+        Checks.notNull(configurator, "configurator");
         createCommands(packageName).forEach(configurator);
         return self();
     }
@@ -80,6 +89,7 @@ public interface CommandHandleBuilderFactory<T> {
     }
 
     default T addCommandsFromClasses(Consumer<CommandHandleBuilder> configurator, Class<?>... commandClasses) {
+        Checks.notNull(configurator, "configurator");
         createCommandsFromClasses(commandClasses).forEach(configurator);
         return self();
     }
@@ -90,6 +100,7 @@ public interface CommandHandleBuilderFactory<T> {
     }
 
     default T addCommandsFromObjects(Consumer<CommandHandleBuilder> configurator, Object... commandObjects) {
+        Checks.notNull(configurator, "configurator");
         createCommandsFromObjects(commandObjects).forEach(configurator);
         return self();
     }
@@ -100,6 +111,7 @@ public interface CommandHandleBuilderFactory<T> {
     }
 
     default T addCommandsFromSuppliers(Consumer<CommandHandleBuilder> configurator, Supplier<?>... commandSuppliers) {
+        Checks.notNull(configurator, "configurator");
         createCommandsFromSuppliers(commandSuppliers).forEach(configurator);
         return self();
     }
@@ -110,6 +122,7 @@ public interface CommandHandleBuilderFactory<T> {
     }
 
     default T addCommandsFromClasses(Collection<Class<?>> commandClasses, Consumer<CommandHandleBuilder> configurator) {
+        Checks.notNull(configurator, "configurator");
         createCommandsFromClasses(commandClasses).forEach(configurator);
         return self();
     }
@@ -120,6 +133,7 @@ public interface CommandHandleBuilderFactory<T> {
     }
 
     default T addCommandsFromObjects(Collection<?> commandObjects, Consumer<CommandHandleBuilder> configurator) {
+        Checks.notNull(configurator, "configurator");
         createCommandsFromObjects(commandObjects).forEach(configurator);
         return self();
     }
@@ -130,6 +144,7 @@ public interface CommandHandleBuilderFactory<T> {
     }
 
     default T addCommandsFromSuppliers(Collection<Supplier<?>> commandSuppliers, Consumer<CommandHandleBuilder> configurator) {
+        Checks.notNull(configurator, "configurator");
         createCommandsFromSuppliers(commandSuppliers).forEach(configurator);
         return self();
     }
