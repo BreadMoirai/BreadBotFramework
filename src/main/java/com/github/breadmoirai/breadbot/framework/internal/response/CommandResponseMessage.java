@@ -26,6 +26,7 @@ import net.dv8tion.jda.core.utils.Checks;
 
 import java.awt.*;
 import java.io.File;
+import java.io.InputStream;
 import java.time.Instant;
 import java.time.temporal.TemporalAccessor;
 import java.util.Formattable;
@@ -39,19 +40,44 @@ public class CommandResponseMessage extends CommandResponse {
     private TextChannel channel;
     private Message message;
     private Builder builder;
+    private FileSender file;
     private long delay;
     private TimeUnit unit;
     private Consumer<Message> success;
     private Consumer<Throwable> failure;
+
+    public CommandResponseMessage(TextChannel channel) {
+        this.channel = channel;
+        this.builder = new Builder();
+    }
 
     public CommandResponseMessage(TextChannel channel, Message message) {
         this.channel = channel;
         this.message = message;
     }
 
-    public CommandResponseMessage(TextChannel channel) {
+    public CommandResponseMessage(TextChannel channel, Message message, File upload) {
         this.channel = channel;
-        this.builder = new Builder();
+        this.message = message;
+        this.file = new FileFileSender(upload, upload.getName());
+    }
+
+    public CommandResponseMessage(TextChannel channel, Message message, File upload, String fileName) {
+        this.channel = channel;
+        this.message = message;
+        this.file = new FileFileSender(upload, fileName);
+    }
+
+    public CommandResponseMessage(TextChannel channel, Message message, byte[] upload, String fileName) {
+        this.channel = channel;
+        this.message = message;
+        this.file = new DataFileSender(upload, fileName);
+    }
+
+    public CommandResponseMessage(TextChannel channel, Message message, InputStream upload, String fileName) {
+        this.channel = channel;
+        this.message = message;
+        this.file = new StreamFileSender(upload, fileName);
     }
 
     @Override
@@ -323,6 +349,36 @@ public class CommandResponseMessage extends CommandResponse {
         private Queue<Message> buildMessages() {
 
         }
+
+        public Builder upload(File file) {
+            Checks.notNull(file, "file");
+            return upload(file, file.getName());
+        }
+
+        public Builder upload(File file, String fileName) {
+            Checks.notNull(file, "file");
+            Checks.check(file.exists() && file.canRead(),
+                    "Provided file is either null, doesn't exist or is not readable!");
+            Checks.check(file.length() <= channel.getJDA().getSelfUser().getAllowedFileSize(),
+                    "File is to big! Max file-size is 8 MiB for normal and 50 MiB for nitro users");
+            Checks.notNull(fileName, "fileName");
+
+            CommandResponseMessage.this.file = new FileFileSender(file, fileName);
+            return this;
+        }
+
+        public Builder upload(byte[] data, String fileName) {
+            CommandResponseMessage.this.file = new DataFileSender(data, fileName);
+            return this;
+        }
+
+
+        public Builder upload(InputStream inputStream, String fileName) {
+            CommandResponseMessage.this.file = new StreamFileSender(inputStream, fileName);
+            return this;
+        }
+
+
     }
 
     /**
@@ -756,7 +812,59 @@ public class CommandResponseMessage extends CommandResponse {
             return this;
         }
 
+        public Builder message() {
+            return CommandResponseMessage.this.builder;
+        }
+
     }
 
 
+    private abstract class FileSender {
+        protected abstract RestAction<Message> sendFile(MessageChannel channel, Message message);
+    }
+
+    private class FileFileSender extends FileSender {
+        final private String fileName;
+        final private File file;
+
+        public FileFileSender(File file, String fileName) {
+            this.fileName = fileName;
+            this.file = file;
+        }
+
+        @Override
+        protected RestAction<Message> sendFile(MessageChannel channel, Message message) {
+            return channel.sendFile(file, fileName, message);
+        }
+    }
+
+    private class DataFileSender extends FileSender {
+        final private String fileName;
+        final private byte[] file;
+
+        public DataFileSender(byte[] file, String fileName) {
+            this.fileName = fileName;
+            this.file = file;
+        }
+
+        @Override
+        protected RestAction<Message> sendFile(MessageChannel channel, Message message) {
+            return channel.sendFile(file, fileName, message);
+        }
+    }
+
+    private class StreamFileSender extends FileSender {
+        final private String fileName;
+        final private InputStream file;
+
+        public StreamFileSender(InputStream file, String fileName) {
+            this.fileName = fileName;
+            this.file = file;
+        }
+
+        @Override
+        protected RestAction<Message> sendFile(MessageChannel channel, Message message) {
+            return channel.sendFile(file, fileName, message);
+        }
+    }
 }
