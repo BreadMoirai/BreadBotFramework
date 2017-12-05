@@ -17,7 +17,6 @@
 package com.github.breadmoirai.breadbot.framework.internal.event;
 
 import com.github.breadmoirai.breadbot.framework.BreadBotClient;
-import com.github.breadmoirai.breadbot.framework.CommandEvent;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.message.guild.GenericGuildMessageEvent;
@@ -28,7 +27,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class MessageReceivedCommandEvent extends CommandEvent {
+public class MessageReceivedCommandEvent extends CommandEventInternal {
 
     private GenericGuildMessageEvent event;
     private Message message;
@@ -148,31 +147,6 @@ public class MessageReceivedCommandEvent extends CommandEvent {
     @Override
     public List<Member> getMentionedMembers() {
         return message.getMentionedUsers().stream().map(getGuild()::getMember).filter(Objects::nonNull).collect(Collectors.toList());
-    }
-
-    @Override
-    public void reply(String message) {
-        getChannel().sendMessage(message).queue();
-    }
-
-    @Override
-    public void reply(MessageEmbed message) {
-        getChannel().sendMessage(message).queue();
-    }
-
-    @Override
-    public void reply(Message message) {
-        getChannel().sendMessage(message).queue();
-    }
-
-    @Override
-    public void replyReaction(Emote emote) {
-        getMessage().addReaction(emote).queue();
-    }
-
-    @Override
-    public void replyReaction(String emoji) {
-        getMessage().addReaction(emoji).queue();
     }
 
 //    @Override

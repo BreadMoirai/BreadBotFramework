@@ -14,7 +14,7 @@ plugins {
 final author = 'BreadMoirai'
 final artifactId = 'breadbot-framework'
 group "com.github.${author}"
-version '0.8.0'
+version '0.8.1'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -26,7 +26,7 @@ repositories {
 
 dependencies {
     //Discord Java Library
-    compileOnly 'net.dv8tion:JDA:3.3.1_306'
+    compileOnly 'net.dv8tion:JDA:3.3.1_307'
 
     //Database
 //    compile 'org.jdbi:jdbi3:3.0.0-beta1'
@@ -107,9 +107,9 @@ bintray {
 publishing {
     publications.create('BintrayRelease', MavenPublication) {
         from components.java
-        groupId project.group as String
-        it.artifactId artifactId
-        version version
+        it.groupId = project.group as String
+        it.artifactId = artifactId
+        it.version = version
         artifact javadocJar
         artifact sourcesJar
         artifact shadowJar

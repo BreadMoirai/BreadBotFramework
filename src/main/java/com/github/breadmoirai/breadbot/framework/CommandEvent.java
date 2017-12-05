@@ -16,8 +16,11 @@
 
 package com.github.breadmoirai.breadbot.framework;
 
+import com.github.breadmoirai.breadbot.framework.command.CommandHandle;
+import com.github.breadmoirai.breadbot.framework.internal.response.CommandResponseMessage;
 import com.github.breadmoirai.breadbot.framework.parameter.CommandArgument;
 import com.github.breadmoirai.breadbot.framework.parameter.CommandArgumentList;
+import com.github.breadmoirai.breadbot.framework.response.RestActionExtension;
 import com.github.breadmoirai.breadbot.util.DiscordPatterns;
 import com.github.breadmoirai.breadbot.util.UnknownEmote;
 import net.dv8tion.jda.core.JDA;
@@ -47,7 +50,6 @@ public abstract class CommandEvent extends Event {
 
     private final BreadBotClient client;
     private final boolean isHelpEvent;
-    private List<String> args;
 
     private CommandArgumentList argumentList;
 
@@ -62,7 +64,16 @@ public abstract class CommandEvent extends Event {
     }
 
     /**
-     * The command prefix.
+     * retrieves the command associated with this event.
+     *
+     * @return a non-null CommandHandle
+     */
+    public abstract CommandHandle getCommand();
+
+    /**
+     * The prefix set for this guild
+     *
+     * @return The string as provided by the set PrefixModule
      */
     public abstract String getPrefix();
 
@@ -151,7 +162,7 @@ public abstract class CommandEvent extends Event {
     public abstract Instant getInstant();
 
     /**
-     * The core of the API.
+     * The jda
      *
      * @return {@link net.dv8tion.jda.core.JDA JDA}.
      */
@@ -336,16 +347,17 @@ public abstract class CommandEvent extends Event {
         return getContent() != null && !getContent().trim().isEmpty();
     }
 
+    public abstract CommandResponseMessage.Builder reply();
 
-    public abstract void reply(String message);
+    public abstract CommandResponseMessage.Builder reply(String message);
 
-    public abstract void reply(MessageEmbed message);
+    public abstract CommandResponseMessage.Builder reply(MessageEmbed message);
 
-    public abstract void reply(Message message);
+    public abstract RestActionExtension<Message> reply(Message message);
 
-    public abstract void replyReaction(Emote emote);
+    public abstract RestActionExtension<Void> replyReaction(Emote emote);
 
-    public abstract void replyReaction(String emoji);
+    public abstract RestActionExtension<Void> replyReaction(String emoji);
 
     public void replyFormat(String format, Object... args) {
         reply(String.format(format, args));
