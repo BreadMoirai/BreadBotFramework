@@ -19,6 +19,6 @@ public interface CommandResponseManager {
 
     void accept(CommandResponse response);
 
-    void finish();
+    void complete();
 
 }

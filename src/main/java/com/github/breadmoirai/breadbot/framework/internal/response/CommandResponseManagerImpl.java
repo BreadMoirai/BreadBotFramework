@@ -31,7 +31,7 @@ public class CommandResponseManagerImpl implements CommandResponseManager {
     }
 
     @Override
-    public void finish() {
+    public void complete() {
         while (!responses.isEmpty()) {
             final CommandResponse poll = responses.poll();
             poll.dispatch(value -> {

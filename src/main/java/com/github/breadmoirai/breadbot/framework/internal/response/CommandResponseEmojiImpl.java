@@ -16,16 +16,33 @@
 package com.github.breadmoirai.breadbot.framework.internal.response;
 
 import com.github.breadmoirai.breadbot.framework.response.CommandResponse;
+import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageDeleteEvent;
 
+import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 import java.util.function.LongConsumer;
 
 public class CommandResponseEmojiImpl extends CommandResponse<Void> {
 
+    private final Message message;
+    private String emoji;
+    private long delay;
+    private TimeUnit unit;
+    private Consumer<Void> success;
+    private Consumer<Throwable> failure;
+
+    public CommandResponseEmojiImpl(Message message) {
+        this.message = message;
+    }
 
     @Override
     public void dispatch(LongConsumer linkReceiver) {
-
+        if (delay > 0) {
+            message.addReaction(emoji).queueAfter(delay, unit, success, failure);
+        } else {
+            message.addReaction(emoji).queue(success, failure);
+        }
     }
 
     @Override

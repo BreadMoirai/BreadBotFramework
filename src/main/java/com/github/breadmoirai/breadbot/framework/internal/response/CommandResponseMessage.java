@@ -17,7 +17,6 @@ package com.github.breadmoirai.breadbot.framework.internal.response;
 
 import com.github.breadmoirai.breadbot.framework.response.CommandResponse;
 import com.github.breadmoirai.breadbot.framework.response.RestActionExtension;
-import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageDeleteEvent;
@@ -39,7 +38,7 @@ public class CommandResponseMessage extends CommandResponse {
 
     private TextChannel channel;
     private Message message;
-    private Builder builder;
+    private RMessageBuilder builder;
     private FileSender file;
     private long delay;
     private TimeUnit unit;
@@ -48,36 +47,11 @@ public class CommandResponseMessage extends CommandResponse {
 
     public CommandResponseMessage(TextChannel channel) {
         this.channel = channel;
-        this.builder = new Builder();
     }
 
     public CommandResponseMessage(TextChannel channel, Message message) {
         this.channel = channel;
         this.message = message;
-    }
-
-    public CommandResponseMessage(TextChannel channel, Message message, File upload) {
-        this.channel = channel;
-        this.message = message;
-        this.file = new FileFileSender(upload, upload.getName());
-    }
-
-    public CommandResponseMessage(TextChannel channel, Message message, File upload, String fileName) {
-        this.channel = channel;
-        this.message = message;
-        this.file = new FileFileSender(upload, fileName);
-    }
-
-    public CommandResponseMessage(TextChannel channel, Message message, byte[] upload, String fileName) {
-        this.channel = channel;
-        this.message = message;
-        this.file = new DataFileSender(upload, fileName);
-    }
-
-    public CommandResponseMessage(TextChannel channel, Message message, InputStream upload, String fileName) {
-        this.channel = channel;
-        this.message = message;
-        this.file = new StreamFileSender(upload, fileName);
     }
 
     @Override
@@ -86,13 +60,40 @@ public class CommandResponseMessage extends CommandResponse {
             message = builder.buildMessage();
         }
         if (builder != null && !builder.mustSplit() || builder == null) {
+            final RestAction<Message> restAction;
+            if (file != null) {
+                restAction = file.sendFile(channel, message);
+            } else {
+                restAction = channel.sendMessage(message);
+            }
             if (delay > 0)
-                channel.sendMessage(message).queueAfter(delay, unit, success.andThen(m -> linkReceiver.accept(m.getIdLong())), failure);
+                restAction.queueAfter(delay, unit, success.andThen(m -> linkReceiver.accept(m.getIdLong())), failure);
             else {
-                channel.sendMessage(message).queue(success.andThen(m -> linkReceiver.accept(m.getIdLong())), failure);
+                restAction.queue(success.andThen(m -> linkReceiver.accept(m.getIdLong())), failure);
             }
         } else {
-
+            final Queue<Message> messages = builder.buildMessages();
+            while (!messages.isEmpty()) {
+                final Message poll = messages.poll();
+                if (!messages.isEmpty()) {
+                    if (delay > 0)
+                        channel.sendMessage(message).queueAfter(delay, unit, m -> linkReceiver.accept(m.getIdLong()), failure);
+                    else
+                        channel.sendMessage(message).queue(m -> linkReceiver.accept(m.getIdLong()), failure);
+                } else {
+                    final RestAction<Message> restAction;
+                    if (file != null) {
+                        restAction = file.sendFile(channel, message);
+                    } else {
+                        restAction = channel.sendMessage(message);
+                    }
+                    if (delay > 0)
+                        restAction.queueAfter(delay, unit, success.andThen(m -> linkReceiver.accept(m.getIdLong())), failure);
+                    else {
+                        restAction.queue(success.andThen(m -> linkReceiver.accept(m.getIdLong())), failure);
+                    }
+                }
+            }
         }
     }
 
@@ -106,37 +107,110 @@ public class CommandResponseMessage extends CommandResponse {
 
     }
 
-    public Builder builder() {
-        builder = new Builder();
+    public RMessageBuilder builder() {
+        builder = new RMessageBuilder();
         return builder;
     }
 
-    /**
-     * Wraps around a MessageBuilder. Is not required to build.
-     * Will automatically send once the command finishes execution.
-     */
-    public class Builder implements RestActionExtension<Message>, Appendable {
+    public abstract class ResponseMessageBuilder implements RestActionExtension<Message> {
 
-        private MessageBuilder builder;
-        private MessageBuilder.SplitPolicy[] splitPolicy;
-        private CommandResponseMessage.EmbedBuilder embed;
-
-        public Builder() {
-            builder = new MessageBuilder();
+        /**
+         * Attaches a file to this message.
+         *
+         * @param file the file to upload
+         * @return this instance
+         * @throws java.lang.IllegalArgumentException                              <ul>
+         *                                                                         <li>Provided {@code file} is null.</li>
+         *                                                                         <li>Provided {@code file} does not exist.</li>
+         *                                                                         <li>Provided {@code file} is unreadable.</li>
+         *                                                                         <li>Provided {@code file} is greater than 8 MiB on a normal or 50 MiB on a nitro account.</li>
+         *                                                                         <li>Provided {@link net.dv8tion.jda.core.entities.Message Message} is not {@code null} <b>and</b>
+         *                                                                         contains a {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbed} which
+         *                                                                         is not {@link net.dv8tion.jda.core.entities.MessageEmbed#isSendable(net.dv8tion.jda.core.AccountType) sendable}</li>
+         *                                                                         </ul>
+         * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException If the logged in account does not have
+         *                                                                         <ul>
+         *                                                                         <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}</li>
+         *                                                                         <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}</li>
+         *                                                                         <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_ATTACH_FILES Permission.MESSAGE_ATTACH_FILES}</li>
+         *                                                                         </ul>
+         * @see MessageChannel#sendFile(File, Message)
+         */
+        public ResponseMessageBuilder upload(File file) {
+            Checks.notNull(file, "file");
+            return upload(file, file.getName());
         }
 
-        public Builder setTargetChannel(TextChannel channel) {
-            CommandResponseMessage.this.channel = channel;
+        /**
+         * Attaches a fle to this message with the specified filename.
+         * The filename must specify the type of file in the extension.
+         * The filename may also be provided as the file type such as "png" or "jpeg" and discord will generate a name.
+         *
+         * @param file     the file to upload
+         * @param fileName the name of the file for discord
+         * @return this instance
+         * @throws java.lang.IllegalArgumentException                              <ul>
+         *                                                                         <li>Provided {@code file} is null.</li>
+         *                                                                         <li>Provided {@code file} does not exist.</li>
+         *                                                                         <li>Provided {@code file} is unreadable.</li>
+         *                                                                         <li>Provided {@code file} is greater than 8 MiB on a normal or 50 MiB on a nitro account.</li>
+         *                                                                         <li>Provided {@link net.dv8tion.jda.core.entities.Message Message} is not {@code null} <b>and</b>
+         *                                                                         contains a {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbed} which
+         *                                                                         is not {@link net.dv8tion.jda.core.entities.MessageEmbed#isSendable(net.dv8tion.jda.core.AccountType) sendable}</li>
+         *                                                                         </ul>
+         * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException If the logged in account does not have
+         *                                                                         <ul>
+         *                                                                         <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}</li>
+         *                                                                         <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}</li>
+         *                                                                         <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_ATTACH_FILES Permission.MESSAGE_ATTACH_FILES}</li>
+         *                                                                         </ul>
+         * @see MessageChannel#sendFile(File, String, Message)
+         */
+        public ResponseMessageBuilder upload(File file, String fileName) {
+            Checks.notNull(file, "file");
+            Checks.check(file.exists() && file.canRead(),
+                    "Provided file is either null, doesn't exist or is not readable!");
+            Checks.check(file.length() <= channel.getJDA().getSelfUser().getAllowedFileSize(),
+                    "File is to big! Max file-size is 8 MiB for normal and 50 MiB for nitro users");
+            Checks.notNull(fileName, "fileName");
+
+            CommandResponseMessage.this.file = new FileFileSender(file, fileName);
             return this;
         }
 
-        public CommandResponseMessage.EmbedBuilder embed() {
-            this.embed = CommandResponseMessage.this.new EmbedBuilder();
-            return embed;
+        /**
+         * Attaches a file to this message.
+         *
+         * @param data     the data to represent the file
+         * @param fileName the name of the file for discord
+         * @return this instance
+         * @see MessageChannel#sendFile(byte[], String, Message)
+         * @see #upload(File, String)
+         */
+        public ResponseMessageBuilder upload(byte[] data, String fileName) {
+            Checks.notNull(data, "data");
+            CommandResponseMessage.this.file = new DataFileSender(data, fileName);
+            return this;
         }
 
+        /**
+         * Attaches a file to this message.
+         *
+         * @param inputStream the inputStream containing the file contents
+         * @param fileName    the name of the file for discord
+         * @return this instance
+         * @see MessageChannel#sendFile(InputStream, String, Message)
+         * @see #upload(File, String)
+         */
+        public ResponseMessageBuilder upload(InputStream inputStream, String fileName) {
+            Checks.notNull(inputStream, "inputStream");
+            CommandResponseMessage.this.file = new StreamFileSender(inputStream, fileName);
+            return this;
+        }
+
+
         @Override
-        public Builder after(long delay, TimeUnit unit) {
+        public ResponseMessageBuilder after(long delay, TimeUnit unit) {
             Checks.notNull(unit, "TimeUnit");
             Checks.positive(delay, "delay");
             CommandResponseMessage.this.delay = delay;
@@ -145,19 +219,19 @@ public class CommandResponseMessage extends CommandResponse {
         }
 
         @Override
-        public Builder onSuccess(Consumer<Message> success) {
+        public ResponseMessageBuilder onSuccess(Consumer<Message> success) {
             CommandResponseMessage.this.success = success;
             return this;
         }
 
         @Override
-        public Builder onFailure(Consumer<Throwable> failure) {
+        public ResponseMessageBuilder onFailure(Consumer<Throwable> failure) {
             CommandResponseMessage.this.failure = failure;
             return this;
         }
 
         @Override
-        public Builder appendSuccess(Consumer<Message> success) {
+        public ResponseMessageBuilder appendSuccess(Consumer<Message> success) {
             if (CommandResponseMessage.this.success == null) {
                 return onSuccess(success);
             } else {
@@ -166,12 +240,97 @@ public class CommandResponseMessage extends CommandResponse {
         }
 
         @Override
-        public Builder appendFailure(Consumer<Throwable> failure) {
+        public ResponseMessageBuilder appendFailure(Consumer<Throwable> failure) {
             if (CommandResponseMessage.this.failure == null) {
                 return onFailure(RestAction.DEFAULT_FAILURE.andThen(failure));
             } else {
                 return onFailure(CommandResponseMessage.this.failure.andThen(failure));
             }
+        }
+
+    }
+
+    /**
+     * Wraps around a MessageBuilder. Is not required to build.
+     * Will automatically send once the command finishes execution.
+     */
+    public class RMessageBuilder extends ResponseMessageBuilder implements Appendable {
+
+        private net.dv8tion.jda.core.MessageBuilder builder;
+        private net.dv8tion.jda.core.MessageBuilder.SplitPolicy[] splitPolicy;
+        private REmbedBuilder embed;
+
+        private RMessageBuilder() {
+            builder = new net.dv8tion.jda.core.MessageBuilder();
+        }
+
+        public RMessageBuilder setTargetChannel(TextChannel channel) {
+            CommandResponseMessage.this.channel = channel;
+            return this;
+        }
+
+        /**
+         * Creates a new Embed Builder for this message, overriding any existing embeds.
+         *
+         * @return an wrapper around an EmbedBuilder
+         */
+        public REmbedBuilder embed() {
+            this.embed = CommandResponseMessage.this.new REmbedBuilder();
+            return embed;
+        }
+
+        @Override
+        public RMessageBuilder upload(File file) {
+            super.upload(file);
+            return this;
+        }
+
+        @Override
+        public RMessageBuilder upload(File file, String fileName) {
+            super.upload(file, fileName);
+            return this;
+        }
+
+        @Override
+        public RMessageBuilder upload(byte[] data, String fileName) {
+            super.upload(data, fileName);
+            return this;
+        }
+
+        @Override
+        public RMessageBuilder upload(InputStream inputStream, String fileName) {
+            super.upload(inputStream, fileName);
+            return this;
+        }
+
+        @Override
+        public RMessageBuilder after(long delay, TimeUnit unit) {
+            super.after(delay, unit);
+            return this;
+        }
+
+        @Override
+        public RMessageBuilder onSuccess(Consumer<Message> success) {
+            super.onSuccess(success);
+            return this;
+        }
+
+        @Override
+        public RMessageBuilder onFailure(Consumer<Throwable> failure) {
+            super.onFailure(failure);
+            return this;
+        }
+
+        @Override
+        public RMessageBuilder appendSuccess(Consumer<Message> success) {
+            super.appendSuccess(success);
+            return this;
+        }
+
+        @Override
+        public RMessageBuilder appendFailure(Consumer<Throwable> failure) {
+            super.appendFailure(failure);
+            return this;
         }
 
         /**
@@ -182,7 +341,7 @@ public class CommandResponseMessage extends CommandResponse {
          * @param tts whether the created Message should be a tts message
          * @return This instance.
          */
-        public Builder setTTS(boolean tts) {
+        public RMessageBuilder setTTS(boolean tts) {
             builder.setTTS(tts);
             return this;
         }
@@ -194,7 +353,7 @@ public class CommandResponseMessage extends CommandResponse {
          * @param embed the embed to add, or null to remove
          * @return This instance.
          */
-        public Builder setEmbed(MessageEmbed embed) {
+        public RMessageBuilder setEmbed(MessageEmbed embed) {
             builder.setEmbed(embed);
             return this;
         }
@@ -205,19 +364,19 @@ public class CommandResponseMessage extends CommandResponse {
          * @param text the text to append
          * @return This instance.
          */
-        public Builder append(CharSequence text) {
+        public RMessageBuilder append(CharSequence text) {
             builder.append(text);
             return this;
         }
 
         @Override
-        public Builder append(CharSequence text, int start, int end) {
+        public RMessageBuilder append(CharSequence text, int start, int end) {
             builder.append(text, start, end);
             return this;
         }
 
         @Override
-        public Builder append(char c) {
+        public RMessageBuilder append(char c) {
             builder.append(c);
             return this;
         }
@@ -229,7 +388,7 @@ public class CommandResponseMessage extends CommandResponse {
          * @param object the object to append
          * @return This instance.
          */
-        public Builder append(Object object) {
+        public RMessageBuilder append(Object object) {
             builder.append(object);
             return this;
         }
@@ -240,21 +399,21 @@ public class CommandResponseMessage extends CommandResponse {
          * {@link User User} or {@link TextChannel TextChannel}.
          *
          * @param mention the mention to append
-         * @return The {@link MessageBuilder MessageBuilder} instance. Useful for chaining.
+         * @return The {@link net.dv8tion.jda.core.MessageBuilder MessageBuilder} instance. Useful for chaining.
          */
-        public Builder append(IMentionable mention) {
+        public RMessageBuilder append(IMentionable mention) {
             builder.append(mention);
             return this;
         }
 
         /**
-         * Appends a String using the specified chat {@link MessageBuilder.Formatting Formatting(s)}.
+         * Appends a String using the specified chat {@link net.dv8tion.jda.core.MessageBuilder.Formatting Formatting(s)}.
          *
          * @param text   the text to append.
          * @param format the format(s) to apply to the text.
          * @return This instance.
          */
-        public Builder append(CharSequence text, MessageBuilder.Formatting... format) {
+        public RMessageBuilder append(CharSequence text, net.dv8tion.jda.core.MessageBuilder.Formatting... format) {
             builder.append(text, format);
             return this;
         }
@@ -298,7 +457,7 @@ public class CommandResponseMessage extends CommandResponse {
          * @return This instance.
          * @throws IllegalArgumentException If the provided format string is {@code null} or empty
          */
-        public Builder appendFormat(String format, Object... args) {
+        public RMessageBuilder appendFormat(String format, Object... args) {
             builder.appendFormat(format, args);
             return this;
         }
@@ -312,8 +471,20 @@ public class CommandResponseMessage extends CommandResponse {
          * @param language the language of the code. If unknown use an empty string
          * @return This instance.
          */
-        public Builder appendCodeBlock(CharSequence text, CharSequence language) {
+        public RMessageBuilder appendCodeBlock(CharSequence text, CharSequence language) {
             builder.appendCodeBlock(text, language);
+            return this;
+        }
+
+        /**
+         * This sets the SplitPolicies to be used in case this message exceeds 2000 characters.
+         *
+         * @param policies What splitpolicies to use in the order of their priority.
+         * @return this instance
+         * @see net.dv8tion.jda.core.MessageBuilder#buildAll(net.dv8tion.jda.core.MessageBuilder.SplitPolicy...)
+         */
+        public RMessageBuilder splitPolicy(net.dv8tion.jda.core.MessageBuilder.SplitPolicy... policies) {
+            splitPolicy = policies;
             return this;
         }
 
@@ -321,7 +492,7 @@ public class CommandResponseMessage extends CommandResponse {
          * Returns the current length of the content.
          * <br>If this value is {@code 0} (and there is no embed) an exception
          * will be raised as you cannot send an empty message to Discord.
-         * <br>If this value is greater than 2000, multiple message will be sent as according to the set {@link MessageBuilder.SplitPolicy SplitPolicies}.
+         * <br>If this value is greater than 2000, multiple message will be sent as according to the set {@link net.dv8tion.jda.core.MessageBuilder.SplitPolicy SplitPolicies}.
          *
          * @return the current length of the content that will be built into a Message.
          */
@@ -334,7 +505,7 @@ public class CommandResponseMessage extends CommandResponse {
          *
          * @return the underlying MessageBuilder
          */
-        public MessageBuilder getMessageBuilder() {
+        public net.dv8tion.jda.core.MessageBuilder getMessageBuilder() {
             return builder;
         }
 
@@ -343,39 +514,13 @@ public class CommandResponseMessage extends CommandResponse {
         }
 
         private Message buildMessage() {
-
+            builder.setEmbed(embed.getEmbedBuilder().build());
+            return builder.build();
         }
 
         private Queue<Message> buildMessages() {
-
-        }
-
-        public Builder upload(File file) {
-            Checks.notNull(file, "file");
-            return upload(file, file.getName());
-        }
-
-        public Builder upload(File file, String fileName) {
-            Checks.notNull(file, "file");
-            Checks.check(file.exists() && file.canRead(),
-                    "Provided file is either null, doesn't exist or is not readable!");
-            Checks.check(file.length() <= channel.getJDA().getSelfUser().getAllowedFileSize(),
-                    "File is to big! Max file-size is 8 MiB for normal and 50 MiB for nitro users");
-            Checks.notNull(fileName, "fileName");
-
-            CommandResponseMessage.this.file = new FileFileSender(file, fileName);
-            return this;
-        }
-
-        public Builder upload(byte[] data, String fileName) {
-            CommandResponseMessage.this.file = new DataFileSender(data, fileName);
-            return this;
-        }
-
-
-        public Builder upload(InputStream inputStream, String fileName) {
-            CommandResponseMessage.this.file = new StreamFileSender(inputStream, fileName);
-            return this;
+            builder.setEmbed(embed.getEmbedBuilder().build());
+            return builder.buildAll(splitPolicy);
         }
 
 
@@ -384,10 +529,10 @@ public class CommandResponseMessage extends CommandResponse {
     /**
      * A wrapper around an EmbedBuilder
      */
-    private class EmbedBuilder implements RestActionExtension<Message> {
+    private class REmbedBuilder extends ResponseMessageBuilder {
         private final net.dv8tion.jda.core.EmbedBuilder embed;
 
-        public EmbedBuilder() {
+        private REmbedBuilder() {
             this.embed = new net.dv8tion.jda.core.EmbedBuilder();
         }
 
@@ -396,42 +541,57 @@ public class CommandResponseMessage extends CommandResponse {
         }
 
         @Override
-        public EmbedBuilder after(long delay, TimeUnit unit) {
-            Checks.notNull(unit, "TimeUnit");
-            Checks.positive(delay, "delay");
-            CommandResponseMessage.this.delay = delay;
-            CommandResponseMessage.this.unit = unit;
+        public REmbedBuilder upload(File file) {
+            super.upload(file);
             return this;
         }
 
         @Override
-        public EmbedBuilder onSuccess(Consumer<Message> success) {
-            CommandResponseMessage.this.success = success;
+        public REmbedBuilder upload(File file, String fileName) {
+            super.upload(file, fileName);
             return this;
         }
 
         @Override
-        public EmbedBuilder onFailure(Consumer<Throwable> failure) {
-            CommandResponseMessage.this.failure = failure;
+        public REmbedBuilder upload(byte[] data, String fileName) {
+            super.upload(data, fileName);
             return this;
         }
 
         @Override
-        public EmbedBuilder appendSuccess(Consumer<Message> success) {
-            if (CommandResponseMessage.this.success == null) {
-                return onSuccess(success);
-            } else {
-                return onSuccess(CommandResponseMessage.this.success.andThen(success));
-            }
+        public REmbedBuilder upload(InputStream inputStream, String fileName) {
+            super.upload(inputStream, fileName);
+            return this;
         }
 
         @Override
-        public EmbedBuilder appendFailure(Consumer<Throwable> failure) {
-            if (CommandResponseMessage.this.failure == null) {
-                return onFailure(RestAction.DEFAULT_FAILURE.andThen(failure));
-            } else {
-                return onFailure(CommandResponseMessage.this.failure.andThen(failure));
-            }
+        public REmbedBuilder after(long delay, TimeUnit unit) {
+            super.after(delay, unit);
+            return this;
+        }
+
+        @Override
+        public REmbedBuilder onSuccess(Consumer<Message> success) {
+            super.onSuccess(success);
+            return this;
+        }
+
+        @Override
+        public REmbedBuilder onFailure(Consumer<Throwable> failure) {
+            super.onFailure(failure);
+            return this;
+        }
+
+        @Override
+        public REmbedBuilder appendSuccess(Consumer<Message> success) {
+            super.appendSuccess(success);
+            return this;
+        }
+
+        @Override
+        public REmbedBuilder appendFailure(Consumer<Throwable> failure) {
+            super.appendFailure(failure);
+            return this;
         }
 
         /**
@@ -447,7 +607,7 @@ public class CommandResponseMessage extends CommandResponse {
          *                                  <li>If the length of {@code title} is greater than {@link MessageEmbed#TITLE_MAX_LENGTH}.</li>
          *                                  </ul>
          */
-        public EmbedBuilder title(String title) {
+        public REmbedBuilder title(String title) {
             embed.setTitle(title);
             return this;
         }
@@ -468,7 +628,7 @@ public class CommandResponseMessage extends CommandResponse {
          *                                  <li>If the provided {@code url} is not a properly formatted http or https url.</li>
          *                                  </ul>
          */
-        public EmbedBuilder title(String title, String url) {
+        public REmbedBuilder title(String title, String url) {
             embed.setTitle(title);
             return this;
         }
@@ -482,7 +642,7 @@ public class CommandResponseMessage extends CommandResponse {
          * @return the builder after the description has been set
          * @throws IllegalArgumentException If the length of {@code description} is greater than {@link MessageEmbed#TEXT_MAX_LENGTH}
          */
-        public EmbedBuilder description(CharSequence description) {
+        public REmbedBuilder description(CharSequence description) {
             embed.setDescription(description);
             return this;
         }
@@ -499,7 +659,7 @@ public class CommandResponseMessage extends CommandResponse {
          *                                  <li>If the length of {@code description} is greater than {@link MessageEmbed#TEXT_MAX_LENGTH}.</li>
          *                                  </ul>
          */
-        public EmbedBuilder appendDescription(CharSequence description) {
+        public REmbedBuilder appendDescription(CharSequence description) {
             embed.appendDescription(description);
             return this;
         }
@@ -515,7 +675,7 @@ public class CommandResponseMessage extends CommandResponse {
          * @param temporal the temporal accessor of the timestamp
          * @return the builder after the timestamp has been set
          */
-        public EmbedBuilder timestamp(TemporalAccessor temporal) {
+        public REmbedBuilder timestamp(TemporalAccessor temporal) {
             embed.setTimestamp(temporal);
             return this;
         }
@@ -529,7 +689,7 @@ public class CommandResponseMessage extends CommandResponse {
          *              or {@code null} to use no color
          * @return the builder after the color has been set
          */
-        public EmbedBuilder color(Color color) {
+        public REmbedBuilder color(Color color) {
             embed.setColor(color);
             return this;
         }
@@ -563,7 +723,7 @@ public class CommandResponseMessage extends CommandResponse {
          *                                  <li>If the provided {@code url} is not a properly formatted http or https url.</li>
          *                                  </ul>
          */
-        public EmbedBuilder thumbnail(String url) {
+        public REmbedBuilder thumbnail(String url) {
             embed.setThumbnail(url);
             return this;
         }
@@ -598,7 +758,7 @@ public class CommandResponseMessage extends CommandResponse {
          *                                  </ul>
          * @see MessageChannel#sendFile(File, String, Message) MessageChannel.sendFile(...)
          */
-        public EmbedBuilder image(String url) {
+        public REmbedBuilder image(String url) {
             embed.setImage(url);
             return this;
         }
@@ -613,7 +773,7 @@ public class CommandResponseMessage extends CommandResponse {
          * @param name the name of the author of the embed. If this is not set, the author will not appear in the embed
          * @return the builder after the author has been set
          */
-        public EmbedBuilder author(String name) {
+        public REmbedBuilder author(String name) {
             embed.setAuthor(name);
             return this;
         }
@@ -633,7 +793,7 @@ public class CommandResponseMessage extends CommandResponse {
          *                                  <li>If the provided {@code url} is not a properly formatted http or https url.</li>
          *                                  </ul>
          */
-        public EmbedBuilder author(String name, String url) {
+        public REmbedBuilder author(String name, String url) {
             embed.setAuthor(name, url);
             return this;
         }
@@ -672,7 +832,7 @@ public class CommandResponseMessage extends CommandResponse {
          *                                  <li>If the provided {@code iconUrl} is not a properly formatted http or https url.</li>
          *                                  </ul>
          */
-        public EmbedBuilder author(String name, String url, String iconUrl) {
+        public REmbedBuilder author(String name, String url, String iconUrl) {
             embed.setAuthor(name, url, iconUrl);
             return this;
         }
@@ -708,7 +868,7 @@ public class CommandResponseMessage extends CommandResponse {
          *                                  <li>If the provided {@code iconUrl} is not a properly formatted http or https url.</li>
          *                                  </ul>
          */
-        public EmbedBuilder footer(String text, String iconUrl) {
+        public REmbedBuilder footer(String text, String iconUrl) {
             embed.setFooter(text, iconUrl);
             return this;
         }
@@ -732,7 +892,7 @@ public class CommandResponseMessage extends CommandResponse {
          *                                  <li>If the length of {@code value} is greater than {@link MessageEmbed#VALUE_MAX_LENGTH}.</li>
          *                                  </ul>
          */
-        public EmbedBuilder field(String name, String value, boolean inline) {
+        public REmbedBuilder field(String name, String value, boolean inline) {
             embed.addField(name, value, inline);
             return this;
         }
@@ -746,7 +906,7 @@ public class CommandResponseMessage extends CommandResponse {
          * @param inline whether or not this field should display inline
          * @return the builder after the field has been added
          */
-        public EmbedBuilder blankField(boolean inline) {
+        public REmbedBuilder blankField(boolean inline) {
             embed.addBlankField(inline);
             return this;
         }
@@ -758,7 +918,7 @@ public class CommandResponseMessage extends CommandResponse {
          * @param user the User to be set as the author.
          * @return this instance.
          */
-        public EmbedBuilder author(User user) {
+        public REmbedBuilder author(User user) {
             return author(user.getName(), null, user.getEffectiveAvatarUrl());
         }
 
@@ -775,7 +935,7 @@ public class CommandResponseMessage extends CommandResponse {
          *                                  <li>If the provided {@code url} is not a properly formatted http or https url.</li>
          *                                  </ul>
          */
-        public EmbedBuilder author(User user, String url) {
+        public REmbedBuilder author(User user, String url) {
             return author(user.getName(), url, user.getEffectiveAvatarUrl());
         }
 
@@ -787,7 +947,7 @@ public class CommandResponseMessage extends CommandResponse {
          * @param member the Member to be set as the author.
          * @return this instance
          */
-        public EmbedBuilder author(Member member) {
+        public REmbedBuilder author(Member member) {
             author(member.getEffectiveName(), null, member.getUser().getEffectiveAvatarUrl());
             color(member.getColor());
             return this;
@@ -806,13 +966,20 @@ public class CommandResponseMessage extends CommandResponse {
          *                                  <li>If the provided {@code url} is not a properly formatted http or https url.</li>
          *                                  </ul>
          */
-        public EmbedBuilder author(Member member, String url) {
+        public REmbedBuilder author(Member member, String url) {
             author(member.getEffectiveName(), url, member.getUser().getEffectiveAvatarUrl());
             color(member.getColor());
             return this;
         }
 
-        public Builder message() {
+        /**
+         * Returns the Builder representing the MessageBuilder
+         *
+         * @return the Builder.
+         */
+        public RMessageBuilder message() {
+            if (embed.isEmpty())
+                throw new IllegalStateException("An empty embed cannot be added to a message.");
             return CommandResponseMessage.this.builder;
         }
 

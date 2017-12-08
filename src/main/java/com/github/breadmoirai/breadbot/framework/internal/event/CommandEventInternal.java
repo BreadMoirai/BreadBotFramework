@@ -18,9 +18,10 @@ package com.github.breadmoirai.breadbot.framework.internal.event;
 import com.github.breadmoirai.breadbot.framework.BreadBotClient;
 import com.github.breadmoirai.breadbot.framework.CommandEvent;
 import com.github.breadmoirai.breadbot.framework.command.CommandHandle;
-import com.github.breadmoirai.breadbot.framework.internal.response.CommandResponseEmojiImpl;
+import com.github.breadmoirai.breadbot.framework.internal.response.CommandResponseManagerImpl;
 import com.github.breadmoirai.breadbot.framework.internal.response.CommandResponseMessage;
 import com.github.breadmoirai.breadbot.framework.response.CommandResponseManager;
+import com.github.breadmoirai.breadbot.framework.response.RestActionExtension;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Emote;
 import net.dv8tion.jda.core.entities.Message;
@@ -31,30 +32,53 @@ public abstract class CommandEventInternal extends CommandEvent {
     private CommandHandle command;
     private CommandResponseManager manager;
 
-    public CommandEventInternal(JDA api, long responseNumber, BreadBotClient client, boolean isHelpEvent, CommandResponseManager manager) {
+    public CommandEventInternal(JDA api, long responseNumber, BreadBotClient client, boolean isHelpEvent) {
         super(api, responseNumber, client, isHelpEvent);
+        manager = new CommandResponseManagerImpl();
     }
 
     public void setCommand(CommandHandle command) {
         this.command = command;
     }
 
+    public CommandResponseManager getCommandResponseManager() {
+        return manager;
+    }
+
     @Override
-    public CommandResponseMessage.Builder reply(Message message) {
+    public CommandResponseMessage.RMessageBuilder reply(String message) {
+        final CommandResponseMessage resp = new CommandResponseMessage(getChannel());
+        final CommandResponseMessage.RMessageBuilder builder = resp.builder();
+        manager.accept(resp);
+        return builder.append(message);
+    }
+
+    @Override
+    public CommandResponseMessage.RMessageBuilder reply(Message message) {
         final CommandResponseMessage resp = new CommandResponseMessage(getChannel(), message);
-        final CommandResponseMessage.Builder builder = resp.new Builder();
+        final CommandResponseMessage.RMessageBuilder builder = resp.builder();
         manager.accept(resp);
         return builder;
     }
 
     @Override
-    public CommandResponseEmojiImpl replyReaction(Emote emote) {
-
+    public CommandResponseMessage.RMessageBuilder reply() {
+        final CommandResponseMessage m = new CommandResponseMessage(getChannel());
+        final CommandResponseMessage.RMessageBuilder builder = m.builder();
+        manager.accept(m);
+        return builder;
     }
 
     @Override
-    public CommandResponseEmojiImpl replyReaction(String emoji) {
+    public RestActionExtension<Void> replyReaction(Emote emote) {
+
+        return null;
+    }
+
+    @Override
+    public RestActionExtension<Void> replyReaction(String emoji) {
         final RestAction<Void> restAction = getChannel().addReactionById(getMessageId(), emoji);
 
+        return null;
     }
 }

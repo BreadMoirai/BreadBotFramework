@@ -347,11 +347,9 @@ public abstract class CommandEvent extends Event {
         return getContent() != null && !getContent().trim().isEmpty();
     }
 
-    public abstract CommandResponseMessage.Builder reply();
+    public abstract CommandResponseMessage.RMessageBuilder reply();
 
-    public abstract CommandResponseMessage.Builder reply(String message);
-
-    public abstract CommandResponseMessage.Builder reply(MessageEmbed message);
+    public abstract CommandResponseMessage.RMessageBuilder reply(String message);
 
     public abstract RestActionExtension<Message> reply(Message message);
 
