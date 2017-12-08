@@ -16,12 +16,12 @@
 
 package com.github.breadmoirai.breadbot.framework.internal.command;
 
-import com.github.breadmoirai.breadbot.framework.CommandEvent;
 import com.github.breadmoirai.breadbot.framework.command.CommandHandle;
 import com.github.breadmoirai.breadbot.framework.command.CommandPreprocessor;
 import com.github.breadmoirai.breadbot.framework.command.CommandPropertyMap;
 import com.github.breadmoirai.breadbot.framework.command.CommandResultHandler;
 import com.github.breadmoirai.breadbot.framework.error.MissingCommandKeyException;
+import com.github.breadmoirai.breadbot.framework.internal.event.CommandEventInternal;
 import com.github.breadmoirai.breadbot.framework.parameter.CommandParameter;
 import com.github.breadmoirai.breadbot.framework.parameter.CommandParser;
 import org.slf4j.Logger;
@@ -95,7 +95,7 @@ public class CommandHandleImpl implements CommandHandle {
     }
 
     @Override
-    public boolean handle(CommandEvent event, Iterator<String> keyItr) {
+    public boolean handle(CommandEventInternal event, Iterator<String> keyItr) {
         if (isHelp && event.isHelpEvent()) {
             return runThis(event);
         }
@@ -117,7 +117,8 @@ public class CommandHandleImpl implements CommandHandle {
         }
     }
 
-    private boolean runThis(CommandEvent event) {
+    private boolean runThis(CommandEventInternal event) {
+        event.setCommand(this);
         Object commandObj = commandSupplier.get();
         if (invokableCommand != null) {
             final CommandParser parser = new CommandParser(event, this, splitRegex == null ? event.getArguments() : event.createNewArgumentList(splitRegex, splitLimit), getParameters());

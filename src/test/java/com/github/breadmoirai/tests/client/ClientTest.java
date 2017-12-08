@@ -17,10 +17,10 @@
 package com.github.breadmoirai.tests.client;
 
 import com.github.breadmoirai.breadbot.framework.BreadBotClient;
-import com.github.breadmoirai.breadbot.framework.CommandEvent;
 import com.github.breadmoirai.breadbot.framework.builder.BreadBotClientBuilder;
 import com.github.breadmoirai.breadbot.framework.builder.CommandHandleBuilder;
 import com.github.breadmoirai.breadbot.framework.internal.event.CommandEventFactoryImpl;
+import com.github.breadmoirai.breadbot.framework.internal.event.CommandEventInternal;
 import com.github.breadmoirai.breadbot.modules.prefix.DefaultPrefixModule;
 import com.github.breadmoirai.breadbot.util.Emoji;
 import net.dv8tion.jda.core.entities.Guild;
@@ -269,9 +269,9 @@ public class ClientTest {
 //        TextChannel mockChannel = mock(TextChannel.class);
         Message mockMessage = mock(Message.class);
         when(mockMessage.getRawContent()).thenReturn(input);
-        CommandEvent event = eventFactory.createEvent(mockEvent, mockMessage, client);
+        CommandEventInternal event = eventFactory.createEvent(mockEvent, mockMessage, client);
 
-        CommandEvent spy = spy(event);
+        CommandEventInternal spy = spy(event);
 
         //when(spy.getChannel()).thenReturn(mockChannel);
         doReturn(0L).when(spy).getChannelId();

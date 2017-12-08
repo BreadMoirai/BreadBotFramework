@@ -16,15 +16,20 @@
 
 package com.github.breadmoirai.breadbot.framework.internal;
 
-import com.github.breadmoirai.breadbot.framework.*;
+import com.github.breadmoirai.breadbot.framework.BreadBotClient;
+import com.github.breadmoirai.breadbot.framework.CommandEngine;
+import com.github.breadmoirai.breadbot.framework.CommandEventFactory;
+import com.github.breadmoirai.breadbot.framework.CommandModule;
 import com.github.breadmoirai.breadbot.framework.command.CommandHandle;
 import com.github.breadmoirai.breadbot.framework.command.CommandPropertiesManager;
 import com.github.breadmoirai.breadbot.framework.command.CommandResultManager;
 import com.github.breadmoirai.breadbot.framework.internal.command.builder.CommandHandleBuilderInternal;
+import com.github.breadmoirai.breadbot.framework.internal.event.CommandEventInternal;
 import com.github.breadmoirai.breadbot.framework.parameter.CommandParameterTypeManager;
 import com.github.breadmoirai.breadbot.util.EventStringIterator;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.events.Event;
 import net.dv8tion.jda.core.events.ReadyEvent;
 import net.dv8tion.jda.core.events.message.guild.GenericGuildMessageEvent;
@@ -247,11 +252,11 @@ public class BreadBotClientImpl implements BreadBotClient, EventListener {
 
     private void onGuildMessageEvent(GenericGuildMessageEvent event, Message message) {
         if (preProcessPredicate == null || preProcessPredicate.test(message)) {
-            final CommandEvent commandEvent = eventFactory.createEvent(event, message, BreadBotClientImpl.this);
+            final CommandEventInternal commandEvent = eventFactory.createEvent(event, message, BreadBotClientImpl.this);
             if (commandEvent != null) {
                 LOG.trace(commandEvent.toString());
                 commandEngine.handle(commandEvent);
-//                ((JDAImpl) jda).getEventManager().handle(event);
+                ((JDAImpl) jda).getEventManager().handle(event);
             }
         }
     }

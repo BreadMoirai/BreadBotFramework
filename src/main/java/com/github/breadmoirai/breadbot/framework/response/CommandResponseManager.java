@@ -15,10 +15,15 @@
  */
 package com.github.breadmoirai.breadbot.framework.response;
 
+import com.github.breadmoirai.breadbot.framework.internal.response.CommandResponseManagerImpl;
+
+import java.util.function.Supplier;
+
 public interface CommandResponseManager {
+
+    Supplier<CommandResponseManager> factory = CommandResponseManagerImpl::new;
 
     void accept(CommandResponse response);
 
     void complete();
-
 }

@@ -18,14 +18,13 @@ package com.github.breadmoirai.breadbot.framework.internal.event;
 import com.github.breadmoirai.breadbot.framework.BreadBotClient;
 import com.github.breadmoirai.breadbot.framework.CommandEvent;
 import com.github.breadmoirai.breadbot.framework.command.CommandHandle;
-import com.github.breadmoirai.breadbot.framework.internal.response.CommandResponseManagerImpl;
 import com.github.breadmoirai.breadbot.framework.internal.response.CommandResponseMessage;
+import com.github.breadmoirai.breadbot.framework.internal.response.CommandResponseReactionImpl;
 import com.github.breadmoirai.breadbot.framework.response.CommandResponseManager;
 import com.github.breadmoirai.breadbot.framework.response.RestActionExtension;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Emote;
 import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.requests.RestAction;
 
 public abstract class CommandEventInternal extends CommandEvent {
 
@@ -34,15 +33,20 @@ public abstract class CommandEventInternal extends CommandEvent {
 
     public CommandEventInternal(JDA api, long responseNumber, BreadBotClient client, boolean isHelpEvent) {
         super(api, responseNumber, client, isHelpEvent);
-        manager = new CommandResponseManagerImpl();
+        manager = CommandResponseManager.factory.get();
+    }
+
+    @Override
+    public CommandHandle getCommand() {
+        return command;
+    }
+
+    public CommandResponseManager getManager() {
+        return manager;
     }
 
     public void setCommand(CommandHandle command) {
         this.command = command;
-    }
-
-    public CommandResponseManager getCommandResponseManager() {
-        return manager;
     }
 
     @Override
@@ -71,14 +75,15 @@ public abstract class CommandEventInternal extends CommandEvent {
 
     @Override
     public RestActionExtension<Void> replyReaction(Emote emote) {
-
-        return null;
+        CommandResponseReactionImpl resp = new CommandResponseReactionImpl(() -> getMessage().addReaction(emote));
+        manager.accept(resp);
+        return resp;
     }
 
     @Override
     public RestActionExtension<Void> replyReaction(String emoji) {
-        final RestAction<Void> restAction = getChannel().addReactionById(getMessageId(), emoji);
-
-        return null;
+        CommandResponseReactionImpl resp = new CommandResponseReactionImpl(() -> getMessage().addReaction(emoji));
+        manager.accept(resp);
+        return resp;
     }
 }

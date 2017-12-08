@@ -20,7 +20,7 @@ import net.dv8tion.jda.core.events.message.guild.GuildMessageDeleteEvent;
 
 import java.util.function.LongConsumer;
 
-public abstract class CommandResponse<T> {
+public abstract class CommandResponse {
 
     public abstract void dispatch(LongConsumer linkReceiver);
 

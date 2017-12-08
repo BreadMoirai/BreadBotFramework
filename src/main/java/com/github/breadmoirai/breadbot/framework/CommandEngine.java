@@ -16,8 +16,10 @@
 
 package com.github.breadmoirai.breadbot.framework;
 
+import com.github.breadmoirai.breadbot.framework.internal.event.CommandEventInternal;
+
 public interface CommandEngine {
 
-    void handle(CommandEvent event);
+    void handle(CommandEventInternal event);
 
 }

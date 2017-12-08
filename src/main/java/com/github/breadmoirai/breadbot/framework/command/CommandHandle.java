@@ -16,7 +16,7 @@
 
 package com.github.breadmoirai.breadbot.framework.command;
 
-import com.github.breadmoirai.breadbot.framework.CommandEvent;
+import com.github.breadmoirai.breadbot.framework.internal.event.CommandEventInternal;
 import com.github.breadmoirai.breadbot.framework.parameter.CommandParameter;
 
 import java.lang.reflect.Method;
@@ -41,7 +41,7 @@ public interface CommandHandle {
 
     List<CommandPreprocessor> getPreprocessors();
 
-    boolean handle(CommandEvent event, Iterator<String> keyItr);
+    boolean handle(CommandEventInternal event, Iterator<String> keyItr);
 
     Map<String, CommandHandle> getSubCommandMap();
 
