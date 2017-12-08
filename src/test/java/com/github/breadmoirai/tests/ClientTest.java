@@ -14,19 +14,14 @@
  *   limitations under the License.
  */
 
-package com.github.breadmoirai.tests.client;
+package com.github.breadmoirai.tests;
 
 import com.github.breadmoirai.breadbot.framework.BreadBotClient;
 import com.github.breadmoirai.breadbot.framework.builder.BreadBotClientBuilder;
 import com.github.breadmoirai.breadbot.framework.builder.CommandHandleBuilder;
-import com.github.breadmoirai.breadbot.framework.internal.event.CommandEventFactoryImpl;
 import com.github.breadmoirai.breadbot.framework.internal.event.CommandEventInternal;
-import com.github.breadmoirai.breadbot.modules.prefix.DefaultPrefixModule;
 import com.github.breadmoirai.breadbot.util.Emoji;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.User;
-import net.dv8tion.jda.core.events.message.guild.GenericGuildMessageEvent;
+import com.github.breadmoirai.tests.commands.*;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -36,6 +31,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static com.github.breadmoirai.tests.MockFactory.mockCommand;
 import static org.mockito.Mockito.*;
 
 public class ClientTest {
@@ -83,7 +79,7 @@ public class ClientTest {
                             event.reply(targetHandle.getGroup() + "." + commandObj.getClass().getSimpleName() + ".class");
                         })
                 ));
-        assertResponse("!ping?", "client.PingCommand.class");
+        assertResponse("!ping?", "tests.PingCommand.class");
     }
 
     @Test
@@ -237,7 +233,7 @@ public class ClientTest {
 
     @Test
     public void typeTest() {
-        setupBread(bread -> bread.addCommand(TypeTestKeyTest::new));
+        setupBread(bread -> bread.addCommand(TypeTestKeyTestCommand::new));
         assertResponse("!10plus 2", "12");
         assertResponse("!10plus 10", "21");
     }
@@ -249,34 +245,7 @@ public class ClientTest {
     }
 
     private void assertResponse(final String input, final String expected) {
-//        GenericGuildMessageEvent mockInput = mock(GenericGuildMessageEvent.class);
-//        Guild mockGuild = mock(Guild.class);
-//        when(mockGuild.getIdLong()).thenReturn(0L);
-//        when(mockInput.getGuild()).thenReturn(mockGuild);
-//
-
-//        final String[] split = DiscordPatterns.WHITE_SPACE.split(input.substring(1), 2);
-//        final String key = split[0];
-//        final String content = split.length > 1 ? split[1].trim() : null;
-
-        CommandEventFactoryImpl eventFactory = new CommandEventFactoryImpl(new DefaultPrefixModule("!"));
-
-        GenericGuildMessageEvent mockEvent = mock(GenericGuildMessageEvent.class);
-
-        Guild mockGuild = mock(Guild.class);
-        when(mockEvent.getGuild()).thenReturn(mockGuild);
-        User mockUser = mock(User.class);
-//        TextChannel mockChannel = mock(TextChannel.class);
-        Message mockMessage = mock(Message.class);
-        when(mockMessage.getRawContent()).thenReturn(input);
-        CommandEventInternal event = eventFactory.createEvent(mockEvent, mockMessage, client);
-
-        CommandEventInternal spy = spy(event);
-
-        //when(spy.getChannel()).thenReturn(mockChannel);
-        doReturn(0L).when(spy).getChannelId();
-        when(spy.getAuthor()).thenReturn(mockUser);
-        //doNothing().when(spy).reply(anyString());
+        CommandEventInternal spy = mockCommand(client, input);
 
 
         doAnswer(invocation -> {

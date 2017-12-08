@@ -23,6 +23,7 @@ import com.github.breadmoirai.breadbot.framework.CommandModule;
 import com.github.breadmoirai.breadbot.framework.command.CommandHandle;
 import com.github.breadmoirai.breadbot.framework.command.CommandPropertiesManager;
 import com.github.breadmoirai.breadbot.framework.command.CommandResultManager;
+import com.github.breadmoirai.breadbot.framework.error.DuplicateCommandKeyException;
 import com.github.breadmoirai.breadbot.framework.internal.command.builder.CommandHandleBuilderInternal;
 import com.github.breadmoirai.breadbot.framework.internal.event.CommandEventInternal;
 import com.github.breadmoirai.breadbot.framework.parameter.CommandParameterTypeManager;
@@ -83,6 +84,9 @@ public class BreadBotClientImpl implements BreadBotClient, EventListener {
             CommandHandle handle = command.build();
             String[] keys = handle.getKeys();
             for (String key : keys) {
+                if (handleMap.containsKey(key)) {
+                    throw new DuplicateCommandKeyException(key, handle, handleMap.get(key));
+                }
                 handleMap.put(key, handle);
             }
             LOG.info("Command Created: " + handle);

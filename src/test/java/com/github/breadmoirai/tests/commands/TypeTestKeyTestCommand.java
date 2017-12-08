@@ -14,18 +14,23 @@
  *   limitations under the License.
  */
 
-package com.github.breadmoirai.tests.client;
+package com.github.breadmoirai.tests.commands;
 
+import com.github.breadmoirai.breadbot.framework.annotation.command.Command;
 import com.github.breadmoirai.breadbot.framework.annotation.command.MainCommand;
+import com.github.breadmoirai.breadbot.framework.annotation.parameter.Type;
+import com.github.breadmoirai.breadbot.framework.parameter.CommandArgument;
 
-import java.awt.*;
-import java.lang.reflect.Field;
+public class TypeTestKeyTestCommand {
 
-public class ColorCommand {
+    @MainCommand("10plus")
+    public String addTen(@Type(int.class) CommandArgument argument) {
+        final int i = argument.parseInt() + 10;
+        return String.valueOf(i);
+    }
 
-    @MainCommand
-    public Color color(String s) throws IllegalAccessException, NoSuchFieldException {
-        Field field = Color.class.getField(s);
-        return (Color) field.get(null);
+    @Command("10")
+    public String addTenMore() {
+        return "21";
     }
 }

@@ -16,9 +16,9 @@
 
 package com.github.breadmoirai.breadbot.framework.error;
 
-public class DuplicateCommandKeyException extends Exception {
+public class DuplicateCommandKeyException extends BreadBotException {
 
     public DuplicateCommandKeyException(String key, Object a, Object b) {
-        super("Duplicate Command key: \"" + key + "\" found for " + a + " and " + b);
+        super("Duplicate Command key: \"" + key + "\" found for \n" + a + "\n AND \n" + b);
     }
 }
