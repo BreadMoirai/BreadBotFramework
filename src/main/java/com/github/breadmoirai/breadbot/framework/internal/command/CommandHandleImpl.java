@@ -20,7 +20,6 @@ import com.github.breadmoirai.breadbot.framework.command.CommandHandle;
 import com.github.breadmoirai.breadbot.framework.command.CommandPreprocessor;
 import com.github.breadmoirai.breadbot.framework.command.CommandPropertyMap;
 import com.github.breadmoirai.breadbot.framework.command.CommandResultHandler;
-import com.github.breadmoirai.breadbot.framework.error.MissingCommandKeyException;
 import com.github.breadmoirai.breadbot.framework.internal.event.CommandEventInternal;
 import com.github.breadmoirai.breadbot.framework.parameter.CommandParameter;
 import com.github.breadmoirai.breadbot.framework.parameter.CommandParser;
@@ -53,6 +52,7 @@ public class CommandHandleImpl implements CommandHandle {
     private final Pattern splitRegex;
     private final int splitLimit;
     private final boolean isHelp;
+    private CommandHandle superCommand;
 
     public CommandHandleImpl(String[] keys,
                              String name,
@@ -70,7 +70,8 @@ public class CommandHandleImpl implements CommandHandle {
                              List<CommandPreprocessor> preprocessors,
                              CommandPropertyMap propertyMap,
                              Pattern splitRegex,
-                             int splitLimit) {
+                             int splitLimit,
+                             CommandHandle superCommand) {
         this.keys = keys;
         this.name = name;
         this.group = group;
@@ -88,9 +89,7 @@ public class CommandHandleImpl implements CommandHandle {
         this.propertyMap = propertyMap;
         this.splitRegex = splitRegex;
         this.splitLimit = splitLimit;
-        if (keys == null || keys.length == 0) {
-            throw new MissingCommandKeyException(this);
-        }
+        this.superCommand = superCommand;
         this.isHelp = Arrays.stream(keys).anyMatch(s -> s.equalsIgnoreCase("help"));
     }
 
@@ -123,7 +122,7 @@ public class CommandHandleImpl implements CommandHandle {
         if (commandObj == null) return false;
         if (invokableCommand != null) {
             final CommandParser parser = new CommandParser(event, this, splitRegex == null ? event.getArguments() : event.createNewArgumentList(splitRegex, splitLimit), getParameters());
-            final CommandRunner runner = new CommandRunner(commandObj, event, invokableCommand, parser, this, resultHandler, throwable -> log.error("An error ocurred while invoking a command:\n" + this, throwable));
+            final CommandRunner runner = new CommandRunner(commandObj, event, invokableCommand, parser, this, resultHandler, throwable -> log.error("An error ocurred while invoking command:\n" + this + "\non Event:\n" + event, throwable));
             final CommandProcessStack commandProcessStack = new CommandProcessStack(commandObj, this, event, preprocessors, runner);
             commandProcessStack.runNext();
             return commandProcessStack.result();
@@ -178,8 +177,13 @@ public class CommandHandleImpl implements CommandHandle {
     }
 
     @Override
-    public Map<String, CommandHandle> getSubCommandMap() {
+    public Map<String, CommandHandle> getSubCommands() {
         return Collections.unmodifiableMap(subCommandMap);
+    }
+
+    @Override
+    public CommandHandle getSuperCommand() {
+        return superCommand;
     }
 
     @Override

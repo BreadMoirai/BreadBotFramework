@@ -18,6 +18,7 @@ package com.github.breadmoirai.tests;
 
 import com.github.breadmoirai.breadbot.framework.BreadBotClient;
 import com.github.breadmoirai.breadbot.framework.builder.BreadBotClientBuilder;
+import com.github.breadmoirai.breadbot.framework.command.CommandHandle;
 import com.github.breadmoirai.breadbot.framework.command.CommandPreprocessor;
 import com.github.breadmoirai.breadbot.framework.error.DuplicateCommandKeyException;
 import com.github.breadmoirai.breadbot.framework.error.MissingCommandKeyException;
@@ -112,5 +113,35 @@ public class ExceptionTester {
         Optional<Throwable> cause = loggingEvent.getThrowable();
         assertTrue(cause.isPresent());
         assertEquals("Preprocessor Exception", cause.get().getMessage());
+    }
+
+    @Test
+    public void commandRunTest() {
+        TestLogger testLogger = TestLoggerFactory.getTestLogger(CommandHandle.class);
+        testLogger.setEnabledLevels(Level.ERROR);
+
+        BreadBotClient bread = new BreadBotClientBuilder()
+                .createCommand(BadCommand.class)
+                .getClientBuilder().build();
+
+        CommandEventInternal mock = mockCommand(bread, "!bad");
+        bread.getCommandEngine().handle(mock);
+
+        ImmutableList<LoggingEvent> logs = testLogger.getLoggingEvents();
+        assertEquals(1, logs.size());
+        LoggingEvent loggingEvent = logs.get(0);
+        assertEquals("An error ocurred while invoking command:\n" +
+                "CommandHandle{\n" +
+                "  keys: [bad]\n" +
+                "  name: bad\n" +
+                "  group: tests\n" +
+                "  desc: null\n" +
+                "  source: com.github.breadmoirai.tests.commands.BadCommand#bad\n" +
+                "}\n" +
+                "on Event:\n" +
+                "CommandEvent{ Guild=0, Channel=0, Author=0, Prefix=!, Key=[bad], Content=null }", loggingEvent.getMessage());
+        Optional<Throwable> cause = loggingEvent.getThrowable();
+        assertTrue(cause.isPresent());
+        assertEquals("Command Exception", cause.get().getMessage());
     }
 }

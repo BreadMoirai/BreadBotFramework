@@ -47,7 +47,24 @@ public abstract class CommandEventInternal extends CommandEvent {
 
     public void setCommand(CommandHandle command) {
         this.command = command;
+        String[] keys = command.getKeys();
+        if (command.getSuperCommand() == null) return;
+        for (String key : keys) {
+            String contentL = getContent().toLowerCase();
+            String keyL = key.toLowerCase();
+            if (!contentL.contains(keyL)) return;
+            int i = contentL.indexOf(keyL);
+            String newContent = getContent().substring(i + keyL.length()).trim();
+            super.argumentList = null;
+            String contentK = getKeys()[0] + " " + getContent().substring(0, i + keyL.length()).trim();
+            setKeys(contentK.split("\\s+"));
+            setContent(newContent);
+        }
     }
+
+    protected abstract void setContent(String newContent);
+
+    protected abstract void setKeys(String[] keys);
 
     @Override
     public CommandResponseMessage.RMessageBuilder reply(String message) {

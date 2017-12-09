@@ -81,7 +81,7 @@ public class BreadBotClientImpl implements BreadBotClient, EventListener {
 
         HashMap<String, CommandHandle> handleMap = new HashMap<>();
         for (CommandHandleBuilderInternal command : commands) {
-            CommandHandle handle = command.build();
+            CommandHandle handle = command.build(null);
             String[] keys = handle.getKeys();
             for (String key : keys) {
                 if (handleMap.containsKey(key)) {
@@ -111,7 +111,7 @@ public class BreadBotClientImpl implements BreadBotClient, EventListener {
         this.moduleTypeMap = typeMap;
 
         commandEngine = event -> {
-            CommandHandle commandHandle = commandMap.get(event.getKey().toLowerCase());
+            CommandHandle commandHandle = commandMap.get(event.getKeys()[0].toLowerCase());
             if (commandHandle != null) {
                 if (event.isHelpEvent()) {
                     if (!commandHandle.handle(event, new EventStringIterator(event))) {

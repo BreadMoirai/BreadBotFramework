@@ -20,8 +20,10 @@ import com.github.breadmoirai.breadbot.framework.annotation.command.Command;
 import com.github.breadmoirai.breadbot.framework.builder.BreadBotClientBuilder;
 import com.github.breadmoirai.breadbot.framework.builder.CommandHandleBuilder;
 import com.github.breadmoirai.breadbot.framework.builder.CommandParameterBuilder;
+import com.github.breadmoirai.breadbot.framework.command.CommandHandle;
 import com.github.breadmoirai.breadbot.framework.command.CommandPreprocessor;
 import com.github.breadmoirai.breadbot.framework.command.CommandResultHandler;
+import com.github.breadmoirai.breadbot.framework.error.MissingCommandKeyException;
 import com.github.breadmoirai.breadbot.framework.internal.command.CommandHandleImpl;
 import com.github.breadmoirai.breadbot.framework.internal.command.CommandObjectFactory;
 import com.github.breadmoirai.breadbot.framework.internal.command.CommandPropertyMapImpl;
@@ -288,18 +290,16 @@ public class CommandHandleBuilderImpl implements CommandHandleBuilderInternal {
     }
 
     @Override
-    public CommandHandleImpl build() {
+    public CommandHandleImpl build(CommandHandle parent) {
+        if (keys == null || keys.length == 0) {
+            throw new MissingCommandKeyException(this);
+        }
+
         Map<String, CommandHandleImpl> subCommandMap;
         if (subCommands.isEmpty()) {
             subCommandMap = null;
         } else {
             subCommandMap = new HashMap<>();
-            for (CommandHandleBuilderInternal subCommand : subCommands) {
-                CommandHandleImpl command = subCommand.build();
-                for (String key : command.getKeys()) {
-                    subCommandMap.put(key, command);
-                }
-            }
         }
         CommandObjectFactory commandFactory;
         if (isPersistent) {
@@ -314,6 +314,16 @@ public class CommandHandleBuilderImpl implements CommandHandleBuilderInternal {
             Class<?> returnType = declaringMethod.getReturnType();
             resultHandler = getClientBuilder().getResultHandler(returnType);
         }
-        return new CommandHandleImpl(keys, name, group, description, declaringObject, declaringClass, declaringMethod,/*client,*/ commandFactory, commandParameters, commandFunction, resultHandler, subCommandMap, preprocessors, shouldRetainProperties ? propertyMap : null, splitRegex, splitLimit);
+        CommandHandleImpl commandHandle = new CommandHandleImpl(keys, name, group, description, declaringObject, declaringClass, declaringMethod,/*client,*/ commandFactory, commandParameters, commandFunction, resultHandler, subCommandMap, preprocessors, shouldRetainProperties ? propertyMap : null, splitRegex, splitLimit, parent);
+
+        //would do null check on sucCommandMap but for loop does not run when subCommands isEmpty
+        for (CommandHandleBuilderInternal subCommand : subCommands) {
+            CommandHandleImpl command = subCommand.build(commandHandle);
+            for (String key : command.getKeys()) {
+                //noinspection ConstantConditions
+                subCommandMap.put(key, command);
+            }
+        }
+        return commandHandle;
     }
 }

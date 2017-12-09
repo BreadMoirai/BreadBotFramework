@@ -18,6 +18,7 @@ package com.github.breadmoirai.breadbot.framework.internal.command.builder;
 
 import com.github.breadmoirai.breadbot.framework.CommandEvent;
 import com.github.breadmoirai.breadbot.framework.builder.CommandHandleBuilder;
+import com.github.breadmoirai.breadbot.framework.command.CommandHandle;
 import com.github.breadmoirai.breadbot.framework.internal.command.CommandHandleImpl;
 import com.github.breadmoirai.breadbot.framework.internal.command.CommandObjectFactory;
 import com.github.breadmoirai.breadbot.framework.internal.command.CommandPropertyMapImpl;
@@ -32,7 +33,7 @@ public interface CommandHandleBuilderInternal extends CommandHandleBuilder {
 
     CommandPropertyMapImpl getPropertyMap();
 
-    CommandHandleImpl build();
+    CommandHandleImpl build(CommandHandle parent);
 
     void putCommandHandle(CommandHandleBuilderInternal handle);
 

@@ -43,7 +43,9 @@ public interface CommandHandle {
 
     boolean handle(CommandEventInternal event, Iterator<String> keyItr);
 
-    Map<String, CommandHandle> getSubCommandMap();
+    Map<String, CommandHandle> getSubCommands();
+
+    CommandHandle getSuperCommand();
 
     /**
      * This method returns null if the command has been defined with a class or a supplier.

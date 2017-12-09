@@ -22,7 +22,6 @@ import com.github.breadmoirai.breadbot.framework.builder.CommandHandleBuilder;
 import com.github.breadmoirai.breadbot.framework.internal.event.CommandEventInternal;
 import com.github.breadmoirai.breadbot.util.Emoji;
 import com.github.breadmoirai.tests.commands.*;
-import org.junit.Assert;
 import org.junit.Test;
 import uk.org.lidalia.slf4jext.Level;
 import uk.org.lidalia.slf4jtest.TestLoggerFactory;
@@ -34,6 +33,8 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static com.github.breadmoirai.tests.MockFactory.mockCommand;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
 public class ClientTest {
@@ -53,6 +54,41 @@ public class ClientTest {
         assertResponse("!ping", "pong");
         setupBread(builder -> builder.addCommand(new PingCommand()));
         assertResponse("!ping", "pong");
+    }
+
+    @Test
+    public void basicContentTest() {
+        setupBread(builder ->
+                builder.createCommand(PingCommand.class)
+                        .setKeys("p1ng")
+                        .addPreprocessorFunction("1st", (commandObj, targetHandle, event, processorStack) -> {
+                            System.out.println("targetHandle = " + targetHandle);
+                            System.out.println("event = " + event);
+                            assertEquals("the first", event.getContent());
+                            assertArrayEquals(new String[]{"p1ng"}, event.getKeys());
+                            processorStack.runNext();
+                        })
+                        .createCommand(PingCommand.class)
+                        .setKeys("p2ng")
+                        .addPreprocessorFunction("2nd", (commandObj, targetHandle, event, processorStack) -> {
+                            System.out.println("targetHandle = " + targetHandle);
+                            System.out.println("event = " + event);
+                            assertEquals("the second", event.getContent());
+                            assertArrayEquals(new String[]{"p1ng", "p2ng"}, event.getKeys());
+                            processorStack.runNext();
+                        })
+                        .createCommand(PingCommand.class)
+                        .setKeys("p3ng")
+                        .addPreprocessorFunction("3rd", (commandObj, targetHandle, event, processorStack) -> {
+                            System.out.println("targetHandle = " + targetHandle);
+                            System.out.println("event = " + event);
+                            assertEquals("the third", event.getContent());
+                            assertArrayEquals(new String[]{"p1ng", "p2ng", "p3ng"}, event.getKeys());
+                            processorStack.runNext();
+                        }));
+        assertResponse("!p1ng the first", "pong");
+        assertResponse("!p1ng p2ng the second", "pong");
+        assertResponse("!p1ng p2ng p3ng the third", "pong");
     }
 
     @Test
@@ -160,6 +196,14 @@ public class ClientTest {
     }
 
     @Test
+    public void subParameterPropertyTest() {
+        setupBread(bread -> bread.createCommand(PingCommand.class).addCommand(NameCommand.class));
+        assertResponse("!ping name a b c", "a b c");
+        assertResponse("!ping first a b c", "a");
+        assertResponse("!ping last a b c", "b c");
+    }
+
+    @Test
     public void returnTypeTest() {
         setupBread(bread -> bread
                 .registerResultHandler(Color.class, (command, event, result) -> event.reply(Integer.toHexString(result.getRGB())))
@@ -257,8 +301,7 @@ public class ClientTest {
 
         doAnswer(invocation -> {
             String argument = invocation.getArgument(0);
-            if (!argument.equalsIgnoreCase(expected))
-                Assert.fail(String.format("Expected: \"%s\", Actual: \"%s\"", expected, argument));
+            assertEquals(expected, argument);
             return null;
         }).when(spy).reply(anyString());
 

@@ -67,15 +67,15 @@ public class CommandEventFactoryImpl implements CommandEventFactory {
         final String content = split.length > 1 ? split[1].trim() : null;
         if (key.equalsIgnoreCase("help")) {
             if (content == null)
-                return new MessageReceivedCommandEvent(client, event, message, prefix, "help", null, true);
+                return new MessageReceivedCommandEvent(client, event, message, prefix, new String[]{key}, null, true);
             else {
                 final String[] split2 = DiscordPatterns.WHITE_SPACE.split(content, 2);
                 final String key2 = split2[0];
                 final String content2 = split2.length > 1 ? split2[1].trim() : null;
-                return new MessageReceivedCommandEvent(client, event, message, prefix, key2, content2 + " help", true);
+                return new MessageReceivedCommandEvent(client, event, message, prefix, new String[]{key2}, content2 + " help", true);
             }
         }
-        return new MessageReceivedCommandEvent(client, event, message, prefix, key, content, false);
+        return new MessageReceivedCommandEvent(client, event, message, prefix, new String[]{key}, content, false);
     }
 
 

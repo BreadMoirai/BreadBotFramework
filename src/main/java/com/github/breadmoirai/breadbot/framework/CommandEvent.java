@@ -51,7 +51,7 @@ public abstract class CommandEvent extends Event {
     private final BreadBotClient client;
     private final boolean isHelpEvent;
 
-    private CommandArgumentList argumentList;
+    protected CommandArgumentList argumentList;
 
     public CommandEvent(JDA api, long responseNumber, BreadBotClient client, boolean isHelpEvent) {
         super(api, responseNumber);
@@ -78,16 +78,16 @@ public abstract class CommandEvent extends Event {
     public abstract String getPrefix();
 
     /**
-     * The command key. The case is not guaranteed.
+     * The command key. The case is as was sent. Guaranteed to be as least of length 1. Not Null.
      *
      * @return a {@link java.lang.String String}. May be empty.
      */
-    public abstract String getKey();
+    public abstract String[] getKeys();
 
     /**
-     * Whatever comes after the prefix and key.
+     * Whatever comes after the prefix and the keys.
      *
-     * @return a {@link java.lang.String String} that does not contain the prefix or the key.
+     * @return a {@link java.lang.String String} that does not contain the prefix or any of the keys.
      * @see CommandEvent#getArguments()
      */
     public abstract String getContent();
@@ -397,7 +397,7 @@ public abstract class CommandEvent extends Event {
 
     @Override
     public String toString() {
-        return String.format("CommandEvent{ Guild=%d, Channel=%d, Author=%d, Prefix=%s, Key=%s, Content=%s }", getGuildId(), getChannelId(), getAuthorId(), getPrefix(), getKey(), getContent());
+        return String.format("CommandEvent{ Guild=%d, Channel=%d, Author=%d, Prefix=%s, Key=%s, Content=%s }", getGuildId(), getChannelId(), getAuthorId(), getPrefix(), Arrays.toString(getKeys()), getContent());
     }
 
 }

@@ -32,10 +32,10 @@ public class MessageReceivedCommandEvent extends CommandEventInternal {
     private GenericGuildMessageEvent event;
     private Message message;
     private String prefix;
-    private String key;
+    private String[] key;
     private String content;
 
-    MessageReceivedCommandEvent(BreadBotClient client, GenericGuildMessageEvent event, Message message, String prefix, String key, String content, boolean isHelpEvent) {
+    MessageReceivedCommandEvent(BreadBotClient client, GenericGuildMessageEvent event, Message message, String prefix, String[] key, String content, boolean isHelpEvent) {
         super(event.getJDA(), event.getResponseNumber(), client, isHelpEvent);
         this.event = event;
         this.message = message;
@@ -50,7 +50,7 @@ public class MessageReceivedCommandEvent extends CommandEventInternal {
     }
 
     @Override
-    public String getKey() {
+    public String[] getKeys() {
         return key;
     }
 
@@ -147,6 +147,16 @@ public class MessageReceivedCommandEvent extends CommandEventInternal {
     @Override
     public List<Member> getMentionedMembers() {
         return message.getMentionedUsers().stream().map(getGuild()::getMember).filter(Objects::nonNull).collect(Collectors.toList());
+    }
+
+    @Override
+    protected void setContent(String newContent) {
+        this.content = newContent;
+    }
+
+    @Override
+    protected void setKeys(String[] keys) {
+        this.key = keys;
     }
 
 //    @Override
