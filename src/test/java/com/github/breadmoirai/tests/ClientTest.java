@@ -24,6 +24,8 @@ import com.github.breadmoirai.breadbot.util.Emoji;
 import com.github.breadmoirai.tests.commands.*;
 import org.junit.Assert;
 import org.junit.Test;
+import uk.org.lidalia.slf4jext.Level;
+import uk.org.lidalia.slf4jtest.TestLoggerFactory;
 
 import java.awt.*;
 import java.util.function.Consumer;
@@ -35,6 +37,11 @@ import static com.github.breadmoirai.tests.MockFactory.mockCommand;
 import static org.mockito.Mockito.*;
 
 public class ClientTest {
+
+
+    static {
+        TestLoggerFactory.getInstance().setPrintLevel(Level.INFO);
+    }
 
     private BreadBotClient client;
 

@@ -120,6 +120,7 @@ public class CommandHandleImpl implements CommandHandle {
     private boolean runThis(CommandEventInternal event) {
         event.setCommand(this);
         Object commandObj = commandSupplier.get();
+        if (commandObj == null) return false;
         if (invokableCommand != null) {
             final CommandParser parser = new CommandParser(event, this, splitRegex == null ? event.getArguments() : event.createNewArgumentList(splitRegex, splitLimit), getParameters());
             final CommandRunner runner = new CommandRunner(commandObj, event, invokableCommand, parser, this, resultHandler, throwable -> log.error("An error ocurred while invoking a command:\n" + this, throwable));

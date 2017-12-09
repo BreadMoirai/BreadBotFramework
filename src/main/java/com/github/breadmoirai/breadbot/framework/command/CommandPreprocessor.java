@@ -18,8 +18,13 @@ package com.github.breadmoirai.breadbot.framework.command;
 
 import com.github.breadmoirai.breadbot.framework.CommandEvent;
 import com.github.breadmoirai.breadbot.framework.internal.command.CommandProcessStack;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CommandPreprocessor implements CommandPreprocessorFunction {
+
+    private static final Logger LOG = LoggerFactory.getLogger(CommandPreprocessor.class);
+
     private final String identifier;
     private final CommandPreprocessorFunction function;
 
@@ -38,7 +43,11 @@ public class CommandPreprocessor implements CommandPreprocessorFunction {
 
     @Override
     public void process(Object commandObj, CommandHandle targetHandle, CommandEvent event, CommandProcessStack processQueue) {
-        getFunction().process(commandObj, targetHandle, event, processQueue);
+        try {
+            getFunction().process(commandObj, targetHandle, event, processQueue);
+        } catch (Throwable t) {
+            LOG.error("An exception was thrown while attempting to evaluate a preprocessor: " + identifier, t);
+        }
     }
 
     @Override
