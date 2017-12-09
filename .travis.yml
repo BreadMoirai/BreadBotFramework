@@ -8,3 +8,6 @@ script:
   - ./gradlew jacocoTestReport
 after_success:
   - bash <(curl -s https://codecov.io/bash)
+notifications:
+  webhooks:
+    - https://ptb.discordapp.com/api/webhooks/280240499418464256/cAnfSnpgYERHihPaYffYTfKRIDnnHGwiCjZHeIOTLSBuXaxjjAy16r-8UE68li8enJWn
