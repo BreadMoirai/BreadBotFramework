@@ -14,7 +14,7 @@ plugins {
 final author = 'BreadMoirai'
 final artifactId = 'breadbot-framework'
 group "com.github.${author}"
-version '0.8.1'
+version '0.8.1_1'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -87,7 +87,7 @@ gitPublishReset {
 }
 
 bintray {
-    user = author
+    user = author.toLowerCase()
     if (hasProperty('bintray.key'))
         key = getProperty('bintray.key').toString()
     publications = ["BintrayRelease"]
