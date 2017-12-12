@@ -198,7 +198,7 @@ public class CommandHandleBuilderImpl implements CommandHandleBuilderInternal {
     public CommandHandleBuilder setParameter(int parameterIndex, Function<CommandParser, ?> mapper) {
         Checks.notNull(mapper, "mapper");
         final CommandParameterBuilder parameter = parameterBuilders[parameterIndex];
-        parameterBuilders[parameterIndex] = new CommandParameterFunctionBuilderImpl(parameter.getDeclaringParameter(), "You have defined this parameter with a function. Further modifications are useless.", mapper);
+        parameterBuilders[parameterIndex] = new CommandParameterFunctionBuilderImpl(getClientBuilder(), this, parameter.getDeclaringParameter(), "You have defined this parameter with a function. Further modifications are useless.", mapper);
         return this;
     }
 
@@ -287,6 +287,11 @@ public class CommandHandleBuilderImpl implements CommandHandleBuilderInternal {
             subCommands.addAll(commandHandles);
         }
         return this;
+    }
+
+    @Override
+    public List<CommandParameterBuilder> getParameters() {
+        return Collections.unmodifiableList(Arrays.asList(parameterBuilders));
     }
 
     @Override

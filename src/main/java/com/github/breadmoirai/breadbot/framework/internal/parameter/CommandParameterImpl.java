@@ -56,36 +56,60 @@ public class CommandParameterImpl implements CommandParameter {
 
         for (; i < limit; i++) {
             if (parser.hasMappedArgument(i)) continue;
-            int[] indexes;
-            final CommandArgument commandArgument;
             if (width == 1) {
-                indexes = new int[]{i};
-                commandArgument = list.get(i);
-            } else if (width < 1) {
+                Object o = map(parser, list.get(i), new int[]{i});
+                if (o != null) {
+                    return o;
+                }
+            } else if (width == 0) {
+                int j = i;
+                for (; j < list.size(); j++) {
+                    if (parser.hasMappedArgument(j)) {
+                        break;
+                    }
+                }
+                for (; j > i; j--) {
+                    StringJoiner sj = new StringJoiner(" ");
+                    for (int k = i; k < j; k++) {
+                        sj.add(list.get(k).getArgument());
+                    }
+                    Object o = map(parser, sj.toString(), IntStream.range(i, j).toArray());
+                    if (o != null) {
+                        return o;
+                    }
+                }
+
+            } else if (width < 0) {
                 final StringJoiner sj = new StringJoiner(" ");
                 int j = i;
                 for (; j < list.size(); j++) {
                     if (parser.hasMappedArgument(j)) break;
                     sj.add(list.get(j).getArgument());
                 }
-                indexes = IntStream.range(i, j).toArray();
-                commandArgument = new GenericCommandArgument(parser.getEvent(), sj.toString());
+                int[] indexes = IntStream.range(i, j).toArray();
+                i = j;
+                Object o = map(parser, sj.toString(), indexes);
+                if (o != null) {
+                    return o;
+                }
             } else {
                 final StringJoiner sj = new StringJoiner(" ");
-                if (i + width >= list.size())
+                if (i + width > list.size())
                     continue;
-                for (int j = i; j < i + width && j < list.size(); j++) {
-                    if (parser.hasMappedArgument(i)) break;
-                    sj.add(list.get(i).getArgument());
+                int j = i;
+                for (; j < i + width; j++) {
+                    if (parser.hasMappedArgument(j)) break;
+                    sj.add(list.get(j).getArgument());
                 }
-                indexes = IntStream.range(i, i + width).toArray();
-                commandArgument = new GenericCommandArgument(parser.getEvent(), sj.toString());
+                if (j == i + width) {
+                    int[] indexes = IntStream.range(i, i + width).toArray();
+                    Object o = map(parser, sj.toString(), indexes);
+                    if (o != null) {
+                        return o;
+                    }
+                }
             }
-            final Object o = mapper.map(commandArgument, flags);
-            if (o != null) {
-                parser.markMappedArguments(indexes);
-                return o;
-            }
+
         }
 
         if (mustBePresent) parser.fail();
@@ -119,4 +143,17 @@ public class CommandParameterImpl implements CommandParameter {
         return mustBePresent;
     }
 
+    private Object map(CommandParser parser, String arg, int[] indexes) {
+        return map(parser, new GenericCommandArgument(parser.getEvent(), arg), indexes);
+    }
+
+    private Object map(CommandParser parser, CommandArgument arg, int[] indexes) {
+        Object o = mapper.map(arg, flags);
+        if (o != null) {
+            parser.markMappedArguments(indexes);
+            return o;
+        }
+        return o;
+
+    }
 }

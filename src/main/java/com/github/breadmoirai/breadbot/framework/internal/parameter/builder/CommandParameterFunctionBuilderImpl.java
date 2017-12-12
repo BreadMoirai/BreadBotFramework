@@ -16,6 +16,8 @@
 
 package com.github.breadmoirai.breadbot.framework.internal.parameter.builder;
 
+import com.github.breadmoirai.breadbot.framework.builder.BreadBotClientBuilder;
+import com.github.breadmoirai.breadbot.framework.builder.CommandHandleBuilder;
 import com.github.breadmoirai.breadbot.framework.builder.CommandParameterBuilder;
 import com.github.breadmoirai.breadbot.framework.internal.parameter.CommandParameterFunctionImpl;
 import com.github.breadmoirai.breadbot.framework.parameter.*;
@@ -25,16 +27,31 @@ import java.lang.reflect.Parameter;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-public class CommandParameterFunctionBuilderImpl implements CommandParameterBuilder, Function<CommandParser, Object> {
+public class CommandParameterFunctionBuilderImpl implements CommandParameterBuilder {
 
+    private final BreadBotClientBuilder clientBuilder;
+    private final CommandHandleBuilder handleBuilder;
     private Parameter parameter;
     private final Function<CommandParser, ?> function;
     private final String error;
 
-    public CommandParameterFunctionBuilderImpl(Parameter parameter, String error, Function<CommandParser, ?> function) {
+    public CommandParameterFunctionBuilderImpl(BreadBotClientBuilder clientBuilder, CommandHandleBuilder handleBuilder, Parameter parameter, String error, Function<CommandParser, ?> function) {
+
+        this.clientBuilder = clientBuilder;
+        this.handleBuilder = handleBuilder;
         this.parameter = parameter;
-        this.function = function;
         this.error = error;
+        this.function = function;
+    }
+
+    @Override
+    public BreadBotClientBuilder getClientBuilder() {
+        return clientBuilder;
+    }
+
+    @Override
+    public CommandHandleBuilder getCommandBuilder() {
+        return handleBuilder;
     }
 
     @Override
@@ -122,8 +139,4 @@ public class CommandParameterFunctionBuilderImpl implements CommandParameterBuil
         return new CommandParameterFunctionImpl(function);
     }
 
-    @Override
-    public Object apply(CommandParser parser) {
-        return function.apply(parser);
-    }
 }

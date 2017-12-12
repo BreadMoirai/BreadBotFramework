@@ -224,4 +224,6 @@ public interface CommandHandleBuilder extends CommandHandleBuilderFactory<Comman
      * @return this
      */
     CommandHandleBuilder setParameter(int parameterIndex, Function<CommandParser, ?> mapper);
+
+    List<CommandParameterBuilder> getParameters();
 }

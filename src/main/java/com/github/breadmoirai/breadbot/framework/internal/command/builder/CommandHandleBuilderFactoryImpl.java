@@ -63,18 +63,21 @@ public class CommandHandleBuilderFactoryImpl implements CommandHandleBuilderFact
 
     @Override
     public CommandHandleBuilderInternal createCommand(Consumer<CommandEvent> onCommand) {
-        return new CommandHandleBuilderImpl(
+        CommandParameterBuilder[] parameterBuilders = new CommandParameterBuilder[1];
+        CommandHandleBuilderImpl commandHandleBuilder = new CommandHandleBuilderImpl(
                 onCommand,
                 onCommand.getClass(),
                 null,
                 clientBuilder,
                 new CommandObjectFactory(() -> onCommand),
-                new CommandParameterBuilder[]{new CommandParameterFunctionBuilderImpl(null, "This parameter of type CommandEvent is inconfigurable", CommandParser::getEvent)},
+                parameterBuilders,
                 (o, objects) -> {
                     onCommand.accept(((CommandEvent) objects[0]));
                     return null;
                 },
                 new CommandPropertyMapImpl(CommandPackageProperties.getPropertiesForPackage(onCommand.getClass().getPackage())));
+        parameterBuilders[0] = new CommandParameterFunctionBuilderImpl(clientBuilder, commandHandleBuilder, null, "This parameter of type CommandEvent is inconfigurable", CommandParser::getEvent);
+        return commandHandleBuilder;
     }
 
     @Override
@@ -286,10 +289,10 @@ public class CommandHandleBuilderFactoryImpl implements CommandHandleBuilderFact
     }
 
     public CommandHandleBuilderInternal createHandleFromMethod(Object obj, Class<?> commandClass, Method method, CommandObjectFactory objectFactory, CommandPropertyMapImpl map) {
-        final CommandParameterBuilderFactory parameterFactory = new CommandParameterBuilderFactory(clientBuilder, map, method.getName());
+
         final Parameter[] parameters = method.getParameters();
         final CommandParameterBuilder[] parameterBuilders = new CommandParameterBuilder[parameters.length];
-        Arrays.setAll(parameterBuilders, value -> parameterFactory.builder(parameters[value]));
+
         final MethodHandle handle;
         try {
             handle = MethodHandles.publicLookup().unreflect(method);
@@ -304,7 +307,12 @@ public class CommandHandleBuilderFactoryImpl implements CommandHandleBuilderFact
         } else {
             factory = getSupplierForClass(method.getDeclaringClass());
         }
-        return new CommandHandleBuilderImpl(obj, commandClass, method, clientBuilder, factory, parameterBuilders, invokableCommandHandle, map);
+
+        CommandHandleBuilderImpl commandHandleBuilder = new CommandHandleBuilderImpl(obj, commandClass, method, clientBuilder, factory, parameterBuilders, invokableCommandHandle, map);
+
+        final CommandParameterBuilderFactory parameterFactory = new CommandParameterBuilderFactory(clientBuilder, commandHandleBuilder, map, method.getName());
+        Arrays.setAll(parameterBuilders, value -> parameterFactory.builder(parameters[value]));
+        return commandHandleBuilder;
     }
 
     private CommandObjectFactory getSupplierForClass(Class<?> klass) throws BreadBotException {

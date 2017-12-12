@@ -19,6 +19,7 @@ package com.github.breadmoirai.breadbot.framework.internal.parameter.builder;
 import com.github.breadmoirai.breadbot.framework.CommandEvent;
 import com.github.breadmoirai.breadbot.framework.CommandModule;
 import com.github.breadmoirai.breadbot.framework.builder.BreadBotClientBuilder;
+import com.github.breadmoirai.breadbot.framework.builder.CommandHandleBuilder;
 import com.github.breadmoirai.breadbot.framework.builder.CommandParameterBuilder;
 import com.github.breadmoirai.breadbot.framework.command.CommandPropertyMap;
 import com.github.breadmoirai.breadbot.framework.parameter.CommandParser;
@@ -26,12 +27,14 @@ import com.github.breadmoirai.breadbot.framework.parameter.CommandParser;
 import java.lang.reflect.Parameter;
 
 public class CommandParameterBuilderFactory {
-    private BreadBotClientBuilder clientBuilder;
+    private final BreadBotClientBuilder clientBuilder;
+    private final CommandHandleBuilder handleBuilder;
     private final CommandPropertyMap map;
     private final String methodName;
 
-    public CommandParameterBuilderFactory(BreadBotClientBuilder clientBuilder, CommandPropertyMap map, String methodName) {
+    public CommandParameterBuilderFactory(BreadBotClientBuilder clientBuilder, CommandHandleBuilder handleBuilder, CommandPropertyMap map, String methodName) {
         this.clientBuilder = clientBuilder;
+        this.handleBuilder = handleBuilder;
         this.map = map;
         this.methodName = methodName;
     }
@@ -39,11 +42,11 @@ public class CommandParameterBuilderFactory {
     public CommandParameterBuilder builder(Parameter parameter) {
         final Class<?> type = parameter.getType();
         if (type == CommandEvent.class) {
-            return new CommandParameterFunctionBuilderImpl(parameter, "This parameter of type CommandEvent is inconfigurable", CommandParser::getEvent);
+            return new CommandParameterFunctionBuilderImpl(clientBuilder, handleBuilder, parameter, "This parameter of type CommandEvent is inconfigurable", CommandParser::getEvent);
         } else if (CommandModule.class.isAssignableFrom(type)) {
-            return new CommandParameterFunctionBuilderImpl(parameter, "This parameter of type " + type.getSimpleName() + " is inconfigurable", (commandParser) -> commandParser.getEvent().getClient().getModule(type));
+            return new CommandParameterFunctionBuilderImpl(clientBuilder, handleBuilder, parameter, "This parameter of type " + type.getSimpleName() + " is inconfigurable", (commandParser) -> commandParser.getEvent().getClient().getModule(type));
         } else {
-            CommandParameterBuilderImpl param = new CommandParameterBuilderImpl(clientBuilder, parameter, methodName, map);
+            CommandParameterBuilderImpl param = new CommandParameterBuilderImpl(clientBuilder, handleBuilder, parameter, methodName, map);
             clientBuilder.applyModifiers(param);
             return param;
         }

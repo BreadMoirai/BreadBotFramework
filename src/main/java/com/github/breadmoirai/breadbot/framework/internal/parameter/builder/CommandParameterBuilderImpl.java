@@ -17,6 +17,7 @@
 package com.github.breadmoirai.breadbot.framework.internal.parameter.builder;
 
 import com.github.breadmoirai.breadbot.framework.builder.BreadBotClientBuilder;
+import com.github.breadmoirai.breadbot.framework.builder.CommandHandleBuilder;
 import com.github.breadmoirai.breadbot.framework.builder.CommandParameterBuilder;
 import com.github.breadmoirai.breadbot.framework.command.CommandPropertyMap;
 import com.github.breadmoirai.breadbot.framework.error.MissingTypeMapperException;
@@ -38,6 +39,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class CommandParameterBuilderImpl implements CommandParameterBuilder {
+    private final CommandHandleBuilder commandBuilder;
     private final Parameter parameter;
     private String methodName;
     private final CommandPropertyMapImpl map;
@@ -52,7 +54,8 @@ public class CommandParameterBuilderImpl implements CommandParameterBuilder {
     private AbsentArgumentHandler absentArgumentHandler = null;
     private final BreadBotClientBuilder clientBuilder;
 
-    public CommandParameterBuilderImpl(BreadBotClientBuilder builder, Parameter parameter, String methodName, CommandPropertyMap map) {
+    public CommandParameterBuilderImpl(BreadBotClientBuilder builder, CommandHandleBuilder commandBuilder, Parameter parameter, String methodName, CommandPropertyMap map) {
+        this.commandBuilder = commandBuilder;
         this.parameter = parameter;
         this.map = new CommandPropertyMapImpl(map, parameter.getAnnotations());
         this.paramName = parameter.getName();
@@ -202,6 +205,16 @@ public class CommandParameterBuilderImpl implements CommandParameterBuilder {
     public CommandParameterBuilder configure(Consumer<CommandParameterBuilder> configurator) {
         configurator.accept(this);
         return this;
+    }
+
+    @Override
+    public BreadBotClientBuilder getClientBuilder() {
+        return clientBuilder;
+    }
+
+    @Override
+    public CommandHandleBuilder getCommandBuilder() {
+        return commandBuilder;
     }
 
     @Override
