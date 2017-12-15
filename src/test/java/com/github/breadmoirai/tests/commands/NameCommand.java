@@ -36,17 +36,17 @@ import com.github.breadmoirai.breadbot.framework.annotation.parameter.Width;
 public class NameCommand {
 
     @Command
-    public String name(@Width(-1) String name) {
+    public String name(@Width(0) String name) {
         return name;
     }
 
     @Command
-    public String first(@Index(0) @Width(1) String name) {
+    public String first(@Width(1) String name) {
         return name;
     }
 
     @Command
-    public String last(@Index(1) @Width(-1) String name) {
+    public String last(@Index(2) @Width(0) String name) {
         return name;
     }
 

@@ -3,6 +3,8 @@ package com.github.breadmoirai.tests;
 import com.github.breadmoirai.breadbot.framework.BreadBotClient;
 import com.github.breadmoirai.breadbot.framework.builder.BreadBotClientBuilder;
 import com.github.breadmoirai.breadbot.framework.internal.event.CommandEventInternal;
+import com.github.breadmoirai.tests.commands.NameCommand;
+import com.github.breadmoirai.tests.commands.PingCommand;
 import com.github.breadmoirai.tests.commands.SSICommand;
 import org.junit.Test;
 import uk.org.lidalia.slf4jext.Level;
@@ -69,6 +71,50 @@ public class ParameterTester {
         assertResponse("!iss 1 a b 2 4", "null, 1 a, b 2");
     }
 
+    @Test
+    public void indexPositive() {
+        client = new BreadBotClientBuilder()
+                .addCommand(SSICommand.class, command -> command
+                        .configureParameter(0, param -> param.setIndex(3))
+                        .configureParameter(1, param -> param.setIndex(2))
+                        .configureParameter(2, param -> param.setIndex(1)))
+                .build();
+        assertResponse("!ssi", "null, null, null");
+        assertResponse("!ssi a b 1", "1, b, null");
+        assertResponse("!iss a b 1", "1, b, a");
+    }
+
+    @Test
+    public void indexNegative() {
+        client = new BreadBotClientBuilder()
+                .addCommand(SSICommand.class, command -> command
+                        .configureParameter(0, param -> param.setIndex(-1))
+                        .configureParameter(1, param -> param.setIndex(-2))
+                        .configureParameter(2, param -> param.setIndex(-3)))
+                .build();
+        assertResponse("!ssi", "null, null, null");
+        assertResponse("!ssi a b 1", "1, b, null");
+        assertResponse("!iss a b 1", "1, b, a");
+        assertResponse("!sis a b 1 c", "c, 1, b");
+    }
+
+    @Test
+    public void parameterPropertyTest() {
+        client = new BreadBotClientBuilder().addCommand(NameCommand.class).build();
+        assertResponse("!name a b c", "a b c");
+        assertResponse("!first a b c", "a");
+        assertResponse("!last a b c", "b c");
+    }
+
+    @Test
+    public void subParameterPropertyTest() {
+        client = new BreadBotClientBuilder()
+                .createCommand(PingCommand.class).addCommand(NameCommand.class)
+                .getClientBuilder().build();
+        assertResponse("!ping name a b c", "a b c");
+        assertResponse("!ping first a b c", "a");
+        assertResponse("!ping last a b c", "b c");
+    }
 
     private void assertResponse(final String input, final String expected) {
         CommandEventInternal spy = mockCommand(client, input);

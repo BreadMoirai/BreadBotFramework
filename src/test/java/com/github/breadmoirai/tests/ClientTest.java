@@ -188,22 +188,6 @@ public class ClientTest {
     }
 
     @Test
-    public void parameterPropertyTest() {
-        setupBread(bread -> bread.addCommand(NameCommand.class));
-        assertResponse("!name a b c", "a b c");
-        assertResponse("!first a b c", "a");
-        assertResponse("!last a b c", "b c");
-    }
-
-    @Test
-    public void subParameterPropertyTest() {
-        setupBread(bread -> bread.createCommand(PingCommand.class).addCommand(NameCommand.class));
-        assertResponse("!ping name a b c", "a b c");
-        assertResponse("!ping first a b c", "a");
-        assertResponse("!ping last a b c", "b c");
-    }
-
-    @Test
     public void returnTypeTest() {
         setupBread(bread -> bread
                 .registerResultHandler(Color.class, (command, event, result) -> event.reply(Integer.toHexString(result.getRGB())))

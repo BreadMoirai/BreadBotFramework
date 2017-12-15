@@ -20,6 +20,7 @@ import com.github.breadmoirai.breadbot.framework.internal.parameter.arguments.Ge
 import com.github.breadmoirai.breadbot.framework.parameter.*;
 
 import java.util.StringJoiner;
+import java.util.function.IntPredicate;
 import java.util.stream.IntStream;
 
 public class CommandParameterImpl implements CommandParameter {
@@ -45,16 +46,28 @@ public class CommandParameterImpl implements CommandParameter {
     @Override
     public Object map(CommandArgumentList list, CommandParser parser) {
         int i;
-        final int limit;
-        if (index >= 0) {
-            i = index;
-            limit = i + 1;
+        final IntPredicate condition;
+        final int increment;
+        if (index > 0) {
+            i = index - 1;
+            if (i >= list.size())
+                return null;
+            final int limit = i + 1;
+            condition = value -> value < limit;
+            increment = 1;
+        } else if (index < 0) {
+            i = list.size() + index;
+            if (i < 0)
+                return null;
+            condition = value -> value >= 0;
+            increment = -1;
         } else {
             i = 0;
-            limit = list.size();
+            condition = value -> value < list.size();
+            increment = 1;
         }
 
-        for (; i < limit; i++) {
+        for (; condition.test(i); i += increment) {
             if (parser.hasMappedArgument(i)) continue;
             if (width == 1) {
                 Object o = map(parser, list.get(i), new int[]{i});

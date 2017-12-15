@@ -58,12 +58,14 @@ public interface CommandParameterBuilder {
     CommandParameterBuilder setFlags(int flags);
 
     /**
-     * If {@code index >= 0}, the parser will only attempt to map the argument at the specified position.
+     * If {@code index > 0}, the parser will only attempt to map the argument at the specified position.
      * If the position is out of bounds, this parameter will be passed {@code null}.
-     * If the width is not 1, the first argument consumed will always be at this index.
+     * The first argument consumed will always be at this index.
      * If the width is positive and there are not enough arguments to satisfy that width starting from this index, {@code null} will be passed.
+     * By default the index is set to 0 which means that there is no specific index.
+     * If the index is set to a negative value, it will count backwards where the last argument is at index {@code -1}.
      *
-     * @param index the starting index of the argument to consume starting at 0.
+     * @param index the starting index of the argument to consume.
      * @return this builder instance
      */
     CommandParameterBuilder setIndex(int index);

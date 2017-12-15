@@ -46,7 +46,7 @@ public class CommandParameterBuilderImpl implements CommandParameterBuilder {
     private String paramName;
     private final Class<?> paramType;
     private Function<Class<?>, Collector<?, ?, ?>> collectorSupplier;
-    private int flags = 0, index = -1, width = 1;
+    private int flags = 0, index = 0, width = 1;
     private Class<?> type;
     private ArgumentParser<?> parser;
     private boolean mustBePresent = false;
