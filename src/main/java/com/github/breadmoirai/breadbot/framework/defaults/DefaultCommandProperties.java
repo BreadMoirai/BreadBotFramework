@@ -128,6 +128,7 @@ public class DefaultCommandProperties {
             }
         });
 
+        cp.putParameterModifier(Name.class, (p, builder) -> builder.setName(p.value()));
         cp.putParameterModifier(Flags.class, (p, builder) -> builder.setFlags(p.value()));
         cp.putParameterModifier(AbsentArgumentHandler.class, (p, builder) -> builder.setOnAbsentArgument(p));
         cp.putParameterModifier(Required.class, (p, builder) -> builder.setRequired(true));
