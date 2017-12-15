@@ -16,8 +16,7 @@
 
 package com.github.breadmoirai.breadbot.framework.defaults;
 
-import com.github.breadmoirai.breadbot.framework.annotation.ConfigureCommand;
-import com.github.breadmoirai.breadbot.framework.annotation.ConfigureCommands;
+import com.github.breadmoirai.breadbot.framework.annotation.*;
 import com.github.breadmoirai.breadbot.framework.annotation.command.*;
 import com.github.breadmoirai.breadbot.framework.annotation.parameter.*;
 import com.github.breadmoirai.breadbot.framework.builder.CommandHandleBuilder;
