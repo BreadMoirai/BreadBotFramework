@@ -14,12 +14,15 @@
  *   limitations under the License.
  */
 
-package com.github.breadmoirai.breadbot.framework.annotation.command;
+package com.github.breadmoirai.breadbot.framework.annotation;
 
 import java.lang.annotation.*;
 
+/**
+ * This annotation sets the name of a command or parameter.
+ */
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
+@Target({ElementType.METHOD, ElementType.PARAMETER})
 @Inherited
 public @interface Name {
 

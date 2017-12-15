@@ -16,8 +16,7 @@
 
 package com.github.breadmoirai.breadbot.framework.defaults;
 
-import com.github.breadmoirai.breadbot.framework.annotation.ConfigureCommand;
-import com.github.breadmoirai.breadbot.framework.annotation.ConfigureCommands;
+import com.github.breadmoirai.breadbot.framework.annotation.*;
 import com.github.breadmoirai.breadbot.framework.annotation.command.*;
 import com.github.breadmoirai.breadbot.framework.annotation.parameter.*;
 import com.github.breadmoirai.breadbot.framework.builder.CommandHandleBuilder;
@@ -128,6 +127,7 @@ public class DefaultCommandProperties {
             }
         });
 
+        cp.putParameterModifier(Name.class, (p, builder) -> builder.setName(p.value()));
         cp.putParameterModifier(Flags.class, (p, builder) -> builder.setFlags(p.value()));
         cp.putParameterModifier(AbsentArgumentHandler.class, (p, builder) -> builder.setOnAbsentArgument(p));
         cp.putParameterModifier(Required.class, (p, builder) -> builder.setRequired(true));
