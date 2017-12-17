@@ -239,7 +239,7 @@ public class CommandParameterBuilderImpl implements CommandParameterBuilder {
         if (paramType == CommandArgument.class) {
             mapper = (arg, flags1) -> parser.test(arg, flags1) ? arg : null;
         }
-        final CommandParameterImpl commandParameter = new CommandParameterImpl(type, flags, index, width, mapper, mustBePresent, absentArgumentHandler);
+        final CommandParameterImpl commandParameter = new CommandParameterImpl(paramName, parameter, type, flags, index, width, mapper, mustBePresent, absentArgumentHandler);
         if (collectorSupplier != null) {
             @SuppressWarnings("unchecked") final Collector<Object, Object, Object> collector = (Collector<Object, Object, Object>) collectorSupplier.apply(commandParameter.getType());
             return new CommandParameterCollectionImpl(commandParameter, collector, contiguous);

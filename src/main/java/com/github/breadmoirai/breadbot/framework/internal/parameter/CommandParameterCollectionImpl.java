@@ -20,6 +20,7 @@ import com.github.breadmoirai.breadbot.framework.parameter.CommandArgumentList;
 import com.github.breadmoirai.breadbot.framework.parameter.CommandParameter;
 import com.github.breadmoirai.breadbot.framework.parameter.CommandParser;
 
+import java.lang.reflect.Parameter;
 import java.util.stream.Collector;
 import java.util.stream.Stream;
 
@@ -33,6 +34,16 @@ public class CommandParameterCollectionImpl implements CommandParameter {
         this.commandParameter = commandParameter;
         this.collector = collector;
         this.contiguous = contiguous;
+    }
+
+    @Override
+    public String getName() {
+        return commandParameter.getName();
+    }
+
+    @Override
+    public Parameter getDeclaringParameter() {
+        return commandParameter.getDeclaringParameter();
     }
 
     @Override

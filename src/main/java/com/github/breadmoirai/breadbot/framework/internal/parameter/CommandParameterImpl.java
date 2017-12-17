@@ -19,12 +19,15 @@ package com.github.breadmoirai.breadbot.framework.internal.parameter;
 import com.github.breadmoirai.breadbot.framework.internal.parameter.arguments.GenericCommandArgument;
 import com.github.breadmoirai.breadbot.framework.parameter.*;
 
+import java.lang.reflect.Parameter;
 import java.util.StringJoiner;
 import java.util.function.IntPredicate;
 import java.util.stream.IntStream;
 
 public class CommandParameterImpl implements CommandParameter {
 
+    private final String name;
+    private final Parameter parameter;
     private Class<?> type;
     private int flags;
     private int index;
@@ -33,7 +36,9 @@ public class CommandParameterImpl implements CommandParameter {
     private boolean mustBePresent;
     private AbsentArgumentHandler absentArgumentHandler;
 
-    public CommandParameterImpl(Class<?> type, int flags, int index, int width, ArgumentTypeMapper<?> mapper, boolean mustBePresent, AbsentArgumentHandler absentArgumentHandler) {
+    public CommandParameterImpl(String name, Parameter parameter, Class<?> type, int flags, int index, int width, ArgumentTypeMapper<?> mapper, boolean mustBePresent, AbsentArgumentHandler absentArgumentHandler) {
+        this.name = name;
+        this.parameter = parameter;
         this.type = type;
         this.flags = flags;
         this.index = index;
@@ -41,6 +46,16 @@ public class CommandParameterImpl implements CommandParameter {
         this.mapper = mapper;
         this.mustBePresent = mustBePresent;
         this.absentArgumentHandler = absentArgumentHandler;
+    }
+
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public Parameter getDeclaringParameter() {
+        return parameter;
     }
 
     @Override
@@ -167,6 +182,5 @@ public class CommandParameterImpl implements CommandParameter {
             return o;
         }
         return o;
-
     }
 }

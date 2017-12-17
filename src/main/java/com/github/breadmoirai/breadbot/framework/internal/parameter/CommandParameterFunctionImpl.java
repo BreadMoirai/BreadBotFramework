@@ -20,14 +20,29 @@ import com.github.breadmoirai.breadbot.framework.parameter.CommandArgumentList;
 import com.github.breadmoirai.breadbot.framework.parameter.CommandParameter;
 import com.github.breadmoirai.breadbot.framework.parameter.CommandParser;
 
+import java.lang.reflect.Parameter;
 import java.util.function.Function;
 
 public class CommandParameterFunctionImpl implements CommandParameter {
 
+    private final String name;
+    private final Parameter parameter;
     private final Function<CommandParser, ?> function;
 
-    public CommandParameterFunctionImpl(Function<CommandParser, ?> function) {
+    public CommandParameterFunctionImpl(String name, Parameter parameter, Function<CommandParser, ?> function) {
+        this.name = name;
+        this.parameter = parameter;
         this.function = function;
+    }
+
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public Parameter getDeclaringParameter() {
+        return parameter;
     }
 
     @Override

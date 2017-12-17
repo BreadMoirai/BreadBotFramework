@@ -34,6 +34,7 @@ public class CommandParameterFunctionBuilderImpl implements CommandParameterBuil
     private Parameter parameter;
     private final Function<CommandParser, ?> function;
     private final String error;
+    private String name;
 
     public CommandParameterFunctionBuilderImpl(BreadBotClientBuilder clientBuilder, CommandHandleBuilder handleBuilder, Parameter parameter, String error, Function<CommandParser, ?> function) {
 
@@ -61,7 +62,8 @@ public class CommandParameterFunctionBuilderImpl implements CommandParameterBuil
 
     @Override
     public CommandParameterBuilder setName(String paramName) {
-        throw new UnsupportedOperationException(error);
+        this.name = paramName;
+        return this;
     }
 
     @Override
@@ -136,7 +138,7 @@ public class CommandParameterFunctionBuilderImpl implements CommandParameterBuil
 
     @Override
     public CommandParameter build() {
-        return new CommandParameterFunctionImpl(function);
+        return new CommandParameterFunctionImpl(name, parameter, function);
     }
 
 }

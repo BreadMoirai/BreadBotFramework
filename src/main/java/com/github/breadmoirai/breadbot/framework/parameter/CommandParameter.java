@@ -16,7 +16,13 @@
 
 package com.github.breadmoirai.breadbot.framework.parameter;
 
+import java.lang.reflect.Parameter;
+
 public interface CommandParameter {
+
+    String getName();
+
+    Parameter getDeclaringParameter();
 
     default Object map(CommandParser parser) {
         return map(parser.getArgumentList(), parser);
