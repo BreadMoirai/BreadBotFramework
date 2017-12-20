@@ -22,9 +22,8 @@ import java.util.Set;
 import java.util.function.Predicate;
 
 public interface CommandPropertyMap extends Iterable<Object> {
-    boolean hasProperty(Class<?> propertyType);
 
-    boolean hasDeclaredProperty(Class<?> propertyType);
+    boolean hasProperty(Class<?> propertyType);
 
     /**
      * Retrieves the property of the passed {@link Class}. If this obj does not contain a mapping, it will attempt to provide a value from it's defaultPropertyMap
@@ -34,15 +33,6 @@ public interface CommandPropertyMap extends Iterable<Object> {
      * @return the type if found, otherwise {@code null}
      */
     <T> T getProperty(Class<T> propertyType);
-
-    /**
-     * Retrieves the property if it was declared on this element. If no element is found, it will not search for a default mapping in the enclosing object.
-     *
-     * @param propertyType the property class
-     * @param <T>          the type
-     * @return the property if found on this map, otherwise {@code null}
-     */
-    <T> T getDeclaredProperty(Class<T> propertyType);
 
     /**
      * Checks the provided {@link Predicate} against the property type if it exists, returning the result if it does, and {@code false} if it doesn't.
@@ -71,10 +61,4 @@ public interface CommandPropertyMap extends Iterable<Object> {
      */
     Collection<Object> values();
 
-    /**
-     * returns another propertymap.
-     *
-     * @return the property map for inherited/default values.
-     */
-    CommandPropertyMap getDefaultProperties();
 }

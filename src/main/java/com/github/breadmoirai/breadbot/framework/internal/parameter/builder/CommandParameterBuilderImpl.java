@@ -19,7 +19,6 @@ package com.github.breadmoirai.breadbot.framework.internal.parameter.builder;
 import com.github.breadmoirai.breadbot.framework.builder.BreadBotClientBuilder;
 import com.github.breadmoirai.breadbot.framework.builder.CommandHandleBuilder;
 import com.github.breadmoirai.breadbot.framework.builder.CommandParameterBuilder;
-import com.github.breadmoirai.breadbot.framework.command.CommandPropertyMap;
 import com.github.breadmoirai.breadbot.framework.error.MissingTypeMapperException;
 import com.github.breadmoirai.breadbot.framework.internal.command.CommandPropertyMapImpl;
 import com.github.breadmoirai.breadbot.framework.internal.parameter.CommandParameterCollectionImpl;
@@ -54,7 +53,7 @@ public class CommandParameterBuilderImpl implements CommandParameterBuilder {
     private AbsentArgumentHandler absentArgumentHandler = null;
     private final BreadBotClientBuilder clientBuilder;
 
-    public CommandParameterBuilderImpl(BreadBotClientBuilder builder, CommandHandleBuilder commandBuilder, Parameter parameter, String methodName, CommandPropertyMap map) {
+    public CommandParameterBuilderImpl(BreadBotClientBuilder builder, CommandHandleBuilder commandBuilder, Parameter parameter, String methodName, CommandPropertyMapImpl map) {
         this.commandBuilder = commandBuilder;
         this.parameter = parameter;
         this.map = new CommandPropertyMapImpl(map, parameter.getAnnotations());

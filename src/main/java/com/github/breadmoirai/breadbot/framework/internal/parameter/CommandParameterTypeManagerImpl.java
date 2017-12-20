@@ -30,7 +30,7 @@ import java.util.Map;
  * Does argument Mapping.
  * Is basically a heterogeneous map of Class<?> to ArgumentMapper<?>
  */
-public final class CommandParameterTypeManagerImpl implements CommandParameterTypeManager, CommandParameterManagerBuilder<Void> {
+public final class CommandParameterTypeManagerImpl implements CommandParameterTypeManager, CommandParameterManagerBuilder {
 
     private final Map<Class<?>, ArgumentParser<?>> map;
 
@@ -40,9 +40,9 @@ public final class CommandParameterTypeManagerImpl implements CommandParameterTy
     }
 
     @Override
-    public <T> Void registerArgumentMapper(Class<T> type, ArgumentTypePredicate predicate, ArgumentTypeMapper<T> mapper) {
+    public <T> CommandParameterManagerBuilder registerArgumentMapper(Class<T> type, ArgumentTypePredicate predicate, ArgumentTypeMapper<T> mapper) {
         put(type, new ArgumentParser<>(predicate, mapper));
-        return null;
+        return this;
     }
 
     @Override

@@ -16,6 +16,7 @@
 
 package com.github.breadmoirai.breadbot.framework.internal.command;
 
+import com.github.breadmoirai.breadbot.framework.annotation.InheritedProperty;
 import com.github.breadmoirai.breadbot.framework.annotation.RegisterPropertyMapper;
 import com.github.breadmoirai.breadbot.framework.command.CommandPropertyMap;
 import org.jetbrains.annotations.NotNull;
@@ -27,26 +28,23 @@ import java.util.function.Function;
 /**
  * A builder for a {@link CommandPropertyMap}. This map can inherit values from another map.
  */
-public class CommandPropertyMapImpl implements Iterable<Object>, CommandPropertyMap {
+public class CommandPropertyMapImpl implements CommandPropertyMap {
 
-    private CommandPropertyMap defaultProperties;
     private final Map<Class<?>, Object> properties;
 
-    public CommandPropertyMapImpl() {
-        this(null, null);
+    public CommandPropertyMapImpl(CommandPropertyMapImpl map) {
+        this(map, null);
     }
 
-    public CommandPropertyMapImpl(CommandPropertyMap defaultMap) {
-        this(defaultMap, null);
-    }
-
-    public CommandPropertyMapImpl(Annotation[] annotations) {
-        this(null, annotations);
-    }
-
-    public CommandPropertyMapImpl(CommandPropertyMap defaultMap, Annotation[] annotations) {
+    public CommandPropertyMapImpl(CommandPropertyMapImpl defaultMap, Annotation[] annotations) {
         properties = new HashMap<>();
-        this.defaultProperties = defaultMap;
+        if (defaultMap != null) {
+            defaultMap.properties.forEach((aClass, o) -> {
+                if (aClass.isAnnotationPresent(InheritedProperty.class)) {
+                    properties.put(aClass, o);
+                }
+            });
+        }
         if (annotations != null) {
             putAnnotations(annotations);
         }
@@ -54,56 +52,28 @@ public class CommandPropertyMapImpl implements Iterable<Object>, CommandProperty
 
     @Override
     public boolean hasProperty(Class<?> propertyType) {
-        return properties.containsKey(propertyType) || (defaultProperties != null && defaultProperties.hasProperty(propertyType));
-    }
-
-    @Override
-    public boolean hasDeclaredProperty(Class<?> propertyType) {
         return properties.containsKey(propertyType);
     }
 
-    /**
-     * Retrieves the property of the passed {@link java.lang.Class}. If this obj does not contain a mapping, it will attempt to provide a value from it's defaultPropertyMap
-     *
-     * @param propertyType a class
-     * @param <T>          the type
-     * @return the type if found, otherwise {@code null}
-     */
     @Override
     public <T> T getProperty(Class<T> propertyType) {
         final Object obj = properties.get(propertyType);
-        if (obj == null) {
-            if (defaultProperties != null) {
-                return defaultProperties.getProperty(propertyType);
-            }
-            else return null;
-        }
-        return propertyType.cast(obj);
+        if (propertyType != null)
+            return propertyType.cast(obj);
+        else return null;
     }
 
-    @Override
-    public <T> T getDeclaredProperty(Class<T> propertyType) {
-        return propertyType.cast(properties.get(propertyType));
-    }
-
-    public <T> CommandPropertyMapImpl putProperty(Class<? super T> propertyType, T propertyObj) {
+    public <T> void putProperty(Class<? super T> propertyType, T propertyObj) {
         properties.put(propertyType, propertyObj);
-        return this;
     }
 
-    public CommandPropertyMapImpl putProperty(Object propertyObj) {
+    public void putProperty(Object propertyObj) {
         if (propertyObj instanceof Annotation) {
             final Class<? extends Annotation> aClass = ((Annotation) propertyObj).annotationType();
             properties.put(aClass, propertyObj);
         } else {
             properties.put(propertyObj.getClass(), propertyObj);
         }
-        return this;
-    }
-
-    public CommandPropertyMapImpl setDefaultProperties(CommandPropertyMap defaultProperties) {
-        this.defaultProperties = defaultProperties;
-        return this;
     }
 
     public CommandPropertyMapImpl clear() {
@@ -129,28 +99,6 @@ public class CommandPropertyMapImpl implements Iterable<Object>, CommandProperty
     @Override
     public Collection<Object> values() {
         return Collections.unmodifiableCollection(properties.values());
-    }
-
-    @Override
-    public CommandPropertyMap getDefaultProperties() {
-        return defaultProperties;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        CommandPropertyMapImpl objects = (CommandPropertyMapImpl) o;
-
-        return (defaultProperties != null ? defaultProperties.equals(objects.defaultProperties) : objects.defaultProperties == null) && (properties != null ? properties.equals(objects.properties) : objects.properties == null);
-    }
-
-    @Override
-    public int hashCode() {
-        int result = defaultProperties != null ? defaultProperties.hashCode() : 0;
-        result = 31 * result + (properties != null ? properties.hashCode() : 0);
-        return result;
     }
 
     /**
@@ -210,10 +158,9 @@ public class CommandPropertyMapImpl implements Iterable<Object>, CommandProperty
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("CommandPropertyMapImpl{");
-        sb.append("defaultProperties=").append(defaultProperties);
-        sb.append(", properties=").append(properties);
-        sb.append('}');
+        final StringBuilder sb = new StringBuilder("CommandPropertyMapImpl{")
+                .append(properties)
+                .append('}');
         return sb.toString();
     }
 }

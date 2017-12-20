@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class CommandResultManagerImpl implements CommandResultManager, CommandResultManagerBuilder<Void> {
+public class CommandResultManagerImpl implements CommandResultManager, CommandResultManagerBuilder {
 
     private final Map<Class<?>, CommandResultHandler<?>> map = new HashMap<>();
 
@@ -43,9 +43,9 @@ public class CommandResultManagerImpl implements CommandResultManager, CommandRe
     }
 
     @Override
-    public <T> Void registerResultHandler(Class<T> resultType, CommandResultHandler<T> handler) {
+    public <T> CommandResultManagerBuilder registerResultHandler(Class<T> resultType, CommandResultHandler<T> handler) {
         map.put(resultType, handler);
-        return null;
+        return this;
     }
 
     @Override

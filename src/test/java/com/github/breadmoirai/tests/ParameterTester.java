@@ -6,6 +6,7 @@ import com.github.breadmoirai.breadbot.framework.internal.event.CommandEventInte
 import com.github.breadmoirai.tests.commands.NameCommand;
 import com.github.breadmoirai.tests.commands.PingCommand;
 import com.github.breadmoirai.tests.commands.SSICommand;
+import com.github.breadmoirai.tests.commands.WikiParameterCommand;
 import org.junit.Test;
 import uk.org.lidalia.slf4jext.Level;
 import uk.org.lidalia.slf4jtest.TestLoggerFactory;
@@ -114,6 +115,16 @@ public class ParameterTester {
         assertResponse("!ping name a b c", "a b c");
         assertResponse("!ping first a b c", "a");
         assertResponse("!ping last a b c", "b c");
+    }
+
+    @Test
+    public void wikiTest() {
+        client = new BreadBotClientBuilder()
+                .addCommand(WikiParameterCommand.class)
+                .build();
+        assertResponse("!ex hello 1", "lint=1, third=null, start=hello");
+        assertResponse("!ex hhel lo 3i wo 6", "lint=6, third=3i, start=hhel lo");
+        assertResponse("!ex is i2noi 2i4 sz", "Error: required [lint] but not found");
     }
 
     private void assertResponse(final String input, final String expected) {

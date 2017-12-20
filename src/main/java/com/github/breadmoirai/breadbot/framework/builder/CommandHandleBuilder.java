@@ -16,6 +16,7 @@
 
 package com.github.breadmoirai.breadbot.framework.builder;
 
+import com.github.breadmoirai.breadbot.framework.CommandEvent;
 import com.github.breadmoirai.breadbot.framework.command.CommandPreprocessor;
 import com.github.breadmoirai.breadbot.framework.command.CommandPreprocessorFunction;
 import com.github.breadmoirai.breadbot.framework.command.CommandPreprocessorPredicate;
@@ -24,14 +25,16 @@ import com.github.breadmoirai.breadbot.framework.error.NoSuchCommandException;
 import com.github.breadmoirai.breadbot.framework.parameter.CommandParser;
 
 import java.lang.reflect.Method;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.regex.Pattern;
 
-public interface CommandHandleBuilder extends CommandHandleBuilderFactory<CommandHandleBuilder> {
+public interface CommandHandleBuilder extends CommandHandleBuilderFactory {
 
     CommandHandleBuilder setKeys(String... key);
 
@@ -226,4 +229,130 @@ public interface CommandHandleBuilder extends CommandHandleBuilderFactory<Comman
     CommandHandleBuilder setParameter(int parameterIndex, Function<CommandParser, ?> mapper);
 
     List<CommandParameterBuilder> getParameters();
+
+    @Override
+    default CommandHandleBuilder addCommand(Consumer<CommandEvent> onCommand, Consumer<CommandHandleBuilder> configurator) {
+        CommandHandleBuilderFactory.super.addCommand(onCommand, configurator);
+        return this;
+    }
+
+    @Override
+    default CommandHandleBuilder addCommand(Class<?> commandClass, Consumer<CommandHandleBuilder> configurator) {
+        CommandHandleBuilderFactory.super.addCommand(commandClass, configurator);
+        return this;
+    }
+
+    @Override
+    default CommandHandleBuilder addCommand(Class<?> commandClass) {
+        CommandHandleBuilderFactory.super.addCommand(commandClass);
+        return this;
+    }
+
+    @Override
+    default CommandHandleBuilder addCommand(Object commandObject, Consumer<CommandHandleBuilder> configurator) {
+        CommandHandleBuilderFactory.super.addCommand(commandObject, configurator);
+        return this;
+    }
+
+    @Override
+    default CommandHandleBuilder addCommand(Object commandObject) {
+        CommandHandleBuilderFactory.super.addCommand(commandObject);
+        return this;
+    }
+
+    @Override
+    default CommandHandleBuilder addCommand(Supplier<?> commandSupplier, Consumer<CommandHandleBuilder> configurator) {
+        CommandHandleBuilderFactory.super.addCommand(commandSupplier, configurator);
+        return this;
+    }
+
+    @Override
+    default CommandHandleBuilder addCommand(Supplier<?> commandSupplier) {
+        CommandHandleBuilderFactory.super.addCommand(commandSupplier);
+        return this;
+    }
+
+    @Override
+    default CommandHandleBuilder addCommands(String packageName, Consumer<CommandHandleBuilder> configurator) {
+        CommandHandleBuilderFactory.super.addCommands(packageName, configurator);
+        return this;
+    }
+
+    @Override
+    default CommandHandleBuilder addCommands(String packageName) {
+        CommandHandleBuilderFactory.super.addCommands(packageName);
+        return this;
+    }
+
+    @Override
+    default CommandHandleBuilder addCommandsFromClasses(Consumer<CommandHandleBuilder> configurator, Class<?>... commandClasses) {
+        CommandHandleBuilderFactory.super.addCommandsFromClasses(configurator, commandClasses);
+        return this;
+    }
+
+    @Override
+    default CommandHandleBuilder addCommandsFromClasses(Class<?>... commandClasses) {
+        CommandHandleBuilderFactory.super.addCommandsFromClasses(commandClasses);
+        return this;
+    }
+
+    @Override
+    default CommandHandleBuilder addCommandsFromObjects(Consumer<CommandHandleBuilder> configurator, Object... commandObjects) {
+        CommandHandleBuilderFactory.super.addCommandsFromObjects(configurator, commandObjects);
+        return this;
+    }
+
+    @Override
+    default CommandHandleBuilder addCommandsFromObjects(Object... commandObjects) {
+        CommandHandleBuilderFactory.super.addCommandsFromObjects(commandObjects);
+        return this;
+    }
+
+    @Override
+    default CommandHandleBuilder addCommandsFromSuppliers(Consumer<CommandHandleBuilder> configurator, Supplier<?>... commandSuppliers) {
+        CommandHandleBuilderFactory.super.addCommandsFromSuppliers(configurator, commandSuppliers);
+        return this;
+    }
+
+    @Override
+    default CommandHandleBuilder addCommandsFromSuppliers(Supplier<?>... commandSuppliers) {
+        CommandHandleBuilderFactory.super.addCommandsFromSuppliers(commandSuppliers);
+        return this;
+    }
+
+    @Override
+    default CommandHandleBuilder addCommandsFromClasses(Collection<Class<?>> commandClasses, Consumer<CommandHandleBuilder> configurator) {
+        CommandHandleBuilderFactory.super.addCommandsFromClasses(commandClasses, configurator);
+        return this;
+    }
+
+    @Override
+    default CommandHandleBuilder addCommandsFromClasses(Collection<Class<?>> commandClasses) {
+        CommandHandleBuilderFactory.super.addCommandsFromClasses(commandClasses);
+        return this;
+    }
+
+    @Override
+    default CommandHandleBuilder addCommandsFromObjects(Collection<?> commandObjects, Consumer<CommandHandleBuilder> configurator) {
+        CommandHandleBuilderFactory.super.addCommandsFromObjects(commandObjects, configurator);
+        return this;
+    }
+
+    @Override
+    default CommandHandleBuilder addCommandsFromObjects(Collection<?> commandObjects) {
+        CommandHandleBuilderFactory.super.addCommandsFromObjects(commandObjects);
+        return this;
+    }
+
+    @Override
+    default CommandHandleBuilder addCommandsFromSuppliers(Collection<Supplier<?>> commandSuppliers, Consumer<CommandHandleBuilder> configurator) {
+        CommandHandleBuilderFactory.super.addCommandsFromSuppliers(commandSuppliers, configurator);
+        return this;
+    }
+
+    @Override
+    default CommandHandleBuilder addCommandsFromSuppliers(Collection<Supplier<?>> commandSuppliers) {
+        CommandHandleBuilderFactory.super.addCommandsFromSuppliers(commandSuppliers);
+        return this;
+    }
 }

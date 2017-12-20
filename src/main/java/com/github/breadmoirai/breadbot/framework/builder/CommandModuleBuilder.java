@@ -28,7 +28,7 @@ import net.dv8tion.jda.core.entities.Member;
 import java.util.Collection;
 import java.util.function.Predicate;
 
-public interface CommandModuleBuilder<T> {
+public interface CommandModuleBuilder {
 
     /**
      * Adds a module and initializes it.
@@ -36,7 +36,7 @@ public interface CommandModuleBuilder<T> {
      * @param module an instance of {@link CommandModule CommandModule}.
      * @return this
      */
-    T addModule(CommandModule module);
+    CommandModuleBuilder addModule(CommandModule module);
 
     /**
      * Adds a collection of modules and initializes each one.
@@ -44,7 +44,7 @@ public interface CommandModuleBuilder<T> {
      * @param modules a Collection of CommandModules. Should not contain any null elements.
      * @return this
      */
-    T addModule(Collection<CommandModule> modules);
+    CommandModuleBuilder addModule(Collection<CommandModule> modules);
 
     /**
      * Checks whether there is a module present that is of the class provided or a subclass of it.
@@ -73,7 +73,7 @@ public interface CommandModuleBuilder<T> {
      * @param prefix a string the defines a global prefix
      * @return this
      */
-    default T addDefaultPrefixModule(String prefix) {
+    default CommandModuleBuilder addDefaultPrefixModule(String prefix) {
         return addModule(new DefaultPrefixModule(prefix));
     }
 
@@ -94,7 +94,7 @@ public interface CommandModuleBuilder<T> {
      *
      * @return this
      */
-    default T addDefaultAdminModule() {
+    default CommandModuleBuilder addDefaultAdminModule() {
         return addModule(new DefaultAdminModule());
     }
 
@@ -106,7 +106,7 @@ public interface CommandModuleBuilder<T> {
      *
      * @return this
      */
-    default T addAdminModule(Predicate<Member> isAdmin) {
+    default CommandModuleBuilder addAdminModule(Predicate<Member> isAdmin) {
         return addModule(new DefaultAdminModule(isAdmin));
     }
 
@@ -117,7 +117,7 @@ public interface CommandModuleBuilder<T> {
      * @param sourceGuildId The guild id
      * @return this
      */
-    default T addSourceModule(long sourceGuildId) {
+    default CommandModuleBuilder addSourceModule(long sourceGuildId) {
         return addModule(new GuildRestrictionModule(sourceGuildId));
     }
 

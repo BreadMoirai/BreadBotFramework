@@ -32,12 +32,16 @@ public class CommandPropertiesManagerImpl implements CommandPropertiesManager {
 
     private List<String> preprocessorPriorityList = Collections.emptyList();
 
+    private static Map<Package, CommandPropertyMapImpl> packageMap = new HashMap<>();
+
     private final Map<Class<?>, BiConsumer<?, CommandHandleBuilder>> commandPropertyMap = new HashMap<>();
     private final Map<Class<?>, BiConsumer<?, CommandParameterBuilder>> parameterPropertyMap = new HashMap<>();
 
     public CommandPropertiesManagerImpl() {
-        putCommandModifier(null, (o, b) -> {});
-        putParameterModifier(null, (o, b) -> {});
+        putCommandModifier(null, (o, b) -> {
+        });
+        putParameterModifier(null, (o, b) -> {
+        });
         new DefaultCommandProperties().initialize(this);
     }
 
@@ -162,6 +166,29 @@ public class CommandPropertiesManagerImpl implements CommandPropertiesManager {
     @Override
     public void setPreprocessorPriority(List<String> identifierList) {
         preprocessorPriorityList = identifierList;
+    }
+
+    private static CommandPropertyMapImpl createPropertiesForPackage(Package p) {
+        final String name = p.getName();
+        final int i = name.lastIndexOf('.');
+        final CommandPropertyMapImpl map;
+        if (i != -1) {
+            final String parentPackageName = name.substring(0, i);
+            final Package aPackage = Package.getPackage(parentPackageName);
+            if (aPackage != null) {
+                map = new CommandPropertyMapImpl(getPP(aPackage), p.getAnnotations());
+            } else {
+                map = new CommandPropertyMapImpl(null, p.getAnnotations());
+            }
+        } else {
+            map = new CommandPropertyMapImpl(null, p.getAnnotations());
+        }
+        return map;
+    }
+
+    public static CommandPropertyMapImpl getPP(Package p) {
+        if (p == null) return null;
+        return packageMap.computeIfAbsent(p, CommandPropertiesManagerImpl::createPropertiesForPackage);
     }
 
     private int getPriority(String identifier, List<String> list) {

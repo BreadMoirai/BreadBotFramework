@@ -28,130 +28,123 @@ import java.util.function.Supplier;
 /**
  * Todo write docs
  */
-public interface CommandHandleBuilderFactory<T extends CommandHandleBuilderFactory> {
+public interface CommandHandleBuilderFactory {
 
-    /**
-     * a self reference.
-     *
-     * @return this
-     */
-    T self();
-
-    default T addCommand(Consumer<CommandEvent> onCommand, Consumer<CommandHandleBuilder> configurator) {
+    default CommandHandleBuilderFactory addCommand(Consumer<CommandEvent> onCommand, Consumer<CommandHandleBuilder> configurator) {
         Checks.notNull(configurator, "configurator");
         configurator.accept(createCommand(onCommand));
-        return self();
+        return this;
     }
 
-    default T addCommand(Class<?> commandClass, Consumer<CommandHandleBuilder> configurator) {
+    default CommandHandleBuilderFactory addCommand(Class<?> commandClass, Consumer<CommandHandleBuilder> configurator) {
         Checks.notNull(configurator, "configurator");
         createCommandsFromClasses(commandClass).forEach(configurator);
-        return self();
+        return this;
     }
 
-    default T addCommand(Class<?> commandClass) {
+    default CommandHandleBuilderFactory addCommand(Class<?> commandClass) {
         createCommandsFromClasses(commandClass);
-        return self();
+        return this;
     }
 
-    default T addCommand(Object commandObject, Consumer<CommandHandleBuilder> configurator) {
+    default CommandHandleBuilderFactory addCommand(Object commandObject, Consumer<CommandHandleBuilder> configurator) {
         Checks.notNull(configurator, "configurator");
         createCommandsFromObjects(commandObject).forEach(configurator);
-        return self();
+        return this;
     }
 
-    default T addCommand(Object commandObject) {
+    default CommandHandleBuilderFactory addCommand(Object commandObject) {
         createCommandsFromObjects(commandObject);
-        return self();
+        return this;
     }
 
-    default T addCommand(Supplier<?> commandSupplier, Consumer<CommandHandleBuilder> configurator) {
+    default CommandHandleBuilderFactory addCommand(Supplier<?> commandSupplier, Consumer<CommandHandleBuilder> configurator) {
         Checks.notNull(configurator, "configurator");
         final List<CommandHandleBuilder> commands = createCommandsFromSuppliers(commandSupplier);
         commands.forEach(configurator);
-        return self();
+        return this;
     }
 
-    default T addCommand(Supplier<?> commandSupplier) {
+    default CommandHandleBuilderFactory addCommand(Supplier<?> commandSupplier) {
         createCommandsFromSuppliers(commandSupplier);
-        return self();
+        return this;
     }
 
-    default T addCommands(String packageName, Consumer<CommandHandleBuilder> configurator) {
+    default CommandHandleBuilderFactory addCommands(String packageName, Consumer<CommandHandleBuilder> configurator) {
         Checks.notNull(configurator, "configurator");
         createCommands(packageName).forEach(configurator);
-        return self();
+        return this;
     }
 
-    default T addCommands(String packageName) {
+    default CommandHandleBuilderFactory addCommands(String packageName) {
         createCommands(packageName);
-        return self();
+        return this;
     }
 
-    default T addCommandsFromClasses(Consumer<CommandHandleBuilder> configurator, Class<?>... commandClasses) {
+    default CommandHandleBuilderFactory addCommandsFromClasses(Consumer<CommandHandleBuilder> configurator, Class<?>... commandClasses) {
         Checks.notNull(configurator, "configurator");
         createCommandsFromClasses(commandClasses).forEach(configurator);
-        return self();
+        return this;
     }
 
-    default T addCommandsFromClasses(Class<?>... commandClasses) {
+    default CommandHandleBuilderFactory addCommandsFromClasses(Class<?>... commandClasses) {
         createCommandsFromClasses(commandClasses);
-        return self();
+        return this;
     }
 
-    default T addCommandsFromObjects(Consumer<CommandHandleBuilder> configurator, Object... commandObjects) {
+    default CommandHandleBuilderFactory addCommandsFromObjects(Consumer<CommandHandleBuilder> configurator, Object... commandObjects) {
         Checks.notNull(configurator, "configurator");
         createCommandsFromObjects(commandObjects).forEach(configurator);
-        return self();
+        return this;
     }
 
-    default T addCommandsFromObjects(Object... commandObjects) {
+    default CommandHandleBuilderFactory addCommandsFromObjects(Object... commandObjects) {
         createCommandsFromObjects(commandObjects);
-        return self();
+        return this;
     }
 
-    default T addCommandsFromSuppliers(Consumer<CommandHandleBuilder> configurator, Supplier<?>... commandSuppliers) {
+    default CommandHandleBuilderFactory addCommandsFromSuppliers(Consumer<CommandHandleBuilder> configurator, Supplier<?>... commandSuppliers) {
         Checks.notNull(configurator, "configurator");
         createCommandsFromSuppliers(commandSuppliers).forEach(configurator);
-        return self();
+        return this;
     }
 
-    default T addCommandsFromSuppliers(Supplier<?>... commandSuppliers) {
+    default CommandHandleBuilderFactory addCommandsFromSuppliers(Supplier<?>... commandSuppliers) {
         createCommandsFromSuppliers(commandSuppliers);
-        return self();
+        return this;
     }
 
-    default T addCommandsFromClasses(Collection<Class<?>> commandClasses, Consumer<CommandHandleBuilder> configurator) {
+    default CommandHandleBuilderFactory addCommandsFromClasses(Collection<Class<?>> commandClasses, Consumer<CommandHandleBuilder> configurator) {
         Checks.notNull(configurator, "configurator");
         createCommandsFromClasses(commandClasses).forEach(configurator);
-        return self();
+        return this;
     }
 
-    default T addCommandsFromClasses(Collection<Class<?>> commandClasses) {
+    default CommandHandleBuilderFactory addCommandsFromClasses(Collection<Class<?>> commandClasses) {
         createCommandsFromClasses(commandClasses);
-        return self();
+        return this;
     }
 
-    default T addCommandsFromObjects(Collection<?> commandObjects, Consumer<CommandHandleBuilder> configurator) {
+    default CommandHandleBuilderFactory addCommandsFromObjects(Collection<?> commandObjects, Consumer<CommandHandleBuilder> configurator) {
         Checks.notNull(configurator, "configurator");
         createCommandsFromObjects(commandObjects).forEach(configurator);
-        return self();
+        return this;
     }
 
-    default T addCommandsFromObjects(Collection<?> commandObjects) {
+    default CommandHandleBuilderFactory addCommandsFromObjects(Collection<?> commandObjects) {
         createCommandsFromObjects(commandObjects);
-        return self();
+        return this;
     }
 
-    default T addCommandsFromSuppliers(Collection<Supplier<?>> commandSuppliers, Consumer<CommandHandleBuilder> configurator) {
+    default CommandHandleBuilderFactory addCommandsFromSuppliers(Collection<Supplier<?>> commandSuppliers, Consumer<CommandHandleBuilder> configurator) {
         Checks.notNull(configurator, "configurator");
         createCommandsFromSuppliers(commandSuppliers).forEach(configurator);
-        return self();
+        return this;
     }
 
-    default T addCommandsFromSuppliers(Collection<Supplier<?>> commandSuppliers) {
+    default CommandHandleBuilderFactory addCommandsFromSuppliers(Collection<Supplier<?>> commandSuppliers) {
         createCommandsFromSuppliers(commandSuppliers);
-        return self();
+        return this;
     }
 
     CommandHandleBuilder createCommand(Consumer<CommandEvent> onCommand);
