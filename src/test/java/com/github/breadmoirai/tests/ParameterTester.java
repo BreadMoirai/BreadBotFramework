@@ -124,7 +124,7 @@ public class ParameterTester {
                 .build();
         assertResponse("!ex hello 1", "lint=1, third=null, start=hello");
         assertResponse("!ex hhel lo 3i wo 6", "lint=6, third=3i, start=hhel lo");
-        assertResponse("!ex is i2noi 2i4 sz", "Error: required [arg0] but not found");
+        assertResponse("!ex is i2noi 2i4 sz", "Error: required [lint] but not found");
     }
 
     private void assertResponse(final String input, final String expected) {
