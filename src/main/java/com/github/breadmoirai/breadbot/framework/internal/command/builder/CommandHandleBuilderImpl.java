@@ -78,7 +78,7 @@ public class CommandHandleBuilderImpl implements CommandHandleBuilderInternal {
         this.commandFunction = commandFunction;
         this.subCommands = new ArrayList<>();
         this.preprocessors = new ArrayList<>();
-        this.propertyMap = propertyMap == null ? new CommandPropertyMapImpl() : propertyMap;
+        this.propertyMap = propertyMap == null ? new CommandPropertyMapImpl(null, null) : propertyMap;
     }
 
     @Override
@@ -254,11 +254,6 @@ public class CommandHandleBuilderImpl implements CommandHandleBuilderInternal {
     @Override
     public CommandObjectFactory getObjectFactory() {
         return commandFactory;
-    }
-
-    @Override
-    public CommandHandleBuilder self() {
-        return this;
     }
 
     @Override

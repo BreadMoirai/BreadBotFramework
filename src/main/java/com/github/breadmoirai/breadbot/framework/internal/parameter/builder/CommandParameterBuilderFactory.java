@@ -21,7 +21,7 @@ import com.github.breadmoirai.breadbot.framework.CommandModule;
 import com.github.breadmoirai.breadbot.framework.builder.BreadBotClientBuilder;
 import com.github.breadmoirai.breadbot.framework.builder.CommandHandleBuilder;
 import com.github.breadmoirai.breadbot.framework.builder.CommandParameterBuilder;
-import com.github.breadmoirai.breadbot.framework.command.CommandPropertyMap;
+import com.github.breadmoirai.breadbot.framework.internal.command.CommandPropertyMapImpl;
 import com.github.breadmoirai.breadbot.framework.parameter.CommandParser;
 
 import java.lang.reflect.Parameter;
@@ -29,10 +29,10 @@ import java.lang.reflect.Parameter;
 public class CommandParameterBuilderFactory {
     private final BreadBotClientBuilder clientBuilder;
     private final CommandHandleBuilder handleBuilder;
-    private final CommandPropertyMap map;
+    private final CommandPropertyMapImpl map;
     private final String methodName;
 
-    public CommandParameterBuilderFactory(BreadBotClientBuilder clientBuilder, CommandHandleBuilder handleBuilder, CommandPropertyMap map, String methodName) {
+    public CommandParameterBuilderFactory(BreadBotClientBuilder clientBuilder, CommandHandleBuilder handleBuilder, CommandPropertyMapImpl map, String methodName) {
         this.clientBuilder = clientBuilder;
         this.handleBuilder = handleBuilder;
         this.map = map;

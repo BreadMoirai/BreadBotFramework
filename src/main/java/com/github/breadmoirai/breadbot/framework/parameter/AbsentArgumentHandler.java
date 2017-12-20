@@ -17,8 +17,10 @@
 package com.github.breadmoirai.breadbot.framework.parameter;
 
 import com.github.breadmoirai.breadbot.framework.CommandEvent;
+import com.github.breadmoirai.breadbot.framework.annotation.InheritedProperty;
 
 @FunctionalInterface
+@InheritedProperty
 public interface AbsentArgumentHandler {
 
     void handle(CommandEvent event, CommandParameter missing);
