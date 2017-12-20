@@ -83,17 +83,17 @@ public class DefaultCommandParameters {
         map.put(LONG, longParser);
         map.put(Long.class, longParser);
 
-        map.registerArgumentMapperSimple(FLOAT, CommandArgument::isFloat, CommandArgument::parseFloat);
-        map.registerArgumentMapperSimple(Float.class, CommandArgument::isFloat, CommandArgument::parseFloat);
+        map.registerParameterTypeFlagless(FLOAT, CommandArgument::isFloat, CommandArgument::parseFloat);
+        map.registerParameterTypeFlagless(Float.class, CommandArgument::isFloat, CommandArgument::parseFloat);
 
-        map.registerArgumentMapperSimple(DOUBLE, CommandArgument::isFloat, CommandArgument::parseDouble);
-        map.registerArgumentMapperSimple(Double.class, CommandArgument::isFloat, CommandArgument::parseDouble);
+        map.registerParameterTypeFlagless(DOUBLE, CommandArgument::isFloat, CommandArgument::parseDouble);
+        map.registerParameterTypeFlagless(Double.class, CommandArgument::isFloat, CommandArgument::parseDouble);
 
 
-        map.registerArgumentMapperSimple(BOOLEAN, CommandArgument::isBoolean, CommandArgument::parseBoolean);
-        map.registerArgumentMapperSimple(Boolean.class, CommandArgument::isBoolean, CommandArgument::parseBoolean);
+        map.registerParameterTypeFlagless(BOOLEAN, CommandArgument::isBoolean, CommandArgument::parseBoolean);
+        map.registerParameterTypeFlagless(Boolean.class, CommandArgument::isBoolean, CommandArgument::parseBoolean);
 
-        map.registerArgumentMapper(RANGE, (arg, flags) -> {
+        map.registerParameterType(RANGE, (arg, flags) -> {
             if (ArgumentFlags.isStrict(flags)) {
                 return arg.isRange();
             } else return arg.isInteger() || arg.isRange();
@@ -103,7 +103,7 @@ public class DefaultCommandParameters {
             } else return arg.parseRange();
         });
 
-        map.registerArgumentMapper(USER, null, (arg, flags) -> {
+        map.registerParameterType(USER, null, (arg, flags) -> {
             if (ArgumentFlags.isStrict(flags)) {
                 if (arg.isValidUser()) return arg.getUser();
                 else return null;
@@ -115,7 +115,7 @@ public class DefaultCommandParameters {
             return arg.findMember().map(Member::getUser).orElse(null);
         });
 
-        map.registerArgumentMapper(MEMBER, null, (arg, flags) -> {
+        map.registerParameterType(MEMBER, null, (arg, flags) -> {
             if (ArgumentFlags.isStrict(flags)) {
                 if (arg.isValidMember()) return arg.getMember();
                 else return null;
@@ -127,7 +127,7 @@ public class DefaultCommandParameters {
             return arg.findMember().orElse(null);
         });
 
-        map.registerArgumentMapper(ROLE, null, (arg, flags) -> {
+        map.registerParameterType(ROLE, null, (arg, flags) -> {
             if (ArgumentFlags.isStrict(flags)) {
                 if (arg.isValidRole()) return arg.getRole();
                 else return null;
@@ -142,7 +142,7 @@ public class DefaultCommandParameters {
             return arg.findRole().orElse(null);
         });
 
-        map.registerArgumentMapper(TEXTCHANNEL, null, (arg, flags) -> {
+        map.registerParameterType(TEXTCHANNEL, null, (arg, flags) -> {
             if (ArgumentFlags.isStrict(flags)) {
                 if (arg.isValidTextChannel()) return arg.getTextChannel();
                 else return null;
@@ -157,15 +157,15 @@ public class DefaultCommandParameters {
             return arg.findTextChannel().orElse(null);
         });
 
-        map.registerArgumentMapperSimple(EMOTE, CommandArgument::isEmote, CommandArgument::getEmote);
+        map.registerParameterTypeFlagless(EMOTE, CommandArgument::isEmote, CommandArgument::getEmote);
 
-        map.registerArgumentMapperSimple(EMOJI, CommandArgument::isEmoji, CommandArgument::getEmoji);
+        map.registerParameterTypeFlagless(EMOJI, CommandArgument::isEmoji, CommandArgument::getEmoji);
 
-        map.registerArgumentMapperSimple(Duration.class, null, new DurationMapper());
+        map.registerParameterTypeFlagless(Duration.class, null, new DurationMapper());
 
-        map.registerArgumentMapperSimple(OffsetDateTime.class, null, new DateTimeMapper());
+        map.registerParameterTypeFlagless(OffsetDateTime.class, null, new DateTimeMapper());
 
-        map.registerArgumentMapperSimple(String.class, null, CommandArgument::getArgument);
+        map.registerParameterTypeFlagless(String.class, null, CommandArgument::getArgument);
     }
 
 }

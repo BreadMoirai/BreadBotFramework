@@ -40,7 +40,7 @@ public final class CommandParameterTypeManagerImpl implements CommandParameterTy
     }
 
     @Override
-    public <T> CommandParameterManagerBuilder registerArgumentMapper(Class<T> type, ArgumentTypePredicate predicate, ArgumentTypeMapper<T> mapper) {
+    public <T> CommandParameterManagerBuilder registerParameterType(Class<T> type, ArgumentTypePredicate predicate, ArgumentTypeMapper<T> mapper) {
         put(type, new ArgumentParser<>(predicate, mapper));
         return this;
     }

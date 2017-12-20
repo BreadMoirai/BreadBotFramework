@@ -14,7 +14,7 @@ plugins {
 final author = 'BreadMoirai'
 final artifactId = 'breadbot-framework'
 group "com.github.${author}"
-version '0.8.1_3'
+version '0.8.1_4'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8

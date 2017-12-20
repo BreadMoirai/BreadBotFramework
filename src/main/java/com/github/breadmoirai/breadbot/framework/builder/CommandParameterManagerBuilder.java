@@ -34,20 +34,20 @@ public interface CommandParameterManagerBuilder {
      * @param mapper    the mapper
      * @param <T>       the type
      */
-    <T> CommandParameterManagerBuilder registerArgumentMapper(Class<T> type, ArgumentTypePredicate predicate, ArgumentTypeMapper<T> mapper);
+    <T> CommandParameterManagerBuilder registerParameterType(Class<T> type, ArgumentTypePredicate predicate, ArgumentTypeMapper<T> mapper);
 
     /**
-     * This ignores flags. Use {@link CommandParameterManagerBuilder#registerArgumentMapper} otherwise.
+     * This ignores flags. Use {@link CommandParameterManagerBuilder#registerParameterType} otherwise.
      *
      * @param type      The type class
      * @param isType    predicate to test if the argument can be parsed to the type provided. This param can be left {@code null} if the complexity is close to {@code getAsType.apply(arg) != null}
      * @param getAsType A function to convert the argument to the type provided.
      * @param <T>       The type
      */
-    default <T> CommandParameterManagerBuilder registerArgumentMapperSimple(Class<T> type, Predicate<CommandArgument> isType, Function<CommandArgument, T> getAsType) {
+    default <T> CommandParameterManagerBuilder registerParameterTypeFlagless(Class<T> type, Predicate<CommandArgument> isType, Function<CommandArgument, T> getAsType) {
         final ArgumentTypePredicate l = isType == null ? null : (arg, flags) -> isType.test(arg);
         final ArgumentTypeMapper<T> r = (arg, flags) -> getAsType.apply(arg);
-        return registerArgumentMapper(type, l, r);
+        return registerParameterType(type, l, r);
     }
 
     /**

@@ -447,14 +447,14 @@ public class BreadBotClientBuilder implements
     }
 
     @Override
-    public <T> BreadBotClientBuilder registerArgumentMapper(Class<T> type, ArgumentTypePredicate predicate, ArgumentTypeMapper<T> mapper) {
-        argumentTypes.registerArgumentMapper(type, predicate, mapper);
+    public <T> BreadBotClientBuilder registerParameterType(Class<T> type, ArgumentTypePredicate predicate, ArgumentTypeMapper<T> mapper) {
+        argumentTypes.registerParameterType(type, predicate, mapper);
         return this;
     }
 
     @Override
-    public <T> BreadBotClientBuilder registerArgumentMapperSimple(Class<T> type, Predicate<CommandArgument> isType, Function<CommandArgument, T> getAsType) {
-        argumentTypes.registerArgumentMapperSimple(type, isType, getAsType);
+    public <T> BreadBotClientBuilder registerParameterTypeFlagless(Class<T> type, Predicate<CommandArgument> isType, Function<CommandArgument, T> getAsType) {
+        argumentTypes.registerParameterTypeFlagless(type, isType, getAsType);
         return this;
     }
 

@@ -45,7 +45,7 @@ public interface CommandHandleBuilder extends CommandHandleBuilderFactory {
     CommandHandleBuilder setDescription(String description);
 
     /**
-     * Attempts to find a subcommand by the specified name
+     * Attempts to find a subcommand by the specified name.
      *
      * @param commandName the name of the command. By default this is the name of the method or the name of the inner class. If the subcommand is an inner class and its name ends in {@code "command"}, the name only includes the part preceding {@code "command"}.
      * @return The CommandHandleBuilder of the sub command.
@@ -87,7 +87,8 @@ public interface CommandHandleBuilder extends CommandHandleBuilderFactory {
     }
 
     default <T> CommandHandleBuilder applyProperty(T property) {
-        @SuppressWarnings("unchecked") Class<T> type = (Class<T>) property.getClass();
+        @SuppressWarnings("unchecked")
+        Class<T> type = (Class<T>) property.getClass();
         BiConsumer<? super T, CommandHandleBuilder> commandModifier = getClientBuilder().getCommandModifier(type);
         if (commandModifier != null)
             commandModifier.accept(property, this);

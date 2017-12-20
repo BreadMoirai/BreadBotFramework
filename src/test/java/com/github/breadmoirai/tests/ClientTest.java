@@ -200,7 +200,7 @@ public class ClientTest {
     @Test
     public void customParameterTest() {
         setupBread(bread -> bread
-                .registerArgumentMapperSimple(
+                .registerParameterTypeFlagless(
                         MathCommand.Operator.class,
                         arg -> arg.matches(Pattern.compile("[+\\-*/]")),
                         arg -> {
