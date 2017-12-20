@@ -13,8 +13,8 @@ plugins {
 
 final author = 'BreadMoirai'
 final artifactId = 'breadbot-framework'
-group "com.github.${author}"
-version '0.8.1_4'
+group "com.github.${author.toLowerCase()}"
+version '0.8.1_5'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -60,8 +60,8 @@ dependencies {
 }
 
 githubRelease {
-    if (hasProperty('github.key'))
-        token = getProperty('github.key').toString()
+    if (project.hasProperty('github.key'))
+        token = project.getProperty('github.key').toString()
     String version = project.version
     it.body = "\n## Adding as Dependency\n### Gradle\n```gradle\nrepositories {\n  jcenter()\n}\n\ndependencies {\n  compile '$project.group:$artifactId:$project.version'\n}\n```\n\n### Maven\n```xml\n<repository>\n  <id>jcenter</id>\n  <name>jcenter</name>\n  <url>http://jcenter.bintray.com/</url>\n</repository>\n\n<dependency>\n  <groupId>$project.group</groupId>\n  <artifactId>$artifactId</artifactId>\n  <version>$project.version</version>\n  <type>pom</type>\n</dependency>\n```"
     FilenameFilter filter = { dir, file -> file.contains(version) }
@@ -88,8 +88,8 @@ gitPublishReset {
 
 bintray {
     user = author.toLowerCase()
-    if (hasProperty('bintray.key'))
-        key = getProperty('bintray.key').toString()
+    if (project.hasProperty('bintray.key'))
+        key = project.getProperty('bintray.key').toString()
     publications = ["BintrayRelease"]
     publish = true
     pkg {
