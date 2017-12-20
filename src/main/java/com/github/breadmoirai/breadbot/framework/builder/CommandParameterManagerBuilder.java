@@ -24,18 +24,17 @@ import com.github.breadmoirai.breadbot.framework.parameter.CommandArgument;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-public interface CommandParameterManagerBuilder<R> {
+public interface CommandParameterManagerBuilder {
     /**
      * Registers an ArgumentMapper with the type provided.
      *
-     * @param type   the Type class
-     *
+     * @param type      the Type class
      * @param predicate This returns {@code true} if the {@link CommandArgument} can be mapped to the {@code type}.
      *                  If the computation cost is similar to mapping the argument, leave this field null.
-     * @param mapper the mapper
-     * @param <T>    the type
+     * @param mapper    the mapper
+     * @param <T>       the type
      */
-    <T> R registerArgumentMapper(Class<T> type, ArgumentTypePredicate predicate, ArgumentTypeMapper<T> mapper);
+    <T> CommandParameterManagerBuilder registerArgumentMapper(Class<T> type, ArgumentTypePredicate predicate, ArgumentTypeMapper<T> mapper);
 
     /**
      * This ignores flags. Use {@link CommandParameterManagerBuilder#registerArgumentMapper} otherwise.
@@ -45,7 +44,7 @@ public interface CommandParameterManagerBuilder<R> {
      * @param getAsType A function to convert the argument to the type provided.
      * @param <T>       The type
      */
-    default <T> R registerArgumentMapperSimple(Class<T> type, Predicate<CommandArgument> isType, Function<CommandArgument, T> getAsType) {
+    default <T> CommandParameterManagerBuilder registerArgumentMapperSimple(Class<T> type, Predicate<CommandArgument> isType, Function<CommandArgument, T> getAsType) {
         final ArgumentTypePredicate l = isType == null ? null : (arg, flags) -> isType.test(arg);
         final ArgumentTypeMapper<T> r = (arg, flags) -> getAsType.apply(arg);
         return registerArgumentMapper(type, l, r);

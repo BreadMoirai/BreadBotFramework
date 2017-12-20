@@ -18,9 +18,9 @@ package com.github.breadmoirai.breadbot.framework.builder;
 
 import com.github.breadmoirai.breadbot.framework.command.CommandResultHandler;
 
-public interface CommandResultManagerBuilder<R> {
+public interface CommandResultManagerBuilder {
 
-    <T> R registerResultHandler(Class<T> resultType, CommandResultHandler<T> handler);
+    <T> CommandResultManagerBuilder registerResultHandler(Class<T> resultType, CommandResultHandler<T> handler);
 
     <T> CommandResultHandler<? super T> getResultHandler(Class<T> resultType);
 }
