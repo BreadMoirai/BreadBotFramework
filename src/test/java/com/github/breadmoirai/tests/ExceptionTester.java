@@ -25,6 +25,8 @@ import com.github.breadmoirai.breadbot.framework.error.MissingCommandKeyExceptio
 import com.github.breadmoirai.breadbot.framework.internal.command.CommandObjectFactory;
 import com.github.breadmoirai.breadbot.framework.internal.event.CommandEventInternal;
 import com.github.breadmoirai.tests.commands.BadCommand;
+import com.github.breadmoirai.tests.commands.BadCtorCommand;
+import com.github.breadmoirai.tests.commands.BadPrepCommand;
 import com.github.breadmoirai.tests.commands.PingCommand;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
@@ -35,6 +37,8 @@ import uk.org.lidalia.slf4jtest.LoggingEvent;
 import uk.org.lidalia.slf4jtest.TestLogger;
 import uk.org.lidalia.slf4jtest.TestLoggerFactory;
 import uk.org.lidalia.slf4jtest.TestLoggerFactoryResetRule;
+
+import java.util.function.Supplier;
 
 import static com.github.breadmoirai.tests.MockFactory.mockCommand;
 import static org.junit.Assert.assertEquals;
@@ -52,7 +56,9 @@ public class ExceptionTester {
     @Test(expected = MissingCommandKeyException.class)
     public void missingKey() {
         new BreadBotClientBuilder()
-                .addCommand(commandEvent -> {}, configurator -> {})
+                .addCommand(commandEvent -> {
+                }, configurator -> {
+                })
                 .build();
     }
 
@@ -66,9 +72,8 @@ public class ExceptionTester {
 
     @Test(expected = RuntimeException.class)
     public void commandctorBuild() {
-        BadCommand.ctorException = true;
         new BreadBotClientBuilder()
-                .addCommand(BadCommand::new)
+                .addCommand(BadCtorCommand::new)
                 .build();
     }
 
@@ -77,9 +82,8 @@ public class ExceptionTester {
         TestLogger testLogger = TestLoggerFactory.getTestLogger(CommandObjectFactory.class);
         testLogger.setEnabledLevels(Level.ERROR);
 
-        BadCommand.ctorException = true;
         BreadBotClient bread = new BreadBotClientBuilder()
-                .addCommand(BadCommand.class)
+                .addCommand(BadCtorCommand.class)
                 .build();
         CommandEventInternal mock = mockCommand(bread, "!bad");
         bread.getCommandEngine().handle(mock);
@@ -98,9 +102,8 @@ public class ExceptionTester {
         TestLogger testLogger = TestLoggerFactory.getTestLogger(CommandPreprocessor.class);
         testLogger.setEnabledLevels(Level.ERROR);
 
-        BadCommand.preException = true;
         BreadBotClient bread = new BreadBotClientBuilder()
-                .createCommand(BadCommand.class)
+                .createCommand(BadPrepCommand.class)
                 .getClientBuilder().build();
 
         CommandEventInternal mock = mockCommand(bread, "!bad");
@@ -144,4 +147,26 @@ public class ExceptionTester {
         assertTrue(cause.isPresent());
         assertEquals("Command Exception", cause.get().getMessage());
     }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void nullCommandClassTest() {
+        new BreadBotClientBuilder()
+                .addCommand((Class<?>) null)
+                .build();
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void nullCommandSupplierTest() {
+        new BreadBotClientBuilder()
+                .addCommand((Supplier<?>) null)
+                .build();
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void nullCommandObjectTest() {
+        new BreadBotClientBuilder()
+                .addCommand((Object) null)
+                .build();
+    }
+
 }
