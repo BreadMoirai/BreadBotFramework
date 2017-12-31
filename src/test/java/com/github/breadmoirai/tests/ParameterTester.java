@@ -2,7 +2,7 @@ package com.github.breadmoirai.tests;
 
 import com.github.breadmoirai.breadbot.framework.BreadBotClient;
 import com.github.breadmoirai.breadbot.framework.builder.BreadBotClientBuilder;
-import com.github.breadmoirai.breadbot.framework.internal.event.CommandEventInternal;
+import com.github.breadmoirai.breadbot.framework.event.internal.CommandEventInternal;
 import com.github.breadmoirai.tests.commands.NameCommand;
 import com.github.breadmoirai.tests.commands.PingCommand;
 import com.github.breadmoirai.tests.commands.SSICommand;

@@ -16,13 +16,12 @@
 
 package com.github.breadmoirai.breadbot.framework.builder;
 
-import com.github.breadmoirai.breadbot.framework.CommandEvent;
 import com.github.breadmoirai.breadbot.framework.command.CommandPreprocessor;
 import com.github.breadmoirai.breadbot.framework.command.CommandPreprocessorFunction;
 import com.github.breadmoirai.breadbot.framework.command.CommandPreprocessorPredicate;
 import com.github.breadmoirai.breadbot.framework.command.CommandResultHandler;
 import com.github.breadmoirai.breadbot.framework.error.NoSuchCommandException;
-import com.github.breadmoirai.breadbot.framework.parameter.CommandParser;
+import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
 
 import java.lang.reflect.Method;
 import java.util.Collection;
@@ -30,7 +29,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
 
@@ -219,15 +217,6 @@ public interface CommandHandleBuilder extends CommandHandleBuilderFactory {
     }
 
     CommandParameterBuilder getParameter(int parameterIndex);
-
-    /**
-     * Sets the specified parameter to use a specific function to map its argument
-     *
-     * @param parameterIndex the index of the parameter starting from {@code 0} as it was declared
-     * @param mapper         a Function that takes the parser and returns an object that can be casted to the parameter type.
-     * @return this
-     */
-    CommandHandleBuilder setParameter(int parameterIndex, Function<CommandParser, ?> mapper);
 
     List<CommandParameterBuilder> getParameters();
 

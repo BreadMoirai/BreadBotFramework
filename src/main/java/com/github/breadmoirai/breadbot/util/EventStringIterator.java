@@ -16,7 +16,7 @@
 
 package com.github.breadmoirai.breadbot.util;
 
-import com.github.breadmoirai.breadbot.framework.CommandEvent;
+import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
 import com.github.breadmoirai.breadbot.framework.parameter.CommandArgument;
 
 import java.util.Iterator;

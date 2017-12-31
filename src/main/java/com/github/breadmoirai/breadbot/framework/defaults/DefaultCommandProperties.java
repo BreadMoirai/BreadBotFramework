@@ -16,22 +16,33 @@
 
 package com.github.breadmoirai.breadbot.framework.defaults;
 
-import com.github.breadmoirai.breadbot.framework.annotation.*;
-import com.github.breadmoirai.breadbot.framework.annotation.command.*;
-import com.github.breadmoirai.breadbot.framework.annotation.parameter.*;
+import com.github.breadmoirai.breadbot.framework.annotation.ConfigureCommand;
+import com.github.breadmoirai.breadbot.framework.annotation.ConfigureCommands;
+import com.github.breadmoirai.breadbot.framework.annotation.Name;
+import com.github.breadmoirai.breadbot.framework.annotation.command.Command;
+import com.github.breadmoirai.breadbot.framework.annotation.command.Delimiter;
+import com.github.breadmoirai.breadbot.framework.annotation.command.Description;
+import com.github.breadmoirai.breadbot.framework.annotation.command.Group;
+import com.github.breadmoirai.breadbot.framework.annotation.command.MainCommand;
+import com.github.breadmoirai.breadbot.framework.annotation.command.RequiredParameters;
+import com.github.breadmoirai.breadbot.framework.annotation.parameter.Contiguous;
+import com.github.breadmoirai.breadbot.framework.annotation.parameter.Flags;
+import com.github.breadmoirai.breadbot.framework.annotation.parameter.Index;
+import com.github.breadmoirai.breadbot.framework.annotation.parameter.MatchRegex;
+import com.github.breadmoirai.breadbot.framework.annotation.parameter.Required;
+import com.github.breadmoirai.breadbot.framework.annotation.parameter.Width;
 import com.github.breadmoirai.breadbot.framework.builder.CommandHandleBuilder;
+import com.github.breadmoirai.breadbot.framework.command.internal.CommandPropertiesManagerImpl;
+import com.github.breadmoirai.breadbot.framework.command.internal.builder.CommandHandleBuilderInternal;
 import com.github.breadmoirai.breadbot.framework.error.BreadBotException;
-import com.github.breadmoirai.breadbot.framework.internal.command.CommandPropertiesManagerImpl;
-import com.github.breadmoirai.breadbot.framework.internal.command.builder.CommandHandleBuilderInternal;
 import com.github.breadmoirai.breadbot.framework.parameter.AbsentArgumentHandler;
-import com.github.breadmoirai.breadbot.framework.parameter.ArgumentParser;
-import com.github.breadmoirai.breadbot.framework.parameter.ArgumentTypePredicate;
+import com.github.breadmoirai.breadbot.framework.parameter.TypeParser;
+import com.github.breadmoirai.breadbot.framework.parameter.TypeParserFlags;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -128,33 +139,33 @@ public class DefaultCommandProperties {
         });
 
         cp.putParameterModifier(Name.class, (p, builder) -> builder.setName(p.value()));
-        cp.putParameterModifier(Flags.class, (p, builder) -> builder.setFlags(p.value()));
+        cp.putParameterModifier(Flags.class, (p, builder) -> builder.setFlags(TypeParserFlags.get(p.value())));
         cp.putParameterModifier(AbsentArgumentHandler.class, (p, builder) -> builder.setOnAbsentArgument(p));
         cp.putParameterModifier(Required.class, (p, builder) -> builder.setRequired(true));
         cp.putParameterModifier(Index.class, (p, builder) -> builder.setIndex(p.value()));
         cp.putParameterModifier(MatchRegex.class, (p, builder) -> {
-            ArgumentParser<?> parser = builder.getParser();
-            ArgumentTypePredicate predicate;
-            if (parser.hasPredicate()) {
-                predicate = (arg, flags) -> arg.matches(p.value()) && parser.test(arg, flags);
-            } else {
-                predicate = (arg, flags) -> arg.matches(p.value());
-            }
-            builder.setParser(predicate, parser.getMapper());
+            TypeParser<?> parser = builder.getTypeParser();
+            final Pattern pattern = Pattern.compile(p.value());
+            builder.setTypeParser((arg, flags) -> {
+                if (arg.matches(pattern)) {
+                    return parser.parse(arg, flags);
+                } else {
+                    return null;
+                }
+            });
         });
         cp.putParameterModifier(Width.class, (p, builder) -> builder.setWidth(p.value()));
-        cp.putParameterModifier(Type.class, (p, builder) -> builder.setBaseType(p.value()));
         cp.putParameterModifier(Contiguous.class, (p, builder) -> builder.setContiguous(p.value()));
-        cp.putParameterModifier(Numeric.class, (p, builder) -> {
-            if (!(builder instanceof Function)) {
-                final ArgumentParser<?> parser = builder.getParser();
-                if (parser.hasPredicate()) {
-                    builder.setParser(parser.getPredicate().and((arg, flags) -> arg.isNumeric()), parser.getMapper());
-                } else {
-                    builder.setParser((arg, flags) -> arg.isNumeric(), parser.getMapper());
-                }
-            }
-        });
+//        cp.putParameterModifier(Numeric.class, (p, builder) -> {
+//            if (!(builder instanceof CommandParameterFunctionBuilderImpl)) {
+//                final TypeParser<?> parser = builder.getParser();
+//                if (parser.hasPredicate()) {
+//                    builder.setTypeParser(parser.getPredicate().and((arg, flags) -> arg.isNumeric()), parser.getMapper());
+//                } else {
+//                    builder.setTypeParser((arg, flags) -> arg.isNumeric(), parser.getMapper());
+//                }
+//            }
+//        });
     }
 
     private void setGroupToPackage(CommandHandleBuilder builder, Class<?> declaringClass) {

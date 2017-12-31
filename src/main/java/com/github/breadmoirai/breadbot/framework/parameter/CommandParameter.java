@@ -28,15 +28,21 @@ public interface CommandParameter {
         return map(parser.getArgumentList(), parser);
     }
 
+    TypeParser<?> getTypeParser();
+
+    ArgumentParser getArgumentParser();
+
     Object map(CommandArgumentList list, CommandParser parser);
 
     Class<?> getType();
-
-    int getFlags();
 
     int getIndex();
 
     int getWidth();
 
-    boolean isMustBePresent();
+    boolean isContiguous();
+
+    boolean mustBePresent();
+
+    AbsentArgumentHandler getAbsentArgumentHandler();
 }

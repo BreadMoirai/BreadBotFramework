@@ -14,7 +14,7 @@ plugins {
 final author = 'BreadMoirai'
 final artifactId = 'breadbot-framework'
 group "com.github.${author.toLowerCase()}"
-version '0.8.1_5'
+version '0.9.0'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -26,37 +26,27 @@ repositories {
 
 dependencies {
     //Discord Java Library
-    compileOnly 'net.dv8tion:JDA:3.3.1_307'
+    compileOnly 'net.dv8tion:JDA:3.4.0_318'
 
-    //Database
-//    compile 'org.jdbi:jdbi3:3.0.0-beta1'
-//    compile 'org.jdbi:jdbi3-parent:3.0.0-beta1'
-//    compile 'org.jdbi:jdbi3-sqlobject:3.0.0-beta1'
-
-    //slf4j
     compile 'org.slf4j:slf4j-api:1.7.25'
-//    compile 'com.squareup.okhttp3:okhttp:3.8.1'
-//    compile 'com.j256.simplemagic:simplemagic:1.10'
-    //Utility
+
     compile 'org.reflections:reflections:0.9.10'
-    //compile 'com.jagrosh:JDA-Utilities:1.2'
-    compile 'org.jetbrains:annotations:13.0'
+    compile 'com.typesafe:config:1.3.2'
+    //compile 'com.jagrosh:JDA-Utilities:1.9'
 
-//    compile 'org.apache.commons:commons-lang3:3.6'
-
-    //testing
-//    compile 'com.sedmelluq:lavaplayer:1.2.42'
-//    compile 'org.slf4j:slf4j-simple:1.8.0-alpha2'
-//    compile 'org.apache.derby:derby:10.13.1.1'
-//    compile 'com.google.api-client:google-api-client:1.22.0'
-//    compile 'com.google.apis:google-api-services-youtube:v3-rev183-1.22.0'
     testCompile 'uk.org.lidalia:slf4j-test:1.1.0'
     testCompile('junit:junit:4.12') {
         exclude group: 'org.hamcrest'
     }
-    testCompile 'net.dv8tion:JDA:3.3.1_284'
+    testCompile 'net.dv8tion:JDA:3.4.0_318'
     testCompile 'org.hamcrest:hamcrest-library:1.3'
     testCompile 'org.mockito:mockito-core:2.+'
+}
+
+javadoc {
+    options.memberLevel = JavadocMemberLevel.PUBLIC
+
+    exclude 'com/github/breadmoirai/breadbot/framework/internal'
 }
 
 githubRelease {
@@ -161,65 +151,3 @@ jacocoTestReport {
 tasks.withType(JavaCompile) {
     options.compilerArgs << '-parameters'
 }
-
-//task aonoengoeiioa {
-//
-//    def tree = fileTree('src').include('**/*.java')
-//    tree.each { File file ->
-//        if (!file.isDirectory()) {
-//            def lines = file.readLines()
-//            if (lines.get(15).length() != 0) {
-//                lines.add(15, '')
-//                file.write(lines.stream().collect(Collectors.joining('\n')));
-//            }
-//        }
-//    }
-//}
-
-//System.setProperty('java.awt.headless', 'false')
-//import groovy.swing.SwingBuilder
-//
-//gradle.taskGraph.whenReady { taskGraph ->
-//    if (taskGraph.hasTask(githubPublish)) {
-//
-//        new SwingBuilder().edt {
-//            dialog(modal: true, // Otherwise the build will continue running before you closed the dialog
-//                    title: 'Enter password', // Dialog title
-//                    alwaysOnTop: true, // pretty much what the name says
-//                    resizable: false, // Don't allow the user to resize the dialog
-//                    locationRelativeTo: null, // Place dialog in center of the screen
-//                    pack: true, // We need to pack the dialog (so it will take the size of it's children)
-//                    show: true // Let's show it
-//            ) {
-//                vbox { // Put everything below each other
-//                    label(text: "Enter Password")
-//                    def input = passwordField()
-//                    button(defaultButton: true, text: 'OK', actionPerformed: {
-//                        githubPublish.userName = author
-//                        githubPublish.password = input.password as String
-//                        dispose()
-//                    })
-//                } // vbox end
-//            } // dialog end
-//        } // edt end
-//
-//    } // end if has task
-//} // end whenReady
-
-//githubPublish {
-//    dependsOn jarMake
-//    repositoryName = "$author/$project.name"
-//    baseUrl = "https://github.com/$author/${project.name}.git"
-//    targetCommitish = "master"
-//    tagName = 'v' + project.version
-//    releaseName project.version.toString()
-//    body = "\n## Adding as Dependency\n### Gradle\n```gradle\nrepositories {\n  jcenter()\n}\n\ndependencies {\n  compile '$project.group:$artifactId:$project.version'\n}\n```\n\n### Maven\n```xml\n<repository>\n  <id>jcenter</id>\n  <name>jcenter</name>\n  <url>http://jcenter.bintray.com/</url>\n</repository>\n\n<dependency>\n  <groupId>$project.group</groupId>\n  <artifactId>$artifactId</artifactId>\n  <version>$project.version</version>\n  <type>pom</type>\n</dependency>\n```"
-//    prerelease = false
-//    draft = false
-//
-//    //copySpec values
-//    FilenameFilter filter = { dir, File file -> file.name.contains(version.toString()) }
-//    from() {
-//        jar.destinationDir.listFiles(filter)
-//    }
-//}

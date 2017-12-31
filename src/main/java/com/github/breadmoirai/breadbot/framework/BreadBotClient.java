@@ -16,6 +16,7 @@
 
 package com.github.breadmoirai.breadbot.framework;
 
+import com.github.breadmoirai.breadbot.framework.command.CommandEngine;
 import com.github.breadmoirai.breadbot.framework.command.CommandHandle;
 import com.github.breadmoirai.breadbot.framework.command.CommandResultManager;
 import com.github.breadmoirai.breadbot.framework.parameter.CommandParameterTypeManager;

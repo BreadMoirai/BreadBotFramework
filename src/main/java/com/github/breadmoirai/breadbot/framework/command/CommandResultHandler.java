@@ -16,7 +16,7 @@
 
 package com.github.breadmoirai.breadbot.framework.command;
 
-import com.github.breadmoirai.breadbot.framework.CommandEvent;
+import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
 
 /**
  * This handles the result of a command, in other terms the returned value from invoking a command method

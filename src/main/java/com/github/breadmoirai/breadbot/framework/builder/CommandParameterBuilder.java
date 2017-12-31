@@ -16,19 +16,17 @@
 
 package com.github.breadmoirai.breadbot.framework.builder;
 
-import com.github.breadmoirai.breadbot.framework.internal.parameter.CommandParameterTypeManagerImpl;
-import com.github.breadmoirai.breadbot.framework.parameter.*;
-import org.jetbrains.annotations.Nullable;
+import com.github.breadmoirai.breadbot.framework.parameter.AbsentArgumentHandler;
+import com.github.breadmoirai.breadbot.framework.parameter.ArgumentParser;
+import com.github.breadmoirai.breadbot.framework.parameter.CommandParameter;
+import com.github.breadmoirai.breadbot.framework.parameter.TypeParser;
 
+import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.function.Consumer;
 
 /**
  * This is used to set settings for command parameters.
- * <p>
- * For guidance, refer to the
- * <a href="https://github.com/BreadMoirai/BreadBotFramework/wiki/6)-Command-Parameters">
- * <b>Github Wiki</b>: CommandParameters</a>
  */
 public interface CommandParameterBuilder {
 
@@ -49,13 +47,6 @@ public interface CommandParameterBuilder {
      * @return this obj.
      */
     CommandParameterBuilder setName(String paramName);
-
-    /**
-     * Sets the flags to be passed to the {@link ArgumentTypeMapper}
-     *
-     * @param flags hints for the parser.
-     */
-    CommandParameterBuilder setFlags(int flags);
 
     /**
      * If {@code index > 0}, the parser will only attempt to map the argument at the specified position.
@@ -81,51 +72,9 @@ public interface CommandParameterBuilder {
      */
     CommandParameterBuilder setWidth(int width);
 
-    /**
-     * Sets the intended base type of the method. \\todo make a wiki
-     *
-     * @param type the Class of the argument.
-     */
-    <T> CommandParameterBuilder setBaseType(Class<T> type);
+    <T> CommandParameterBuilder setTypeParser(TypeParser<T> parser);
 
-    /**
-     * Sets the {@link ArgumentTypeMapper} to be used in mapping the {@link CommandParameter}.
-     * If an {@link ArgumentTypeMapper} is registered in {@link CommandParameterTypeManagerImpl}, it will not be used.
-     * The provided {@link ArgumentTypeMapper} will not be registered with {@link CommandParameterTypeManagerImpl}.
-     *
-     * This should only be used on parameters of the supported type which are as follows:
-     * <ul>
-     *     <li>{@link CommandArgument}</li>
-     *     <li>{@link java.util.List}</li>
-     *     <li>{@link java.util.Queue}</li>
-     *     <li>{@link java.util.Deque}</li>
-     *     <li>{@link java.util.stream.Stream}</li>
-     * </ul>
-     *
-     * It is generally recommended to prefer using different {@link ArgumentFlags flags} on custom types to indicate that the {@link CommandArgument} should be mapped differently.
-     *
-     * @param type This parameter type
-     * @param mapper a public class that implements {@link ArgumentTypeMapper} and contains a no-args public constructor.
-     */
-    default <T> CommandParameterBuilder setBaseType(Class<T> type, ArgumentTypeMapper<T> mapper) {
-        return setBaseType(type, null, mapper);
-    }
-
-    /**
-     * @param type
-     * @param predicate
-     * @param mapper
-     * @param <T>
-     * @return
-     */
-    <T> CommandParameterBuilder setBaseType(Class<T> type, ArgumentTypePredicate predicate, ArgumentTypeMapper<T> mapper);
-
-    /**
-     * @param predicate may be null
-     * @param parser    may not be null
-     * @return this
-     */
-    <T> CommandParameterBuilder setParser(@Nullable ArgumentTypePredicate predicate, ArgumentTypeMapper<T> parser);
+    CommandParameterBuilder setParser(ArgumentParser parser);
 
     /**
      * @param mustBePresent {@code true} if the argument must be present. Otherwise an error message will be sent to the user with the default error or
@@ -136,10 +85,10 @@ public interface CommandParameterBuilder {
     /**
      * Defines the behavior to be executed when the parameter could not be mapped from any unmapped CommandEventArguments.
      *
-     * @param onParamNotFound A MissingArgumentHandler which is a functional interface that is a BiConsumer of the CommandEvent and the CommandParameter that is missing
+     * @param onAbsentArgument A MissingArgumentHandler which is a functional interface that is a BiConsumer of the CommandEvent and the CommandParameter that is missing
      * @return this
      */
-    CommandParameterBuilder setOnAbsentArgument(AbsentArgumentHandler onParamNotFound);
+    CommandParameterBuilder setOnAbsentArgument(AbsentArgumentHandler onAbsentArgument);
 
     /**
      * This only affects parameters which are Collections.
@@ -151,13 +100,16 @@ public interface CommandParameterBuilder {
      */
     CommandParameterBuilder setContiguous(boolean isContiguous);
 
-    ArgumentParser<?> getParser();
+    default CommandParameterBuilder configure(Consumer<CommandParameterBuilder> configurator) {
+        configurator.accept(this);
+        return this;
+    }
 
-    CommandParameterBuilder configure(Consumer<CommandParameterBuilder> configurator);
+    boolean hasProperty(Class<?> propertyType);
 
-    CommandParameter build();
+    Method getDeclaringMethod();
 
     <T> T getProperty(Class<T> propertyType);
 
-    boolean hasProperty(Class<?> propertyType);
+    CommandParameter build();
 }

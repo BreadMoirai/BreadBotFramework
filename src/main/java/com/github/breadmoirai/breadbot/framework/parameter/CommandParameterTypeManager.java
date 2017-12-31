@@ -25,5 +25,5 @@ public interface CommandParameterTypeManager {
      * @param <T>  the type
      * @return an ArgumentParser if found. Else {@code null}.
      */
-    <T> ArgumentParser<T> getParser(Class<T> type);
+    <T> TypeParser<T> getTypeParser(Class<T> type);
 }

@@ -16,19 +16,26 @@
 
 package com.github.breadmoirai.breadbot.framework.defaults;
 
-import com.github.breadmoirai.breadbot.framework.internal.parameter.CommandParameterTypeManagerImpl;
-import com.github.breadmoirai.breadbot.framework.parameter.*;
+import com.github.breadmoirai.breadbot.framework.parameter.CommandArgument;
+import com.github.breadmoirai.breadbot.framework.parameter.TypeParser;
+import com.github.breadmoirai.breadbot.framework.parameter.TypeParserFlags;
+import com.github.breadmoirai.breadbot.framework.parameter.internal.CommandParameterTypeManagerImpl;
 import com.github.breadmoirai.breadbot.util.Arguments;
 import com.github.breadmoirai.breadbot.util.DateTimeMapper;
 import com.github.breadmoirai.breadbot.util.DurationMapper;
 import com.github.breadmoirai.breadbot.util.Emoji;
-import net.dv8tion.jda.core.entities.*;
+import net.dv8tion.jda.core.entities.Emote;
+import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.Role;
+import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.entities.User;
 
 import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.util.stream.IntStream;
 
 public class DefaultCommandParameters {
+
     public static final Class<Integer> INTEGER = Integer.TYPE;
     public static final Class<Long> LONG = Long.TYPE;
     public static final Class<Float> FLOAT = Float.TYPE;
@@ -43,68 +50,54 @@ public class DefaultCommandParameters {
     public static final Class<Emoji> EMOJI = Emoji.class;
 
     public void initialize(CommandParameterTypeManagerImpl map) {
-        final ArgumentTypePredicate intPredicate = (arg, flags) -> {
-            final boolean hex = ArgumentFlags.hasFlag(flags, ArgumentFlags.HEX);
-            return hex ? arg.isHex() : arg.isInteger();
-        };
-        final ArgumentTypeMapper<Integer> intType = (arg, flags) -> {
-            final boolean hex = ArgumentFlags.hasFlag(flags, ArgumentFlags.HEX);
+        final TypeParser<Integer> intParser = (arg, flags) -> {
+            final boolean hex = TypeParserFlags.has(flags, TypeParserFlags.HEX);
             if (hex) {
-                try {
-                    return Integer.parseInt(Arguments.stripHexPrefix(arg.getArgument()), 16);
-                } catch (NumberFormatException ignored) {
-                    return null;
-                }
-            } else {
+                if (arg.isHex()) {
+                    return arg.parseIntFromHex();
+                } else return null;
+            } else if (arg.isInteger()) {
                 return arg.parseInt();
+            } else {
+                return null;
             }
         };
-        final ArgumentParser<Integer> intParser = new ArgumentParser<>(intPredicate, intType);
         map.put(INTEGER, intParser);
         map.put(Integer.class, intParser);
 
 
-        final ArgumentParser<Long> longParser = new ArgumentParser<>((arg, flags) -> {
-            final boolean hex = ArgumentFlags.hasFlag(flags, ArgumentFlags.HEX);
-            return hex ? arg.isHex() : arg.isLong();
-        }, (arg, flags) -> {
-            final boolean hex = ArgumentFlags.hasFlag(flags, ArgumentFlags.HEX);
-            if (hex) {
-                try {
-                    return Long.parseLong(Arguments.stripHexPrefix(arg.getArgument()), 16);
-                } catch (NumberFormatException ignored) {
-
-                }
+        final TypeParser<Long> longParser = (arg, flags) -> {
+            final boolean hex = TypeParserFlags.has(flags, TypeParserFlags.HEX);
+            if (hex && arg.isHex()) {
+                return Long.parseLong(Arguments.stripHexPrefix(arg.getArgument()), 16);
             } else if (arg.isLong()) {
                 return arg.parseLong();
+            } else {
+                return null;
             }
-            return null;
-        });
+        };
         map.put(LONG, longParser);
         map.put(Long.class, longParser);
 
-        map.registerParameterTypeFlagless(FLOAT, CommandArgument::isFloat, CommandArgument::parseFloat);
-        map.registerParameterTypeFlagless(Float.class, CommandArgument::isFloat, CommandArgument::parseFloat);
 
-        map.registerParameterTypeFlagless(DOUBLE, CommandArgument::isFloat, CommandArgument::parseDouble);
-        map.registerParameterTypeFlagless(Double.class, CommandArgument::isFloat, CommandArgument::parseDouble);
+        final TypeParser<Float> floatParser = (arg, flags) -> arg.isFloat() ? arg.parseFloat() : null;
+        map.put(FLOAT, floatParser);
+        map.put(Float.class, floatParser);
 
 
-        map.registerParameterTypeFlagless(BOOLEAN, CommandArgument::isBoolean, CommandArgument::parseBoolean);
-        map.registerParameterTypeFlagless(Boolean.class, CommandArgument::isBoolean, CommandArgument::parseBoolean);
+        final TypeParser<Double> doubleParser = (arg, flags) -> arg.isFloat() ? arg.parseDouble() : null;
+        map.put(DOUBLE, floatParser);
+        map.put(Double.class, floatParser);
 
-        map.registerParameterType(RANGE, (arg, flags) -> {
-            if (ArgumentFlags.isStrict(flags)) {
-                return arg.isRange();
-            } else return arg.isInteger() || arg.isRange();
-        }, (arg, flags) -> {
-            if (ArgumentFlags.isStrict(flags)) {
-                return arg.isNumeric() ?null : arg.parseRange();
-            } else return arg.parseRange();
-        });
 
-        map.registerParameterType(USER, null, (arg, flags) -> {
-            if (ArgumentFlags.isStrict(flags)) {
+        final TypeParser<Boolean> boolParser = (arg, flags) -> arg.isBoolean() ? arg.parseBoolean() : null;
+        map.put(BOOLEAN, floatParser);
+        map.put(Boolean.class, floatParser);
+
+        map.put(RANGE, (arg, flags) -> arg.parseRange());
+
+        map.put(USER, (arg, flags) -> {
+            if (TypeParserFlags.has(flags, "strict")) {
                 if (arg.isValidUser()) return arg.getUser();
                 else return null;
             }
@@ -115,8 +108,8 @@ public class DefaultCommandParameters {
             return arg.findMember().map(Member::getUser).orElse(null);
         });
 
-        map.registerParameterType(MEMBER, null, (arg, flags) -> {
-            if (ArgumentFlags.isStrict(flags)) {
+        map.put(MEMBER, (arg, flags) -> {
+            if (TypeParserFlags.has(flags, "strict")) {
                 if (arg.isValidMember()) return arg.getMember();
                 else return null;
             }
@@ -127,8 +120,8 @@ public class DefaultCommandParameters {
             return arg.findMember().orElse(null);
         });
 
-        map.registerParameterType(ROLE, null, (arg, flags) -> {
-            if (ArgumentFlags.isStrict(flags)) {
+        map.put(ROLE, (arg, flags) -> {
+            if (TypeParserFlags.has(flags, "strict")) {
                 if (arg.isValidRole()) return arg.getRole();
                 else return null;
             }
@@ -142,8 +135,8 @@ public class DefaultCommandParameters {
             return arg.findRole().orElse(null);
         });
 
-        map.registerParameterType(TEXTCHANNEL, null, (arg, flags) -> {
-            if (ArgumentFlags.isStrict(flags)) {
+        map.put(TEXTCHANNEL, (arg, flags) -> {
+            if (TypeParserFlags.has(flags, "strict")) {
                 if (arg.isValidTextChannel()) return arg.getTextChannel();
                 else return null;
             }
@@ -157,15 +150,15 @@ public class DefaultCommandParameters {
             return arg.findTextChannel().orElse(null);
         });
 
-        map.registerParameterTypeFlagless(EMOTE, CommandArgument::isEmote, CommandArgument::getEmote);
+        map.registerParameterTypeFlagless(EMOTE, CommandArgument::getEmote);
 
-        map.registerParameterTypeFlagless(EMOJI, CommandArgument::isEmoji, CommandArgument::getEmoji);
+        map.registerParameterTypeFlagless(EMOJI, CommandArgument::getEmoji);
 
-        map.registerParameterTypeFlagless(Duration.class, null, new DurationMapper());
+        map.registerParameterTypeFlagless(Duration.class, new DurationMapper());
 
-        map.registerParameterTypeFlagless(OffsetDateTime.class, null, new DateTimeMapper());
+        map.registerParameterTypeFlagless(OffsetDateTime.class, new DateTimeMapper());
 
-        map.registerParameterTypeFlagless(String.class, null, CommandArgument::getArgument);
+        map.registerParameterTypeFlagless(String.class, CommandArgument::getArgument);
     }
 
 }

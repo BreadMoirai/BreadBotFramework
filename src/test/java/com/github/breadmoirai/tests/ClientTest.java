@@ -19,23 +19,33 @@ package com.github.breadmoirai.tests;
 import com.github.breadmoirai.breadbot.framework.BreadBotClient;
 import com.github.breadmoirai.breadbot.framework.builder.BreadBotClientBuilder;
 import com.github.breadmoirai.breadbot.framework.builder.CommandHandleBuilder;
-import com.github.breadmoirai.breadbot.framework.internal.event.CommandEventInternal;
+import com.github.breadmoirai.breadbot.framework.event.internal.CommandEventInternal;
 import com.github.breadmoirai.breadbot.util.Emoji;
-import com.github.breadmoirai.tests.commands.*;
+import com.github.breadmoirai.tests.commands.ColorCommand;
+import com.github.breadmoirai.tests.commands.CountCommand;
+import com.github.breadmoirai.tests.commands.EmojiCommand;
+import com.github.breadmoirai.tests.commands.HelpCommand;
+import com.github.breadmoirai.tests.commands.MathCommand;
+import com.github.breadmoirai.tests.commands.MirrorCommand;
+import com.github.breadmoirai.tests.commands.NameCommand;
+import com.github.breadmoirai.tests.commands.PingCommand;
+import com.github.breadmoirai.tests.commands.StaticCommand;
+import com.github.breadmoirai.tests.commands.TypeTestKeyTestCommand;
 import org.junit.Test;
 import uk.org.lidalia.slf4jext.Level;
 import uk.org.lidalia.slf4jtest.TestLoggerFactory;
 
 import java.awt.*;
 import java.util.function.Consumer;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static com.github.breadmoirai.tests.MockFactory.mockCommand;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.verify;
 
 public class ClientTest {
 
@@ -202,7 +212,7 @@ public class ClientTest {
         setupBread(bread -> bread
                 .registerParameterTypeFlagless(
                         MathCommand.Operator.class,
-                        arg -> arg.matches(Pattern.compile("[+\\-*/]")),
+//                        arg -> arg.matches(Pattern.compile("[+\\-*/]")),
                         arg -> {
                             switch (arg.getArgument()) {
                                 case "+":

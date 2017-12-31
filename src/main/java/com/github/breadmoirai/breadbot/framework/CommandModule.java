@@ -17,7 +17,11 @@
 package com.github.breadmoirai.breadbot.framework;
 
 import com.github.breadmoirai.breadbot.framework.builder.BreadBotClientBuilder;
-import org.json.JSONObject;
+import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
+import com.typesafe.config.Config;
+import net.dv8tion.jda.core.entities.Guild;
+
+import java.util.Map;
 
 public interface CommandModule {
 
@@ -37,14 +41,14 @@ public interface CommandModule {
         event.reply("This is not the help you are looking for");
     }
 
-    default boolean isJSONConfigurable() {
+    default boolean isConfigurable() {
         return false;
     }
 
-    default void addJSONConfig(long guildId, JSONObject jsonObject) {
+    default void buildConfig(Guild guild, Map<String, Object> conf) {
     }
 
-    default boolean loadJSONConfig(long guildId, JSONObject jsonObject) {
+    default boolean loadConfig(Guild guild, Config conf) {
         return false;
     }
 

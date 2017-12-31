@@ -16,8 +16,6 @@
 
 package com.github.breadmoirai.breadbot.util;
 
-import org.jetbrains.annotations.Contract;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.IntStream;
@@ -195,11 +193,11 @@ public class Arguments {
             return IntStream.of(Integer.parseInt(s));
         }
         if (dash == s.length() - 1) {
-            return IntStream.empty();
+            return null;
         }
         String sa = s.substring(0, dash);
         String sb = s.substring(dash + 1, s.length());
-        if (!isInteger(s) || !isInteger(sb)) return IntStream.empty();
+        if (!isInteger(s) || !isInteger(sb)) return null;
         int a = Integer.parseInt(sa);
         int b = Integer.parseInt(sb);
         if (a < b) {
@@ -240,7 +238,6 @@ public class Arguments {
         return true;
     }
 
-    @Contract("null -> null; !null -> !null")
     public static String stripHexPrefix(String s) {
         if (s == null) return null;
         if (s.startsWith("#")) {
@@ -251,7 +248,11 @@ public class Arguments {
         return s;
     }
 
-    private static final Pattern boolPattern = Pattern.compile("(true|yes|on)|(false|no|off)", Pattern.CASE_INSENSITIVE);
+    /**
+     * A Pattern that should be case insensitive and consists of 2 groups separated by an or.
+     * The first group should consist of terms that indicate {@code true} and the second group {@code false}.
+     */
+    public static Pattern boolPattern = Pattern.compile("(true|yes|on)|(false|no|off)", Pattern.CASE_INSENSITIVE);
 
 
     /**

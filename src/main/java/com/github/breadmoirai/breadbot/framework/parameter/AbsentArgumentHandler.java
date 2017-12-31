@@ -16,8 +16,8 @@
 
 package com.github.breadmoirai.breadbot.framework.parameter;
 
-import com.github.breadmoirai.breadbot.framework.CommandEvent;
 import com.github.breadmoirai.breadbot.framework.annotation.InheritedProperty;
+import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
 
 @FunctionalInterface
 @InheritedProperty
