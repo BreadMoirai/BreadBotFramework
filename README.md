@@ -2,7 +2,7 @@
 [bintrayLink]: https://bintray.com/breadmoirai/maven/breadbot-framework/_latestVersion
 [codecovImage]: https://codecov.io/gh/BreadMoirai/BreadBotFramework/branch/master/graph/badge.svg
 [codecovLink]: https://codecov.io/gh/BreadMoirai/BreadBotFramework
-[travisImage]: https://travis-ci.org/BreadMoirai/BreadBotFramework.svg?branch=master
+[travisImage]: https://travis-ci.org/BreadMoirai/BreadBotFramework.svg?branch=development
 [travisLink]: https://travis-ci.org/BreadMoirai/BreadBotFramework
 [contributorsImage]: https://img.shields.io/github/contributors/BreadMoirai/BreadBotFramework.svg
 [contributorsLink]: https://github.com/BreadMoirai/BreadBotFramework/graphs/contributors
