@@ -17,6 +17,7 @@
 package com.github.breadmoirai.breadbot.util;
 
 import com.github.breadmoirai.breadbot.framework.parameter.CommandArgument;
+import com.github.breadmoirai.breadbot.framework.parameter.TypeParser;
 
 import java.time.*;
 import java.time.format.DateTimeFormatter;
@@ -24,11 +25,10 @@ import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoField;
 import java.time.temporal.TemporalAccessor;
-import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class DateTimeMapper implements Function<CommandArgument, OffsetDateTime> {
+public class DateTimeMapper implements TypeParser<OffsetDateTime> {
 
     DateTimeFormatter DATE_TIME_FORMATTER = new DateTimeFormatterBuilder()
             .parseCaseInsensitive()
@@ -42,7 +42,7 @@ public class DateTimeMapper implements Function<CommandArgument, OffsetDateTime>
 
 
     @Override
-    public OffsetDateTime apply(CommandArgument argument) {
+    public OffsetDateTime parse(CommandArgument argument) {
         final OffsetDateTime base = argument.getEvent().getTime();
         String args = argument.getArgument().toLowerCase();
         final Matcher monthDay = MONTH_DAY.matcher(args);
