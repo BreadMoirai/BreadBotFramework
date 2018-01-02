@@ -18,17 +18,12 @@ package com.github.breadmoirai.breadbot.framework.defaults;
 
 import com.github.breadmoirai.breadbot.framework.parameter.CommandArgument;
 import com.github.breadmoirai.breadbot.framework.parameter.TypeParser;
-import com.github.breadmoirai.breadbot.framework.parameter.TypeParserFlags;
 import com.github.breadmoirai.breadbot.framework.parameter.internal.CommandParameterTypeManagerImpl;
 import com.github.breadmoirai.breadbot.util.Arguments;
 import com.github.breadmoirai.breadbot.util.DateTimeMapper;
 import com.github.breadmoirai.breadbot.util.DurationMapper;
 import com.github.breadmoirai.breadbot.util.Emoji;
-import net.dv8tion.jda.core.entities.Emote;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.Role;
-import net.dv8tion.jda.core.entities.TextChannel;
-import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.core.entities.*;
 
 import java.time.Duration;
 import java.time.OffsetDateTime;
@@ -50,14 +45,11 @@ public class DefaultCommandParameters {
     public static final Class<Emoji> EMOJI = Emoji.class;
 
     public void initialize(CommandParameterTypeManagerImpl map) {
-        final TypeParser<Integer> intParser = (arg, flags) -> {
-            final boolean hex = TypeParserFlags.has(flags, TypeParserFlags.HEX);
-            if (hex) {
-                if (arg.isHex()) {
-                    return arg.parseIntFromHex();
-                } else return null;
-            } else if (arg.isInteger()) {
+        final TypeParser<Integer> intParser = (arg) -> {
+            if (arg.isInteger()) {
                 return arg.parseInt();
+            } else if (arg.isHex()) {
+                return arg.parseIntFromHex();
             } else {
                 return null;
             }
@@ -66,12 +58,11 @@ public class DefaultCommandParameters {
         map.put(Integer.class, intParser);
 
 
-        final TypeParser<Long> longParser = (arg, flags) -> {
-            final boolean hex = TypeParserFlags.has(flags, TypeParserFlags.HEX);
-            if (hex && arg.isHex()) {
-                return Long.parseLong(Arguments.stripHexPrefix(arg.getArgument()), 16);
-            } else if (arg.isLong()) {
+        final TypeParser<Long> longParser = (CommandArgument arg) -> {
+            if (arg.isLong()) {
                 return arg.parseLong();
+            } else if (arg.isHex()) {
+                return Long.parseLong(Arguments.stripHexPrefix(arg.getArgument()), 16);
             } else {
                 return null;
             }
@@ -80,85 +71,91 @@ public class DefaultCommandParameters {
         map.put(Long.class, longParser);
 
 
-        final TypeParser<Float> floatParser = (arg, flags) -> arg.isFloat() ? arg.parseFloat() : null;
+        final TypeParser<Float> floatParser = (arg) -> arg.isFloat() ? arg.parseFloat() : null;
         map.put(FLOAT, floatParser);
         map.put(Float.class, floatParser);
 
 
-        final TypeParser<Double> doubleParser = (arg, flags) -> arg.isFloat() ? arg.parseDouble() : null;
-        map.put(DOUBLE, floatParser);
-        map.put(Double.class, floatParser);
+        final TypeParser<Double> doubleParser = (arg) -> arg.isFloat() ? arg.parseDouble() : null;
+        map.put(DOUBLE, doubleParser);
+        map.put(Double.class, doubleParser);
 
 
-        final TypeParser<Boolean> boolParser = (arg, flags) -> arg.isBoolean() ? arg.parseBoolean() : null;
-        map.put(BOOLEAN, floatParser);
-        map.put(Boolean.class, floatParser);
+        final TypeParser<Boolean> boolParser = (arg) -> arg.isBoolean() ? arg.parseBoolean() : null;
+        map.put(BOOLEAN, boolParser);
+        map.put(Boolean.class, boolParser);
 
-        map.put(RANGE, (arg, flags) -> arg.parseRange());
+        map.put(RANGE, CommandArgument::parseRange);
 
-        map.put(USER, (arg, flags) -> {
-            if (TypeParserFlags.has(flags, "strict")) {
-                if (arg.isValidUser()) return arg.getUser();
-                else return null;
+        map.put(USER, (arg) -> {
+            if (arg.isValidUser()) {
+                return arg.getUser();
+            } else {
+                return arg.findMember().map(Member::getUser).orElseGet(() -> {
+                    if (arg.isLong()) {
+                        long l = arg.parseLong();
+                        return arg.getEvent().getJDA().getUserById(l);
+                    } else {
+                        return null;
+                    }
+                });
             }
-            if (arg.isLong()) {
-                long l = arg.parseLong();
-                return arg.getEvent().getJDA().getUserById(l);
-            }
-            return arg.findMember().map(Member::getUser).orElse(null);
         });
 
-        map.put(MEMBER, (arg, flags) -> {
-            if (TypeParserFlags.has(flags, "strict")) {
-                if (arg.isValidMember()) return arg.getMember();
-                else return null;
+        map.put(MEMBER, (arg) -> {
+            if (arg.isValidMember()) {
+                return arg.getMember();
+            } else {
+                return arg.findMember().orElseGet(() -> {
+                    if (arg.isLong()) {
+                        long l = arg.parseLong();
+                        return arg.getEvent().getGuild().getMemberById(l);
+                    } else {
+                        return null;
+                    }
+                });
             }
-            if (arg.isLong()) {
-                long l = arg.parseLong();
-                return arg.getEvent().getGuild().getMemberById(l);
-            }
-            return arg.findMember().orElse(null);
         });
 
-        map.put(ROLE, (arg, flags) -> {
-            if (TypeParserFlags.has(flags, "strict")) {
-                if (arg.isValidRole()) return arg.getRole();
-                else return null;
+        map.put(ROLE, (arg) -> {
+            if (arg.isValidRole()) {
+                return arg.getRole();
+            } else {
+                return arg.findRole().orElseGet(() -> {
+                    if (arg.isLong()) {
+                        long l = arg.parseLong();
+                        return arg.getEvent().getGuild().getRoleById(l);
+                    } else {
+                        return null;
+                    }
+                });
             }
-            if (arg.isLong()) {
-                long l = arg.parseLong();
-                Role role = arg.getEvent().getGuild().getRoleById(l);
-                if (role != null) {
-                    return role;
-                }
-            }
-            return arg.findRole().orElse(null);
         });
 
-        map.put(TEXTCHANNEL, (arg, flags) -> {
-            if (TypeParserFlags.has(flags, "strict")) {
-                if (arg.isValidTextChannel()) return arg.getTextChannel();
-                else return null;
+        map.put(TEXTCHANNEL, (arg) -> {
+            if (arg.isValidTextChannel()) {
+                return arg.getTextChannel();
+            } else {
+                return arg.findTextChannel().orElseGet(() -> {
+                    if (arg.isLong()) {
+                        long l = arg.parseLong();
+                        return arg.getEvent().getGuild().getTextChannelById(l);
+                    } else {
+                        return null;
+                    }
+                });
             }
-            if (arg.isLong()) {
-                long l = arg.parseLong();
-                TextChannel channel = arg.getEvent().getJDA().getTextChannelById(l);
-                if (channel != null) {
-                    return channel;
-                }
-            }
-            return arg.findTextChannel().orElse(null);
         });
 
-        map.registerParameterTypeFlagless(EMOTE, CommandArgument::getEmote);
+        map.put(EMOTE, CommandArgument::getEmote);
 
-        map.registerParameterTypeFlagless(EMOJI, CommandArgument::getEmoji);
+        map.put(EMOJI, CommandArgument::getEmoji);
 
-        map.registerParameterTypeFlagless(Duration.class, new DurationMapper());
+        map.put(Duration.class, new DurationMapper());
 
-        map.registerParameterTypeFlagless(OffsetDateTime.class, new DateTimeMapper());
+        map.put(OffsetDateTime.class, new DateTimeMapper());
 
-        map.registerParameterTypeFlagless(String.class, CommandArgument::getArgument);
+        map.put(String.class, CommandArgument::getArgument);
     }
 
 }
