@@ -23,8 +23,6 @@ import com.github.breadmoirai.breadbot.framework.command.CommandResultHandler;
 import com.github.breadmoirai.breadbot.framework.event.internal.CommandEventInternal;
 import com.github.breadmoirai.breadbot.framework.parameter.CommandParameter;
 import com.github.breadmoirai.breadbot.framework.parameter.CommandParser;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -36,8 +34,6 @@ import java.util.StringJoiner;
 import java.util.regex.Pattern;
 
 public class CommandHandleImpl implements CommandHandle {
-
-    private static final Logger LOG = LoggerFactory.getLogger(CommandHandle.class);
 
     private final String[] keys;
     private final String name;

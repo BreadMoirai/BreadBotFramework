@@ -8,7 +8,5 @@ script:
   - ./gradlew jacocoTestReport
 after_success:
   - bash <(curl -s https://codecov.io/bash)
-notifications:
-  webhooks:
-    urls:
-      - https://ptb.discordapp.com/api/webhooks/280240499418464256/cAnfSnpgYERHihPaYffYTfKRIDnnHGwiCjZHeIOTLSBuXaxjjAy16r-8UE68li8enJWn
+after_script:
+  - bash -c "$(curl -fsSL https://raw.githubusercontent.com/MaT1g3R/travis_discord/master/travis.sh)"
