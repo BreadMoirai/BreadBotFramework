@@ -37,7 +37,7 @@ public class CommandEventFactoryImpl implements CommandEventFactory {
     @Override
     public CommandEventInternal createEvent(GenericGuildMessageEvent event, Message message, BreadBotClient client) {
         String prefix = prefixModule.getPrefix(event.getGuild());
-        String contentRaw = message.getRawContent();
+        String contentRaw = message.getContentRaw();
         final Matcher matcher = DiscordPatterns.USER_MENTION_PREFIX.matcher(contentRaw);
         if (matcher.find() && matcher.start() == 0 && matcher.group(1).equals(getMyId(event))) {
             contentRaw = contentRaw.substring(matcher.end()).trim();
