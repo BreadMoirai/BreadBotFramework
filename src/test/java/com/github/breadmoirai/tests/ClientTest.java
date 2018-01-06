@@ -23,6 +23,7 @@ import com.github.breadmoirai.breadbot.framework.event.internal.CommandEventInte
 import com.github.breadmoirai.breadbot.util.Emoji;
 import com.github.breadmoirai.tests.commands.ColorCommand;
 import com.github.breadmoirai.tests.commands.CountCommand;
+import com.github.breadmoirai.tests.commands.EchoCommand;
 import com.github.breadmoirai.tests.commands.EmojiCommand;
 import com.github.breadmoirai.tests.commands.HelpCommand;
 import com.github.breadmoirai.tests.commands.MathCommand;
@@ -45,6 +46,7 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 public class ClientTest {
@@ -282,6 +284,14 @@ public class ClientTest {
         assertResponse("!10plus 10", "21");
     }
 
+    @Test
+    public void matchRegexTest() {
+        setupBread(bread -> bread.addCommand(EchoCommand::new));
+        assertResponse("!echo echo", "echo");
+        assertResponse("!echonum echo", null);
+        assertResponse("!echonum 124", "124");
+    }
+
     private void setupBread(Consumer<BreadBotClientBuilder> config) {
         BreadBotClientBuilder builder = new BreadBotClientBuilder();
         config.accept(builder);
@@ -300,7 +310,10 @@ public class ClientTest {
 
         client.getCommandEngine().handle(spy);
 
-        verify(spy).reply(expected);
+        if (expected != null)
+            verify(spy).reply(expected);
+        else
+            verify(spy, never()).reply(anyString());
     }
 
 

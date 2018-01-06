@@ -68,6 +68,7 @@ public class DefaultCommandProperties {
             final String value = p.value();
             final Pattern compile;
             try {
+                //noinspection MagicConstant
                 compile = Pattern.compile(value, p.flags());
             } catch (PatternSyntaxException e) {
                 throw new BreadBotException("An invalid pattern was provided at " + builder.getDeclaringParameter());
