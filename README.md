@@ -26,7 +26,7 @@
 ### Features
  - [x] Commands
  - [ ] Documentation
- - [ ] Logging
+ - [x] Some Logging
 
 
 This framework is built ontop of [JDA](https://github.com/DV8FromTheWorld/JDA)
