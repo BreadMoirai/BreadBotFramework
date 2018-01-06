@@ -1,5 +1,5 @@
 /*
- *        Copyright 2017 Ton Ly (BreadMoirai)
+ *        Copyright 2017-2018 Ton Ly (BreadMoirai)
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -57,6 +57,7 @@ public class CommandArgumentFactory {
     public CommandArgument parse(final String s) {
         if (Arguments.isMention(s)) {
             int i = 2;
+            boolean animated = false;
             switch (s.charAt(1)) {
                 case '@': {
                     switch (s.charAt(2)) {
@@ -99,6 +100,11 @@ public class CommandArgumentFactory {
                     }
                 }
                 break;
+                case 'a': {
+                    i++;
+                    animated = true;
+                    //fallthrough
+                }
                 case ':': {
                     String emoteMention = s.substring(i, s.length() - 1);
                     int seperator = emoteMention.indexOf(':');
@@ -109,8 +115,10 @@ public class CommandArgumentFactory {
                         long emoteId = Long.parseLong(id);
                         Emote jdaEmote = jda.getEmoteById(emoteId);
                         if (jdaEmote == null) {
+                            //fake emote
                             EmoteImpl emoteImpl = new EmoteImpl(emoteId, (JDAImpl) jda);
                             emoteImpl.setName(name);
+                            emoteImpl.setAnimated(animated);
                             jdaEmote = emoteImpl;
                         }
                         return new EmoteArgument(event, s, jdaEmote);
