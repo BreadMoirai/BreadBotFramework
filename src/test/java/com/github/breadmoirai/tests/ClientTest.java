@@ -53,7 +53,7 @@ public class ClientTest {
 
 
     static {
-        TestLoggerFactory.getInstance().setPrintLevel(Level.INFO);
+        TestLoggerFactory.getInstance().setPrintLevel(Level.DEBUG);
     }
 
     private BreadBotClient client;

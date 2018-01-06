@@ -1,7 +1,5 @@
 [bintrayImage]: https://api.bintray.com/packages/breadmoirai/maven/breadbot-framework/images/download.svg
 [bintrayLink]: https://bintray.com/breadmoirai/maven/breadbot-framework/_latestVersion
-[codecovImage]: https://codecov.io/gh/BreadMoirai/BreadBotFramework/branch/master/graph/badge.svg
-[codecovLink]: https://codecov.io/gh/BreadMoirai/BreadBotFramework
 [travisImage]: https://travis-ci.org/BreadMoirai/BreadBotFramework.svg?branch=master
 [travisLink]: https://travis-ci.org/BreadMoirai/BreadBotFramework
 [contributorsImage]: https://img.shields.io/github/contributors/BreadMoirai/BreadBotFramework.svg
@@ -16,7 +14,6 @@
 [docsLink]: https://breadmoirai.github.io/BreadBotFramework/
 
 [ ![bintrayImage][] ][bintrayLink]
-[ ![codecovImage][]][codecovLink]
 [ ![travisImage][]][travisLink]
 [ ![contributorsImage][] ][contributorsLink]
 [ ![issuesImage][] ][issuesLink]
@@ -29,7 +26,7 @@
 ### Features
  - [x] Commands
  - [ ] Documentation
- - [ ] Logging
+ - [x] Some Logging
 
 
 This framework is built ontop of [JDA](https://github.com/DV8FromTheWorld/JDA)

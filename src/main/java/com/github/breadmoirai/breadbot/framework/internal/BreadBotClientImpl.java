@@ -57,7 +57,6 @@ public class BreadBotClientImpl implements BreadBotClient, EventListener {
 
     private final CommandResultManager resultManager;
     private final CommandParameterManager argumentTypes;
-    //    private final IEventManager eventManager;
     private final CommandEventFactory eventFactory;
     private final CommandEngine commandEngine;
     private final Predicate<Message> preProcessPredicate;
@@ -78,7 +77,6 @@ public class BreadBotClientImpl implements BreadBotClient, EventListener {
         this.modules = Collections.unmodifiableList(modules);
         this.resultManager = resultManager;
         this.argumentTypes = argumentTypes;
-//        this.eventManager = eventManager;
         this.eventFactory = eventFactory;
         this.preProcessPredicate = preProcessPredicate;
         this.shouldEvaluateCommandOnMessageUpdate = shouldEvaluateCommandOnMessageUpdate;
@@ -121,15 +119,19 @@ public class BreadBotClientImpl implements BreadBotClient, EventListener {
                     if (!commandHandle.handle(event, new EventStringIterator(event))) {
                         CommandHandle help = commandMap.get("help");
                         if (help != null) {
+                            LOG.debug(String.format("Executing Command: %s (%s)", help.getName(), help.getGroup()));
                             help.handle(event, new EventStringIterator(event));
                         }
                     }
                 } else {
+                    LOG.debug(String.format("Executing Command: %s (%s)", commandHandle.getName(), commandHandle.getGroup()));
                     commandHandle.handle(event, new EventStringIterator(event));
+
                 }
             } else if (event.isHelpEvent()) {
                 CommandHandle help = commandMap.get("help");
                 if (help != null) {
+                    LOG.debug("Executing Command: help");
                     help.handle(event, new EventStringIterator(event));
                 }
             }
@@ -161,11 +163,6 @@ public class BreadBotClientImpl implements BreadBotClient, EventListener {
     public void setJDA(JDA jda) {
         this.jda = jda;
     }
-//
-//    @Override
-//    public IEventManager getEventManager() {
-//        return eventManager;
-//    }
 
     @Override
     public CommandParameterManager getArgumentTypes() {
@@ -262,7 +259,7 @@ public class BreadBotClientImpl implements BreadBotClient, EventListener {
         if (preProcessPredicate == null || preProcessPredicate.test(message)) {
             final CommandEventInternal commandEvent = eventFactory.createEvent(event, message, BreadBotClientImpl.this);
             if (commandEvent != null) {
-                LOG.trace(commandEvent.toString());
+                LOG.debug(commandEvent.toString());
                 commandEngine.handle(commandEvent);
                 ((JDAImpl) jda).getEventManager().handle(event);
             }

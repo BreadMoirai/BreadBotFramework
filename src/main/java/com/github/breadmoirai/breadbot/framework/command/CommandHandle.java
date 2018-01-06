@@ -1,5 +1,5 @@
 /*
- *        Copyright 2017 Ton Ly (BreadMoirai)
+ *        Copyright 2017-2018 Ton Ly (BreadMoirai)
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -81,4 +81,5 @@ public interface CommandHandle {
      * @return an array of CommandParameters
      */
     CommandParameter[] getParameters();
+
 }
