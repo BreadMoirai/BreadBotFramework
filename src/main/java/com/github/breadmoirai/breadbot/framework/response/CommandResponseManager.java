@@ -15,7 +15,7 @@
  */
 package com.github.breadmoirai.breadbot.framework.response;
 
-import com.github.breadmoirai.breadbot.framework.internal.response.CommandResponseManagerImpl;
+import com.github.breadmoirai.breadbot.framework.response.internal.CommandResponseManagerImpl;
 
 import java.util.function.Supplier;
 

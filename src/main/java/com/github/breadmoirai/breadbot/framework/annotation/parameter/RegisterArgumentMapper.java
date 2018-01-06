@@ -16,15 +16,19 @@
 
 package com.github.breadmoirai.breadbot.framework.annotation.parameter;
 
-import com.github.breadmoirai.breadbot.framework.parameter.ArgumentTypeMapper;
+import com.github.breadmoirai.breadbot.framework.parameter.TypeParser;
 
-import java.lang.annotation.*;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE, ElementType.PARAMETER, ElementType.PACKAGE, ElementType.METHOD})
 @Inherited
 public @interface RegisterArgumentMapper {
 
-    Class<ArgumentTypeMapper<?>>[] mapper() default {};
+    Class<TypeParser<?>>[] mapper() default {};
 
 }

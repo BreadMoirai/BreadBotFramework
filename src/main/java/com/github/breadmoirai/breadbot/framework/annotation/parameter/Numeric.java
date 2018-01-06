@@ -1,5 +1,5 @@
 /*
- *        Copyright 2017 Ton Ly (BreadMoirai)
+ *        Copyright 2017-2018 Ton Ly (BreadMoirai)
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -16,11 +16,40 @@
 
 package com.github.breadmoirai.breadbot.framework.annotation.parameter;
 
-import java.lang.annotation.*;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.PARAMETER)
 @Inherited
 public @interface Numeric {
+
+    Type value() default Type.NUMBER;
+
+    public enum Type {
+        /**
+         * Tests whether this argument consists of only 0-9.
+         */
+        NUMBER,
+        /**
+         * Tests whether this argument only consists of 0-9
+         * and if it falls into the range of a java integer.
+         */
+        INT,
+        /**
+         * Tests whether this argument only consists of 0-9
+         * and if it falls into the range of a java long.
+         */
+        LONG,
+        /**
+         * Tests whether this argument can be parsed as a float.
+         *
+         * @see Double#valueOf(String)
+         */
+        FLOAT
+    }
 
 }

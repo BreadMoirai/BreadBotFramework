@@ -1,20 +1,21 @@
 package com.github.breadmoirai.tests;
 
 import com.github.breadmoirai.breadbot.framework.BreadBotClient;
-import com.github.breadmoirai.breadbot.framework.internal.event.CommandEventFactoryImpl;
-import com.github.breadmoirai.breadbot.framework.internal.event.CommandEventInternal;
+import com.github.breadmoirai.breadbot.framework.event.internal.CommandEventFactoryImpl;
+import com.github.breadmoirai.breadbot.framework.event.internal.CommandEventInternal;
 import com.github.breadmoirai.breadbot.modules.prefix.DefaultPrefixModule;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.message.guild.GenericGuildMessageEvent;
-import org.jetbrains.annotations.NotNull;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 
 public class MockFactory {
 
-    @NotNull
     public static CommandEventInternal mockCommand(BreadBotClient client, String input) {
         //        GenericGuildMessageEvent mockInput = mock(GenericGuildMessageEvent.class);
 //        Guild mockGuild = mock(Guild.class);

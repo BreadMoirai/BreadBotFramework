@@ -1,5 +1,5 @@
 /*
- *        Copyright 2017 Ton Ly (BreadMoirai)
+ *        Copyright 2017-2018 Ton Ly (BreadMoirai)
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -16,7 +16,11 @@
 
 package com.github.breadmoirai.breadbot.framework.annotation.parameter;
 
-import java.lang.annotation.*;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.PARAMETER)
@@ -25,4 +29,9 @@ public @interface MatchRegex {
 
     String value();
 
+    /**
+     * @return by default {@code 0}.
+     * @see java.util.regex.Pattern#compile(String, int)
+     */
+    int flags() default 0;
 }

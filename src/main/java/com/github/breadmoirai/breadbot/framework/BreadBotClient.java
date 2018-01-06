@@ -1,5 +1,5 @@
 /*
- *        Copyright 2017 Ton Ly (BreadMoirai)
+ *        Copyright 2017-2018 Ton Ly (BreadMoirai)
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -16,9 +16,10 @@
 
 package com.github.breadmoirai.breadbot.framework;
 
+import com.github.breadmoirai.breadbot.framework.command.CommandEngine;
 import com.github.breadmoirai.breadbot.framework.command.CommandHandle;
 import com.github.breadmoirai.breadbot.framework.command.CommandResultManager;
-import com.github.breadmoirai.breadbot.framework.parameter.CommandParameterTypeManager;
+import com.github.breadmoirai.breadbot.framework.parameter.CommandParameterManager;
 import net.dv8tion.jda.core.JDA;
 
 import java.lang.reflect.Type;
@@ -47,7 +48,7 @@ public interface BreadBotClient {
 
 //    IEventManager getEventManager();
 
-    CommandParameterTypeManager getArgumentTypes();
+    CommandParameterManager getArgumentTypes();
 
 
     CommandResultManager getResultManager();

@@ -1,5 +1,5 @@
 /*
- *        Copyright 2017 Ton Ly (BreadMoirai)
+ *        Copyright 2017-2018 Ton Ly (BreadMoirai)
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -19,23 +19,35 @@ package com.github.breadmoirai.tests;
 import com.github.breadmoirai.breadbot.framework.BreadBotClient;
 import com.github.breadmoirai.breadbot.framework.builder.BreadBotClientBuilder;
 import com.github.breadmoirai.breadbot.framework.builder.CommandHandleBuilder;
-import com.github.breadmoirai.breadbot.framework.internal.event.CommandEventInternal;
+import com.github.breadmoirai.breadbot.framework.event.internal.CommandEventInternal;
 import com.github.breadmoirai.breadbot.util.Emoji;
-import com.github.breadmoirai.tests.commands.*;
+import com.github.breadmoirai.tests.commands.ColorCommand;
+import com.github.breadmoirai.tests.commands.CountCommand;
+import com.github.breadmoirai.tests.commands.EchoCommand;
+import com.github.breadmoirai.tests.commands.EmojiCommand;
+import com.github.breadmoirai.tests.commands.HelpCommand;
+import com.github.breadmoirai.tests.commands.MathCommand;
+import com.github.breadmoirai.tests.commands.MirrorCommand;
+import com.github.breadmoirai.tests.commands.NameCommand;
+import com.github.breadmoirai.tests.commands.PingCommand;
+import com.github.breadmoirai.tests.commands.StaticCommand;
+import com.github.breadmoirai.tests.commands.TypeTestKeyTestCommand;
 import org.junit.Test;
 import uk.org.lidalia.slf4jext.Level;
 import uk.org.lidalia.slf4jtest.TestLoggerFactory;
 
 import java.awt.*;
 import java.util.function.Consumer;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static com.github.breadmoirai.tests.MockFactory.mockCommand;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 public class ClientTest {
 
@@ -200,9 +212,8 @@ public class ClientTest {
     @Test
     public void customParameterTest() {
         setupBread(bread -> bread
-                .registerParameterTypeFlagless(
+                .putTypeParser(
                         MathCommand.Operator.class,
-                        arg -> arg.matches(Pattern.compile("[+\\-*/]")),
                         arg -> {
                             switch (arg.getArgument()) {
                                 case "+":
@@ -214,7 +225,7 @@ public class ClientTest {
                                 case "*":
                                     return new MathCommand.MultiplyOperator();
                                 default:
-                                    throw new RuntimeException();
+                                    return null;
                             }
                         })
                 .addCommand(MathCommand::new));
@@ -259,7 +270,7 @@ public class ClientTest {
         setupBread(bread -> {
             for (CommandHandleBuilder command : bread.createCommands(NameCommand::new)) {
                 if (command.getName().equals("name")) {
-                    command.setParameter(0, parser -> "James");
+                    command.getParameter(0).setParser((parameter, list, parser) -> "James");
                 }
             }
         });
@@ -271,6 +282,14 @@ public class ClientTest {
         setupBread(bread -> bread.addCommand(TypeTestKeyTestCommand::new));
         assertResponse("!10plus 2", "12");
         assertResponse("!10plus 10", "21");
+    }
+
+    @Test
+    public void matchRegexTest() {
+        setupBread(bread -> bread.addCommand(EchoCommand::new));
+        assertResponse("!echo echo", "echo");
+        assertResponse("!echonum echo", null);
+        assertResponse("!echonum 124", "124");
     }
 
     private void setupBread(Consumer<BreadBotClientBuilder> config) {
@@ -291,7 +310,10 @@ public class ClientTest {
 
         client.getCommandEngine().handle(spy);
 
-        verify(spy).reply(expected);
+        if (expected != null)
+            verify(spy).reply(expected);
+        else
+            verify(spy, never()).reply(anyString());
     }
 
 

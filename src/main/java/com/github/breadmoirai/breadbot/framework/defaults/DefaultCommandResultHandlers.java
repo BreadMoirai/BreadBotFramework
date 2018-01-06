@@ -16,7 +16,7 @@
 
 package com.github.breadmoirai.breadbot.framework.defaults;
 
-import com.github.breadmoirai.breadbot.framework.internal.command.CommandResultManagerImpl;
+import com.github.breadmoirai.breadbot.framework.command.internal.CommandResultManagerImpl;
 import com.github.breadmoirai.breadbot.util.Emoji;
 import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.entities.Emote;

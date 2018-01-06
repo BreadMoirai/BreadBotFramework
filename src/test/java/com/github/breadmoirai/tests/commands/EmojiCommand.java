@@ -1,5 +1,5 @@
 /*
- *        Copyright 2017 Ton Ly (BreadMoirai)
+ *        Copyright 2017-2018 Ton Ly (BreadMoirai)
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -16,11 +16,11 @@
 
 package com.github.breadmoirai.tests.commands;
 
-import com.github.breadmoirai.breadbot.framework.CommandEvent;
 import com.github.breadmoirai.breadbot.framework.annotation.command.Command;
 import com.github.breadmoirai.breadbot.framework.annotation.command.MainCommand;
 import com.github.breadmoirai.breadbot.framework.annotation.parameter.HandleAbsentArgument;
 import com.github.breadmoirai.breadbot.framework.annotation.parameter.Required;
+import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
 import com.github.breadmoirai.breadbot.framework.parameter.AbsentArgumentHandler;
 import com.github.breadmoirai.breadbot.framework.parameter.CommandParameter;
 import com.github.breadmoirai.breadbot.util.Emoji;
@@ -43,7 +43,7 @@ public class EmojiCommand {
 
         @Override
         public void handle(CommandEvent commandEvent, CommandParameter commandParameter) {
-            commandEvent.reply("missing parameter: " + commandParameter.getType().getSimpleName());
+            commandEvent.reply("missing parameter: " + commandParameter.getDeclaringParameter().getType().getSimpleName());
         }
     }
 }

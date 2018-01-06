@@ -16,7 +16,7 @@
 
 package com.github.breadmoirai.breadbot.framework.builder;
 
-import com.github.breadmoirai.breadbot.framework.CommandEvent;
+import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
 import net.dv8tion.jda.core.utils.Checks;
 
 import java.util.Arrays;

@@ -17,14 +17,14 @@
 package com.github.breadmoirai.breadbot.util;
 
 import com.github.breadmoirai.breadbot.framework.parameter.CommandArgument;
+import com.github.breadmoirai.breadbot.framework.parameter.TypeParser;
 
 import java.time.Duration;
-import java.util.function.Function;
 
-public class DurationMapper implements Function<CommandArgument, Duration> {
+public class DurationMapper implements TypeParser<Duration> {
 
     @Override
-    public Duration apply(CommandArgument argument) {
+    public Duration parse(CommandArgument argument) {
         final String s = argument.getArgument().toLowerCase();
         if (s.indexOf(' ') != -1) {
             final String[] times = new String[4];

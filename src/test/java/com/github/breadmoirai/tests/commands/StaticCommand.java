@@ -16,10 +16,10 @@
 
 package com.github.breadmoirai.tests.commands;
 
-import com.github.breadmoirai.breadbot.framework.CommandEvent;
 import com.github.breadmoirai.breadbot.framework.annotation.ConfigureCommand;
 import com.github.breadmoirai.breadbot.framework.annotation.command.MainCommand;
 import com.github.breadmoirai.breadbot.framework.builder.CommandHandleBuilder;
+import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
 
 public class StaticCommand {
 

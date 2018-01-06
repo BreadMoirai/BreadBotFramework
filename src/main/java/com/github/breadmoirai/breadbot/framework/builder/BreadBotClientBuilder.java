@@ -1,5 +1,5 @@
 /*
- *        Copyright 2017 Ton Ly (BreadMoirai)
+ *        Copyright 2017-2018 Ton Ly (BreadMoirai)
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -17,32 +17,37 @@
 package com.github.breadmoirai.breadbot.framework.builder;
 
 import com.github.breadmoirai.breadbot.framework.BreadBotClient;
-import com.github.breadmoirai.breadbot.framework.CommandEvent;
-import com.github.breadmoirai.breadbot.framework.CommandEventFactory;
 import com.github.breadmoirai.breadbot.framework.CommandModule;
 import com.github.breadmoirai.breadbot.framework.command.CommandPreprocessor;
 import com.github.breadmoirai.breadbot.framework.command.CommandPreprocessorFunction;
 import com.github.breadmoirai.breadbot.framework.command.CommandPreprocessorPredicate;
 import com.github.breadmoirai.breadbot.framework.command.CommandResultHandler;
+import com.github.breadmoirai.breadbot.framework.command.internal.CommandPropertiesManagerImpl;
+import com.github.breadmoirai.breadbot.framework.command.internal.CommandResultManagerImpl;
+import com.github.breadmoirai.breadbot.framework.command.internal.builder.CommandHandleBuilderFactoryImpl;
+import com.github.breadmoirai.breadbot.framework.command.internal.builder.CommandHandleBuilderInternal;
+import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
+import com.github.breadmoirai.breadbot.framework.event.CommandEventFactory;
+import com.github.breadmoirai.breadbot.framework.event.internal.CommandEventFactoryImpl;
 import com.github.breadmoirai.breadbot.framework.internal.BreadBotClientImpl;
-import com.github.breadmoirai.breadbot.framework.internal.command.CommandPropertiesManagerImpl;
-import com.github.breadmoirai.breadbot.framework.internal.command.CommandResultManagerImpl;
-import com.github.breadmoirai.breadbot.framework.internal.command.builder.CommandHandleBuilderFactoryImpl;
-import com.github.breadmoirai.breadbot.framework.internal.command.builder.CommandHandleBuilderInternal;
-import com.github.breadmoirai.breadbot.framework.internal.event.CommandEventFactoryImpl;
-import com.github.breadmoirai.breadbot.framework.internal.parameter.CommandParameterTypeManagerImpl;
-import com.github.breadmoirai.breadbot.framework.parameter.ArgumentParser;
-import com.github.breadmoirai.breadbot.framework.parameter.ArgumentTypeMapper;
-import com.github.breadmoirai.breadbot.framework.parameter.ArgumentTypePredicate;
-import com.github.breadmoirai.breadbot.framework.parameter.CommandArgument;
+import com.github.breadmoirai.breadbot.framework.parameter.TypeParser;
+import com.github.breadmoirai.breadbot.framework.parameter.internal.builder.CommandParameterTypeManagerImpl;
 import com.github.breadmoirai.breadbot.modules.prefix.DefaultPrefixModule;
 import com.github.breadmoirai.breadbot.modules.prefix.PrefixModule;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.utils.Checks;
 
-import java.util.*;
-import java.util.function.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 public class BreadBotClientBuilder implements
         CommandModuleBuilder,
@@ -367,7 +372,7 @@ public class BreadBotClientBuilder implements
     }
 
     @Override
-    public BreadBotClientBuilder applyModifiers(CommandHandleBuilder builder) {
+    public BreadBotClientBuilder applyPropertyModifiers(CommandHandleBuilder builder) {
         commandProperties.applyModifiers(builder);
         return this;
     }
@@ -384,7 +389,7 @@ public class BreadBotClientBuilder implements
     }
 
     @Override
-    public BreadBotClientBuilder applyModifiers(CommandParameterBuilder builder) {
+    public BreadBotClientBuilder applyPropertyModifiers(CommandParameterBuilder builder) {
         commandProperties.applyModifiers(builder);
         return this;
     }
@@ -447,20 +452,31 @@ public class BreadBotClientBuilder implements
     }
 
     @Override
-    public <T> BreadBotClientBuilder registerParameterType(Class<T> type, ArgumentTypePredicate predicate, ArgumentTypeMapper<T> mapper) {
-        argumentTypes.registerParameterType(type, predicate, mapper);
+    public <T> BreadBotClientBuilder putTypeParser(Class<T> type, TypeParser<T> parser) {
+        argumentTypes.putTypeParser(type, parser);
         return this;
     }
 
     @Override
-    public <T> BreadBotClientBuilder registerParameterTypeFlagless(Class<T> type, Predicate<CommandArgument> isType, Function<CommandArgument, T> getAsType) {
-        argumentTypes.registerParameterTypeFlagless(type, isType, getAsType);
+    public <T> TypeParser<T> getTypeParser(Class<T> type) {
+        return argumentTypes.getTypeParser(type);
+    }
+
+    @Override
+    public BreadBotClientBuilder putTypeModifier(Class<?> parameterType, Consumer<CommandParameterBuilder> modifier) {
+        argumentTypes.putTypeModifier(parameterType, modifier);
         return this;
     }
 
     @Override
-    public <T> ArgumentParser<T> getParser(Class<T> type) {
-        return argumentTypes.getParser(type);
+    public BreadBotClientBuilder appendTypeModifer(Class<?> parameterType, Consumer<CommandParameterBuilder> modifier) {
+        argumentTypes.appendTypeModifer(parameterType, modifier);
+        return this;
+    }
+
+    @Override
+    public void applyTypeModifiers(CommandParameterBuilder parameterBuilder) {
+        argumentTypes.applyTypeModifiers(parameterBuilder);
     }
 
     @Override
@@ -508,6 +524,7 @@ public class BreadBotClientBuilder implements
         return this;
     }
 
+
     /**
      * This will allow messages to be re-evaluated on message edit.
      * This will also evaluate commands that are unpinned.
@@ -520,34 +537,6 @@ public class BreadBotClientBuilder implements
         this.shouldEvaluateCommandOnMessageUpdate = shouldEvaluateCommandOnMessageUpdate;
         return this;
     }
-
-//    /**
-//     * Builds a BreadBotClient with an {@link net.dv8tion.jda.core.hooks.AnnotatedEventManager}
-//     * <p>
-//     * This implementation is as follows:
-//     * <pre><code>
-//     *     return {@link BreadBotClientBuilder breadBotBuilder}.{@link BreadBotClientBuilder#build build}(new {@link net.dv8tion.jda.core.hooks.AnnotatedEventManager AnnotatedEventManager()});
-//     * </code></pre>
-//     *
-//     * @return The {@link com.github.breadmoirai.breadbot.framework.BreadBotClient} for use with {@link net.dv8tion.jda.core.JDABuilder#setEventManager(IEventManager) JDABuilder#setEventManager}({@link com.github.breadmoirai.breadbot.framework.BreadBotClient#getEventManager client.getEventManager()})
-//     */
-//    public BreadBotClient buildAnnotated() {
-//        return build(new AnnotatedEventManager());
-//    }
-//
-//    /**
-//     * Builds a BreadBotClient with an {@link net.dv8tion.jda.core.hooks.InterfacedEventManager}
-//     * <p>
-//     * This implementation is as follows:
-//     * <pre><code>
-//     *     return {@link BreadBotClientBuilder breadBotBuilder}.{@link BreadBotClientBuilder#build build}(new {@link net.dv8tion.jda.core.hooks.InterfacedEventManager InterfacedEventManager()});
-//     * </code></pre>
-//     *
-//     * @return The {@link com.github.breadmoirai.breadbot.framework.BreadBotClient} for use with {@link net.dv8tion.jda.core.JDABuilder#setEventManager(IEventManager) JDABuilder#setEventManager}({@link com.github.breadmoirai.breadbot.framework.BreadBotClient#getEventManager client.getEventManager()})
-//     */
-//    public BreadBotClient buildInterfaced() {
-//        return build(new InterfacedEventManager());
-//    }
 
     /**
      * Builds the BreadBotClient with the provided EventManager.

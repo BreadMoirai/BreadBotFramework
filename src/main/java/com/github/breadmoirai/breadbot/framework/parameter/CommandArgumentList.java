@@ -1,5 +1,5 @@
 /*
- *        Copyright 2017 Ton Ly (BreadMoirai)
+ *        Copyright 2017-2018 Ton Ly (BreadMoirai)
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -16,11 +16,15 @@
 
 package com.github.breadmoirai.breadbot.framework.parameter;
 
-import com.github.breadmoirai.breadbot.framework.CommandEvent;
-import com.github.breadmoirai.breadbot.framework.internal.parameter.CommandArgumentFactory;
-import org.jetbrains.annotations.NotNull;
+import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
+import com.github.breadmoirai.breadbot.framework.parameter.internal.CommandArgumentFactory;
 
-import java.util.*;
+import java.util.AbstractList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.RandomAccess;
+import java.util.Spliterator;
+import java.util.Spliterators;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -74,7 +78,6 @@ public class CommandArgumentList extends AbstractList<CommandArgument> implement
      * @throws IllegalArgumentException  if the endpoint indices are out of order
      *                                   {@code (fromIndex > toIndex)}
      */
-    @NotNull
     @Override
     public CommandArgumentList subList(int fromIndex, int toIndex) {
         if (fromIndex < 0 || toIndex > size()) throw new IndexOutOfBoundsException();
@@ -100,57 +103,6 @@ public class CommandArgumentList extends AbstractList<CommandArgument> implement
      */
     public <T> Spliterator<T> spliterator(Class<T> type) {
         return Spliterators.spliteratorUnknownSize(typeIterator(type), Spliterator.IMMUTABLE | Spliterator.NONNULL | Spliterator.ORDERED);
-    }
-
-    /**
-     * Attempts to match each {@link CommandArgument} to a {@link ArgumentTypeMapper} in the order passed.
-     * Will automatically fail if the amount of {@link ArgumentTypeMapper ArgumentTypes} provided is greater than the amount of arguments passed.
-     *
-     * @param types the types of which to look for.
-     * @return {@code true} if the {@link ArgumentTypeMapper ArgumentTypes} provided match the {@link CommandArgument CommandArguments} in this list with {@link CommandArgument#isOfType(Class)}
-     */
-    public boolean matchesType(Class<?>... types) {
-        return matchesType(0, types);
-    }
-
-    /**
-     * Attempts to match each {@link CommandArgument} to a {@link ArgumentTypeMapper} in the order passed.
-     * Will automatically fail if the amount of {@link ArgumentTypeMapper ArgumentTypes} provided is greater than the amount of arguments passed.
-     *
-     * @param startIndex the starting index of which to start matching Types.
-     * @param types      the types of which to look for.
-     * @return {@code true} if the {@link ArgumentTypeMapper ArgumentTypes} provided match the {@link CommandArgument CommandArguments} in this list with {@link CommandArgument#isOfType(Class)}
-     */
-    public boolean matchesType(int startIndex, Class<?>... types) {
-        if (startIndex + types.length > size()) return false;
-        for (int j = 0; j < types.length; j++) {
-            if (!get(j + startIndex).isOfType(types[j])) return false;
-        }
-        return true;
-    }
-
-    /**
-     * Finds the index of the first argument that matches the specified type.
-     *
-     * @param type The {@link ArgumentTypeMapper} to search for.
-     * @return The index of the argument if found. If none of the arguments match the type provided, {@code -1} is returned.
-     */
-    public int indexOfType(Class<?> type) {
-        return indexOfType(0, type);
-    }
-
-    /**
-     * Finds the first argument of the specified type that occurs after the index given.
-     *
-     * @param startIndex The index from which to start searching.
-     * @param type       The {@link ArgumentTypeMapper} to search for.
-     * @return The index of the argument if found. If none of the arguments match the type provided, {@code -1} is returned. If the {@code startIndex} provided is less than {@code 0}, it will be treated as {@code 0}. If the {@code startIndex} provided is greater than or equal to the size of this list, {@code -1} will be returned.
-     */
-    public int indexOfType(int startIndex, Class<?> type) {
-        for (int i = startIndex; i < size(); i++) {
-            if (get(i).isOfType(type)) return i;
-        }
-        return -1;
     }
 
     /**
@@ -184,41 +136,29 @@ public class CommandArgumentList extends AbstractList<CommandArgument> implement
     public class ArgumentTypeIterator<T> implements Iterator<T> {
         private int cursor;
         private final Class<T> type;
+        private transient T next;
 
         private ArgumentTypeIterator(Class<T> type) {
             this.type = type;
         }
 
-        /**
-         * Note that in this specific implementation, depending on the parser for the type, this method may be redundant if the parser does not implement a {@link ArgumentParser#test(CommandArgument)} predicate
-         *
-         * <p>{@inheritDoc}
-         *
-         * <p>Note that {@link #next()} will <b>not</b> throw an exception if there are no more elements
-         * @return
-         */
         @Override
         public boolean hasNext() {
-            for (; cursor < size(); cursor++) {
-                CommandArgument commandArgument = get(cursor);
-                if (commandArgument.isOfType(type)) {
-                    return true;
-                }
-            }
-            return false;
+            return next != null;
         }
 
         @Override
         public T next() {
+            T r = next;
             for (; cursor < size(); cursor++) {
                 CommandArgument commandArgument = get(cursor);
                 T asType = commandArgument.getAsType(type);
                 if (asType != null) {
                     cursor++;
-                    return asType;
+                    next = asType;
                 }
             }
-            return null;
+            return r;
         }
     }
 

@@ -1,5 +1,5 @@
 /*
- *        Copyright 2017 Ton Ly (BreadMoirai)
+ *        Copyright 2017-2018 Ton Ly (BreadMoirai)
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -18,13 +18,13 @@ package com.github.breadmoirai.tests.commands;
 
 import com.github.breadmoirai.breadbot.framework.annotation.command.Command;
 import com.github.breadmoirai.breadbot.framework.annotation.command.MainCommand;
-import com.github.breadmoirai.breadbot.framework.annotation.parameter.Type;
+import com.github.breadmoirai.breadbot.framework.annotation.parameter.Numeric;
 import com.github.breadmoirai.breadbot.framework.parameter.CommandArgument;
 
 public class TypeTestKeyTestCommand {
 
     @MainCommand("10plus")
-    public String addTen(@Type(int.class) CommandArgument argument) {
+    public String addTen(@Numeric(Numeric.Type.INT) CommandArgument argument) {
         final int i = argument.parseInt() + 10;
         return String.valueOf(i);
     }

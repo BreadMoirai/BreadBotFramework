@@ -1,5 +1,5 @@
 /*
- *        Copyright 2017 Ton Ly (BreadMoirai)
+ *        Copyright 2017-2018 Ton Ly (BreadMoirai)
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -17,16 +17,16 @@
 package com.github.breadmoirai.breadbot.framework.internal;
 
 import com.github.breadmoirai.breadbot.framework.BreadBotClient;
-import com.github.breadmoirai.breadbot.framework.CommandEngine;
-import com.github.breadmoirai.breadbot.framework.CommandEventFactory;
 import com.github.breadmoirai.breadbot.framework.CommandModule;
+import com.github.breadmoirai.breadbot.framework.command.CommandEngine;
 import com.github.breadmoirai.breadbot.framework.command.CommandHandle;
 import com.github.breadmoirai.breadbot.framework.command.CommandPropertiesManager;
 import com.github.breadmoirai.breadbot.framework.command.CommandResultManager;
+import com.github.breadmoirai.breadbot.framework.command.internal.builder.CommandHandleBuilderInternal;
 import com.github.breadmoirai.breadbot.framework.error.DuplicateCommandKeyException;
-import com.github.breadmoirai.breadbot.framework.internal.command.builder.CommandHandleBuilderInternal;
-import com.github.breadmoirai.breadbot.framework.internal.event.CommandEventInternal;
-import com.github.breadmoirai.breadbot.framework.parameter.CommandParameterTypeManager;
+import com.github.breadmoirai.breadbot.framework.event.CommandEventFactory;
+import com.github.breadmoirai.breadbot.framework.event.internal.CommandEventInternal;
+import com.github.breadmoirai.breadbot.framework.parameter.CommandParameterManager;
 import com.github.breadmoirai.breadbot.util.EventStringIterator;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Message;
@@ -42,7 +42,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Type;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Predicate;
 
 public class BreadBotClientImpl implements BreadBotClient, EventListener {
@@ -52,7 +56,7 @@ public class BreadBotClientImpl implements BreadBotClient, EventListener {
     private JDA jda;
 
     private final CommandResultManager resultManager;
-    private final CommandParameterTypeManager argumentTypes;
+    private final CommandParameterManager argumentTypes;
     //    private final IEventManager eventManager;
     private final CommandEventFactory eventFactory;
     private final CommandEngine commandEngine;
@@ -67,7 +71,7 @@ public class BreadBotClientImpl implements BreadBotClient, EventListener {
             List<CommandHandleBuilderInternal> commands,
             CommandPropertiesManager commandProperties,
             CommandResultManager resultManager,
-            CommandParameterTypeManager argumentTypes,
+            CommandParameterManager argumentTypes,
             CommandEventFactory eventFactory,
             Predicate<Message> preProcessPredicate,
             boolean shouldEvaluateCommandOnMessageUpdate) {
@@ -164,7 +168,7 @@ public class BreadBotClientImpl implements BreadBotClient, EventListener {
 //    }
 
     @Override
-    public CommandParameterTypeManager getArgumentTypes() {
+    public CommandParameterManager getArgumentTypes() {
         return argumentTypes;
     }
 

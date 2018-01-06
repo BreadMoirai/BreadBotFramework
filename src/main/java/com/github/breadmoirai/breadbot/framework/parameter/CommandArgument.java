@@ -1,5 +1,5 @@
 /*
- *        Copyright 2017 Ton Ly (BreadMoirai)
+ *        Copyright 2017-2018 Ton Ly (BreadMoirai)
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -17,11 +17,15 @@
 package com.github.breadmoirai.breadbot.framework.parameter;
 
 import com.github.breadmoirai.breadbot.framework.BreadBotClient;
-import com.github.breadmoirai.breadbot.framework.CommandEvent;
+import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
 import com.github.breadmoirai.breadbot.util.Arguments;
 import com.github.breadmoirai.breadbot.util.Emoji;
-import net.dv8tion.jda.core.entities.*;
-import org.jetbrains.annotations.NotNull;
+import net.dv8tion.jda.core.entities.Emote;
+import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.Role;
+import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.core.entities.VoiceChannel;
 
 import java.util.List;
 import java.util.Optional;
@@ -74,26 +78,6 @@ public interface CommandArgument {
     }
 
 
-//    Checks if this argument is of the type given. If this is a formatted mention, i.e. {@link com.github.breadmoirai.bot.framework.event.args.CommandArgument#isMention isMention()} would return {@code true}, {@code notnull} is also {@code true}, this will also check if the argument can correctly be resolved to a valid {@link net.dv8tion.jda.core.JDA} entity or primitive or custom Object registered with {@link com.github.breadmoirai.bot.framework.event.args.ArgumentTypes}.
-//            * <p>If this argument is an {@link net.dv8tion.jda.core.entities.Emote}, the method will return {@code true}. However, if the {@link net.dv8tion.jda.core.entities.Emote} is not a valid {@link net.dv8tion.jda.core.JDA} entity, it will NOT be reflected in this method. Instead the object returned by {@link com.github.breadmoirai.bot.framework.event.args.CommandArgument#getEmote} will return an {@link net.dv8tion.jda.core.entities.Emote} with {@link net.dv8tion.jda.core.entities.IFakeable#isFake() isFake()} returning {@code true}
-
-    /**
-     * @param type The type of argument to test for.
-     * @return {@code true} if this argument is of the type passed.
-     */
-    default boolean isOfType(Class<?> type) {
-        return getClient().getArgumentTypes().getParser(type).test(this);
-    }
-
-    /**
-     * @param type  the argument type to test for
-     * @param flags testing flags. {@link ArgumentFlags}
-     * @return {@code true} if this argument is of the type passed.
-     */
-    default boolean isOfType(Class<?> type, int flags) {
-        return getClient().getArgumentTypes().getParser(type).test(this, flags);
-    }
-
     /**
      * Grabs the corresponding parser from the BreadBotClient and attempts to parse this argument to the passed type. If successful, return the result.
      *
@@ -102,9 +86,9 @@ public interface CommandArgument {
      * @return the result if can be parsed, otherwise {@code null}.
      */
     default <T> T getAsType(Class<T> type) {
-        ArgumentParser<T> parser = getClient().getArgumentTypes().getParser(type);
+        TypeParser<T> parser = getClient().getArgumentTypes().getTypeParser(type);
         if (parser != null)
-            return parser.parse(this, 0);
+            return parser.parse(this);
         else return null;
     }
 
@@ -249,9 +233,8 @@ public interface CommandArgument {
      * <p>For example, an argument of {@code "2-6"} will return a stream of {@code [2,3,4,5,6]} and an argument of {@code "8-5"} will return a stream of {@code [8,7,6,5]}.
      * <p><b>This method CAN be used in cases where {@link CommandArgument#isRange isRange()} would return false.</b> If the argument is a single integer, where {@link CommandArgument#isInteger isInteger()} would return {@code true}, an {@link java.util.stream.IntStream} with a single value will be returned.
      *
-     * @return an ordered {@link java.util.stream.IntStream}. If {@link CommandArgument#isRange isRange()} AND {@link CommandArgument#isInteger isInteger()} would return false, An empty IntStream will be returned.
+     * @return an ordered {@link java.util.stream.IntStream}. If {@link CommandArgument#isRange isRange()} AND {@link CommandArgument#isInteger isInteger()} would return false, {@code null} will be returned.
      */
-    @NotNull
     default IntStream parseRange() {
         return Arguments.parseRange(getArgument());
     }
@@ -304,7 +287,7 @@ public interface CommandArgument {
      * Checks if this argument is a {@link net.dv8tion.jda.core.entities.User} mention that can be correctly resolved to a {@link net.dv8tion.jda.core.entities.User}.
      * The result of this method is equivalent to checking this argument against a regex of {@code <@(!)?[0-9]+>} and then checking to see if {@link net.dv8tion.jda.core.JDA} has knowledge of a {@link net.dv8tion.jda.core.entities.User} with that id.
      * <p>
-     * If this method returns {@code false} and {@link CommandArgument#isUser} returns {@code true}, this CommandArgument is can be cast to an  {@link com.github.breadmoirai.breadbot.framework.internal.parameter.arguments.InvalidMentionArgument InvalidMentionArgument}
+     * If this method returns {@code false} and {@link CommandArgument#isUser} returns {@code true}, this CommandArgument is can be cast to an  {@link com.github.breadmoirai.breadbot.framework.parameter.internal.arguments.InvalidMentionArgument InvalidMentionArgument}
      *
      * @return {@code true} if this is a formatted {@link net.dv8tion.jda.core.entities.User} mention that can be resolved to an entity.
      */
@@ -316,9 +299,9 @@ public interface CommandArgument {
      * @return The {@link net.dv8tion.jda.core.entities.User} if found by JDA.
      * @throws UnsupportedOperationException if {@link CommandArgument#isValidUser()} would return {@code false}
      */
-    @NotNull
+
     default User getUser() {
-        throw new UnsupportedOperationException("This argument is not a User");
+        throw new UnsupportedOperationException("\"" + this.getArgument() + "\" is not a User");
     }
 
     /**
@@ -339,9 +322,9 @@ public interface CommandArgument {
      * @return The {@link net.dv8tion.jda.core.entities.Member} if found.
      * @throws UnsupportedOperationException if {@link CommandArgument#isValidMember()} would return {@code false}
      */
-    @NotNull
+
     default Member getMember() {
-        throw new UnsupportedOperationException("This argument is not a member");
+        throw new UnsupportedOperationException("\"" + this.getArgument() + "\" is not a member");
     }
 
     /**
@@ -353,7 +336,7 @@ public interface CommandArgument {
      *
      * @return the first {@link net.dv8tion.jda.core.entities.Member} found, otherwise an empty {@link java.util.Optional}
      */
-    @NotNull
+
     Optional<Member> findMember();
 
     /**
@@ -363,7 +346,7 @@ public interface CommandArgument {
      *
      * @return A never-null {@link java.util.List} of {@link net.dv8tion.jda.core.entities.Member Members}
      */
-    @NotNull
+
     List<Member> searchMembers();
 
     /**
@@ -389,9 +372,8 @@ public interface CommandArgument {
      * @return {@link net.dv8tion.jda.core.entities.Role} if role is present within the {@link net.dv8tion.jda.core.entities.Guild}, otherwise {@code null}
      * @throws UnsupportedOperationException if {@link CommandArgument#isValidRole()} would return {@code false}
      */
-    @NotNull
     default Role getRole() {
-        throw new UnsupportedOperationException("This argument is not a Role");
+        throw new UnsupportedOperationException("\"" + this.getArgument() + "\" is not a Role");
     }
 
     /**
@@ -401,7 +383,6 @@ public interface CommandArgument {
      *
      * @return the first {@link net.dv8tion.jda.core.entities.Role} found, otherwise an empty {@link java.util.Optional}
      */
-    @NotNull
     Optional<Role> findRole();
 
     /**
@@ -411,7 +392,6 @@ public interface CommandArgument {
      *
      * @return A never-null {@link java.util.List} of {@link net.dv8tion.jda.core.entities.Role Roles}.
      */
-    @NotNull
     List<Role> searchRoles();
 
     /**
@@ -426,7 +406,7 @@ public interface CommandArgument {
      * Checks if this argument is a {@link net.dv8tion.jda.core.entities.TextChannel} mention that can be correctly resolved to a {@link net.dv8tion.jda.core.entities.TextChannel}.
      * The result of this method is equivalent to checking this argument against a regex of {@code <#[0-9]+>} and then checking to see if {@link net.dv8tion.jda.core.JDA} has knowledge of a {@link net.dv8tion.jda.core.entities.TextChannel} with that id.
      * <p>
-     * If this method returns {@code false} and {@link CommandArgument#isTextChannel()} returns {@code true}, this CommandArgument is can be cast to an  {@link com.github.breadmoirai.breadbot.framework.internal.parameter.arguments.InvalidMentionArgument InvalidMentionArgument}
+     * If this method returns {@code false} and {@link CommandArgument#isTextChannel()} returns {@code true}, this CommandArgument is can be cast to an  {@link com.github.breadmoirai.breadbot.framework.parameter.internal.arguments.InvalidMentionArgument InvalidMentionArgument}
      *
      * @return {@code true} if this is a formatted {@link net.dv8tion.jda.core.entities.TextChannel} mention and can be correctly resolved to a JDA entity.
      */
@@ -440,9 +420,8 @@ public interface CommandArgument {
      * @return {@link net.dv8tion.jda.core.entities.TextChannel} if can be resolved to a JDA entity
      * @throws UnsupportedOperationException if {@link CommandArgument#isValidTextChannel()} would return {@code false}
      */
-    @NotNull
     default TextChannel getTextChannel() {
-        throw new UnsupportedOperationException("This argument is not a TextChannel");
+        throw new UnsupportedOperationException("\"" + this.getArgument() + "\" is not a TextChannel");
     }
 
     /**
@@ -451,7 +430,6 @@ public interface CommandArgument {
      *
      * @return the first {@link net.dv8tion.jda.core.entities.TextChannel} found, otherwise an empty {@link java.util.Optional}
      */
-    @NotNull
     Optional<TextChannel> findTextChannel();
 
     /**
@@ -461,7 +439,6 @@ public interface CommandArgument {
      *
      * @return A never-null {@link java.util.List} of {@link net.dv8tion.jda.core.entities.TextChannel TextChannels}.
      */
-    @NotNull
     List<TextChannel> searchTextChannels();
 
     /**
@@ -469,7 +446,6 @@ public interface CommandArgument {
      *
      * @return the first {@link net.dv8tion.jda.core.entities.VoiceChannel} if found, otherwise an empty {@link java.util.Optional}
      */
-    @NotNull
     Optional<VoiceChannel> findVoiceChannel();
 
     /**
@@ -477,7 +453,6 @@ public interface CommandArgument {
      *
      * @return A never-null {@link java.util.List} of {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannels}.
      */
-    @NotNull
     List<VoiceChannel> searchVoiceChannels();
 
     /**
@@ -498,9 +473,8 @@ public interface CommandArgument {
      * @return An {@link net.dv8tion.jda.core.entities.Emote} if the formatting is correct. Otherwise {@code null}.
      * @throws UnsupportedOperationException if {@link CommandArgument#isEmote()} would return {@code false}
      */
-    @NotNull
     default Emote getEmote() {
-        throw new UnsupportedOperationException("This argument is not an Emote");
+        throw new UnsupportedOperationException("\"" + this.getArgument() + "\" is not an Emote");
     }
 
     /**
@@ -520,8 +494,7 @@ public interface CommandArgument {
      * @return The {@link com.github.breadmoirai.breadbot.util.Emoji} if matched.
      * @throws UnsupportedOperationException if {@link CommandArgument#isEmoji()} would return {@code false}
      */
-    @NotNull
     default Emoji getEmoji() {
-        throw new UnsupportedOperationException("This argument is not an Emoji");
+        throw new UnsupportedOperationException("\"" + this.getArgument() + "\" is not an Emoji");
     }
 }

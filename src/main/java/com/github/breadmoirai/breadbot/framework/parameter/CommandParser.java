@@ -16,8 +16,8 @@
 
 package com.github.breadmoirai.breadbot.framework.parameter;
 
-import com.github.breadmoirai.breadbot.framework.CommandEvent;
 import com.github.breadmoirai.breadbot.framework.command.CommandHandle;
+import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 
@@ -110,11 +110,11 @@ public class CommandParser {
         return size;
     }
 
-    public boolean hasMappedArgument(int index) {
+    public boolean hasMappedArguments(int index) {
         return set.contains(index);
     }
 
-    public boolean markMappedArgument(int index) {
+    public boolean markMappedArguments(int index) {
         return set.add(index);
     }
 

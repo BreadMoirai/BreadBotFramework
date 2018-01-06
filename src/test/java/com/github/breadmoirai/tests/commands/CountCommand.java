@@ -29,8 +29,8 @@ package com.github.breadmoirai.tests.commands;/*    Copyright 2017 Ton Ly
   limitations under the License.
 */
 
-import com.github.breadmoirai.breadbot.framework.CommandEvent;
 import com.github.breadmoirai.breadbot.framework.annotation.command.Command;
+import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
 
 public class CountCommand {
 

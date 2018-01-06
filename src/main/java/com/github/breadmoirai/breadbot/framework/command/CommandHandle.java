@@ -16,7 +16,7 @@
 
 package com.github.breadmoirai.breadbot.framework.command;
 
-import com.github.breadmoirai.breadbot.framework.internal.event.CommandEventInternal;
+import com.github.breadmoirai.breadbot.framework.event.internal.CommandEventInternal;
 import com.github.breadmoirai.breadbot.framework.parameter.CommandParameter;
 
 import java.lang.reflect.Method;
