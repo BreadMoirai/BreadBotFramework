@@ -16,6 +16,25 @@ final artifactId = 'breadbot-framework'
 group "com.github.${author.toLowerCase()}"
 version '0.9.0'
 
+/*
+ *        Copyright 2017-2018 Ton Ly (BreadMoirai)
+ *
+ *   Licensed under the Apache License, Version 2.0 (the "License");
+ *   you may not use this file except in compliance with the License.
+ *   You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *   Unless required by applicable law or agreed to in writing, software
+ *   distributed under the License is distributed on an "AS IS" BASIS,
+ *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *   See the License for the specific language governing permissions and
+ *   limitations under the License.
+ */
+
+//project.hasProperty never seems to work properly
+final boolean keysArePresent = false
+
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
@@ -26,7 +45,7 @@ repositories {
 
 dependencies {
     //Discord Java Library
-    compileOnly 'net.dv8tion:JDA:3.4.0_318'
+    compileOnly 'net.dv8tion:JDA:3.4.0_324'
 
     compile 'org.slf4j:slf4j-api:1.7.25'
 
@@ -50,7 +69,7 @@ javadoc {
 }
 
 githubRelease {
-    if (project.hasProperty('github.key'))
+    if (keysArePresent)
         token = project.getProperty('github.key').toString()
     String version = project.version
     it.body = "\n## Adding as Dependency\n### Gradle\n```gradle\nrepositories {\n  jcenter()\n}\n\ndependencies {\n  compile '$project.group:$artifactId:$project.version'\n}\n```\n\n### Maven\n```xml\n<repository>\n  <id>jcenter</id>\n  <name>jcenter</name>\n  <url>http://jcenter.bintray.com/</url>\n</repository>\n\n<dependency>\n  <groupId>$project.group</groupId>\n  <artifactId>$artifactId</artifactId>\n  <version>$project.version</version>\n  <type>pom</type>\n</dependency>\n```"
@@ -78,7 +97,7 @@ gitPublishReset {
 
 bintray {
     user = author.toLowerCase()
-    if (project.hasProperty('bintray.key'))
+    if (keysArePresent)
         key = project.getProperty('bintray.key').toString()
     publications = ["BintrayRelease"]
     publish = true

@@ -1,5 +1,5 @@
 /*
- *        Copyright 2017 Ton Ly (BreadMoirai)
+ *        Copyright 2017-2018 Ton Ly (BreadMoirai)
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -27,8 +27,6 @@ import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.message.guild.GenericGuildMessageEvent;
 
-import java.time.Instant;
-import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -120,15 +118,6 @@ public class MessageReceivedCommandEvent extends CommandEventInternal {
         return getChannel().getIdLong();
     }
 
-    @Override
-    public OffsetDateTime getTime() {
-        return getMessage().isEdited() ? getMessage().getEditedTime() : getMessage().getCreationTime();
-    }
-
-    @Override
-    public Instant getInstant() {
-        return getTime().toInstant();
-    }
 
     @Override
     public JDA getJDA() {

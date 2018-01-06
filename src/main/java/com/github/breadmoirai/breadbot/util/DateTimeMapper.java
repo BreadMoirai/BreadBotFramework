@@ -1,5 +1,5 @@
 /*
- *        Copyright 2017 Ton Ly (BreadMoirai)
+ *        Copyright 2017-2018 Ton Ly (BreadMoirai)
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -19,7 +19,14 @@ package com.github.breadmoirai.breadbot.util;
 import com.github.breadmoirai.breadbot.framework.parameter.CommandArgument;
 import com.github.breadmoirai.breadbot.framework.parameter.TypeParser;
 
-import java.time.*;
+import java.time.DateTimeException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.Month;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
@@ -43,7 +50,7 @@ public class DateTimeMapper implements TypeParser<OffsetDateTime> {
 
     @Override
     public OffsetDateTime parse(CommandArgument argument) {
-        final OffsetDateTime base = argument.getEvent().getTime();
+        final OffsetDateTime base = argument.getEvent().getCreationTime();
         String args = argument.getArgument().toLowerCase();
         final Matcher monthDay = MONTH_DAY.matcher(args);
         if (monthDay.find()) {
