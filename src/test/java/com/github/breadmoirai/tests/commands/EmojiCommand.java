@@ -1,5 +1,5 @@
 /*
- *        Copyright 2017 Ton Ly (BreadMoirai)
+ *        Copyright 2017-2018 Ton Ly (BreadMoirai)
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -43,7 +43,7 @@ public class EmojiCommand {
 
         @Override
         public void handle(CommandEvent commandEvent, CommandParameter commandParameter) {
-            commandEvent.reply("missing parameter: " + commandParameter.getType().getSimpleName());
+            commandEvent.reply("missing parameter: " + commandParameter.getDeclaringParameter().getType().getSimpleName());
         }
     }
 }

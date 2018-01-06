@@ -1,5 +1,5 @@
 /*
- *        Copyright 2017 Ton Ly (BreadMoirai)
+ *        Copyright 2017-2018 Ton Ly (BreadMoirai)
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -26,9 +26,10 @@ import com.github.breadmoirai.breadbot.framework.annotation.command.Group;
 import com.github.breadmoirai.breadbot.framework.annotation.command.MainCommand;
 import com.github.breadmoirai.breadbot.framework.annotation.command.RequiredParameters;
 import com.github.breadmoirai.breadbot.framework.annotation.parameter.Contiguous;
-import com.github.breadmoirai.breadbot.framework.annotation.parameter.Flags;
+import com.github.breadmoirai.breadbot.framework.annotation.parameter.Hexadecimal;
 import com.github.breadmoirai.breadbot.framework.annotation.parameter.Index;
 import com.github.breadmoirai.breadbot.framework.annotation.parameter.MatchRegex;
+import com.github.breadmoirai.breadbot.framework.annotation.parameter.Numeric;
 import com.github.breadmoirai.breadbot.framework.annotation.parameter.Required;
 import com.github.breadmoirai.breadbot.framework.annotation.parameter.Width;
 import com.github.breadmoirai.breadbot.framework.builder.CommandHandleBuilder;
@@ -36,8 +37,8 @@ import com.github.breadmoirai.breadbot.framework.command.internal.CommandPropert
 import com.github.breadmoirai.breadbot.framework.command.internal.builder.CommandHandleBuilderInternal;
 import com.github.breadmoirai.breadbot.framework.error.BreadBotException;
 import com.github.breadmoirai.breadbot.framework.parameter.AbsentArgumentHandler;
-import com.github.breadmoirai.breadbot.framework.parameter.TypeParser;
-import com.github.breadmoirai.breadbot.framework.parameter.TypeParserFlags;
+import com.github.breadmoirai.breadbot.framework.parameter.CommandArgument;
+import com.github.breadmoirai.breadbot.util.Arguments;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -45,12 +46,65 @@ import java.lang.reflect.Modifier;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 public class DefaultCommandProperties {
 
     private static final Pattern COMMAND_PATTERN = Pattern.compile(".+(command|cmd)(s)?");
 
     public void initialize(CommandPropertiesManagerImpl cp) {
+        putCommandModifiers(cp);
+
+        putParameterModifiers(cp);
+
+    }
+
+    private void putParameterModifiers(CommandPropertiesManagerImpl cp) {
+        cp.putParameterModifier(Name.class, (p, builder) -> builder.setName(p.value()));
+        cp.putParameterModifier(AbsentArgumentHandler.class, (p, builder) -> builder.setOnAbsentArgument(p));
+        cp.putParameterModifier(Required.class, (p, builder) -> builder.setRequired(true));
+        cp.putParameterModifier(Index.class, (p, builder) -> builder.setIndex(p.value()));
+        cp.putParameterModifier(MatchRegex.class, (p, builder) -> {
+            final String value = p.value();
+            final Pattern compile;
+            try {
+                compile = Pattern.compile(value, p.flags());
+            } catch (PatternSyntaxException e) {
+                throw new BreadBotException("An invalid pattern was provided at " + builder.getDeclaringParameter());
+            }
+            builder.addArgumentPredicate(arg -> arg.matches(compile));
+        });
+        cp.putParameterModifier(Width.class, (p, builder) -> builder.setWidth(p.value()));
+        cp.putParameterModifier(Contiguous.class, (p, builder) -> builder.setContiguous(p.value()));
+        cp.putParameterModifier(Hexadecimal.class, (p, builder) -> {
+            final Class<?> type = builder.getDeclaringParameter().getType();
+            if (type == Integer.class || type == int.class) {
+                builder.setTypeParser(arg -> arg.isHex() ? arg.parseIntFromHex() : null);
+            } else if (type == Long.class || type == long.class) {
+                builder.setTypeParser(arg -> arg.isHex() ? Long.parseLong(Arguments.stripHexPrefix(arg.getArgument()), 16) : null);
+            } else if (type == String.class || type == CommandArgument.class) {
+                builder.addArgumentPredicate(CommandArgument::isHex);
+            }
+        });
+        cp.putParameterModifier(Numeric.class, (p, builder) -> {
+            switch (p.value()) {
+                case NUMBER:
+                    builder.addArgumentPredicate(CommandArgument::isNumeric);
+                    break;
+                case INT:
+                    builder.addArgumentPredicate(CommandArgument::isInteger);
+                    break;
+                case LONG:
+                    builder.addArgumentPredicate(CommandArgument::isLong);
+                    break;
+                case FLOAT:
+                    builder.addArgumentPredicate(CommandArgument::isFloat);
+                    break;
+            }
+        });
+    }
+
+    private void putCommandModifiers(CommandPropertiesManagerImpl cp) {
         cp.putCommandModifier(Command.class, (p, builder) -> {
             if (p.value().length != 0) builder.setKeys(p.value());
         });
@@ -137,35 +191,6 @@ public class DefaultCommandProperties {
                 }
             }
         });
-
-        cp.putParameterModifier(Name.class, (p, builder) -> builder.setName(p.value()));
-        cp.putParameterModifier(Flags.class, (p, builder) -> builder.setFlags(TypeParserFlags.get(p.value())));
-        cp.putParameterModifier(AbsentArgumentHandler.class, (p, builder) -> builder.setOnAbsentArgument(p));
-        cp.putParameterModifier(Required.class, (p, builder) -> builder.setRequired(true));
-        cp.putParameterModifier(Index.class, (p, builder) -> builder.setIndex(p.value()));
-        cp.putParameterModifier(MatchRegex.class, (p, builder) -> {
-            TypeParser<?> parser = builder.getTypeParser();
-            final Pattern pattern = Pattern.compile(p.value());
-            builder.setTypeParser((arg, flags) -> {
-                if (arg.matches(pattern)) {
-                    return parser.parse(arg, flags);
-                } else {
-                    return null;
-                }
-            });
-        });
-        cp.putParameterModifier(Width.class, (p, builder) -> builder.setWidth(p.value()));
-        cp.putParameterModifier(Contiguous.class, (p, builder) -> builder.setContiguous(p.value()));
-//        cp.putParameterModifier(Numeric.class, (p, builder) -> {
-//            if (!(builder instanceof CommandParameterFunctionBuilderImpl)) {
-//                final TypeParser<?> parser = builder.getParser();
-//                if (parser.hasPredicate()) {
-//                    builder.setTypeParser(parser.getPredicate().and((arg, flags) -> arg.isNumeric()), parser.getMapper());
-//                } else {
-//                    builder.setTypeParser((arg, flags) -> arg.isNumeric(), parser.getMapper());
-//                }
-//            }
-//        });
     }
 
     private void setGroupToPackage(CommandHandleBuilder builder, Class<?> declaringClass) {

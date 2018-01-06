@@ -1,5 +1,5 @@
 /*
- *        Copyright 2017 Ton Ly (BreadMoirai)
+ *        Copyright 2017-2018 Ton Ly (BreadMoirai)
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -16,17 +16,31 @@
 
 package com.github.breadmoirai.breadbot.framework.builder;
 
-import com.github.breadmoirai.breadbot.framework.parameter.CommandParameterTypeManager;
+import com.github.breadmoirai.breadbot.framework.parameter.CommandParameterManager;
 import com.github.breadmoirai.breadbot.framework.parameter.TypeParser;
 
-public interface CommandParameterManagerBuilder extends CommandParameterTypeManager {
-    /**
-     * Registers an ArgumentMapper with the type provided.
-     *
-     * @param type      the Type class
-     * @param parser    the mapper
-     * @param <T>       the type
-     */
-    <T> CommandParameterManagerBuilder registerParameterType(Class<T> type, TypeParser<T> parser);
+import java.util.function.Consumer;
 
+public interface CommandParameterManagerBuilder extends CommandParameterManager {
+    /**
+     * Registers a TypeParser with the type provided.
+     *
+     * @param type   the Type class
+     * @param parser the mapper
+     * @param <T>    the type
+     * @return this
+     */
+    <T> CommandParameterManagerBuilder putTypeParser(Class<T> type, TypeParser<T> parser);
+
+    /**
+     * Assigns a Consumer to modify all parameters with the specified type.
+     * This is done before any property modifiers are applied.
+     *
+     * @param parameterType The class of the parameter's type
+     * @param modifier      a Consumer that takes the ParameterBuilder as its argument
+     * @return this
+     */
+    CommandParameterManagerBuilder putTypeModifier(Class<?> parameterType, Consumer<CommandParameterBuilder> modifier);
+
+    CommandParameterManagerBuilder appendTypeModifer(Class<?> parameterType, Consumer<CommandParameterBuilder> modifier);
 }

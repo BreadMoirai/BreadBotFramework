@@ -1,5 +1,5 @@
 /*
- *        Copyright 2017 Ton Ly (BreadMoirai)
+ *        Copyright 2017-2018 Ton Ly (BreadMoirai)
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -14,14 +14,16 @@
  *   limitations under the License.
  */
 
-package com.github.breadmoirai.breadbot.framework.parameter.internal;
+package com.github.breadmoirai.breadbot.framework.parameter.internal.builder;
 
+import com.github.breadmoirai.breadbot.framework.builder.CommandParameterBuilder;
 import com.github.breadmoirai.breadbot.framework.builder.CommandParameterManagerBuilder;
 import com.github.breadmoirai.breadbot.framework.defaults.DefaultCommandParameters;
 import com.github.breadmoirai.breadbot.framework.parameter.TypeParser;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 
 /**
  * Does argument Mapping.
@@ -30,14 +32,16 @@ import java.util.Map;
 public final class CommandParameterTypeManagerImpl implements CommandParameterManagerBuilder {
 
     private final Map<Class<?>, TypeParser<?>> map;
+    private final Map<Class<?>, Consumer<CommandParameterBuilder>> map2;
 
     public CommandParameterTypeManagerImpl() {
         map = new HashMap<>();
+        map2 = new HashMap<>();
         new DefaultCommandParameters().initialize(this);
     }
 
     @Override
-    public <T> CommandParameterManagerBuilder registerParameterType(Class<T> type, TypeParser<T> parser) {
+    public <T> CommandParameterManagerBuilder putTypeParser(Class<T> type, TypeParser<T> parser) {
         put(type, parser);
         return this;
     }
@@ -53,5 +57,30 @@ public final class CommandParameterTypeManagerImpl implements CommandParameterMa
 
     public void put(Class<?> type, TypeParser<?> parser) {
         map.put(type, parser);
+    }
+
+    @Override
+    public CommandParameterManagerBuilder putTypeModifier(Class<?> parameterType, Consumer<CommandParameterBuilder> modifier) {
+        map2.put(parameterType, modifier);
+        return this;
+    }
+
+    @Override
+    public CommandParameterManagerBuilder appendTypeModifer(Class<?> parameterType, Consumer<CommandParameterBuilder> modifier) {
+        if (!map2.containsKey(parameterType)) {
+            map2.put(parameterType, modifier);
+        } else {
+            final Consumer<CommandParameterBuilder> consumer = map2.get(parameterType);
+            map2.put(parameterType, consumer.andThen(modifier));
+        }
+        return this;
+    }
+
+    @Override
+    public void applyTypeModifiers(CommandParameterBuilder parameterBuilder) {
+        final Consumer<CommandParameterBuilder> c = map2.get(parameterBuilder.getDeclaringParameter().getType());
+        if (c != null) {
+            c.accept(parameterBuilder);
+        }
     }
 }

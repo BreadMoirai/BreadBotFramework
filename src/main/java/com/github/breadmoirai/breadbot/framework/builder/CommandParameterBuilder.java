@@ -1,5 +1,5 @@
 /*
- *        Copyright 2017 Ton Ly (BreadMoirai)
+ *        Copyright 2017-2018 Ton Ly (BreadMoirai)
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -18,12 +18,14 @@ package com.github.breadmoirai.breadbot.framework.builder;
 
 import com.github.breadmoirai.breadbot.framework.parameter.AbsentArgumentHandler;
 import com.github.breadmoirai.breadbot.framework.parameter.ArgumentParser;
+import com.github.breadmoirai.breadbot.framework.parameter.CommandArgument;
 import com.github.breadmoirai.breadbot.framework.parameter.CommandParameter;
 import com.github.breadmoirai.breadbot.framework.parameter.TypeParser;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 /**
  * This is used to set settings for command parameters.
@@ -67,6 +69,7 @@ public interface CommandParameterBuilder {
      * If the width is set to {@code 0}, it will try every contiguous combination of arguments starting from the largest size.
      * If the width is set to a negative value, it will attempt each group of contiguous arguments.
      * If the width is set to a positive value greater that {@code 1}, it will try every group of contiguous arguments of that exact size.
+     *
      * @param width the number of arguments to consume.
      * @return this builder instance
      */
@@ -95,10 +98,23 @@ public interface CommandParameterBuilder {
      * If contiguous is set to {@code true}, that means that only adjacent arguments will be provided in the parameter where the first element is the first unmapped argument that is of the Collection's Generic Type.
      * If contiguous is set to {@code false}, then all unmapped arguments which can be mapped to this Collection's Generic Type will be present in this parameter.
      * <p>By default, this field is set to {@code false}.
+     *
      * @param isContiguous a boolean.
      * @return this
      */
     CommandParameterBuilder setContiguous(boolean isContiguous);
+
+    /**
+     * This only affects parameters that contain multiple arguments such as a Stream or a List.
+     * This field determines the maximum amount of arguments to include.
+     * By default this is set to -1.
+     *
+     * @param limit An int determining the maximum amount of arguments to contain.
+     * @return this
+     */
+    CommandParameterBuilder setLimit(int limit);
+
+    CommandParameterBuilder addArgumentPredicate(Predicate<CommandArgument> argumentPredicate);
 
     default CommandParameterBuilder configure(Consumer<CommandParameterBuilder> configurator) {
         configurator.accept(this);

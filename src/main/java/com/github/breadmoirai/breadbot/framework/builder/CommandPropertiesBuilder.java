@@ -1,5 +1,5 @@
 /*
- *        Copyright 2017 Ton Ly (BreadMoirai)
+ *        Copyright 2017-2018 Ton Ly (BreadMoirai)
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -81,7 +81,7 @@ public interface CommandPropertiesBuilder {
      *
      * @param builder the builder to modify
      */
-    CommandPropertiesBuilder applyModifiers(CommandHandleBuilder builder);
+    CommandPropertiesBuilder applyPropertyModifiers(CommandHandleBuilder builder);
 
     /**
      * Retrieves a BiConsumer that is used to modify a CommandHandleBuilder.
@@ -113,7 +113,7 @@ public interface CommandPropertiesBuilder {
      *
      * @param builder the builder to modify
      */
-    CommandPropertiesBuilder applyModifiers(CommandParameterBuilder builder);
+    CommandPropertiesBuilder applyPropertyModifiers(CommandParameterBuilder builder);
 
     /**
      * Retrieves a BiConsumer that is used to modify a CommandParameterBuilder.

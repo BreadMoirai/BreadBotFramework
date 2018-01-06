@@ -25,31 +25,6 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.PARAMETER)
 @Inherited
-public @interface Numeric {
-
-    Type value() default Type.NUMBER;
-
-    public enum Type {
-        /**
-         * Tests whether this argument consists of only 0-9.
-         */
-        NUMBER,
-        /**
-         * Tests whether this argument only consists of 0-9
-         * and if it falls into the range of a java integer.
-         */
-        INT,
-        /**
-         * Tests whether this argument only consists of 0-9
-         * and if it falls into the range of a java long.
-         */
-        LONG,
-        /**
-         * Tests whether this argument can be parsed as a float.
-         *
-         * @see Double#valueOf(String)
-         */
-        FLOAT
-    }
+public @interface Hexadecimal {
 
 }

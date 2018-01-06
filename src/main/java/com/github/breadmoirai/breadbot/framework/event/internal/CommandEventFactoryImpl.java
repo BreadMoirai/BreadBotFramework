@@ -1,5 +1,5 @@
 /*
- *        Copyright 2017 Ton Ly (BreadMoirai)
+ *        Copyright 2017-2018 Ton Ly (BreadMoirai)
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -59,20 +59,47 @@ public class CommandEventFactoryImpl implements CommandEventFactory {
     }
 
     private CommandEventInternal parseContent(GenericGuildMessageEvent event, Message message, BreadBotClient client, String prefix, String contentRaw) {
-        final String[] split = DiscordPatterns.WHITE_SPACE.split(contentRaw, 2);
+        final String[] split = splitContent(contentRaw);
         final String key = split[0];
-        final String content = split.length > 1 ? split[1].trim() : null;
+        final String content = split[1];
         if (key.equalsIgnoreCase("help")) {
             if (content == null)
                 return new MessageReceivedCommandEvent(client, event, message, prefix, new String[]{key}, null, true);
             else {
-                final String[] split2 = DiscordPatterns.WHITE_SPACE.split(content, 2);
+                final String[] split2 = splitContent(content);
                 final String key2 = split2[0];
-                final String content2 = split2.length > 1 ? split2[1].trim() : null;
-                return new MessageReceivedCommandEvent(client, event, message, prefix, new String[]{key2}, content2 + " help", true);
+                final String content2 = split2[1];
+                return new MessageReceivedCommandEvent(client, event, message, prefix, new String[]{key2}, content2 != null ? content2 + " help" : "help", true);
             }
         }
         return new MessageReceivedCommandEvent(client, event, message, prefix, new String[]{key}, content, false);
+    }
+
+    private String[] splitContent(String contentRaw) {
+        if (contentRaw == null) {
+            return new String[]{null, null};
+        }
+        int i = 0;
+        int j = -1;
+        for (; i < contentRaw.length(); i++) {
+            if (Character.isWhitespace(contentRaw.charAt(i))) {
+                j = i + 1;
+                while (j < contentRaw.length()) {
+                    if (Character.isWhitespace(contentRaw.charAt(j))) {
+                        j++;
+                    } else {
+                        break;
+                    }
+                }
+                break;
+            }
+        }
+
+        if (i == contentRaw.length()) {
+            return new String[]{contentRaw, null};
+        } else {
+            return new String[]{contentRaw.substring(0, i), contentRaw.substring(j)};
+        }
     }
 
 

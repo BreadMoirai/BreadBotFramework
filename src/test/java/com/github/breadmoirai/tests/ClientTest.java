@@ -1,5 +1,5 @@
 /*
- *        Copyright 2017 Ton Ly (BreadMoirai)
+ *        Copyright 2017-2018 Ton Ly (BreadMoirai)
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -210,9 +210,8 @@ public class ClientTest {
     @Test
     public void customParameterTest() {
         setupBread(bread -> bread
-                .registerParameterTypeFlagless(
+                .putTypeParser(
                         MathCommand.Operator.class,
-//                        arg -> arg.matches(Pattern.compile("[+\\-*/]")),
                         arg -> {
                             switch (arg.getArgument()) {
                                 case "+":
@@ -224,7 +223,7 @@ public class ClientTest {
                                 case "*":
                                     return new MathCommand.MultiplyOperator();
                                 default:
-                                    throw new RuntimeException();
+                                    return null;
                             }
                         })
                 .addCommand(MathCommand::new));
@@ -269,7 +268,7 @@ public class ClientTest {
         setupBread(bread -> {
             for (CommandHandleBuilder command : bread.createCommands(NameCommand::new)) {
                 if (command.getName().equals("name")) {
-                    command.setParameter(0, parser -> "James");
+                    command.getParameter(0).setParser((parameter, list, parser) -> "James");
                 }
             }
         });

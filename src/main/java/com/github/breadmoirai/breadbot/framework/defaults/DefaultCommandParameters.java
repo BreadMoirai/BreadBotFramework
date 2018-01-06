@@ -1,5 +1,5 @@
 /*
- *        Copyright 2017 Ton Ly (BreadMoirai)
+ *        Copyright 2017-2018 Ton Ly (BreadMoirai)
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -16,18 +16,29 @@
 
 package com.github.breadmoirai.breadbot.framework.defaults;
 
+import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
 import com.github.breadmoirai.breadbot.framework.parameter.CommandArgument;
 import com.github.breadmoirai.breadbot.framework.parameter.TypeParser;
-import com.github.breadmoirai.breadbot.framework.parameter.internal.CommandParameterTypeManagerImpl;
-import com.github.breadmoirai.breadbot.util.Arguments;
+import com.github.breadmoirai.breadbot.framework.parameter.internal.builder.CollectionTypes;
+import com.github.breadmoirai.breadbot.framework.parameter.internal.builder.CommandParameterBuilderImpl;
+import com.github.breadmoirai.breadbot.framework.parameter.internal.builder.CommandParameterTypeManagerImpl;
 import com.github.breadmoirai.breadbot.util.DateTimeMapper;
 import com.github.breadmoirai.breadbot.util.DurationMapper;
 import com.github.breadmoirai.breadbot.util.Emoji;
-import net.dv8tion.jda.core.entities.*;
+import net.dv8tion.jda.core.entities.Emote;
+import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.Role;
+import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.entities.User;
 
 import java.time.Duration;
 import java.time.OffsetDateTime;
+import java.util.Deque;
+import java.util.List;
+import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
+import java.util.stream.LongStream;
+import java.util.stream.Stream;
 
 public class DefaultCommandParameters {
 
@@ -45,11 +56,17 @@ public class DefaultCommandParameters {
     public static final Class<Emoji> EMOJI = Emoji.class;
 
     public void initialize(CommandParameterTypeManagerImpl map) {
+        putParameterTypeParsers(map);
+
+        putParameterTypeModifiers(map);
+    }
+
+    private void putParameterTypeParsers(CommandParameterTypeManagerImpl map) {
+        map.putTypeParser(CommandArgument.class, arg -> arg);
+
         final TypeParser<Integer> intParser = (arg) -> {
             if (arg.isInteger()) {
                 return arg.parseInt();
-            } else if (arg.isHex()) {
-                return arg.parseIntFromHex();
             } else {
                 return null;
             }
@@ -61,8 +78,6 @@ public class DefaultCommandParameters {
         final TypeParser<Long> longParser = (CommandArgument arg) -> {
             if (arg.isLong()) {
                 return arg.parseLong();
-            } else if (arg.isHex()) {
-                return Long.parseLong(Arguments.stripHexPrefix(arg.getArgument()), 16);
             } else {
                 return null;
             }
@@ -147,15 +162,38 @@ public class DefaultCommandParameters {
             }
         });
 
-        map.put(EMOTE, CommandArgument::getEmote);
+        map.put(EMOTE, arg -> arg.isEmote() ? arg.getEmote() : null);
 
-        map.put(EMOJI, CommandArgument::getEmoji);
+        map.put(EMOJI, arg -> arg.isEmoji() ? arg.getEmoji() : null);
 
         map.put(Duration.class, new DurationMapper());
 
         map.put(OffsetDateTime.class, new DateTimeMapper());
 
         map.put(String.class, CommandArgument::getArgument);
+    }
+
+    private void putParameterTypeModifiers(CommandParameterTypeManagerImpl map) {
+        map.putTypeModifier(List.class, p -> {
+            final Class<?> genericType = ((CommandParameterBuilderImpl) p).getGenericType();
+            CollectionTypes.setParserToGenericList(genericType, p);
+        });
+
+        map.putTypeModifier(Deque.class, p -> {
+            final Class<?> genericType = ((CommandParameterBuilderImpl) p).getGenericType();
+            CollectionTypes.setParserToGenericDeque(genericType, p);
+        });
+
+        map.putTypeModifier(Stream.class, p -> {
+            final Class<?> genericType = ((CommandParameterBuilderImpl) p).getGenericType();
+            CollectionTypes.setParserToGenericStream(genericType, p);
+        });
+
+        map.putTypeModifier(IntStream.class, CollectionTypes::setParserToIntStream);
+        map.putTypeModifier(LongStream.class, CollectionTypes::setParserToLongStream);
+        map.putTypeModifier(DoubleStream.class, CollectionTypes::setParserToDoubleStream);
+
+        map.putTypeModifier(CommandEvent.class, p -> p.setParser((parameter, list, parser) -> parser.getEvent()));
     }
 
 }

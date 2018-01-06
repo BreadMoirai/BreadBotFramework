@@ -1,5 +1,5 @@
 /*
- *        Copyright 2017 Ton Ly (BreadMoirai)
+ *        Copyright 2017-2018 Ton Ly (BreadMoirai)
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -78,29 +78,6 @@ public interface CommandArgument {
     }
 
 
-//    Checks if this argument is of the type given. If this is a formatted mention, i.e. {@link com.github.breadmoirai.bot.framework.event.args.CommandArgument#isMention isMention()} would return {@code true}, {@code notnull} is also {@code true}, this will also check if the argument can correctly be resolved to a valid {@link net.dv8tion.jda.core.JDA} entity or primitive or custom Object registered with {@link com.github.breadmoirai.bot.framework.event.args.ArgumentTypes}.
-//            * <p>If this argument is an {@link net.dv8tion.jda.core.entities.Emote}, the method will return {@code true}. However, if the {@link net.dv8tion.jda.core.entities.Emote} is not a valid {@link net.dv8tion.jda.core.JDA} entity, it will NOT be reflected in this method. Instead the object returned by {@link com.github.breadmoirai.bot.framework.event.args.CommandArgument#getEmote} will return an {@link net.dv8tion.jda.core.entities.Emote} with {@link net.dv8tion.jda.core.entities.IFakeable#isFake() isFake()} returning {@code true}
-
-    /**
-     * @param type The type of argument to test for.
-     * @return {@code true} if this argument is of the type passed.
-     */
-    default boolean isOfType(Class<?> type) {
-
-//        return getClient().getArgumentTypes().getParser(type).test(this);
-        return false;
-    }
-
-    /**
-     * @param type  the argument type to test for
-     * @param flags testing flags. {@link TypeParserFlags}
-     * @return {@code true} if this argument is of the type passed.
-     */
-    default boolean isOfType(Class<?> type, int flags) {
-//        return getClient().getArgumentTypes().getParser(type).test(this, flags);
-        return false;
-    }
-
     /**
      * Grabs the corresponding parser from the BreadBotClient and attempts to parse this argument to the passed type. If successful, return the result.
      *
@@ -111,7 +88,7 @@ public interface CommandArgument {
     default <T> T getAsType(Class<T> type) {
         TypeParser<T> parser = getClient().getArgumentTypes().getTypeParser(type);
         if (parser != null)
-            return parser.parse(this, 0);
+            return parser.parse(this);
         else return null;
     }
 
@@ -324,7 +301,7 @@ public interface CommandArgument {
      */
 
     default User getUser() {
-        throw new UnsupportedOperationException("This argument is not a User");
+        throw new UnsupportedOperationException("\"" + this.getArgument() + "\" is not a User");
     }
 
     /**
@@ -347,7 +324,7 @@ public interface CommandArgument {
      */
 
     default Member getMember() {
-        throw new UnsupportedOperationException("This argument is not a member");
+        throw new UnsupportedOperationException("\"" + this.getArgument() + "\" is not a member");
     }
 
     /**
@@ -396,7 +373,7 @@ public interface CommandArgument {
      * @throws UnsupportedOperationException if {@link CommandArgument#isValidRole()} would return {@code false}
      */
     default Role getRole() {
-        throw new UnsupportedOperationException("This argument is not a Role");
+        throw new UnsupportedOperationException("\"" + this.getArgument() + "\" is not a Role");
     }
 
     /**
@@ -444,7 +421,7 @@ public interface CommandArgument {
      * @throws UnsupportedOperationException if {@link CommandArgument#isValidTextChannel()} would return {@code false}
      */
     default TextChannel getTextChannel() {
-        throw new UnsupportedOperationException("This argument is not a TextChannel");
+        throw new UnsupportedOperationException("\"" + this.getArgument() + "\" is not a TextChannel");
     }
 
     /**
@@ -497,7 +474,7 @@ public interface CommandArgument {
      * @throws UnsupportedOperationException if {@link CommandArgument#isEmote()} would return {@code false}
      */
     default Emote getEmote() {
-        throw new UnsupportedOperationException("This argument is not an Emote");
+        throw new UnsupportedOperationException("\"" + this.getArgument() + "\" is not an Emote");
     }
 
     /**
@@ -518,6 +495,6 @@ public interface CommandArgument {
      * @throws UnsupportedOperationException if {@link CommandArgument#isEmoji()} would return {@code false}
      */
     default Emoji getEmoji() {
-        throw new UnsupportedOperationException("This argument is not an Emoji");
+        throw new UnsupportedOperationException("\"" + this.getArgument() + "\" is not an Emoji");
     }
 }

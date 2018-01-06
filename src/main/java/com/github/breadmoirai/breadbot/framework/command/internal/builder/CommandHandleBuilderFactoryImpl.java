@@ -1,5 +1,5 @@
 /*
- *        Copyright 2017 Ton Ly (BreadMoirai)
+ *        Copyright 2017-2018 Ton Ly (BreadMoirai)
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -29,7 +29,6 @@ import com.github.breadmoirai.breadbot.framework.error.CommandInitializationExce
 import com.github.breadmoirai.breadbot.framework.error.MissingMainCommandException;
 import com.github.breadmoirai.breadbot.framework.error.TooManyMainCommandsException;
 import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
-import com.github.breadmoirai.breadbot.framework.parameter.internal.builder.CommandParameterBuilderFactory;
 import com.github.breadmoirai.breadbot.framework.parameter.internal.builder.CommandParameterBuilderImpl;
 import org.reflections.Reflections;
 import org.slf4j.Logger;
@@ -77,7 +76,8 @@ public class CommandHandleBuilderFactoryImpl implements CommandHandleBuilderFact
                     return null;
                 },
                 new CommandPropertyMapImpl(CommandPropertiesManagerImpl.getPP(onCommand.getClass().getPackage())));
-        parameterBuilders[0] = new CommandParameterBuilderImpl(clientBuilder, commandHandleBuilder, null, null, null);
+        parameterBuilders[0] = new CommandParameterBuilderImpl(clientBuilder, commandHandleBuilder, null, null);
+        parameterBuilders[0].setParser((parameter, list, parser) -> parser.getEvent());
         return commandHandleBuilder;
     }
 
@@ -243,7 +243,7 @@ public class CommandHandleBuilderFactoryImpl implements CommandHandleBuilderFact
                 method,
                 factory,
                 methodPorp);
-        clientBuilder.applyModifiers(builder);
+        clientBuilder.applyPropertyModifiers(builder);
         getSubCommands(commandObject, aClass, factory, defaultMap, supplierReturnType, supplier).forEach(builder::putCommandHandle);
         return builder;
     }
@@ -260,7 +260,7 @@ public class CommandHandleBuilderFactoryImpl implements CommandHandleBuilderFact
             CommandPropertyMapImpl map = new CommandPropertyMapImpl(propertyMap, method.getAnnotations());
             String[] keys = map.getProperty(Command.class).value();
             CommandHandleBuilderInternal handle = createHandleFromMethod(commandObject, commandClass, method, factory, map);
-            clientBuilder.applyModifiers(handle);
+            clientBuilder.applyPropertyModifiers(handle);
             builders.add(handle);
         }
 
@@ -311,8 +311,7 @@ public class CommandHandleBuilderFactoryImpl implements CommandHandleBuilderFact
 
         CommandHandleBuilderImpl commandHandleBuilder = new CommandHandleBuilderImpl(obj, commandClass, method, clientBuilder, factory, parameterBuilders, invokableCommandHandle, map);
 
-        final CommandParameterBuilderFactory parameterFactory = new CommandParameterBuilderFactory(clientBuilder, commandHandleBuilder, map, method.getName());
-        Arrays.setAll(parameterBuilders, value -> parameterFactory.builder(parameters[value]));
+        Arrays.setAll(parameterBuilders, value -> new CommandParameterBuilderImpl(clientBuilder, commandHandleBuilder, parameters[value], map));
         return commandHandleBuilder;
     }
 

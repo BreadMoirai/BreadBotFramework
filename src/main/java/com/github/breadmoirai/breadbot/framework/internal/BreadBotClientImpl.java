@@ -1,5 +1,5 @@
 /*
- *        Copyright 2017 Ton Ly (BreadMoirai)
+ *        Copyright 2017-2018 Ton Ly (BreadMoirai)
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ import com.github.breadmoirai.breadbot.framework.command.internal.builder.Comman
 import com.github.breadmoirai.breadbot.framework.error.DuplicateCommandKeyException;
 import com.github.breadmoirai.breadbot.framework.event.CommandEventFactory;
 import com.github.breadmoirai.breadbot.framework.event.internal.CommandEventInternal;
-import com.github.breadmoirai.breadbot.framework.parameter.CommandParameterTypeManager;
+import com.github.breadmoirai.breadbot.framework.parameter.CommandParameterManager;
 import com.github.breadmoirai.breadbot.util.EventStringIterator;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Message;
@@ -56,7 +56,7 @@ public class BreadBotClientImpl implements BreadBotClient, EventListener {
     private JDA jda;
 
     private final CommandResultManager resultManager;
-    private final CommandParameterTypeManager argumentTypes;
+    private final CommandParameterManager argumentTypes;
     //    private final IEventManager eventManager;
     private final CommandEventFactory eventFactory;
     private final CommandEngine commandEngine;
@@ -71,7 +71,7 @@ public class BreadBotClientImpl implements BreadBotClient, EventListener {
             List<CommandHandleBuilderInternal> commands,
             CommandPropertiesManager commandProperties,
             CommandResultManager resultManager,
-            CommandParameterTypeManager argumentTypes,
+            CommandParameterManager argumentTypes,
             CommandEventFactory eventFactory,
             Predicate<Message> preProcessPredicate,
             boolean shouldEvaluateCommandOnMessageUpdate) {
@@ -168,7 +168,7 @@ public class BreadBotClientImpl implements BreadBotClient, EventListener {
 //    }
 
     @Override
-    public CommandParameterTypeManager getArgumentTypes() {
+    public CommandParameterManager getArgumentTypes() {
         return argumentTypes;
     }
 

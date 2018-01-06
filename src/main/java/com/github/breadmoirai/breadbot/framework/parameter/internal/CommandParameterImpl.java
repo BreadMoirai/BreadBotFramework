@@ -1,5 +1,5 @@
 /*
- *        Copyright 2017 Ton Ly (BreadMoirai)
+ *        Copyright 2017-2018 Ton Ly (BreadMoirai)
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -31,17 +31,19 @@ public class CommandParameterImpl implements CommandParameter {
     private final Parameter parameter;
     private final int index;
     private final int width;
+    private final int limit;
     private final boolean contiguous;
     private final TypeParser<?> typeParser;
     private final ArgumentParser argumentParser;
     private final boolean mustBePresent;
     private final AbsentArgumentHandler absentArgumentHandler;
 
-    public CommandParameterImpl(String name, Parameter parameter, int flags, int index, int width, boolean contiguous, TypeParser<?> typeParser, ArgumentParser argumentParser, boolean mustBePresent, AbsentArgumentHandler absentArgumentHandler) {
+    public CommandParameterImpl(String name, Parameter parameter, int index, int width, int limit, boolean contiguous, TypeParser<?> typeParser, ArgumentParser argumentParser, boolean mustBePresent, AbsentArgumentHandler absentArgumentHandler) {
         this.name = name;
         this.parameter = parameter;
         this.index = index;
         this.width = width;
+        this.limit = limit;
         this.contiguous = contiguous;
         this.typeParser = typeParser;
         this.argumentParser = argumentParser;
@@ -71,12 +73,7 @@ public class CommandParameterImpl implements CommandParameter {
 
     @Override
     public Object map(CommandArgumentList list, CommandParser parser) {
-        return null;
-    }
-
-    @Override
-    public Class<?> getType() {
-        return null;
+        return argumentParser.parse(this, list, parser);
     }
 
     @Override
@@ -87,6 +84,11 @@ public class CommandParameterImpl implements CommandParameter {
     @Override
     public int getWidth() {
         return width;
+    }
+
+    @Override
+    public int getLimit() {
+        return limit;
     }
 
     @Override

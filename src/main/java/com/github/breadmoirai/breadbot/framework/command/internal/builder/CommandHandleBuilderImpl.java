@@ -1,5 +1,5 @@
 /*
- *        Copyright 2017 Ton Ly (BreadMoirai)
+ *        Copyright 2017-2018 Ton Ly (BreadMoirai)
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -39,6 +39,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.StringJoiner;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
@@ -320,5 +321,46 @@ public class CommandHandleBuilderImpl implements CommandHandleBuilderInternal {
             }
         }
         return commandHandle;
+    }
+
+    private String toString(int indent) {
+        final StringBuilder sb = new StringBuilder();
+        sb.append("CommandHandle{\n");
+        tab(sb, indent + 2);
+        sb.append("keys: ").append(Arrays.toString(getKeys())).append('\n');
+        tab(sb, indent + 2);
+        sb.append("name: ").append(getName()).append('\n');
+        tab(sb, indent + 2);
+        sb.append("group: ").append(getGroup()).append('\n');
+        tab(sb, indent + 2);
+        sb.append("desc: ").append(getDescription()).append('\n');
+        tab(sb, indent + 2);
+        sb.append("source: ");
+        if (getDeclaringMethod() != null) {
+            sb.append(getDeclaringClass().getName()).append('#').append(getDeclaringMethod().getName());
+        } else {
+            sb.append(getDeclaringClass());
+        }
+        sb.append('\n');
+        tab(sb, indent + 2);
+        sb.append("subcommands: [\n");
+        StringJoiner sj = new StringJoiner(",\n");
+        for (CommandHandleBuilderInternal subCommand : subCommands) {
+            sj.add(((CommandHandleBuilderImpl) subCommand).toString(indent + 4));
+        }
+        tab(sb, indent + 4);
+        sb.append(sj);
+        tab(sb, indent + 2);
+        sb.append("]\n");
+        tab(sb, indent);
+        sb.append("}");
+
+        return sb.toString();
+    }
+
+    private void tab(StringBuilder sb, int indent) {
+        for (int i = 0; i < indent; i++) {
+            sb.append(' ');
+        }
     }
 }

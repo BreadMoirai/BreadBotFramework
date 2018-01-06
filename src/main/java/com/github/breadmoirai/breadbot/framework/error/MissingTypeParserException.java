@@ -1,5 +1,5 @@
 /*
- *        Copyright 2017 Ton Ly (BreadMoirai)
+ *        Copyright 2017-2018 Ton Ly (BreadMoirai)
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -16,10 +16,12 @@
 
 package com.github.breadmoirai.breadbot.framework.error;
 
-public class MissingParserException extends CommandInitializationException {
+import com.github.breadmoirai.breadbot.framework.parameter.internal.builder.CommandParameterBuilderImpl;
 
-    public MissingParserException(String methodName, String paramName) {
-        super("Command Parameter: [\"" + paramName + "\" in method \"" + methodName + "\"]'s parser has been set to null");
+public class MissingTypeParserException extends CommandInitializationException {
+
+    public MissingTypeParserException(CommandParameterBuilderImpl p) {
+        super("Command Parameter: \"" + p.getName() + "\"'s parser has not been set for Command: \n" + p.getCommandBuilder());
     }
 
 }
