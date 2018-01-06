@@ -1,5 +1,5 @@
 /*
- *        Copyright 2017 Ton Ly (BreadMoirai)
+ *        Copyright 2017-2018 Ton Ly (BreadMoirai)
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ import java.util.regex.Pattern;
 
 public class CommandHandleImpl implements CommandHandle {
 
-    private static final Logger log = LoggerFactory.getLogger(CommandHandle.class);
+    private static final Logger LOG = LoggerFactory.getLogger(CommandHandle.class);
 
     private final String[] keys;
     private final String name;
@@ -127,7 +127,7 @@ public class CommandHandleImpl implements CommandHandle {
         if (commandObj == null) return false;
         if (invokableCommand != null) {
             final CommandParser parser = new CommandParser(event, this, splitRegex == null ? event.getArguments() : event.createNewArgumentList(splitRegex, splitLimit), getParameters());
-            final CommandRunner runner = new CommandRunner(commandObj, event, invokableCommand, parser, this, resultHandler, throwable -> log.error("An error ocurred while invoking command:\n" + this + "\non Event:\n" + event, throwable));
+            final CommandRunner runner = new CommandRunner(commandObj, event, invokableCommand, parser, this, resultHandler);
             final CommandProcessStack commandProcessStack = new CommandProcessStack(commandObj, this, event, preprocessors, runner);
             commandProcessStack.runNext();
             return commandProcessStack.result();
