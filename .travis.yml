@@ -9,4 +9,4 @@ script:
 after_success:
   - bash <(curl -s https://codecov.io/bash)
 after_script:
-  - bash -c "$(curl -fsSL https://raw.githubusercontent.com/MaT1g3R/travis_discord/master/travis.sh)"
+  - bash -c "$(curl -fsSL https://raw.githubusercontent.com/BreadMoirai/travis_discord/master/travis.sh)"
