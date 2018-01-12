@@ -13,32 +13,24 @@
  *   See the License for the specific language governing permissions and
  *   limitations under the License.
  */
+package com.github.breadmoirai.tests.commands;
 
-package com.github.breadmoirai.breadbot.framework.parameter;
+import com.github.breadmoirai.breadbot.framework.annotation.command.Command;
+import com.github.breadmoirai.breadbot.framework.annotation.parameter.Author;
+import com.github.breadmoirai.breadbot.framework.annotation.parameter.Required;
+import net.dv8tion.jda.core.entities.Member;
 
-import java.lang.reflect.Parameter;
+public class AuthorCommand {
 
-public interface CommandParameter {
-
-    String getName();
-
-    Parameter getDeclaringParameter();
-
-    default Object map(CommandParser parser) {
-        return map(parser.getArgumentList(), parser);
+    @Command
+    public String auth(@Required @Author(unlessMention = true) Member member) {
+        return member.getEffectiveName();
     }
 
-    Object map(CommandArgumentList list, CommandParser parser);
+    @Command
+    public String author(@Required @Author Member member) {
+        return member.getEffectiveName();
+    }
 
-    int getIndex();
 
-    int getWidth();
-
-    int getLimit();
-
-    boolean isContiguous();
-
-    boolean mustBePresent();
-
-    AbsentArgumentHandler getAbsentArgumentHandler();
 }

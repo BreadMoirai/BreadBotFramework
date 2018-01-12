@@ -41,34 +41,35 @@ public class CollectionTypes {
         builder.setTypeParser(typeParser);
     }
 
-    public static <T> void setParserToGenericList(Class<T> type, CommandParameterBuilder builder) {
+    public static <T> void setParserToGenericList(Class<T> type, CommandParameterBuilderImpl builder) {
         setTypeParser(type, builder);
-        builder.setParser(new ArgumentParserCollectionImpl(() -> ArgumentCollectionBuilder.<List<T>, T>of(ArrayList::new, List::add, f -> f)));
+        builder.setArgumentParser(p -> new ArgumentParserCollectionImpl(p, () -> ArgumentCollectionBuilder.<List<T>, T>of(ArrayList::new, List::add, f -> f)));
+
     }
 
-    public static <T> void setParserToGenericDeque(Class<T> type, CommandParameterBuilder builder) {
+    public static <T> void setParserToGenericDeque(Class<T> type, CommandParameterBuilderImpl builder) {
         setTypeParser(type, builder);
-        builder.setParser(new ArgumentParserCollectionImpl(() -> ArgumentCollectionBuilder.<Deque<T>, T>of(ArrayDeque::new, Deque::add, f -> f)));
+        builder.setArgumentParser(p -> new ArgumentParserCollectionImpl(p, () -> ArgumentCollectionBuilder.<Deque<T>, T>of(ArrayDeque::new, Deque::add, f -> f)));
     }
 
-    public static <T> void setParserToGenericStream(Class<T> type, CommandParameterBuilder builder) {
+    public static <T> void setParserToGenericStream(Class<T> type, CommandParameterBuilderImpl builder) {
         setTypeParser(type, builder);
-        builder.setParser(new ArgumentParserCollectionImpl(() -> ArgumentCollectionBuilder.<Stream.Builder<T>, T>of(Stream::<T>builder, Stream.Builder::<T>accept, Stream.Builder::build)));
+        builder.setArgumentParser(p -> new ArgumentParserCollectionImpl(p, () -> ArgumentCollectionBuilder.<Stream.Builder<T>, T>of(Stream::<T>builder, Stream.Builder::<T>accept, Stream.Builder::build)));
     }
 
 
-    public static void setParserToIntStream(CommandParameterBuilder builder) {
+    public static void setParserToIntStream(CommandParameterBuilderImpl builder) {
         builder.setTypeParser(arg -> arg.isInteger() ? arg : null);
-        builder.setParser(new ArgumentParserCollectionImpl(() -> ArgumentCollectionBuilder.<Stream.Builder<CommandArgument>, CommandArgument>of(Stream::<CommandArgument>builder, Stream.Builder::accept, stream -> stream.build().mapToInt(CommandArgument::parseInt))));
+        builder.setArgumentParser(p -> new ArgumentParserCollectionImpl(p, () -> ArgumentCollectionBuilder.<Stream.Builder<CommandArgument>, CommandArgument>of(Stream::<CommandArgument>builder, Stream.Builder::accept, stream -> stream.build().mapToInt(CommandArgument::parseInt))));
     }
 
-    public static void setParserToLongStream(CommandParameterBuilder builder) {
+    public static void setParserToLongStream(CommandParameterBuilderImpl builder) {
         builder.setTypeParser(arg -> arg.isLong() ? arg : null);
-        builder.setParser(new ArgumentParserCollectionImpl(() -> ArgumentCollectionBuilder.<Stream.Builder<CommandArgument>, CommandArgument>of(Stream::<CommandArgument>builder, Stream.Builder::accept, stream -> stream.build().mapToLong(CommandArgument::parseLong))));
+        builder.setArgumentParser(p -> new ArgumentParserCollectionImpl(p, () -> ArgumentCollectionBuilder.<Stream.Builder<CommandArgument>, CommandArgument>of(Stream::<CommandArgument>builder, Stream.Builder::accept, stream -> stream.build().mapToLong(CommandArgument::parseLong))));
     }
 
-    public static void setParserToDoubleStream(CommandParameterBuilder builder) {
+    public static void setParserToDoubleStream(CommandParameterBuilderImpl builder) {
         builder.setTypeParser(arg -> arg.isFloat() ? arg : null);
-        builder.setParser(new ArgumentParserCollectionImpl(() -> ArgumentCollectionBuilder.<Stream.Builder<CommandArgument>, CommandArgument>of(Stream::<CommandArgument>builder, Stream.Builder::accept, stream -> stream.build().mapToDouble(CommandArgument::parseDouble))));
+        builder.setArgumentParser(p -> new ArgumentParserCollectionImpl(p, () -> ArgumentCollectionBuilder.<Stream.Builder<CommandArgument>, CommandArgument>of(Stream::<CommandArgument>builder, Stream.Builder::accept, stream -> stream.build().mapToDouble(CommandArgument::parseDouble))));
     }
 }

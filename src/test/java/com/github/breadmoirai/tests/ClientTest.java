@@ -23,7 +23,6 @@ import com.github.breadmoirai.breadbot.framework.event.internal.CommandEventInte
 import com.github.breadmoirai.breadbot.util.Emoji;
 import com.github.breadmoirai.tests.commands.ColorCommand;
 import com.github.breadmoirai.tests.commands.CountCommand;
-import com.github.breadmoirai.tests.commands.EchoCommand;
 import com.github.breadmoirai.tests.commands.EmojiCommand;
 import com.github.breadmoirai.tests.commands.HelpCommand;
 import com.github.breadmoirai.tests.commands.MathCommand;
@@ -284,13 +283,6 @@ public class ClientTest {
         assertResponse("!10plus 10", "21");
     }
 
-    @Test
-    public void matchRegexTest() {
-        setupBread(bread -> bread.addCommand(EchoCommand::new));
-        assertResponse("!echo echo", "echo");
-        assertResponse("!echonum echo", null);
-        assertResponse("!echonum 124", "124");
-    }
 
     private void setupBread(Consumer<BreadBotClientBuilder> config) {
         BreadBotClientBuilder builder = new BreadBotClientBuilder();
@@ -299,7 +291,7 @@ public class ClientTest {
     }
 
     private void assertResponse(final String input, final String expected) {
-        CommandEventInternal spy = mockCommand(client, input);
+        CommandEventInternal spy = mockCommand(client, input, MockFactory.UserType.BASIC);
 
 
         doAnswer(invocation -> {

@@ -25,6 +25,7 @@ import com.github.breadmoirai.breadbot.framework.annotation.command.Description;
 import com.github.breadmoirai.breadbot.framework.annotation.command.Group;
 import com.github.breadmoirai.breadbot.framework.annotation.command.MainCommand;
 import com.github.breadmoirai.breadbot.framework.annotation.command.RequiredParameters;
+import com.github.breadmoirai.breadbot.framework.annotation.parameter.Author;
 import com.github.breadmoirai.breadbot.framework.annotation.parameter.Contiguous;
 import com.github.breadmoirai.breadbot.framework.annotation.parameter.Hexadecimal;
 import com.github.breadmoirai.breadbot.framework.annotation.parameter.Index;
@@ -37,8 +38,16 @@ import com.github.breadmoirai.breadbot.framework.command.internal.CommandPropert
 import com.github.breadmoirai.breadbot.framework.command.internal.builder.CommandHandleBuilderInternal;
 import com.github.breadmoirai.breadbot.framework.error.BreadBotException;
 import com.github.breadmoirai.breadbot.framework.parameter.AbsentArgumentHandler;
+import com.github.breadmoirai.breadbot.framework.parameter.ArgumentParser;
 import com.github.breadmoirai.breadbot.framework.parameter.CommandArgument;
+import com.github.breadmoirai.breadbot.framework.parameter.CommandArgumentList;
+import com.github.breadmoirai.breadbot.framework.parameter.CommandParameter;
+import com.github.breadmoirai.breadbot.framework.parameter.CommandParser;
+import com.github.breadmoirai.breadbot.framework.parameter.internal.ArgumentParserImpl;
+import com.github.breadmoirai.breadbot.framework.parameter.internal.builder.CommandParameterBuilderImpl;
 import com.github.breadmoirai.breadbot.util.Arguments;
+import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.User;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -101,6 +110,48 @@ public class DefaultCommandProperties {
                 case FLOAT:
                     builder.addArgumentPredicate(CommandArgument::isFloat);
                     break;
+            }
+        });
+        cp.putParameterModifier(Author.class, (prop, param) -> {
+            final Class<?> type = param.getDeclaringParameter().getType();
+            if (type == Member.class) {
+                if (!prop.unlessMention()) {
+                    param.setTypeParser(null);
+                    param.setParser((parameter, list, parser) -> parser.getEvent().getMember());
+                } else {
+                    ((CommandParameterBuilderImpl) param).setArgumentParser(p -> new ArgumentParser() {
+                        private final ArgumentParserImpl argumentParser = new ArgumentParserImpl(p.getIndex(), p.getWidth(), false, null, p.getTypeParser());
+
+                        @Override
+                        public Object parse(CommandParameter parameter, CommandArgumentList list, CommandParser parser) {
+                            final Object parse = argumentParser.parse(parameter, list, parser);
+                            if (parse != null) {
+                                return parse;
+                            } else {
+                                return parser.getEvent().getMember();
+                            }
+                        }
+                    });
+                }
+            } else if (type == User.class) {
+                if (!prop.unlessMention()) {
+                    param.setTypeParser(null);
+                    param.setParser((parameter, list, parser) -> parser.getEvent().getAuthor());
+                } else {
+                    ((CommandParameterBuilderImpl) param).setArgumentParser(p -> new ArgumentParser() {
+                        private final ArgumentParserImpl argumentParser = new ArgumentParserImpl(p.getIndex(), p.getWidth(), false, null, p.getTypeParser());
+
+                        @Override
+                        public Object parse(CommandParameter parameter, CommandArgumentList list, CommandParser parser) {
+                            final Object parse = argumentParser.parse(parameter, list, parser);
+                            if (parse != null) {
+                                return parse;
+                            } else {
+                                return parser.getEvent().getAuthor();
+                            }
+                        }
+                    });
+                }
             }
         });
     }

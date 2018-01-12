@@ -14,31 +14,18 @@
  *   limitations under the License.
  */
 
-package com.github.breadmoirai.breadbot.framework.parameter;
+package com.github.breadmoirai.tests.commands;
 
-import java.lang.reflect.Parameter;
+import com.github.breadmoirai.breadbot.framework.annotation.command.Command;
+import com.github.breadmoirai.breadbot.modules.admin.Admin;
 
-public interface CommandParameter {
+public class AmIAdminCommand {
 
-    String getName();
-
-    Parameter getDeclaringParameter();
-
-    default Object map(CommandParser parser) {
-        return map(parser.getArgumentList(), parser);
+    @Command
+    @Admin
+    public String isadmin() {
+        return "yes";
     }
 
-    Object map(CommandArgumentList list, CommandParser parser);
 
-    int getIndex();
-
-    int getWidth();
-
-    int getLimit();
-
-    boolean isContiguous();
-
-    boolean mustBePresent();
-
-    AbsentArgumentHandler getAbsentArgumentHandler();
 }

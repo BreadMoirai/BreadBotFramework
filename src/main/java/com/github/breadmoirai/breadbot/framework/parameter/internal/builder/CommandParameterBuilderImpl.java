@@ -21,13 +21,11 @@ import com.github.breadmoirai.breadbot.framework.builder.BreadBotClientBuilder;
 import com.github.breadmoirai.breadbot.framework.builder.CommandHandleBuilder;
 import com.github.breadmoirai.breadbot.framework.builder.CommandParameterBuilder;
 import com.github.breadmoirai.breadbot.framework.command.internal.CommandPropertyMapImpl;
-import com.github.breadmoirai.breadbot.framework.error.MissingTypeParserException;
 import com.github.breadmoirai.breadbot.framework.parameter.AbsentArgumentHandler;
 import com.github.breadmoirai.breadbot.framework.parameter.ArgumentParser;
 import com.github.breadmoirai.breadbot.framework.parameter.CommandArgument;
 import com.github.breadmoirai.breadbot.framework.parameter.CommandParameter;
 import com.github.breadmoirai.breadbot.framework.parameter.TypeParser;
-import com.github.breadmoirai.breadbot.framework.parameter.internal.ArgumentParserCollectionImpl;
 import com.github.breadmoirai.breadbot.framework.parameter.internal.ArgumentParserImpl;
 import com.github.breadmoirai.breadbot.framework.parameter.internal.CommandParameterImpl;
 
@@ -40,6 +38,7 @@ import java.util.Deque;
 import java.util.List;
 import java.util.Queue;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
@@ -59,12 +58,11 @@ public class CommandParameterBuilderImpl implements CommandParameterBuilder {
     private int width = 1;
     private int limit = -1;
     private TypeParser<?> typeParser;
-    private ArgumentParser argumentParser;
+    private Function<CommandParameterBuilderImpl, ArgumentParser> argumentParser;
     private boolean mustBePresent = false;
     private boolean contiguous = false;
     private AbsentArgumentHandler absentArgumentHandler = null;
     private Predicate<CommandArgument> argumentPredicate;
-    private String name;
 
     public CommandParameterBuilderImpl(BreadBotClientBuilder builder, CommandHandleBuilder commandBuilder, Parameter parameter, CommandPropertyMapImpl map) {
         this.commandBuilder = commandBuilder;
@@ -74,11 +72,11 @@ public class CommandParameterBuilderImpl implements CommandParameterBuilder {
             this.map = new CommandPropertyMapImpl(map, parameter.getAnnotations());
             this.paramName = parameter.getName();
             final Class<?> type = parameter.getType();
-            this.typeParser = this.clientBuilder.getTypeParser(type);
+            typeParser = this.clientBuilder.getTypeParser(type);
             if (CommandModule.class.isAssignableFrom(type)) {
-                this.argumentParser = (parameter1, list, parser) -> parser.getEvent().getClient().getModule(type);
+                this.argumentParser = (p) -> (parameter1, list, parser) -> parser.getEvent().getClient().getModule(type);
             } else {
-                this.argumentParser = new ArgumentParserImpl();
+                this.argumentParser = (p) -> new ArgumentParserImpl(p.index, p.width, p.mustBePresent, p.absentArgumentHandler, p.typeParser);
             }
             builder.applyTypeModifiers(this);
         } else {
@@ -124,7 +122,7 @@ public class CommandParameterBuilderImpl implements CommandParameterBuilder {
 
     @Override
     public CommandParameterBuilder setParser(ArgumentParser parser) {
-        this.argumentParser = parser;
+        this.argumentParser = o -> parser;
         return this;
     }
 
@@ -161,8 +159,8 @@ public class CommandParameterBuilderImpl implements CommandParameterBuilder {
         return typeParser;
     }
 
-    public ArgumentParser getParser() {
-        return argumentParser;
+    public void setArgumentParser(Function<CommandParameterBuilderImpl, ArgumentParser> p) {
+        this.argumentParser = p;
     }
 
     @Override
@@ -203,16 +201,14 @@ public class CommandParameterBuilderImpl implements CommandParameterBuilder {
 
     @Override
     public CommandParameter build() {
-        if (typeParser == null && (argumentParser.getClass() == ArgumentParserImpl.class ||
-                argumentParser.getClass() == ArgumentParserCollectionImpl.class)) {
-            throw new MissingTypeParserException(this);
-        }
         if (argumentPredicate != null && typeParser != null) {
             final TypeParser<?> typeParser = this.typeParser;
             final Predicate<CommandArgument> predicate = this.argumentPredicate;
             this.typeParser = arg -> predicate.test(arg) ? typeParser.parse(arg) : null;
         }
-        return new CommandParameterImpl(paramName, parameter, index, width, limit, contiguous, typeParser, argumentParser, mustBePresent, absentArgumentHandler);
+        final ArgumentParser parser = this.argumentParser.apply(this);
+
+        return new CommandParameterImpl(paramName, parameter, index, width, limit, contiguous, parser, mustBePresent, absentArgumentHandler);
     }
 
     @Override
@@ -221,8 +217,43 @@ public class CommandParameterBuilderImpl implements CommandParameterBuilder {
         return this;
     }
 
-    public String getName() {
-        return name;
+    public Parameter getParameter() {
+        return parameter;
     }
 
+    public CommandPropertyMapImpl getMap() {
+        return map;
+    }
+
+    public String getParamName() {
+        return paramName;
+    }
+
+    public int getIndex() {
+        return index;
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public int getLimit() {
+        return limit;
+    }
+
+    public boolean isMustBePresent() {
+        return mustBePresent;
+    }
+
+    public boolean isContiguous() {
+        return contiguous;
+    }
+
+    public AbsentArgumentHandler getAbsentArgumentHandler() {
+        return absentArgumentHandler;
+    }
+
+    public Predicate<CommandArgument> getArgumentPredicate() {
+        return argumentPredicate;
+    }
 }

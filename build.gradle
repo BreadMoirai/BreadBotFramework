@@ -33,7 +33,7 @@ group "com.github.${author.toLowerCase()}"
 version '0.9.1'
 
 //project.hasProperty never seems to work properly
-final boolean keysArePresent = false
+final boolean keysArePresent = true
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8

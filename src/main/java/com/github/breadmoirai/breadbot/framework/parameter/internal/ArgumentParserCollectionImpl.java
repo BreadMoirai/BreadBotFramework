@@ -20,16 +20,22 @@ import com.github.breadmoirai.breadbot.framework.parameter.ArgumentParser;
 import com.github.breadmoirai.breadbot.framework.parameter.CommandArgumentList;
 import com.github.breadmoirai.breadbot.framework.parameter.CommandParameter;
 import com.github.breadmoirai.breadbot.framework.parameter.CommandParser;
+import com.github.breadmoirai.breadbot.framework.parameter.internal.builder.CommandParameterBuilderImpl;
 
 import java.util.function.Supplier;
 
 public class ArgumentParserCollectionImpl implements ArgumentParser {
 
-    private final ArgumentParserImpl baseParser = new ArgumentParserImpl();
+    private final ArgumentParser baseParser;
     private final Supplier<ArgumentCollectionBuilder> collectorFactory;
+    private final int limit;
+    private final boolean contiguous;
 
-    public ArgumentParserCollectionImpl(Supplier<ArgumentCollectionBuilder> collectorFactory) {
+    public ArgumentParserCollectionImpl(CommandParameterBuilderImpl param, Supplier<ArgumentCollectionBuilder> collectorFactory) {
         this.collectorFactory = collectorFactory;
+        this.baseParser = new ArgumentParserImpl(param.getIndex(), param.getWidth(), param.isMustBePresent(), param.getAbsentArgumentHandler(), param.getTypeParser());
+        this.limit = param.getLimit();
+        this.contiguous = param.isContiguous();
     }
 
     @Override

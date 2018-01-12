@@ -1,5 +1,5 @@
 /*
- *        Copyright 2017 Ton Ly (BreadMoirai)
+ *        Copyright 2017-2018 Ton Ly (BreadMoirai)
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -113,7 +113,7 @@ public class CommandPropertiesManagerImpl implements CommandPropertiesManager {
     @Override
     public void applyModifiers(CommandParameterBuilder builder) {
         for (Class<?> aClass : parameterPropertyMap.keySet())
-            if (aClass != null) if (builder.hasProperty(aClass))
+            if (aClass != null && builder.hasProperty(aClass))
                 applyParameterModifier(aClass, builder);
         applyParameterModifier(null, builder);
     }
