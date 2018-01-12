@@ -21,7 +21,7 @@ import com.github.breadmoirai.breadbot.framework.parameter.internal.builder.Comm
 public class MissingTypeParserException extends CommandInitializationException {
 
     public MissingTypeParserException(CommandParameterBuilderImpl p) {
-        super("Command Parameter: \"" + p.getName() + "\"'s parser has not been set for Command: \n" + p.getCommandBuilder());
+        super("Command Parameter: \"" + p.getParamName() + "\"'s parser has not been set for Command: \n" + p.getCommandBuilder());
     }
 
 }

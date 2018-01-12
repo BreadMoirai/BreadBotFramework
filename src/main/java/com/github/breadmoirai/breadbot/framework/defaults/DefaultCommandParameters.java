@@ -175,23 +175,26 @@ public class DefaultCommandParameters {
 
     private void putParameterTypeModifiers(CommandParameterTypeManagerImpl map) {
         map.putTypeModifier(List.class, p -> {
-            final Class<?> genericType = ((CommandParameterBuilderImpl) p).getGenericType();
-            CollectionTypes.setParserToGenericList(genericType, p);
+            final CommandParameterBuilderImpl pc = (CommandParameterBuilderImpl) p;
+            final Class<?> genericType = pc.getGenericType();
+            CollectionTypes.setParserToGenericList(genericType, pc);
         });
 
         map.putTypeModifier(Deque.class, p -> {
-            final Class<?> genericType = ((CommandParameterBuilderImpl) p).getGenericType();
-            CollectionTypes.setParserToGenericDeque(genericType, p);
+            final CommandParameterBuilderImpl pc = (CommandParameterBuilderImpl) p;
+            final Class<?> genericType = pc.getGenericType();
+            CollectionTypes.setParserToGenericDeque(genericType, pc);
         });
 
         map.putTypeModifier(Stream.class, p -> {
-            final Class<?> genericType = ((CommandParameterBuilderImpl) p).getGenericType();
-            CollectionTypes.setParserToGenericStream(genericType, p);
+            final CommandParameterBuilderImpl pc = (CommandParameterBuilderImpl) p;
+            final Class<?> genericType = pc.getGenericType();
+            CollectionTypes.setParserToGenericStream(genericType, pc);
         });
 
-        map.putTypeModifier(IntStream.class, CollectionTypes::setParserToIntStream);
-        map.putTypeModifier(LongStream.class, CollectionTypes::setParserToLongStream);
-        map.putTypeModifier(DoubleStream.class, CollectionTypes::setParserToDoubleStream);
+        map.putTypeModifier(IntStream.class, builder -> CollectionTypes.setParserToIntStream(((CommandParameterBuilderImpl) builder)));
+        map.putTypeModifier(LongStream.class, builder -> CollectionTypes.setParserToLongStream(((CommandParameterBuilderImpl) builder)));
+        map.putTypeModifier(DoubleStream.class, builder -> CollectionTypes.setParserToDoubleStream(((CommandParameterBuilderImpl) builder)));
 
         map.putTypeModifier(CommandEvent.class, p -> p.setParser((parameter, list, parser) -> parser.getEvent()));
     }

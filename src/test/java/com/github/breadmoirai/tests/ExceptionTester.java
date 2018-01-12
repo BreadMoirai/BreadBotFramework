@@ -1,5 +1,5 @@
 /*
- *        Copyright 2017 Ton Ly (BreadMoirai)
+ *        Copyright 2017-2018 Ton Ly (BreadMoirai)
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -85,7 +85,7 @@ public class ExceptionTester {
         BreadBotClient bread = new BreadBotClientBuilder()
                 .addCommand(BadCtorCommand.class)
                 .build();
-        CommandEventInternal mock = mockCommand(bread, "!bad");
+        CommandEventInternal mock = mockCommand(bread, "!bad", MockFactory.UserType.BASIC);
         bread.getCommandEngine().handle(mock);
 
         ImmutableList<LoggingEvent> logs = testLogger.getLoggingEvents();
@@ -106,7 +106,7 @@ public class ExceptionTester {
                 .createCommand(BadPrepCommand.class)
                 .getClientBuilder().build();
 
-        CommandEventInternal mock = mockCommand(bread, "!bad");
+        CommandEventInternal mock = mockCommand(bread, "!bad", MockFactory.UserType.BASIC);
         bread.getCommandEngine().handle(mock);
 
         ImmutableList<LoggingEvent> logs = testLogger.getLoggingEvents();
@@ -127,7 +127,7 @@ public class ExceptionTester {
                 .createCommand(BadCommand.class)
                 .getClientBuilder().build();
 
-        CommandEventInternal mock = mockCommand(bread, "!bad");
+        CommandEventInternal mock = mockCommand(bread, "!bad", MockFactory.UserType.BASIC);
         bread.getCommandEngine().handle(mock);
 
         ImmutableList<LoggingEvent> logs = testLogger.getLoggingEvents();
@@ -142,7 +142,7 @@ public class ExceptionTester {
                 "  source: com.github.breadmoirai.tests.commands.BadCommand#bad\n" +
                 "}\n" +
                 "on Event:\n" +
-                "CommandEvent{ Guild=0, Channel=0, Author=0, Prefix=!, Key=[bad], Content=null }", loggingEvent.getMessage());
+                "CommandEvent{ Guild=0, Channel=14, Author=9, Prefix=!, Key=[bad], Content=null }", loggingEvent.getMessage());
         Optional<Throwable> cause = loggingEvent.getThrowable();
         assertTrue(cause.isPresent());
         assertEquals("Command Exception", cause.get().getMessage());

@@ -1,5 +1,5 @@
 /*
- *        Copyright 2017 Ton Ly (BreadMoirai)
+ *        Copyright 2017-2018 Ton Ly (BreadMoirai)
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package com.github.breadmoirai.breadbot.modules.admin;
 
+import com.github.breadmoirai.breadbot.framework.annotation.command.Command;
 import com.github.breadmoirai.breadbot.framework.annotation.command.MainCommand;
 import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
 import net.dv8tion.jda.core.entities.Member;
@@ -30,8 +31,8 @@ public class AdminCommand {
         event.reply("**Administrative Members:** " + event.getGuild().getMembers().stream().filter(module::isAdmin).map(Member::getEffectiveName).collect(Collectors.joining(", ")));
     }
 
-//    @Override
-//    public void getHelp(CommandEvent event) {
-//        event.reply("This command shows which users have the authority to use Administrative commands");
-//    }
+    @Command
+    public void help(CommandEvent event) {
+        event.reply("This command shows which users have the authority to use Administrative commands");
+    }
 }

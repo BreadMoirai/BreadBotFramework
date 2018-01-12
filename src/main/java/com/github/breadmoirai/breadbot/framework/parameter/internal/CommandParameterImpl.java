@@ -21,7 +21,6 @@ import com.github.breadmoirai.breadbot.framework.parameter.ArgumentParser;
 import com.github.breadmoirai.breadbot.framework.parameter.CommandArgumentList;
 import com.github.breadmoirai.breadbot.framework.parameter.CommandParameter;
 import com.github.breadmoirai.breadbot.framework.parameter.CommandParser;
-import com.github.breadmoirai.breadbot.framework.parameter.TypeParser;
 
 import java.lang.reflect.Parameter;
 
@@ -33,19 +32,17 @@ public class CommandParameterImpl implements CommandParameter {
     private final int width;
     private final int limit;
     private final boolean contiguous;
-    private final TypeParser<?> typeParser;
     private final ArgumentParser argumentParser;
     private final boolean mustBePresent;
     private final AbsentArgumentHandler absentArgumentHandler;
 
-    public CommandParameterImpl(String name, Parameter parameter, int index, int width, int limit, boolean contiguous, TypeParser<?> typeParser, ArgumentParser argumentParser, boolean mustBePresent, AbsentArgumentHandler absentArgumentHandler) {
+    public CommandParameterImpl(String name, Parameter parameter, int index, int width, int limit, boolean contiguous, ArgumentParser argumentParser, boolean mustBePresent, AbsentArgumentHandler absentArgumentHandler) {
         this.name = name;
         this.parameter = parameter;
         this.index = index;
         this.width = width;
         this.limit = limit;
         this.contiguous = contiguous;
-        this.typeParser = typeParser;
         this.argumentParser = argumentParser;
         this.mustBePresent = mustBePresent;
         this.absentArgumentHandler = absentArgumentHandler;
@@ -59,16 +56,6 @@ public class CommandParameterImpl implements CommandParameter {
     @Override
     public Parameter getDeclaringParameter() {
         return parameter;
-    }
-
-    @Override
-    public TypeParser<?> getTypeParser() {
-        return typeParser;
-    }
-
-    @Override
-    public ArgumentParser getArgumentParser() {
-        return argumentParser;
     }
 
     @Override

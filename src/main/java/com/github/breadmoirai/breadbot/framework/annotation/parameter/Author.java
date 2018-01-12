@@ -14,17 +14,30 @@
  *   limitations under the License.
  */
 
-package com.github.breadmoirai.breadbot.modules.admin;
-
-import com.github.breadmoirai.breadbot.framework.annotation.InheritedProperty;
+package com.github.breadmoirai.breadbot.framework.annotation.parameter;
 
 import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * This should only be used on parameters of type Member and User.
+ * This parameter has a field which if set to true,
+ * indicates that the parameter should only be set
+ * to the author if a member is not mentioned in the command.
+ */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE, ElementType.METHOD})
-@InheritedProperty
-public @interface Admin {
+@Target(ElementType.PARAMETER)
+@Inherited
+public @interface Author {
+
+    /**
+     * by default false
+     *
+     * @return booleans
+     */
+    boolean unlessMention() default false;
+
 }
