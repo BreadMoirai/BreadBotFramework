@@ -8,5 +8,6 @@ script:
   - ./gradlew jacocoTestReport
 after_success:
   - bash <(curl -s https://codecov.io/bash)
-after_script:
+  - bash -c "$(curl -fsSL https://raw.githubusercontent.com/BreadMoirai/travis_discord/master/travis.sh)"
+after_failure:
   - bash -c "$(curl -fsSL https://raw.githubusercontent.com/BreadMoirai/travis_discord/master/travis.sh)"
