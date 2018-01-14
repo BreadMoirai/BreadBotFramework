@@ -19,9 +19,9 @@ package com.github.breadmoirai.tests;
 import com.github.breadmoirai.breadbot.framework.BreadBotClient;
 import com.github.breadmoirai.breadbot.framework.builder.BreadBotClientBuilder;
 import com.github.breadmoirai.breadbot.framework.event.internal.CommandEventInternal;
-import com.github.breadmoirai.tests.commands.AmIAdminCommand;
 import com.github.breadmoirai.tests.commands.AuthorCommand;
 import com.github.breadmoirai.tests.commands.EchoCommand;
+import com.github.breadmoirai.tests.commands.WhoAmICommand;
 import org.junit.Test;
 import uk.org.lidalia.slf4jext.Level;
 import uk.org.lidalia.slf4jtest.TestLoggerFactory;
@@ -63,14 +63,13 @@ public class DefaultTester {
     @Test
     public void adminTest() {
         client = new BreadBotClientBuilder()
-                .addDefaultAdminModule()
-                .addCommand(AmIAdminCommand::new)
+                .addAdminPlugin()
+                .addCommand(WhoAmICommand::new)
                 .build();
         assertResponse(MockFactory.UserType.BASIC, "!isadmin", null);
-        assertResponse(MockFactory.UserType.ADMIN, "!isadmin t3ag3", "yes");
-        assertResponse(MockFactory.UserType.CREATOR, "!isadmin 32 resg", "yes");
+        assertResponse(MockFactory.UserType.ADMIN, "!isadmin", "yes");
+        assertResponse(MockFactory.UserType.CREATOR, "!isadmin", "yes");
     }
-
 
     private void assertResponse(String input, String expected) {
         assertResponse(MockFactory.UserType.BASIC, input, expected);

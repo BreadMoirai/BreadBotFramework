@@ -18,15 +18,11 @@ package com.github.breadmoirai.breadbot.framework;
 
 import com.github.breadmoirai.breadbot.framework.builder.BreadBotClientBuilder;
 import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
-import com.typesafe.config.Config;
-import net.dv8tion.jda.core.entities.Guild;
 
-import java.util.Map;
-
-public interface CommandModule {
+public interface BreadBotPlugin {
 
     default String getName() {
-        return this.getClass().getSimpleName();
+        return this.getClass().getSimpleName().replace("Plugin", "");
     }
 
     void initialize(BreadBotClientBuilder builder);
@@ -39,17 +35,6 @@ public interface CommandModule {
 
     default void onHelpEvent(CommandEvent event) {
         event.reply("This is not the help you are looking for");
-    }
-
-    default boolean isConfigurable() {
-        return false;
-    }
-
-    default void buildConfig(Guild guild, Map<String, Object> conf) {
-    }
-
-    default boolean loadConfig(Guild guild, Config conf) {
-        return false;
     }
 
 }

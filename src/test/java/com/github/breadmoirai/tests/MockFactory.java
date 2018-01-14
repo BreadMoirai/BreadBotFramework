@@ -19,7 +19,7 @@ package com.github.breadmoirai.tests;
 import com.github.breadmoirai.breadbot.framework.BreadBotClient;
 import com.github.breadmoirai.breadbot.framework.event.internal.CommandEventFactoryImpl;
 import com.github.breadmoirai.breadbot.framework.event.internal.CommandEventInternal;
-import com.github.breadmoirai.breadbot.modules.prefix.DefaultPrefixModule;
+import com.github.breadmoirai.breadbot.plugins.prefix.StaticPrefixModule;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
@@ -65,7 +65,7 @@ public class MockFactory {
 //        final String key = split[0];
 //        final String content = split.length > 1 ? split[1].trim() : null;
 
-        CommandEventFactoryImpl eventFactory = new CommandEventFactoryImpl(new DefaultPrefixModule("!"));
+        CommandEventFactoryImpl eventFactory = new CommandEventFactoryImpl(new StaticPrefixModule("!"));
 
         GenericGuildMessageEvent mockEvent = mock(GenericGuildMessageEvent.class);
 

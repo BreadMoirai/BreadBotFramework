@@ -14,22 +14,22 @@
  *   limitations under the License.
  */
 
-package com.github.breadmoirai.breadbot.modules.admin;
+package com.github.breadmoirai.breadbot.plugins.admin;
 
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Member;
 
 import java.util.function.Predicate;
 
-public class DefaultAdminModule implements AdminModule {
+public class AdminPluginImpl implements AdminPlugin {
 
     private Predicate<Member> adminPredicate;
 
-    public DefaultAdminModule(Predicate<Member> adminPredicate) {
+    public AdminPluginImpl(Predicate<Member> adminPredicate) {
         this.adminPredicate = adminPredicate;
     }
 
-    public DefaultAdminModule() {
+    public AdminPluginImpl() {
         this(member -> member.hasPermission(Permission.KICK_MEMBERS) && member.canInteract(member.getGuild().getSelfMember()));
     }
 

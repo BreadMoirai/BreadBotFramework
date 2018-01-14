@@ -14,17 +14,30 @@
  *   limitations under the License.
  */
 
-package com.github.breadmoirai.breadbot.modules.admin;
+package com.github.breadmoirai.tests.commands;
 
-import com.github.breadmoirai.breadbot.framework.annotation.InheritedProperty;
+import com.github.breadmoirai.breadbot.framework.annotation.command.Command;
+import com.github.breadmoirai.breadbot.plugins.admin.Admin;
+import com.github.breadmoirai.breadbot.plugins.owner.Owner;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+public class WhoAmICommand {
 
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE, ElementType.METHOD})
-@InheritedProperty
-public @interface Admin {
+    @Command
+    public String isUser() {
+        return "yes";
+    }
+
+    @Command
+    @Admin
+    public String isAdmin() {
+        return "yes";
+    }
+
+    @Command
+    @Owner
+    public String isOwner() {
+        return "yes";
+    }
+
+
 }

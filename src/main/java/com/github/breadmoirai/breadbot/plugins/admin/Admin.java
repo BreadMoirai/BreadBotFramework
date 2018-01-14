@@ -1,5 +1,5 @@
 /*
- *        Copyright 2017 Ton Ly (BreadMoirai)
+ *        Copyright 2017-2018 Ton Ly (BreadMoirai)
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -14,24 +14,17 @@
  *   limitations under the License.
  */
 
-package com.github.breadmoirai.breadbot.modules.prefix;
+package com.github.breadmoirai.breadbot.plugins.admin;
 
-import net.dv8tion.jda.core.entities.Guild;
+import com.github.breadmoirai.breadbot.framework.annotation.InheritedProperty;
 
-/**
- * Provides the same prefix for all guilds as it was specified in the constructor. Non-configurable.
- */
-public class DefaultPrefixModule implements PrefixModule {
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-    private final String defaultPrefix;
-
-    public DefaultPrefixModule(String prefix) {
-        this.defaultPrefix = prefix;
-    }
-
-    @Override
-    public String getPrefix(Guild guild) {
-        return defaultPrefix;
-    }
-
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.TYPE, ElementType.METHOD})
+@InheritedProperty
+public @interface Admin {
 }
