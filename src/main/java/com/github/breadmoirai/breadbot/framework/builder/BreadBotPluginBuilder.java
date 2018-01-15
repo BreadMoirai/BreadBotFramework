@@ -16,7 +16,7 @@
 
 package com.github.breadmoirai.breadbot.framework.builder;
 
-import com.github.breadmoirai.breadbot.framework.BreadBotPlugin;
+import com.github.breadmoirai.breadbot.framework.CommandPlugin;
 import com.github.breadmoirai.breadbot.plugins.admin.AdminPlugin;
 import com.github.breadmoirai.breadbot.plugins.admin.AdminPluginImpl;
 import com.github.breadmoirai.breadbot.plugins.owner.ApplicationOwnerPlugin;
@@ -34,10 +34,10 @@ public interface BreadBotPluginBuilder {
     /**
      * Adds a module and initializes it.
      *
-     * @param module an instance of {@link BreadBotPlugin CommandModule}.
+     * @param module an instance of {@link CommandPlugin CommandModule}.
      * @return this
      */
-    BreadBotPluginBuilder addPlugin(BreadBotPlugin module);
+    BreadBotPluginBuilder addPlugin(CommandPlugin module);
 
     /**
      * Adds a collection of modules and initializes each one.
@@ -45,7 +45,7 @@ public interface BreadBotPluginBuilder {
      * @param modules a Collection of CommandModules. Should not contain any null elements.
      * @return this
      */
-    BreadBotPluginBuilder addPlugin(Collection<BreadBotPlugin> modules);
+    BreadBotPluginBuilder addPlugin(Collection<CommandPlugin> modules);
 
     /**
      * Checks whether there is a module present that is of the class provided or a subclass of it.
@@ -53,7 +53,7 @@ public interface BreadBotPluginBuilder {
      * @param moduleClass a class
      * @return {@code true} if a module has been added that is assignable to {@code moduleClass}, {@code null} otherwise.
      */
-    boolean hasPlugin(Class<? extends BreadBotPlugin> moduleClass);
+    boolean hasPlugin(Class<? extends CommandPlugin> moduleClass);
 
     /**
      * Finds and returns the first Module that is assignable to the provided {@code moduleClass}
@@ -61,15 +61,15 @@ public interface BreadBotPluginBuilder {
      * @param moduleClass The class of the Module to find
      * @return The module if found. Else {@code null}.
      */
-    <M extends BreadBotPlugin> M getPlugin(Class<M> moduleClass);
+    <M extends CommandPlugin> M getPlugin(Class<M> moduleClass);
 
     /**
      * This adds a module that implements {@link PrefixPlugin} to provide a static prefix that cannot be changed. If a {@link PrefixPlugin} is not added, one will be provided with a static prefix of {@code "!"}
      * <p>
      * <p>This method's implementation is:
-     * <pre><code> {@link BreadBotPluginBuilder#addPlugin(BreadBotPlugin) addModule}(new {@link StaticPrefixModule DefaultPrefixModule}(prefix)) </code></pre>
+     * <pre><code> {@link BreadBotPluginBuilder#addPlugin(CommandPlugin) addModule}(new {@link StaticPrefixModule DefaultPrefixModule}(prefix)) </code></pre>
      *
-     * <p>You can define a different prefix implementation by providing an object to {@link BreadBotClientBuilder#addPlugin(BreadBotPlugin) addModule(ICommandModule)} that implements {@link PrefixPlugin IPrefixModule}
+     * <p>You can define a different prefix implementation by providing an object to {@link BreadBotClientBuilder#addPlugin(CommandPlugin) addModule(ICommandModule)} that implements {@link PrefixPlugin IPrefixModule}
      *
      * @param prefix a string the defines a global prefix
      * @return this
@@ -103,7 +103,7 @@ public interface BreadBotPluginBuilder {
      * Define custom behavior to determine which members can use Commands marked with {@link com.github.breadmoirai.breadbot.plugins.admin.Admin @Admin}
      * <p>
      * <p>This method's implementation is:
-     * <pre><code> {@link #addPlugin(BreadBotPlugin) addModule}(new {@link AdminPluginImpl DefaultAdminModule}(isAdmin)) </code></pre>
+     * <pre><code> {@link #addPlugin(CommandPlugin) addModule}(new {@link AdminPluginImpl DefaultAdminModule}(isAdmin)) </code></pre>
      *
      * @param isAdmin a Predicate that can determine which members are Admins
      * @return this

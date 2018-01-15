@@ -16,7 +16,7 @@
 
 package com.github.breadmoirai.breadbot.plugins.hocon;
 
-import com.github.breadmoirai.breadbot.framework.BreadBotPlugin;
+import com.github.breadmoirai.breadbot.framework.CommandPlugin;
 import com.github.breadmoirai.breadbot.framework.annotation.command.Command;
 import com.github.breadmoirai.breadbot.framework.annotation.command.MainCommand;
 import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
@@ -52,7 +52,7 @@ public class ConfigCommand {
     public void download(CommandEvent event) {
         final Map<String, Object> conf = new HashMap<>();
 
-        for (BreadBotPlugin plugin : event.getClient().getPlugins()) {
+        for (CommandPlugin plugin : event.getClient().getPlugins()) {
             if (plugin instanceof BreadBotHOCONPlugin) {
                 ((BreadBotHOCONPlugin) plugin).buildConfig(event.getGuild(), conf);
             }
@@ -92,7 +92,7 @@ public class ConfigCommand {
             event.reply("");
             event.reply("Successfully configured " + success + " modules.");
 
-            event.reply("Configuration failed for modules: " + failed.stream().map(BreadBotPlugin::getName).collect(Collectors.joining(", ")) +
+            event.reply("Configuration failed for modules: " + failed.stream().map(CommandPlugin::getName).collect(Collectors.joining(", ")) +
                     "\nSuccessfully configured " + success + " other modules.");
 
         } catch (IOException e) {

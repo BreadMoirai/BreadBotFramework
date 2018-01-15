@@ -16,14 +16,14 @@
 
 package com.github.breadmoirai.breadbot.plugins.prefix;
 
-import com.github.breadmoirai.breadbot.framework.BreadBotPlugin;
+import com.github.breadmoirai.breadbot.framework.CommandPlugin;
 import com.github.breadmoirai.breadbot.framework.builder.BreadBotClientBuilder;
 import net.dv8tion.jda.core.entities.Guild;
 
 /**
  * This is a mandatory module. This will be included by the BreadBotClientBuilder if it is not present
  */
-public interface PrefixPlugin extends BreadBotPlugin {
+public interface PrefixPlugin extends CommandPlugin {
 
     @Override
     default void initialize(BreadBotClientBuilder client) {

@@ -16,11 +16,11 @@
 
 package com.github.breadmoirai.breadbot.plugins.admin;
 
-import com.github.breadmoirai.breadbot.framework.BreadBotPlugin;
+import com.github.breadmoirai.breadbot.framework.CommandPlugin;
 import com.github.breadmoirai.breadbot.framework.builder.BreadBotClientBuilder;
 import net.dv8tion.jda.core.entities.Member;
 
-public interface AdminPlugin extends BreadBotPlugin {
+public interface AdminPlugin extends CommandPlugin {
 
     @Override
     default String getName() {

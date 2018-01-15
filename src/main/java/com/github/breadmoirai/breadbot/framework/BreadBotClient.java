@@ -30,15 +30,15 @@ public interface BreadBotClient {
 
     boolean hasModule(String pluginName);
 
-    boolean hasModule(Class<? extends BreadBotPlugin> pluginClass);
+    boolean hasModule(Class<? extends CommandPlugin> pluginClass);
 
-    <T extends BreadBotPlugin> T getPlugin(Class<T> pluginClass);
+    <T extends CommandPlugin> T getPlugin(Class<T> pluginClass);
 
-    BreadBotPlugin getPlugin(String pluginName);
+    CommandPlugin getPlugin(String pluginName);
 
-    BreadBotPlugin getPlugin(Type pluginType);
+    CommandPlugin getPlugin(Type pluginType);
 
-    List<BreadBotPlugin> getPlugins();
+    List<CommandPlugin> getPlugins();
 
     CommandEngine getCommandEngine();
 

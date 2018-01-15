@@ -17,7 +17,7 @@
 package com.github.breadmoirai.breadbot.framework.builder;
 
 import com.github.breadmoirai.breadbot.framework.BreadBotClient;
-import com.github.breadmoirai.breadbot.framework.BreadBotPlugin;
+import com.github.breadmoirai.breadbot.framework.CommandPlugin;
 import com.github.breadmoirai.breadbot.framework.command.CommandPreprocessor;
 import com.github.breadmoirai.breadbot.framework.command.CommandPreprocessorFunction;
 import com.github.breadmoirai.breadbot.framework.command.CommandPreprocessorPredicate;
@@ -58,7 +58,7 @@ public class BreadBotClientBuilder implements
 
 //    private static final Logger LOG = LoggerFactory.getLogger(BreadBotClientBuilder.class);
 
-    private final List<BreadBotPlugin> modules;
+    private final List<CommandPlugin> modules;
     private final CommandPropertiesManagerImpl commandProperties;
     private final CommandParameterTypeManagerImpl argumentTypes;
     private final CommandHandleBuilderFactoryImpl factory;
@@ -78,9 +78,9 @@ public class BreadBotClientBuilder implements
     }
 
     @Override
-    public BreadBotClientBuilder addPlugin(Collection<BreadBotPlugin> modules) {
+    public BreadBotClientBuilder addPlugin(Collection<CommandPlugin> modules) {
         Checks.noneNull(modules, "modules");
-        for (BreadBotPlugin module : modules) {
+        for (CommandPlugin module : modules) {
             module.initialize(this);
         }
         this.modules.addAll(modules);
@@ -88,7 +88,7 @@ public class BreadBotClientBuilder implements
     }
 
     @Override
-    public BreadBotClientBuilder addPlugin(BreadBotPlugin module) {
+    public BreadBotClientBuilder addPlugin(CommandPlugin module) {
         Checks.notNull(module, "module");
         this.modules.add(module);
         module.initialize(this);
@@ -96,12 +96,12 @@ public class BreadBotClientBuilder implements
     }
 
     @Override
-    public boolean hasPlugin(Class<? extends BreadBotPlugin> moduleClass) {
+    public boolean hasPlugin(Class<? extends CommandPlugin> moduleClass) {
         return moduleClass != null && modules.stream().map(Object::getClass).anyMatch(moduleClass::isAssignableFrom);
     }
 
     @Override
-    public <T extends BreadBotPlugin> T getPlugin(Class<T> moduleClass) {
+    public <T extends CommandPlugin> T getPlugin(Class<T> moduleClass) {
         return moduleClass == null ? null : modules.stream().filter(module -> moduleClass.isAssignableFrom(module.getClass())).map(moduleClass::cast).findAny().orElse(null);
     }
 

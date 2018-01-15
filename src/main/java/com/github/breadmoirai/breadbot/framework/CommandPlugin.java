@@ -19,7 +19,7 @@ package com.github.breadmoirai.breadbot.framework;
 import com.github.breadmoirai.breadbot.framework.builder.BreadBotClientBuilder;
 import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
 
-public interface BreadBotPlugin {
+public interface CommandPlugin {
 
     default String getName() {
         return this.getClass().getSimpleName().replace("Plugin", "");
@@ -29,9 +29,11 @@ public interface BreadBotPlugin {
 
     /**
      * This method is called when the BreadBotClient has been built.
+     *
      * @param client
      */
-    default void onBreadReady(BreadBotClient client) {}
+    default void onBreadReady(BreadBotClient client) {
+    }
 
     default void onHelpEvent(CommandEvent event) {
         event.reply("This is not the help you are looking for");

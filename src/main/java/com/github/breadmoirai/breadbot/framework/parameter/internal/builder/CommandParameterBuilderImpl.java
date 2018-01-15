@@ -16,7 +16,7 @@
 
 package com.github.breadmoirai.breadbot.framework.parameter.internal.builder;
 
-import com.github.breadmoirai.breadbot.framework.BreadBotPlugin;
+import com.github.breadmoirai.breadbot.framework.CommandPlugin;
 import com.github.breadmoirai.breadbot.framework.builder.BreadBotClientBuilder;
 import com.github.breadmoirai.breadbot.framework.builder.CommandHandleBuilder;
 import com.github.breadmoirai.breadbot.framework.builder.CommandParameterBuilder;
@@ -73,7 +73,7 @@ public class CommandParameterBuilderImpl implements CommandParameterBuilder {
             this.paramName = parameter.getName();
             final Class<?> type = parameter.getType();
             typeParser = this.clientBuilder.getTypeParser(type);
-            if (BreadBotPlugin.class.isAssignableFrom(type)) {
+            if (CommandPlugin.class.isAssignableFrom(type)) {
                 this.argumentParser = (p) -> (parameter1, list, parser) -> parser.getEvent().getClient().getPlugin(type);
             } else {
                 this.argumentParser = (p) -> new ArgumentParserImpl(p.index, p.width, p.mustBePresent, p.absentArgumentHandler, p.typeParser);
