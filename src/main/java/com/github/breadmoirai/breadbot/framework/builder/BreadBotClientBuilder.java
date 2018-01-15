@@ -17,7 +17,7 @@
 package com.github.breadmoirai.breadbot.framework.builder;
 
 import com.github.breadmoirai.breadbot.framework.BreadBotClient;
-import com.github.breadmoirai.breadbot.framework.CommandModule;
+import com.github.breadmoirai.breadbot.framework.BreadBotPlugin;
 import com.github.breadmoirai.breadbot.framework.command.CommandPreprocessor;
 import com.github.breadmoirai.breadbot.framework.command.CommandPreprocessorFunction;
 import com.github.breadmoirai.breadbot.framework.command.CommandPreprocessorPredicate;
@@ -32,8 +32,8 @@ import com.github.breadmoirai.breadbot.framework.event.internal.CommandEventFact
 import com.github.breadmoirai.breadbot.framework.internal.BreadBotClientImpl;
 import com.github.breadmoirai.breadbot.framework.parameter.TypeParser;
 import com.github.breadmoirai.breadbot.framework.parameter.internal.builder.CommandParameterTypeManagerImpl;
-import com.github.breadmoirai.breadbot.modules.prefix.DefaultPrefixModule;
-import com.github.breadmoirai.breadbot.modules.prefix.PrefixModule;
+import com.github.breadmoirai.breadbot.plugins.prefix.PrefixPlugin;
+import com.github.breadmoirai.breadbot.plugins.prefix.StaticPrefixModule;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.utils.Checks;
@@ -50,7 +50,7 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 public class BreadBotClientBuilder implements
-        CommandModuleBuilder,
+        BreadBotPluginBuilder,
         CommandHandleBuilderFactory,
         CommandParameterManagerBuilder,
         CommandResultManagerBuilder,
@@ -58,7 +58,7 @@ public class BreadBotClientBuilder implements
 
 //    private static final Logger LOG = LoggerFactory.getLogger(BreadBotClientBuilder.class);
 
-    private final List<CommandModule> modules;
+    private final List<BreadBotPlugin> modules;
     private final CommandPropertiesManagerImpl commandProperties;
     private final CommandParameterTypeManagerImpl argumentTypes;
     private final CommandHandleBuilderFactoryImpl factory;
@@ -78,9 +78,9 @@ public class BreadBotClientBuilder implements
     }
 
     @Override
-    public BreadBotClientBuilder addModule(Collection<CommandModule> modules) {
+    public BreadBotClientBuilder addPlugin(Collection<BreadBotPlugin> modules) {
         Checks.noneNull(modules, "modules");
-        for (CommandModule module : modules) {
+        for (BreadBotPlugin module : modules) {
             module.initialize(this);
         }
         this.modules.addAll(modules);
@@ -88,7 +88,7 @@ public class BreadBotClientBuilder implements
     }
 
     @Override
-    public BreadBotClientBuilder addModule(CommandModule module) {
+    public BreadBotClientBuilder addPlugin(BreadBotPlugin module) {
         Checks.notNull(module, "module");
         this.modules.add(module);
         module.initialize(this);
@@ -96,12 +96,12 @@ public class BreadBotClientBuilder implements
     }
 
     @Override
-    public boolean hasModule(Class<? extends CommandModule> moduleClass) {
+    public boolean hasPlugin(Class<? extends BreadBotPlugin> moduleClass) {
         return moduleClass != null && modules.stream().map(Object::getClass).anyMatch(moduleClass::isAssignableFrom);
     }
 
     @Override
-    public <T extends CommandModule> T getModule(Class<T> moduleClass) {
+    public <T extends BreadBotPlugin> T getPlugin(Class<T> moduleClass) {
         return moduleClass == null ? null : modules.stream().filter(module -> moduleClass.isAssignableFrom(module.getClass())).map(moduleClass::cast).findAny().orElse(null);
     }
 
@@ -114,26 +114,26 @@ public class BreadBotClientBuilder implements
     }
 
     @Override
-    public BreadBotClientBuilder addDefaultPrefixModule(String prefix) {
-        CommandModuleBuilder.super.addDefaultPrefixModule(prefix);
+    public BreadBotClientBuilder addStaticPrefix(String prefix) {
+        BreadBotPluginBuilder.super.addStaticPrefix(prefix);
         return this;
     }
 
     @Override
-    public BreadBotClientBuilder addDefaultAdminModule() {
-        CommandModuleBuilder.super.addDefaultAdminModule();
+    public BreadBotClientBuilder addOwnerPlugin(long... owners) {
+        BreadBotPluginBuilder.super.addOwnerPlugin(owners);
         return this;
     }
 
     @Override
-    public BreadBotClientBuilder addAdminModule(Predicate<Member> isAdmin) {
-        CommandModuleBuilder.super.addAdminModule(isAdmin);
+    public BreadBotClientBuilder addAdminPlugin() {
+        BreadBotPluginBuilder.super.addAdminPlugin();
         return this;
     }
 
     @Override
-    public BreadBotClientBuilder addSourceModule(long sourceGuildId) {
-        CommandModuleBuilder.super.addSourceModule(sourceGuildId);
+    public BreadBotClientBuilder addAdminPlugin(Predicate<Member> isAdmin) {
+        BreadBotPluginBuilder.super.addAdminPlugin(isAdmin);
         return this;
     }
 
@@ -540,14 +540,14 @@ public class BreadBotClientBuilder implements
 
     /**
      * Builds the BreadBotClient with the provided EventManager.
-     * If an {@link PrefixModule} has not been provided, a {@link com.github.breadmoirai.breadbot.modules.prefix.DefaultPrefixModule new DefaultPrefixModule("!")} is provided.
+     * If an {@link PrefixPlugin} has not been provided, a {@link StaticPrefixModule new DefaultPrefixModule("!")} is provided.
      *
      * @return a new BreadBotClient. This must be added to JDA with {@link net.dv8tion.jda.core.JDABuilder#addEventListener(Object...)}
      */
     public BreadBotClient build() {
-        if (!hasModule(PrefixModule.class)) modules.add(new DefaultPrefixModule("!"));
+        if (!hasPlugin(PrefixPlugin.class)) modules.add(new StaticPrefixModule("!"));
         if (commandEventFactory == null)
-            commandEventFactory = new CommandEventFactoryImpl(getModule(PrefixModule.class));
+            commandEventFactory = new CommandEventFactoryImpl(getPlugin(PrefixPlugin.class));
         return new BreadBotClientImpl(modules, commands, commandProperties, resultManager, argumentTypes, commandEventFactory, preProcessPredicate, shouldEvaluateCommandOnMessageUpdate);
     }
 }

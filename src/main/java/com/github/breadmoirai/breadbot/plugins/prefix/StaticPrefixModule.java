@@ -14,24 +14,24 @@
  *   limitations under the License.
  */
 
-package com.github.breadmoirai.breadbot.modules.admin;
+package com.github.breadmoirai.breadbot.plugins.prefix;
 
-import com.github.breadmoirai.breadbot.framework.CommandModule;
-import com.github.breadmoirai.breadbot.framework.builder.BreadBotClientBuilder;
-import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.Guild;
 
-public interface AdminModule extends CommandModule {
+/**
+ * Provides the same prefix for all guilds as it was specified in the constructor. Non-configurable.
+ */
+public class StaticPrefixModule implements PrefixPlugin {
 
-    @Override
-    default String getName() {
-        return "AdminModule";
+    private final String defaultPrefix;
+
+    public StaticPrefixModule(String prefix) {
+        this.defaultPrefix = prefix;
     }
 
-    boolean isAdmin(Member member);
-
     @Override
-    default void initialize(BreadBotClientBuilder builder) {
-        builder.associatePreprocessorPredicate("admin", Admin.class, event -> isAdmin(event.getMember()));
-        builder.addCommand(AdminCommand.class);
+    public String getPrefix(Guild guild) {
+        return defaultPrefix;
     }
+
 }

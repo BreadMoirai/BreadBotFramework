@@ -14,16 +14,20 @@
  *   limitations under the License.
  */
 
-package com.github.breadmoirai.breadbot.modules.source;
+package com.github.breadmoirai.breadbot.plugins.owner;
+
+import com.github.breadmoirai.breadbot.framework.annotation.InheritedProperty;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * Indicates that this command or the commands contained within this class are to be used by the owner only.
+ */
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
-public @interface RestrictToGuild {
-
-    long value() default 0;
+@Target({ElementType.TYPE, ElementType.METHOD})
+@InheritedProperty
+public @interface Owner {
 }

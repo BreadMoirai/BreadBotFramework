@@ -14,26 +14,27 @@
  *   limitations under the License.
  */
 
-package com.github.breadmoirai.breadbot.modules.prefix;
+package com.github.breadmoirai.breadbot.plugins.owner;
 
-import com.github.breadmoirai.breadbot.framework.CommandModule;
-import com.github.breadmoirai.breadbot.framework.builder.BreadBotClientBuilder;
-import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.Member;
+
+import java.util.Arrays;
 
 /**
- * This is a mandatory module. This will be included by the BreadBotClientBuilder if it is not present
+ * Commands annotated with {@link Owner @Owner} will only activate if the id provided to the constructor matches the user who sent the command.
  */
-public interface PrefixModule extends CommandModule {
+public class StaticOwnerPlugin extends OwnerPlugin {
 
-    @Override
-    default void initialize(BreadBotClientBuilder client) {
-        client.addCommand(PrefixCommand.class);
+    private final long[] owners;
+
+    public StaticOwnerPlugin(long[] owners) {
+        this.owners = owners;
+        Arrays.sort(owners);
     }
 
     @Override
-    default String getName() {
-        return "PrefixModule";
+    public boolean isOwner(Member member) {
+        return Arrays.binarySearch(owners, member.getUser().getIdLong()) >= 0;
     }
 
-    String getPrefix(Guild guild);
 }

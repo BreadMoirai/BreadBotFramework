@@ -18,7 +18,7 @@ package com.github.breadmoirai.breadbot.framework.event.internal;
 
 import com.github.breadmoirai.breadbot.framework.BreadBotClient;
 import com.github.breadmoirai.breadbot.framework.event.CommandEventFactory;
-import com.github.breadmoirai.breadbot.modules.prefix.PrefixModule;
+import com.github.breadmoirai.breadbot.plugins.prefix.PrefixPlugin;
 import com.github.breadmoirai.breadbot.util.DiscordPatterns;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.events.message.guild.GenericGuildMessageEvent;
@@ -27,10 +27,10 @@ import java.util.regex.Matcher;
 
 public class CommandEventFactoryImpl implements CommandEventFactory {
 
-    private final PrefixModule prefixModule;
+    private final PrefixPlugin prefixModule;
     private String myId;
 
-    public CommandEventFactoryImpl(PrefixModule prefixSupplier) {
+    public CommandEventFactoryImpl(PrefixPlugin prefixSupplier) {
         this.prefixModule = prefixSupplier;
     }
 

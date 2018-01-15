@@ -14,7 +14,7 @@
  *   limitations under the License.
  */
 
-package com.github.breadmoirai.breadbot.modules.admin;
+package com.github.breadmoirai.breadbot.plugins.admin;
 
 import com.github.breadmoirai.breadbot.framework.annotation.command.Command;
 import com.github.breadmoirai.breadbot.framework.annotation.command.MainCommand;
@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 public class AdminCommand {
 
     @MainCommand
-    public void admin(CommandEvent event, AdminModule module) {
+    public void admin(CommandEvent event, AdminPlugin module) {
         event.reply("**Administrative Members:** " + event.getGuild().getMembers().stream().filter(module::isAdmin).map(Member::getEffectiveName).collect(Collectors.joining(", ")));
     }
 

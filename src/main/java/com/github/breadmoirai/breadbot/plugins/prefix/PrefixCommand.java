@@ -14,7 +14,7 @@
  *   limitations under the License.
  */
 
-package com.github.breadmoirai.breadbot.modules.prefix;
+package com.github.breadmoirai.breadbot.plugins.prefix;
 
 import com.github.breadmoirai.breadbot.framework.annotation.command.MainCommand;
 import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
@@ -41,7 +41,7 @@ public class PrefixCommand {
 //    }
 
     @MainCommand
-    public void prefix(CommandEvent event, PrefixModule module) {
+    public void prefix(CommandEvent event, PrefixPlugin module) {
         event.replyFormat("The current prefix is `%s`", module.getPrefix(event.getGuild()));
     }
 }

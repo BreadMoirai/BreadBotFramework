@@ -17,7 +17,7 @@
 package com.github.breadmoirai.breadbot.framework.internal;
 
 import com.github.breadmoirai.breadbot.framework.BreadBotClient;
-import com.github.breadmoirai.breadbot.framework.CommandModule;
+import com.github.breadmoirai.breadbot.framework.BreadBotPlugin;
 import com.github.breadmoirai.breadbot.framework.command.CommandEngine;
 import com.github.breadmoirai.breadbot.framework.command.CommandHandle;
 import com.github.breadmoirai.breadbot.framework.command.CommandPropertiesManager;
@@ -60,13 +60,13 @@ public class BreadBotClientImpl implements BreadBotClient, EventListener {
     private final CommandEventFactory eventFactory;
     private final CommandEngine commandEngine;
     private final Predicate<Message> preProcessPredicate;
-    private final List<CommandModule> modules;
-    private final Map<Type, CommandModule> moduleTypeMap;
+    private final List<BreadBotPlugin> modules;
+    private final Map<Type, BreadBotPlugin> moduleTypeMap;
     private final Map<String, CommandHandle> commandMap;
     private final boolean shouldEvaluateCommandOnMessageUpdate;
 
     public BreadBotClientImpl(
-            List<CommandModule> modules,
+            List<BreadBotPlugin> modules,
             List<CommandHandleBuilderInternal> commands,
             CommandPropertiesManager commandProperties,
             CommandResultManager resultManager,
@@ -95,19 +95,19 @@ public class BreadBotClientImpl implements BreadBotClient, EventListener {
         }
         this.commandMap = handleMap;
 
-        final HashMap<Type, CommandModule> typeMap = new HashMap<>(modules.size());
-        for (CommandModule module : modules) {
+        final HashMap<Type, BreadBotPlugin> typeMap = new HashMap<>(modules.size());
+        for (BreadBotPlugin module : modules) {
             Class<?> moduleClass = module.getClass();
             do {
                 typeMap.put(moduleClass, module);
                 for (Class<?> inter : moduleClass.getInterfaces()) {
-                    final List<Class<?>> interfaceList = getInterfaceHierarchy(inter, CommandModule.class);
+                    final List<Class<?>> interfaceList = getInterfaceHierarchy(inter, BreadBotPlugin.class);
                     if (interfaceList != null) {
                         for (Class<?> interfaceClass : interfaceList)
                             typeMap.put(interfaceClass, module);
                     }
                 }
-            } while (CommandModule.class.isAssignableFrom(moduleClass = moduleClass.getSuperclass()));
+            } while (BreadBotPlugin.class.isAssignableFrom(moduleClass = moduleClass.getSuperclass()));
         }
 
         this.moduleTypeMap = typeMap;
@@ -180,45 +180,45 @@ public class BreadBotClientImpl implements BreadBotClient, EventListener {
     }
 
     @Override
-    public boolean hasModule(String moduleName) {
-        return moduleName != null && modules.stream().map(CommandModule::getName).anyMatch(moduleName::equalsIgnoreCase);
+    public boolean hasModule(String pluginName) {
+        return pluginName != null && modules.stream().map(BreadBotPlugin::getName).anyMatch(pluginName::equalsIgnoreCase);
     }
 
     @Override
-    public boolean hasModule(Class<? extends CommandModule> moduleClass) {
-        return moduleTypeMap.containsKey(moduleClass);
+    public boolean hasModule(Class<? extends BreadBotPlugin> pluginClass) {
+        return moduleTypeMap.containsKey(pluginClass);
     }
 
     /**
      * Finds and returns the first Module that is assignable to the provided {@code moduleClass}
      *
-     * @param moduleClass The class of the Module to find
+     * @param pluginClass The class of the Module to find
      * @return Optional containing the module if found.
      */
     @Override
-    public <T extends CommandModule> T getModule(Class<T> moduleClass) {
+    public <T extends BreadBotPlugin> T getPlugin(Class<T> pluginClass) {
         //noinspection unchecked
-        return (T) moduleTypeMap.get(moduleClass);
+        return (T) moduleTypeMap.get(pluginClass);
     }
 
     /**
      * Finds and returns the first Module that is assignable to the provided {@code moduleClass}
      *
-     * @param moduleName the name of the module to find. If the module does not override {@link CommandModule#getName IModule#getName} the name of the class is used.
+     * @param pluginName the name of the module to find. If the module does not override {@link BreadBotPlugin#getName IModule#getName} the name of the class is used.
      * @return Optional containing the module if foundd.
      */
     @Override
-    public CommandModule getModule(String moduleName) {
-        return moduleName == null ? null : modules.stream().filter(module -> module.getName().equalsIgnoreCase(moduleName)).findAny().orElse(null);
+    public BreadBotPlugin getPlugin(String pluginName) {
+        return pluginName == null ? null : modules.stream().filter(module -> module.getName().equalsIgnoreCase(pluginName)).findAny().orElse(null);
     }
 
     @Override
-    public CommandModule getModule(Type moduleType) {
-        return moduleTypeMap.get(moduleType);
+    public BreadBotPlugin getPlugin(Type pluginType) {
+        return moduleTypeMap.get(pluginType);
     }
 
     @Override
-    public List<CommandModule> getModules() {
+    public List<BreadBotPlugin> getPlugins() {
         return modules;
     }
 

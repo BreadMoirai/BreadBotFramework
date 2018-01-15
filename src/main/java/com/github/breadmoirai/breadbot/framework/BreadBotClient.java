@@ -28,17 +28,17 @@ import java.util.Map;
 
 public interface BreadBotClient {
 
-    boolean hasModule(String moduleName);
+    boolean hasModule(String pluginName);
 
-    boolean hasModule(Class<? extends CommandModule> moduleClass);
+    boolean hasModule(Class<? extends BreadBotPlugin> pluginClass);
 
-    <T extends CommandModule> T getModule(Class<T> moduleClass);
+    <T extends BreadBotPlugin> T getPlugin(Class<T> pluginClass);
 
-    CommandModule getModule(String moduleName);
+    BreadBotPlugin getPlugin(String pluginName);
 
-    CommandModule getModule(Type moduleType);
+    BreadBotPlugin getPlugin(Type pluginType);
 
-    List<CommandModule> getModules();
+    List<BreadBotPlugin> getPlugins();
 
     CommandEngine getCommandEngine();
 
@@ -46,13 +46,9 @@ public interface BreadBotClient {
 
     void setJDA(JDA jda);
 
-//    IEventManager getEventManager();
-
     CommandParameterManager getArgumentTypes();
 
-
     CommandResultManager getResultManager();
-
 
     Map<String, CommandHandle> getCommandMap();
 }
