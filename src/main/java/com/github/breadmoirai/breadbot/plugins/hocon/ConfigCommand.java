@@ -53,8 +53,8 @@ public class ConfigCommand {
         final Map<String, Object> conf = new HashMap<>();
 
         for (CommandPlugin plugin : event.getClient().getPlugins()) {
-            if (plugin instanceof BreadBotHOCONPlugin) {
-                ((BreadBotHOCONPlugin) plugin).buildConfig(event.getGuild(), conf);
+            if (plugin instanceof HOCONConfigurable) {
+                ((HOCONConfigurable) plugin).buildConfig(event.getGuild(), conf);
             }
         }
         if (conf.isEmpty()) {
@@ -84,17 +84,25 @@ public class ConfigCommand {
             InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
             Config config = ConfigFactory.parseReader(inputStreamReader);
 
-            final Map<Boolean, List<BreadBotHOCONPlugin>> map = event.getClient().getPlugins().stream().filter(plugin -> plugin instanceof BreadBotHOCONPlugin).map(plugin -> ((BreadBotHOCONPlugin) plugin)).collect(Collectors.partitioningBy(o -> o.loadConfig(event.getGuild(), config)));
-            List<BreadBotHOCONPlugin> failed = map.get(false);
+            final Map<Boolean, List<CommandPlugin>> map = event
+                    .getClient()
+                    .getPlugins()
+                    .stream()
+                    .filter(plugin -> plugin instanceof HOCONConfigurable)
+                    .collect(Collectors.partitioningBy(plugin ->
+                            ((HOCONConfigurable) plugin).loadConfig(event.getGuild(), config)));
+            List<CommandPlugin> failed = map.get(false);
             int success = map.get(true).size();
 
-            StringBuilder sb = new StringBuilder();
-            event.reply("");
-            event.reply("Successfully configured " + success + " modules.");
-
-            event.reply("Configuration failed for modules: " + failed.stream().map(CommandPlugin::getName).collect(Collectors.joining(", ")) +
-                    "\nSuccessfully configured " + success + " other modules.");
-
+            if (failed.isEmpty()) {
+                event.reply("Successfully configured " + success + " modules.");
+            } else {
+                event.replyFormat("Configuration failed for modules: %s" +
+                                "\nSuccessfully configured %d other modules.",
+                        failed.stream()
+                                .map(CommandPlugin::getName)
+                                .collect(Collectors.joining(", ")), success);
+            }
         } catch (IOException e) {
             event.reply("Failed to read file.");
         }
