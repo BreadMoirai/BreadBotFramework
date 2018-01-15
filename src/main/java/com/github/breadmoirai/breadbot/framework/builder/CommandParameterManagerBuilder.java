@@ -42,5 +42,5 @@ public interface CommandParameterManagerBuilder extends CommandParameterManager 
      */
     CommandParameterManagerBuilder putTypeModifier(Class<?> parameterType, Consumer<CommandParameterBuilder> modifier);
 
-    CommandParameterManagerBuilder appendTypeModifer(Class<?> parameterType, Consumer<CommandParameterBuilder> modifier);
+    CommandParameterManagerBuilder addTypeModifier(Class<?> parameterType, Consumer<CommandParameterBuilder> modifier);
 }

@@ -50,7 +50,7 @@ public interface CommandPropertiesBuilder {
      *                     The second argument is the {@link CommandHandleBuilder CommandHandleBuilder} the property is attached to.
      * @param <T>          the propertyType
      */
-    <T> CommandPropertiesBuilder appendCommandModifier(Class<T> propertyType, BiConsumer<T, CommandHandleBuilder> configurator);
+    <T> CommandPropertiesBuilder addCommandModifier(Class<T> propertyType, BiConsumer<T, CommandHandleBuilder> configurator);
 
     /**
      * The provided {@code configurator} is used to modify commands that possess the specified property.
@@ -74,7 +74,7 @@ public interface CommandPropertiesBuilder {
      *                     The second argument is the {@link CommandHandleBuilder CommandHandleBuilder} the property is attached to.
      * @param <T>          the propertyType
      */
-    <T> CommandPropertiesBuilder appendParameterModifier(Class<T> propertyType, BiConsumer<T, CommandParameterBuilder> configurator);
+    <T> CommandPropertiesBuilder addParameterModifier(Class<T> propertyType, BiConsumer<T, CommandParameterBuilder> configurator);
 
     /**
      * Applies modifiers to a CommandHandleBuilder based on whether the handle contains a property.
@@ -90,7 +90,7 @@ public interface CommandPropertiesBuilder {
      * @param <T>          the property type.
      * @return a BiConsumer if present, otherwise {@code null}.
      * @see #putCommandModifier(Class, BiConsumer)
-     * @see #appendCommandModifier(Class, BiConsumer)
+     * @see #addCommandModifier(Class, BiConsumer)
      * @see #applyCommandModifier(Class, CommandHandleBuilder)
      */
     <T> BiConsumer<T, CommandHandleBuilder> getCommandModifier(Class<T> propertyType);
@@ -103,7 +103,7 @@ public interface CommandPropertiesBuilder {
      * @param builder      the CommandHandleBuilder to be modified
      * @param <T>          the property type
      * @see #putCommandModifier(Class, BiConsumer)
-     * @see #appendCommandModifier(Class, BiConsumer)
+     * @see #addCommandModifier(Class, BiConsumer)
      * @see #getCommandModifier(Class)
      */
     <T> CommandPropertiesBuilder applyCommandModifier(Class<T> propertyType, CommandHandleBuilder builder);
@@ -122,7 +122,7 @@ public interface CommandPropertiesBuilder {
      * @param <T>          the property type.
      * @return a BiConsumer if present, otherwise {@code null}.
      * @see #putParameterModifier(Class, BiConsumer)
-     * @see #appendParameterModifier(Class, BiConsumer)
+     * @see #addParameterModifier(Class, BiConsumer)
      * @see #applyParameterModifier(Class, CommandParameterBuilder)
      */
     <T> BiConsumer<T, CommandParameterBuilder> getParameterModifier(Class<T> propertyType);
@@ -135,7 +135,7 @@ public interface CommandPropertiesBuilder {
      * @param builder      the CommandHandleBuilder to be modified
      * @param <T>          the property type
      * @see #putParameterModifier(Class, BiConsumer)
-     * @see #appendParameterModifier(Class, BiConsumer)
+     * @see #addParameterModifier(Class, BiConsumer)
      * @see #getParameterModifier(Class)
      */
     <T> CommandPropertiesBuilder applyParameterModifier(Class<T> propertyType, CommandParameterBuilder builder);

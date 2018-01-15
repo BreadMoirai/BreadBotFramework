@@ -351,7 +351,7 @@ public class BreadBotClientBuilder implements
     }
 
     @Override
-    public <T> BreadBotClientBuilder appendCommandModifier(Class<T> propertyType, BiConsumer<T, CommandHandleBuilder> configurator) {
+    public <T> BreadBotClientBuilder addCommandModifier(Class<T> propertyType, BiConsumer<T, CommandHandleBuilder> configurator) {
         Checks.notNull(configurator, "configurator");
         commandProperties.appendCommandModifier(propertyType, configurator);
         return this;
@@ -365,7 +365,7 @@ public class BreadBotClientBuilder implements
     }
 
     @Override
-    public <T> BreadBotClientBuilder appendParameterModifier(Class<T> propertyType, BiConsumer<T, CommandParameterBuilder> configurator) {
+    public <T> BreadBotClientBuilder addParameterModifier(Class<T> propertyType, BiConsumer<T, CommandParameterBuilder> configurator) {
         Checks.notNull(configurator, "configurator");
         commandProperties.appendParameterModifier(propertyType, configurator);
         return this;
@@ -469,8 +469,8 @@ public class BreadBotClientBuilder implements
     }
 
     @Override
-    public BreadBotClientBuilder appendTypeModifer(Class<?> parameterType, Consumer<CommandParameterBuilder> modifier) {
-        argumentTypes.appendTypeModifer(parameterType, modifier);
+    public BreadBotClientBuilder addTypeModifier(Class<?> parameterType, Consumer<CommandParameterBuilder> modifier) {
+        argumentTypes.addTypeModifier(parameterType, modifier);
         return this;
     }
 

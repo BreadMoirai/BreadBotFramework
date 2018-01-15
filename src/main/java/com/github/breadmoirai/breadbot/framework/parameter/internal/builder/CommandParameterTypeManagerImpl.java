@@ -66,7 +66,7 @@ public final class CommandParameterTypeManagerImpl implements CommandParameterMa
     }
 
     @Override
-    public CommandParameterManagerBuilder appendTypeModifer(Class<?> parameterType, Consumer<CommandParameterBuilder> modifier) {
+    public CommandParameterManagerBuilder addTypeModifier(Class<?> parameterType, Consumer<CommandParameterBuilder> modifier) {
         if (!map2.containsKey(parameterType)) {
             map2.put(parameterType, modifier);
         } else {
