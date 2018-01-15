@@ -26,7 +26,10 @@ import com.github.breadmoirai.breadbot.util.DateTimeMapper;
 import com.github.breadmoirai.breadbot.util.DurationMapper;
 import com.github.breadmoirai.breadbot.util.Emoji;
 import net.dv8tion.jda.core.entities.Emote;
+import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
@@ -197,6 +200,12 @@ public class DefaultCommandParameters {
         map.putTypeModifier(DoubleStream.class, builder -> CollectionTypes.setParserToDoubleStream(((CommandParameterBuilderImpl) builder)));
 
         map.putTypeModifier(CommandEvent.class, p -> p.setParser((parameter, list, parser) -> parser.getEvent()));
+
+        map.putTypeModifier(Message.class, p -> p.setParser((parameter, list, parser) -> parser.getEvent().getMessage()));
+        map.putTypeModifier(Guild.class, p -> p.setParser((parameter, list, parser) -> parser.getEvent().getGuild()));
+        map.putTypeModifier(TextChannel.class, p -> p.setParser((parameter, list, parser) -> parser.getEvent().getChannel()));
+        map.putTypeModifier(MessageChannel.class, p -> p.setParser((parameter, list, parser) -> parser.getEvent().getChannel()));
+        map.putTypeModifier(Message.Attachment.class, p -> p.setParser((parameter, list, parser) -> parser.getEvent().getMessage().getAttachments().stream().findFirst().orElse(null)));
     }
 
 }
