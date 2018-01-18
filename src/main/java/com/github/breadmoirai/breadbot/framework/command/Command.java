@@ -1,5 +1,5 @@
 /*
- *        Copyright 2017 Ton Ly (BreadMoirai)
+ *        Copyright 2017-2018 Ton Ly (BreadMoirai)
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -16,22 +16,28 @@
 
 package com.github.breadmoirai.breadbot.framework.command;
 
-import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
+import com.github.breadmoirai.breadbot.framework.event.internal.CommandEventInternal;
+
+import java.util.Iterator;
+import java.util.Map;
 
 /**
- * This handles the result of a command, in other terms the returned value from invoking a command method
- *
- * @param <T>
+ * This is used to invoke a command
  */
-@FunctionalInterface
-public interface CommandResultHandler<T> {
+public interface Command {
 
-    static <T> void handleObject(CommandResultHandler<T> handler, Command command, CommandEvent event, Object result) {
-        //noinspection unchecked
-        T cast = (T) result;
-        handler.handleResult(command, event, cast);
-    }
+    String[] getKeys();
 
-    void handleResult(Command command, CommandEvent event, T result);
+    String getName();
+
+    String getGroup();
+
+    String getDescription();
+
+    boolean handle(CommandEventInternal event, Iterator<String> keyItr);
+
+    Map<String, Command> getChildren();
+
+    Command getParent();
 
 }

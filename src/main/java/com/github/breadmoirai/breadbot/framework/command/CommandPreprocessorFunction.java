@@ -57,6 +57,6 @@ public interface CommandPreprocessorFunction {
      * @param event        the event that triggered things
      * @param processorStack A queue of Runnables that represent any other preprocessors and the last element being the command itself. Failure to call {@code processQueue.continue()}  will result in the command not being activated.
      */
-    void process(Object commandObj, CommandHandle targetHandle, CommandEvent event, CommandProcessStack processorStack);
+    void process(Object commandObj, Command targetHandle, CommandEvent event, CommandProcessStack processorStack);
 
 }

@@ -16,6 +16,7 @@
 
 package com.github.breadmoirai.breadbot.framework.command.internal;
 
+import com.github.breadmoirai.breadbot.framework.command.Command;
 import com.github.breadmoirai.breadbot.framework.command.CommandHandle;
 import com.github.breadmoirai.breadbot.framework.command.CommandResultHandler;
 import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
@@ -29,26 +30,26 @@ import java.util.StringJoiner;
 
 public class CommandRunner implements Runnable {
 
-    private static final Logger LOG = LoggerFactory.getLogger(CommandHandle.class);
+    private static final Logger LOG = LoggerFactory.getLogger(Command.class);
 
     private final Object o;
     private final CommandEvent event;
     private final InvokableCommand invokableCommand;
     private final CommandParser parser;
-    private final CommandHandle commandHandle;
+    private final Command command;
     private final CommandResultHandler<?> resultHandler;
 
     CommandRunner(Object o,
                   CommandEvent event,
                   InvokableCommand invokableCommand,
                   CommandParser parser,
-                  CommandHandle commandHandle,
+                  Command command,
                   CommandResultHandler<?> resultHandler) {
         this.o = o;
         this.event = event;
         this.invokableCommand = invokableCommand;
         this.parser = parser;
-        this.commandHandle = commandHandle;
+        this.command = command;
         this.resultHandler = resultHandler;
     }
 
@@ -73,11 +74,12 @@ public class CommandRunner implements Runnable {
             try {
                 Object result = invokableCommand.invoke(o, parser.getResults());
                 if (LOG.isDebugEnabled())
-                    if (commandHandle.getDeclaringMethod().getReturnType() != Void.TYPE) {
+                    if (command instanceof CommandHandle &&
+                            ((CommandHandle) command).getDeclaringMethod().getReturnType() != Void.TYPE) {
                         LOG.debug("Command Result: " + result);
                     }
                 if (result != null) {
-                    CommandResultHandler.handleObject(resultHandler, commandHandle, event, result);
+                    CommandResultHandler.handleObject(resultHandler, command, event, result);
                 }
                 LOG.debug("Command Execution Completed");
                 return;
@@ -85,7 +87,7 @@ public class CommandRunner implements Runnable {
                 if (LOG.isDebugEnabled()) {
                     LOG.error("Command Execution Failed", throwable);
                 } else {
-                    LOG.error("An error ocurred while invoking command:\n" + commandHandle + "\non Event:\n" + event, throwable);
+                    LOG.error("An error ocurred while invoking command:\n" + command + "\non Event:\n" + event, throwable);
                 }
             }
         }

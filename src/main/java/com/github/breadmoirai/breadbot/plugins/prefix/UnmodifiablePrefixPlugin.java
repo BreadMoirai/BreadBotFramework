@@ -21,11 +21,11 @@ import net.dv8tion.jda.core.entities.Guild;
 /**
  * Provides the same prefix for all guilds as it was specified in the constructor. Non-configurable.
  */
-public class StaticPrefixModule implements PrefixPlugin {
+public class UnmodifiablePrefixPlugin implements PrefixPlugin {
 
     private final String defaultPrefix;
 
-    public StaticPrefixModule(String prefix) {
+    public UnmodifiablePrefixPlugin(String prefix) {
         this.defaultPrefix = prefix;
     }
 

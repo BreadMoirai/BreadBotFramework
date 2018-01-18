@@ -135,22 +135,6 @@ public interface CommandHandleBuilder extends CommandHandleBuilderFactory {
         return this;
     }
 
-
-//    default CommandHandleBuilder addAssociatedPreprocessors() {
-//        final Map<Class<?>, Function<?, CommandPreprocessor>> preprocessorFactoryMap = getClientBuilder().getPreprocessors().getPreprocessorFactoryMap();
-//        final CommandPropertyMapImpl propertyMapBuilder = getPropertyMapBuilder();
-//        final Set<Map.Entry<Class<?>, Object>> entries = propertyMapBuilder.entrySet();
-//        for (Map.Entry<Class<?>, Object> entry : entries) {
-//            final Class<?> propertyType = entry.getKey();
-//            final Function<?, CommandPreprocessor> factory = preprocessorFactoryMap.get(propertyType);
-//            if (factory != null) {
-//                @SuppressWarnings("unchecked") final CommandPreprocessor preprocessor = ((Function<Object, CommandPreprocessor>) factory).apply(entry.getValue());
-//                addPreprocessor(preprocessor);
-//            }
-//        }
-//        return this;
-//    }
-
     String getName();
 
     String[] getKeys();

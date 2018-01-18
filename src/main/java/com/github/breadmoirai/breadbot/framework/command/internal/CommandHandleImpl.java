@@ -16,6 +16,7 @@
 
 package com.github.breadmoirai.breadbot.framework.command.internal;
 
+import com.github.breadmoirai.breadbot.framework.command.Command;
 import com.github.breadmoirai.breadbot.framework.command.CommandHandle;
 import com.github.breadmoirai.breadbot.framework.command.CommandPreprocessor;
 import com.github.breadmoirai.breadbot.framework.command.CommandPropertyMap;
@@ -53,7 +54,7 @@ public class CommandHandleImpl implements CommandHandle {
     private final Pattern splitRegex;
     private final int splitLimit;
     private final boolean isHelp;
-    private CommandHandle superCommand;
+    private Command superCommand;
 
     public CommandHandleImpl(String[] keys,
                              String name,
@@ -72,7 +73,7 @@ public class CommandHandleImpl implements CommandHandle {
                              CommandPropertyMap propertyMap,
                              Pattern splitRegex,
                              int splitLimit,
-                             CommandHandle superCommand) {
+                             Command superCommand) {
         this.keys = keys;
         this.name = name;
         this.group = group;
@@ -102,7 +103,7 @@ public class CommandHandleImpl implements CommandHandle {
         if (keyItr != null && keyItr.hasNext() && subCommandMap != null) {
             String next = keyItr.next().toLowerCase();
             if (subCommandMap.containsKey(next)) {
-                CommandHandle subHandle = subCommandMap.get(next);
+                Command subHandle = subCommandMap.get(next);
                 if (event.isHelpEvent()) {
                     return subHandle.handle(event, keyItr) || (subCommandMap.containsKey("help") && subCommandMap.get("help").handle(event, null));
                 } else {
@@ -178,12 +179,12 @@ public class CommandHandleImpl implements CommandHandle {
     }
 
     @Override
-    public Map<String, CommandHandle> getSubCommands() {
+    public Map<String, Command> getChildren() {
         return Collections.unmodifiableMap(subCommandMap);
     }
 
     @Override
-    public CommandHandle getSuperCommand() {
+    public Command getParent() {
         return superCommand;
     }
 

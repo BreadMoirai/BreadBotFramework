@@ -19,6 +19,8 @@ package com.github.breadmoirai.tests;
 import com.github.breadmoirai.breadbot.framework.BreadBotClient;
 import com.github.breadmoirai.breadbot.framework.builder.BreadBotClientBuilder;
 import com.github.breadmoirai.breadbot.framework.builder.CommandHandleBuilder;
+import com.github.breadmoirai.breadbot.framework.command.AbstractCommand;
+import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
 import com.github.breadmoirai.breadbot.framework.event.internal.CommandEventInternal;
 import com.github.breadmoirai.breadbot.util.Emoji;
 import com.github.breadmoirai.tests.commands.ColorCommand;
@@ -283,6 +285,21 @@ public class ClientTest {
         assertResponse("!10plus 10", "21");
     }
 
+    @Test
+    public void abstractCommandTest() {
+        setupBread(bread -> bread.addCommand(new AbstractCommand() {
+            {
+                this.keys = new String[]{"test"};
+            }
+
+            @Override
+            public void onCommand(CommandEvent event) {
+                event.reply("am abstract");
+            }
+        }));
+
+        assertResponse("!test", "am abstract");
+    }
 
     private void setupBread(Consumer<BreadBotClientBuilder> config) {
         BreadBotClientBuilder builder = new BreadBotClientBuilder();

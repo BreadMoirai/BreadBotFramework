@@ -16,7 +16,7 @@
 package com.github.breadmoirai.breadbot.framework.event.internal;
 
 import com.github.breadmoirai.breadbot.framework.BreadBotClient;
-import com.github.breadmoirai.breadbot.framework.command.CommandHandle;
+import com.github.breadmoirai.breadbot.framework.command.Command;
 import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
 import com.github.breadmoirai.breadbot.framework.response.CommandResponseManager;
 import com.github.breadmoirai.breadbot.framework.response.RestActionExtension;
@@ -28,7 +28,7 @@ import net.dv8tion.jda.core.entities.Message;
 
 public abstract class CommandEventInternal extends CommandEvent {
 
-    private CommandHandle command;
+    private Command command;
     private CommandResponseManager manager;
 
     public CommandEventInternal(JDA api, long responseNumber, BreadBotClient client, boolean isHelpEvent) {
@@ -37,7 +37,7 @@ public abstract class CommandEventInternal extends CommandEvent {
     }
 
     @Override
-    public CommandHandle getCommand() {
+    public Command getCommand() {
         return command;
     }
 
@@ -45,10 +45,10 @@ public abstract class CommandEventInternal extends CommandEvent {
         return manager;
     }
 
-    public void setCommand(CommandHandle command) {
+    public void setCommand(Command command) {
         this.command = command;
         String[] keys = command.getKeys();
-        if (command.getSuperCommand() == null) return;
+        if (command.getParent() == null) return;
         for (String key : keys) {
             String contentL = getContent().toLowerCase();
             String keyL = key.toLowerCase();

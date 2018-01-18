@@ -22,7 +22,7 @@ import com.github.breadmoirai.breadbot.plugins.admin.AdminPluginImpl;
 import com.github.breadmoirai.breadbot.plugins.owner.ApplicationOwnerPlugin;
 import com.github.breadmoirai.breadbot.plugins.owner.StaticOwnerPlugin;
 import com.github.breadmoirai.breadbot.plugins.prefix.PrefixPlugin;
-import com.github.breadmoirai.breadbot.plugins.prefix.StaticPrefixModule;
+import com.github.breadmoirai.breadbot.plugins.prefix.UnmodifiablePrefixPlugin;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.utils.Checks;
 
@@ -67,7 +67,7 @@ public interface BreadBotPluginBuilder {
      * This adds a module that implements {@link PrefixPlugin} to provide a static prefix that cannot be changed. If a {@link PrefixPlugin} is not added, one will be provided with a static prefix of {@code "!"}
      * <p>
      * <p>This method's implementation is:
-     * <pre><code> {@link BreadBotPluginBuilder#addPlugin(CommandPlugin) addModule}(new {@link StaticPrefixModule DefaultPrefixModule}(prefix)) </code></pre>
+     * <pre><code> {@link BreadBotPluginBuilder#addPlugin(CommandPlugin) addModule}(new {@link UnmodifiablePrefixPlugin DefaultPrefixModule}(prefix)) </code></pre>
      *
      * <p>You can define a different prefix implementation by providing an object to {@link BreadBotClientBuilder#addPlugin(CommandPlugin) addModule(ICommandModule)} that implements {@link PrefixPlugin IPrefixModule}
      *
@@ -75,7 +75,7 @@ public interface BreadBotPluginBuilder {
      * @return this
      */
     default BreadBotPluginBuilder addStaticPrefix(String prefix) {
-        return addPlugin(new StaticPrefixModule(prefix));
+        return addPlugin(new UnmodifiablePrefixPlugin(prefix));
     }
 
     /**

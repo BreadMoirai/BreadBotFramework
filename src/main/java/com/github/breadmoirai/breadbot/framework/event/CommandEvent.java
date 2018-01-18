@@ -17,7 +17,7 @@
 package com.github.breadmoirai.breadbot.framework.event;
 
 import com.github.breadmoirai.breadbot.framework.BreadBotClient;
-import com.github.breadmoirai.breadbot.framework.command.CommandHandle;
+import com.github.breadmoirai.breadbot.framework.command.Command;
 import com.github.breadmoirai.breadbot.framework.parameter.CommandArgument;
 import com.github.breadmoirai.breadbot.framework.parameter.CommandArgumentList;
 import com.github.breadmoirai.breadbot.framework.response.RestActionExtension;
@@ -80,7 +80,7 @@ public abstract class CommandEvent extends Event {
      *
      * @return a non-null CommandHandle
      */
-    public abstract CommandHandle getCommand();
+    public abstract Command getCommand();
 
     /**
      * The prefix set for this guild

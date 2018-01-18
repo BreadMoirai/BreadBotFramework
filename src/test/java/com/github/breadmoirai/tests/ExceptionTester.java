@@ -18,7 +18,7 @@ package com.github.breadmoirai.tests;
 
 import com.github.breadmoirai.breadbot.framework.BreadBotClient;
 import com.github.breadmoirai.breadbot.framework.builder.BreadBotClientBuilder;
-import com.github.breadmoirai.breadbot.framework.command.CommandHandle;
+import com.github.breadmoirai.breadbot.framework.command.Command;
 import com.github.breadmoirai.breadbot.framework.command.CommandPreprocessor;
 import com.github.breadmoirai.breadbot.framework.command.internal.CommandObjectFactory;
 import com.github.breadmoirai.breadbot.framework.error.DuplicateCommandKeyException;
@@ -120,7 +120,7 @@ public class ExceptionTester {
 
     @Test
     public void commandRunTest() {
-        TestLogger testLogger = TestLoggerFactory.getTestLogger(CommandHandle.class);
+        TestLogger testLogger = TestLoggerFactory.getTestLogger(Command.class);
         testLogger.setEnabledLevels(Level.ERROR);
 
         BreadBotClient bread = new BreadBotClientBuilder()

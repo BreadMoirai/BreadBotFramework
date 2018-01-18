@@ -42,7 +42,7 @@ public class CommandPreprocessor implements CommandPreprocessorFunction {
     }
 
     @Override
-    public void process(Object commandObj, CommandHandle targetHandle, CommandEvent event, CommandProcessStack processQueue) {
+    public void process(Object commandObj, Command targetHandle, CommandEvent event, CommandProcessStack processQueue) {
         try {
             getFunction().process(commandObj, targetHandle, event, processQueue);
         } catch (Throwable t) {

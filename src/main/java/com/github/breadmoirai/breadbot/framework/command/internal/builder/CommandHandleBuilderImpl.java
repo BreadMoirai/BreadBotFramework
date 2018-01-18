@@ -16,11 +16,10 @@
 
 package com.github.breadmoirai.breadbot.framework.command.internal.builder;
 
-import com.github.breadmoirai.breadbot.framework.annotation.command.Command;
 import com.github.breadmoirai.breadbot.framework.builder.BreadBotClientBuilder;
 import com.github.breadmoirai.breadbot.framework.builder.CommandHandleBuilder;
 import com.github.breadmoirai.breadbot.framework.builder.CommandParameterBuilder;
-import com.github.breadmoirai.breadbot.framework.command.CommandHandle;
+import com.github.breadmoirai.breadbot.framework.command.Command;
 import com.github.breadmoirai.breadbot.framework.command.CommandPreprocessor;
 import com.github.breadmoirai.breadbot.framework.command.CommandResultHandler;
 import com.github.breadmoirai.breadbot.framework.command.internal.CommandHandleImpl;
@@ -255,7 +254,7 @@ public class CommandHandleBuilderImpl implements CommandHandleBuilderInternal {
     @Override
     public CommandHandleBuilder addCommand(Supplier<?> commandSupplier, Consumer<CommandHandleBuilder> configurator) {
         Object o = commandSupplier.get();
-        if (o.getClass().isAnnotationPresent(Command.class)) {
+        if (o.getClass().isAnnotationPresent(com.github.breadmoirai.breadbot.framework.annotation.command.Command.class)) {
             CommandHandleBuilderInternal commandHandle = getCommandFactory().createCommand(commandSupplier, o);
             configurator.accept(commandHandle);
             subCommands.add(commandHandle);
@@ -270,7 +269,7 @@ public class CommandHandleBuilderImpl implements CommandHandleBuilderInternal {
     @Override
     public CommandHandleBuilder addCommand(Supplier<?> commandSupplier) {
         Object o = commandSupplier.get();
-        if (o.getClass().isAnnotationPresent(Command.class)) {
+        if (o.getClass().isAnnotationPresent(com.github.breadmoirai.breadbot.framework.annotation.command.Command.class)) {
             CommandHandleBuilderInternal commandHandle = getCommandFactory().createCommand(commandSupplier, o);
             subCommands.add(commandHandle);
         } else {
@@ -286,7 +285,7 @@ public class CommandHandleBuilderImpl implements CommandHandleBuilderInternal {
     }
 
     @Override
-    public CommandHandleImpl build(CommandHandle parent) {
+    public CommandHandleImpl build(Command parent) {
         if (keys == null || keys.length == 0) {
             throw new MissingCommandKeyException(this);
         }

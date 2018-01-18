@@ -28,7 +28,7 @@ import java.util.function.Predicate;
 public interface CommandPreprocessorPredicate extends CommandPreprocessorFunction, Predicate<CommandEvent> {
 
     @Override
-    default void process(Object commandObj, CommandHandle targetHandle, CommandEvent event, CommandProcessStack processQueue) {
+    default void process(Object commandObj, Command targetHandle, CommandEvent event, CommandProcessStack processQueue) {
         if (test(event)) {
             processQueue.runNext();
         }

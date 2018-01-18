@@ -16,7 +16,7 @@
 
 package com.github.breadmoirai.breadbot.framework.parameter;
 
-import com.github.breadmoirai.breadbot.framework.command.CommandHandle;
+import com.github.breadmoirai.breadbot.framework.command.Command;
 import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
@@ -27,7 +27,7 @@ import java.util.List;
 public class CommandParser {
 
     private final CommandEvent event;
-    private final CommandHandle method;
+    private final Command method;
     private final CommandArgumentList argumentList;
     private final CommandParameter[] parameters;
     private final TIntSet set;
@@ -38,7 +38,7 @@ public class CommandParser {
 
     private final Object[] results;
 
-    public CommandParser(CommandEvent event, CommandHandle method, CommandArgumentList argumentList, CommandParameter[] parameters) {
+    public CommandParser(CommandEvent event, Command method, CommandArgumentList argumentList, CommandParameter[] parameters) {
         this.event = event;
         this.method = method;
         this.argumentList = argumentList;
@@ -71,7 +71,7 @@ public class CommandParser {
         return pointer;
     }
 
-    public CommandHandle getMethod() {
+    public Command getMethod() {
         return method;
     }
 

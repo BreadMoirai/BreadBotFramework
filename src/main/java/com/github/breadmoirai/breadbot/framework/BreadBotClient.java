@@ -16,8 +16,8 @@
 
 package com.github.breadmoirai.breadbot.framework;
 
+import com.github.breadmoirai.breadbot.framework.command.Command;
 import com.github.breadmoirai.breadbot.framework.command.CommandEngine;
-import com.github.breadmoirai.breadbot.framework.command.CommandHandle;
 import com.github.breadmoirai.breadbot.framework.command.CommandResultManager;
 import com.github.breadmoirai.breadbot.framework.parameter.CommandParameterManager;
 import net.dv8tion.jda.core.JDA;
@@ -50,5 +50,5 @@ public interface BreadBotClient {
 
     CommandResultManager getResultManager();
 
-    Map<String, CommandHandle> getCommandMap();
+    Map<String, Command> getCommandMap();
 }

@@ -18,11 +18,10 @@ package com.github.breadmoirai.breadbot.framework.internal;
 
 import com.github.breadmoirai.breadbot.framework.BreadBotClient;
 import com.github.breadmoirai.breadbot.framework.CommandPlugin;
+import com.github.breadmoirai.breadbot.framework.command.Command;
 import com.github.breadmoirai.breadbot.framework.command.CommandEngine;
-import com.github.breadmoirai.breadbot.framework.command.CommandHandle;
 import com.github.breadmoirai.breadbot.framework.command.CommandPropertiesManager;
 import com.github.breadmoirai.breadbot.framework.command.CommandResultManager;
-import com.github.breadmoirai.breadbot.framework.command.internal.builder.CommandHandleBuilderInternal;
 import com.github.breadmoirai.breadbot.framework.error.DuplicateCommandKeyException;
 import com.github.breadmoirai.breadbot.framework.event.CommandEventFactory;
 import com.github.breadmoirai.breadbot.framework.event.internal.CommandEventInternal;
@@ -62,12 +61,12 @@ public class BreadBotClientImpl implements BreadBotClient, EventListener {
     private final Predicate<Message> preProcessPredicate;
     private final List<CommandPlugin> modules;
     private final Map<Type, CommandPlugin> moduleTypeMap;
-    private final Map<String, CommandHandle> commandMap;
+    private final Map<String, Command> commandMap;
     private final boolean shouldEvaluateCommandOnMessageUpdate;
 
     public BreadBotClientImpl(
             List<CommandPlugin> modules,
-            List<CommandHandleBuilderInternal> commands,
+            List<Command> commands,
             CommandPropertiesManager commandProperties,
             CommandResultManager resultManager,
             CommandParameterManager argumentTypes,
@@ -81,17 +80,16 @@ public class BreadBotClientImpl implements BreadBotClient, EventListener {
         this.preProcessPredicate = preProcessPredicate;
         this.shouldEvaluateCommandOnMessageUpdate = shouldEvaluateCommandOnMessageUpdate;
 
-        HashMap<String, CommandHandle> handleMap = new HashMap<>();
-        for (CommandHandleBuilderInternal command : commands) {
-            CommandHandle handle = command.build(null);
-            String[] keys = handle.getKeys();
+        HashMap<String, Command> handleMap = new HashMap<>();
+        for (Command command : commands) {
+            String[] keys = command.getKeys();
             for (String key : keys) {
                 if (handleMap.containsKey(key)) {
-                    throw new DuplicateCommandKeyException(key, handle, handleMap.get(key));
+                    throw new DuplicateCommandKeyException(key, command, handleMap.get(key));
                 }
-                handleMap.put(key, handle);
+                handleMap.put(key, command);
             }
-            LOG.info("Command Created: " + handle);
+            LOG.info("Command Created: " + command);
         }
         this.commandMap = handleMap;
 
@@ -113,11 +111,11 @@ public class BreadBotClientImpl implements BreadBotClient, EventListener {
         this.moduleTypeMap = typeMap;
 
         commandEngine = event -> {
-            CommandHandle commandHandle = commandMap.get(event.getKeys()[0].toLowerCase());
+            Command commandHandle = commandMap.get(event.getKeys()[0].toLowerCase());
             if (commandHandle != null) {
                 if (event.isHelpEvent()) {
                     if (!commandHandle.handle(event, new EventStringIterator(event))) {
-                        CommandHandle help = commandMap.get("help");
+                        Command help = commandMap.get("help");
                         if (help != null) {
                             LOG.debug(String.format("Executing Command: %s (%s)", help.getName(), help.getGroup()));
                             help.handle(event, new EventStringIterator(event));
@@ -129,7 +127,7 @@ public class BreadBotClientImpl implements BreadBotClient, EventListener {
 
                 }
             } else if (event.isHelpEvent()) {
-                CommandHandle help = commandMap.get("help");
+                Command help = commandMap.get("help");
                 if (help != null) {
                     LOG.debug("Executing Command: help");
                     help.handle(event, new EventStringIterator(event));
@@ -175,7 +173,7 @@ public class BreadBotClientImpl implements BreadBotClient, EventListener {
     }
 
     @Override
-    public Map<String, CommandHandle> getCommandMap() {
+    public Map<String, Command> getCommandMap() {
         return commandMap;
     }
 

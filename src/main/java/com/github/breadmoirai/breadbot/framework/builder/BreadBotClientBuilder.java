@@ -18,10 +18,12 @@ package com.github.breadmoirai.breadbot.framework.builder;
 
 import com.github.breadmoirai.breadbot.framework.BreadBotClient;
 import com.github.breadmoirai.breadbot.framework.CommandPlugin;
+import com.github.breadmoirai.breadbot.framework.command.Command;
 import com.github.breadmoirai.breadbot.framework.command.CommandPreprocessor;
 import com.github.breadmoirai.breadbot.framework.command.CommandPreprocessorFunction;
 import com.github.breadmoirai.breadbot.framework.command.CommandPreprocessorPredicate;
 import com.github.breadmoirai.breadbot.framework.command.CommandResultHandler;
+import com.github.breadmoirai.breadbot.framework.command.internal.CommandHandleImpl;
 import com.github.breadmoirai.breadbot.framework.command.internal.CommandPropertiesManagerImpl;
 import com.github.breadmoirai.breadbot.framework.command.internal.CommandResultManagerImpl;
 import com.github.breadmoirai.breadbot.framework.command.internal.builder.CommandHandleBuilderFactoryImpl;
@@ -33,7 +35,7 @@ import com.github.breadmoirai.breadbot.framework.internal.BreadBotClientImpl;
 import com.github.breadmoirai.breadbot.framework.parameter.TypeParser;
 import com.github.breadmoirai.breadbot.framework.parameter.internal.builder.CommandParameterTypeManagerImpl;
 import com.github.breadmoirai.breadbot.plugins.prefix.PrefixPlugin;
-import com.github.breadmoirai.breadbot.plugins.prefix.StaticPrefixModule;
+import com.github.breadmoirai.breadbot.plugins.prefix.UnmodifiablePrefixPlugin;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.utils.Checks;
@@ -48,6 +50,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 public class BreadBotClientBuilder implements
         BreadBotPluginBuilder,
@@ -58,58 +61,65 @@ public class BreadBotClientBuilder implements
 
 //    private static final Logger LOG = LoggerFactory.getLogger(BreadBotClientBuilder.class);
 
-    private final List<CommandPlugin> modules;
+    private final List<CommandPlugin> plugins;
     private final CommandPropertiesManagerImpl commandProperties;
     private final CommandParameterTypeManagerImpl argumentTypes;
     private final CommandHandleBuilderFactoryImpl factory;
-    private final List<CommandHandleBuilderInternal> commands;
+    private final List<CommandHandleBuilderInternal> commandBuilders;
+    private final List<Command> commands;
     private final CommandResultManagerImpl resultManager;
     private Predicate<Message> preProcessPredicate;
     private CommandEventFactory commandEventFactory;
     private boolean shouldEvaluateCommandOnMessageUpdate = false;
 
     public BreadBotClientBuilder() {
-        modules = new ArrayList<>();
+        plugins = new ArrayList<>();
         commandProperties = new CommandPropertiesManagerImpl();
         argumentTypes = new CommandParameterTypeManagerImpl();
         factory = new CommandHandleBuilderFactoryImpl(this);
+        commandBuilders = new ArrayList<>();
         commands = new ArrayList<>();
         resultManager = new CommandResultManagerImpl();
     }
 
     @Override
-    public BreadBotClientBuilder addPlugin(Collection<CommandPlugin> modules) {
-        Checks.noneNull(modules, "modules");
-        for (CommandPlugin module : modules) {
+    public BreadBotClientBuilder addPlugin(Collection<CommandPlugin> plugins) {
+        Checks.noneNull(plugins, "plugins");
+        for (CommandPlugin module : plugins) {
             module.initialize(this);
         }
-        this.modules.addAll(modules);
+        this.plugins.addAll(plugins);
         return this;
     }
 
     @Override
-    public BreadBotClientBuilder addPlugin(CommandPlugin module) {
-        Checks.notNull(module, "module");
-        this.modules.add(module);
-        module.initialize(this);
+    public BreadBotClientBuilder addPlugin(CommandPlugin plugin) {
+        Checks.notNull(plugin, "plugin");
+        this.plugins.add(plugin);
+        plugin.initialize(this);
         return this;
     }
 
     @Override
-    public boolean hasPlugin(Class<? extends CommandPlugin> moduleClass) {
-        return moduleClass != null && modules.stream().map(Object::getClass).anyMatch(moduleClass::isAssignableFrom);
+    public boolean hasPlugin(Class<? extends CommandPlugin> pluginClass) {
+        return pluginClass != null && plugins.stream().map(Object::getClass).anyMatch(pluginClass::isAssignableFrom);
     }
 
     @Override
-    public <T extends CommandPlugin> T getPlugin(Class<T> moduleClass) {
-        return moduleClass == null ? null : modules.stream().filter(module -> moduleClass.isAssignableFrom(module.getClass())).map(moduleClass::cast).findAny().orElse(null);
+    public <T extends CommandPlugin> T getPlugin(Class<T> pluginClass) {
+        return pluginClass == null ? null : plugins.stream().filter(module -> pluginClass.isAssignableFrom(module.getClass())).map(pluginClass::cast).findAny().orElse(null);
+    }
+
+    public BreadBotClientBuilder addCommand(Command command) {
+        commands.add(command);
+        return this;
     }
 
     @Override
     public CommandHandleBuilder createCommand(Consumer<CommandEvent> onCommand) {
         Checks.notNull(onCommand, "onCommand");
         CommandHandleBuilderInternal commandHandle = factory.createCommand(onCommand);
-        commands.add(commandHandle);
+        commandBuilders.add(commandHandle);
         return commandHandle;
     }
 
@@ -141,7 +151,7 @@ public class BreadBotClientBuilder implements
     public CommandHandleBuilder createCommand(Class<?> commandClass) {
         Checks.notNull(commandClass, "commandClass");
         CommandHandleBuilderInternal commandHandle = factory.createCommand(commandClass);
-        commands.add(commandHandle);
+        commandBuilders.add(commandHandle);
         return commandHandle;
     }
 
@@ -149,7 +159,7 @@ public class BreadBotClientBuilder implements
     public CommandHandleBuilder createCommand(Object commandObject) {
         Checks.notNull(commandObject, "commandObject");
         CommandHandleBuilderInternal commandHandle = factory.createCommand(commandObject);
-        commands.add(commandHandle);
+        commandBuilders.add(commandHandle);
         return commandHandle;
     }
 
@@ -157,7 +167,7 @@ public class BreadBotClientBuilder implements
     public CommandHandleBuilder createCommand(Supplier<?> commandSupplier) {
         Checks.notNull(commandSupplier, "commandSupplier");
         CommandHandleBuilderInternal commandHandle = factory.createCommand(commandSupplier);
-        commands.add(commandHandle);
+        commandBuilders.add(commandHandle);
         return commandHandle;
     }
 
@@ -165,7 +175,7 @@ public class BreadBotClientBuilder implements
     public List<CommandHandleBuilder> createCommands(String packageName) {
         Checks.notNull(packageName, "packageName");
         List<CommandHandleBuilderInternal> commandHandles = factory.createCommands(packageName);
-        commands.addAll(commandHandles);
+        commandBuilders.addAll(commandHandles);
         return Collections.unmodifiableList(commandHandles);
     }
 
@@ -173,7 +183,7 @@ public class BreadBotClientBuilder implements
     public List<CommandHandleBuilder> createCommands(Class<?> commandClass) {
         Checks.notNull(commandClass, "commandClass");
         List<CommandHandleBuilderInternal> commandHandles = factory.createCommands(commandClass);
-        commands.addAll(commandHandles);
+        commandBuilders.addAll(commandHandles);
         return Collections.unmodifiableList(commandHandles);
     }
 
@@ -181,7 +191,7 @@ public class BreadBotClientBuilder implements
     public List<CommandHandleBuilder> createCommands(Object commandObject) {
         Checks.notNull(commandObject, "commandObject");
         List<CommandHandleBuilderInternal> commandHandles = factory.createCommands(commandObject);
-        commands.addAll(commandHandles);
+        commandBuilders.addAll(commandHandles);
         return Collections.unmodifiableList(commandHandles);
     }
 
@@ -189,7 +199,7 @@ public class BreadBotClientBuilder implements
     public List<CommandHandleBuilder> createCommands(Supplier<?> commandSupplier) {
         Checks.notNull(commandSupplier, "commandSupplier");
         List<CommandHandleBuilderInternal> commandHandles = factory.createCommands(commandSupplier, commandSupplier.get());
-        commands.addAll(commandHandles);
+        commandBuilders.addAll(commandHandles);
         return Collections.unmodifiableList(commandHandles);
     }
 
@@ -197,7 +207,7 @@ public class BreadBotClientBuilder implements
     public List<CommandHandleBuilder> createCommandsFromClasses(Collection<Class<?>> commandClasses) {
         Checks.noneNull(commandClasses, "commandClasses");
         List<CommandHandleBuilderInternal> commandHandles = factory.createCommandsFromClasses(commandClasses);
-        commands.addAll(commandHandles);
+        commandBuilders.addAll(commandHandles);
         return Collections.unmodifiableList(commandHandles);
     }
 
@@ -205,7 +215,7 @@ public class BreadBotClientBuilder implements
     public List<CommandHandleBuilder> createCommandsFromObjects(Collection<?> commandObjects) {
         Checks.noneNull(commandObjects, "commandObjects");
         List<CommandHandleBuilderInternal> commandHandles = factory.createCommandsFromObjects(commandObjects);
-        commands.addAll(commandHandles);
+        commandBuilders.addAll(commandHandles);
         return Collections.unmodifiableList(commandHandles);
     }
 
@@ -213,7 +223,7 @@ public class BreadBotClientBuilder implements
     public List<CommandHandleBuilder> createCommandsFromSuppliers(Collection<Supplier<?>> commandSupplier) {
         Checks.noneNull(commandSupplier, "commandSuppliers");
         List<CommandHandleBuilderInternal> commandHandles = factory.createCommandsFromSuppliers(commandSupplier);
-        commands.addAll(commandHandles);
+        commandBuilders.addAll(commandHandles);
         return Collections.unmodifiableList(commandHandles);
     }
 
@@ -540,14 +550,16 @@ public class BreadBotClientBuilder implements
 
     /**
      * Builds the BreadBotClient with the provided EventManager.
-     * If an {@link PrefixPlugin} has not been provided, a {@link StaticPrefixModule new DefaultPrefixModule("!")} is provided.
+     * If an {@link PrefixPlugin} has not been provided, a {@link UnmodifiablePrefixPlugin new UnmodifiablePrefixPlugin("!")} is provided.
      *
      * @return a new BreadBotClient. This must be added to JDA with {@link net.dv8tion.jda.core.JDABuilder#addEventListener(Object...)}
      */
     public BreadBotClient build() {
-        if (!hasPlugin(PrefixPlugin.class)) modules.add(new StaticPrefixModule("!"));
+        if (!hasPlugin(PrefixPlugin.class)) plugins.add(new UnmodifiablePrefixPlugin("!"));
         if (commandEventFactory == null)
             commandEventFactory = new CommandEventFactoryImpl(getPlugin(PrefixPlugin.class));
-        return new BreadBotClientImpl(modules, commands, commandProperties, resultManager, argumentTypes, commandEventFactory, preProcessPredicate, shouldEvaluateCommandOnMessageUpdate);
+        final List<CommandHandleImpl> build = commandBuilders.stream().map(o -> o.build(null)).collect(Collectors.toList());
+        commands.addAll(build);
+        return new BreadBotClientImpl(plugins, commands, commandProperties, resultManager, argumentTypes, commandEventFactory, preProcessPredicate, shouldEvaluateCommandOnMessageUpdate);
     }
 }

@@ -1,51 +1,15 @@
-/*
- *        Copyright 2017-2018 Ton Ly (BreadMoirai)
- *
- *   Licensed under the Apache License, Version 2.0 (the "License");
- *   you may not use this file except in compliance with the License.
- *   You may obtain a copy of the License at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- *   Unless required by applicable law or agreed to in writing, software
- *   distributed under the License is distributed on an "AS IS" BASIS,
- *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *   See the License for the specific language governing permissions and
- *   limitations under the License.
- */
-
 package com.github.breadmoirai.breadbot.framework.command;
 
-import com.github.breadmoirai.breadbot.framework.event.internal.CommandEventInternal;
 import com.github.breadmoirai.breadbot.framework.parameter.CommandParameter;
 
 import java.lang.reflect.Method;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
-/**
- * This is used to invoke a command
- */
-public interface CommandHandle {
-
-    String[] getKeys();
-
-    String getName();
-
-    String getGroup();
-
-    String getDescription();
-
-    CommandPropertyMap getPropertyMap();
+public interface CommandHandle extends Command {
 
     List<CommandPreprocessor> getPreprocessors();
 
-    boolean handle(CommandEventInternal event, Iterator<String> keyItr);
-
-    Map<String, CommandHandle> getSubCommands();
-
-    CommandHandle getSuperCommand();
+    CommandPropertyMap getPropertyMap();
 
     /**
      * This method returns null if the command has been defined with a class or a supplier.
@@ -72,14 +36,15 @@ public interface CommandHandle {
     /**
      * Returns the method that is used to invoke this command.
      * If this command was defined with a Consumer, this returns {@code null}.
+     *
      * @return a Method
      */
     Method getDeclaringMethod();
 
     /**
      * Creates a copy of the backing array and returns the parameters of this Command
+     *
      * @return an array of CommandParameters
      */
     CommandParameter[] getParameters();
-
 }

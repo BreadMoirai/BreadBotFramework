@@ -16,7 +16,7 @@
 
 package com.github.breadmoirai.breadbot.framework.command.internal;
 
-import com.github.breadmoirai.breadbot.framework.command.CommandHandle;
+import com.github.breadmoirai.breadbot.framework.command.Command;
 import com.github.breadmoirai.breadbot.framework.command.CommandPreprocessor;
 import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
 
@@ -30,12 +30,12 @@ import java.util.Collection;
 public class CommandProcessStack extends ArrayDeque<CommandPreprocessor> {
 
     private final Object object;
-    private final CommandHandle targetHandle;
+    private final Command targetHandle;
     private final CommandEvent event;
     private final Runnable onEnd;
     private boolean ranEnd;
 
-    public CommandProcessStack(Object object, CommandHandle targetHandle, CommandEvent event, Collection<CommandPreprocessor> preprocessors, Runnable onEnd) {
+    public CommandProcessStack(Object object, Command targetHandle, CommandEvent event, Collection<CommandPreprocessor> preprocessors, Runnable onEnd) {
         super(preprocessors);
         this.object = object;
         this.targetHandle = targetHandle;
@@ -48,7 +48,7 @@ public class CommandProcessStack extends ArrayDeque<CommandPreprocessor> {
         return object;
     }
 
-    public CommandHandle getTargetHandle() {
+    public Command getTargetHandle() {
         return targetHandle;
     }
 
