@@ -17,7 +17,7 @@
 package com.github.breadmoirai.breadbot.framework.parameter.internal.builder;
 
 import com.github.breadmoirai.breadbot.framework.CommandPlugin;
-import com.github.breadmoirai.breadbot.framework.builder.BreadBotClientBuilder;
+import com.github.breadmoirai.breadbot.framework.builder.BreadBotBuilder;
 import com.github.breadmoirai.breadbot.framework.builder.CommandHandleBuilder;
 import com.github.breadmoirai.breadbot.framework.builder.CommandParameterBuilder;
 import com.github.breadmoirai.breadbot.framework.command.internal.CommandPropertyMapImpl;
@@ -52,7 +52,7 @@ public class CommandParameterBuilderImpl implements CommandParameterBuilder {
     private final CommandHandleBuilder commandBuilder;
     private final Parameter parameter;
     private final CommandPropertyMapImpl map;
-    private final BreadBotClientBuilder clientBuilder;
+    private final BreadBotBuilder clientBuilder;
     private String paramName;
     private int index = 0;
     private int width = 1;
@@ -64,7 +64,7 @@ public class CommandParameterBuilderImpl implements CommandParameterBuilder {
     private AbsentArgumentHandler absentArgumentHandler = null;
     private Predicate<CommandArgument> argumentPredicate;
 
-    public CommandParameterBuilderImpl(BreadBotClientBuilder builder, CommandHandleBuilder commandBuilder, Parameter parameter, CommandPropertyMapImpl map) {
+    public CommandParameterBuilderImpl(BreadBotBuilder builder, CommandHandleBuilder commandBuilder, Parameter parameter, CommandPropertyMapImpl map) {
         this.commandBuilder = commandBuilder;
         this.parameter = parameter;
         this.clientBuilder = builder;
@@ -170,7 +170,7 @@ public class CommandParameterBuilderImpl implements CommandParameterBuilder {
     }
 
     @Override
-    public BreadBotClientBuilder getClientBuilder() {
+    public BreadBotBuilder getClientBuilder() {
         return clientBuilder;
     }
 

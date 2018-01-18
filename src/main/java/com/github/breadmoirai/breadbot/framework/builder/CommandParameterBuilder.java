@@ -32,7 +32,7 @@ import java.util.function.Predicate;
  */
 public interface CommandParameterBuilder {
 
-    BreadBotClientBuilder getClientBuilder();
+    BreadBotBuilder getClientBuilder();
 
     CommandHandleBuilder getCommandBuilder();
 

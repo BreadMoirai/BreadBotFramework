@@ -16,8 +16,8 @@
 
 package com.github.breadmoirai.tests;
 
-import com.github.breadmoirai.breadbot.framework.BreadBotClient;
-import com.github.breadmoirai.breadbot.framework.builder.BreadBotClientBuilder;
+import com.github.breadmoirai.breadbot.framework.BreadBot;
+import com.github.breadmoirai.breadbot.framework.builder.BreadBotBuilder;
 import com.github.breadmoirai.breadbot.framework.builder.CommandHandleBuilder;
 import com.github.breadmoirai.breadbot.framework.command.AbstractCommand;
 import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
@@ -57,7 +57,7 @@ public class ClientTest {
         TestLoggerFactory.getInstance().setPrintLevel(Level.DEBUG);
     }
 
-    private BreadBotClient client;
+    private BreadBot client;
 
     @Test
     public void basicCommandTest() {
@@ -301,8 +301,8 @@ public class ClientTest {
         assertResponse("!test", "am abstract");
     }
 
-    private void setupBread(Consumer<BreadBotClientBuilder> config) {
-        BreadBotClientBuilder builder = new BreadBotClientBuilder();
+    private void setupBread(Consumer<BreadBotBuilder> config) {
+        BreadBotBuilder builder = new BreadBotBuilder();
         config.accept(builder);
         client = builder.build();
     }

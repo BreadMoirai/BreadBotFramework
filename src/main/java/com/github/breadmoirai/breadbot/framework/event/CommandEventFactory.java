@@ -16,7 +16,7 @@
 
 package com.github.breadmoirai.breadbot.framework.event;
 
-import com.github.breadmoirai.breadbot.framework.BreadBotClient;
+import com.github.breadmoirai.breadbot.framework.BreadBot;
 import com.github.breadmoirai.breadbot.framework.event.internal.CommandEventInternal;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.events.message.guild.GenericGuildMessageEvent;
@@ -26,5 +26,5 @@ import net.dv8tion.jda.core.events.message.guild.GenericGuildMessageEvent;
  */
 public interface CommandEventFactory {
 
-    CommandEventInternal createEvent(GenericGuildMessageEvent event, Message message, BreadBotClient client);
+    CommandEventInternal createEvent(GenericGuildMessageEvent event, Message message, BreadBot client);
 }

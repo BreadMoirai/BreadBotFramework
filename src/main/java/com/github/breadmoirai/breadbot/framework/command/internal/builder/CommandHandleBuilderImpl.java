@@ -16,7 +16,7 @@
 
 package com.github.breadmoirai.breadbot.framework.command.internal.builder;
 
-import com.github.breadmoirai.breadbot.framework.builder.BreadBotClientBuilder;
+import com.github.breadmoirai.breadbot.framework.builder.BreadBotBuilder;
 import com.github.breadmoirai.breadbot.framework.builder.CommandHandleBuilder;
 import com.github.breadmoirai.breadbot.framework.builder.CommandParameterBuilder;
 import com.github.breadmoirai.breadbot.framework.command.Command;
@@ -50,7 +50,7 @@ public class CommandHandleBuilderImpl implements CommandHandleBuilderInternal {
     private final Method declaringMethod;
     private String[] keys;
     private String name, group, description;
-    private final BreadBotClientBuilder clientBuilder;
+    private final BreadBotBuilder clientBuilder;
     private final CommandObjectFactory commandFactory;
     private final CommandParameterBuilder[] parameterBuilders;
     private final InvokableCommand commandFunction;
@@ -67,7 +67,7 @@ public class CommandHandleBuilderImpl implements CommandHandleBuilderInternal {
     public CommandHandleBuilderImpl(Object declaringObject,
                                     Class<?> declaringClass,
                                     Method declaringMethod,
-                                    BreadBotClientBuilder clientBuilder,
+                                    BreadBotBuilder clientBuilder,
                                     CommandObjectFactory commandFactory,
                                     CommandParameterBuilder[] parameterBuilders,
                                     InvokableCommand commandFunction,
@@ -169,7 +169,7 @@ public class CommandHandleBuilderImpl implements CommandHandleBuilderInternal {
     }
 
     @Override
-    public BreadBotClientBuilder getClientBuilder() {
+    public BreadBotBuilder getClientBuilder() {
         return clientBuilder;
     }
 

@@ -26,11 +26,11 @@ import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 
-public interface BreadBotClient {
+public interface BreadBot {
 
-    boolean hasModule(String pluginName);
+    boolean hasPlugin(String pluginName);
 
-    boolean hasModule(Class<? extends CommandPlugin> pluginClass);
+    boolean hasPlugin(Class<? extends CommandPlugin> pluginClass);
 
     <T extends CommandPlugin> T getPlugin(Class<T> pluginClass);
 

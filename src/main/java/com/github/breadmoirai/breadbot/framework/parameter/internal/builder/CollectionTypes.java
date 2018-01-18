@@ -16,7 +16,7 @@
 
 package com.github.breadmoirai.breadbot.framework.parameter.internal.builder;
 
-import com.github.breadmoirai.breadbot.framework.builder.BreadBotClientBuilder;
+import com.github.breadmoirai.breadbot.framework.builder.BreadBotBuilder;
 import com.github.breadmoirai.breadbot.framework.builder.CommandParameterBuilder;
 import com.github.breadmoirai.breadbot.framework.parameter.CommandArgument;
 import com.github.breadmoirai.breadbot.framework.parameter.TypeParser;
@@ -36,7 +36,7 @@ public class CollectionTypes {
 
 
     private static <T> void setTypeParser(Class<T> type, CommandParameterBuilder builder) {
-        final BreadBotClientBuilder clientBuilder = builder.getClientBuilder();
+        final BreadBotBuilder clientBuilder = builder.getClientBuilder();
         final TypeParser<T> typeParser = clientBuilder.getTypeParser(type);
         builder.setTypeParser(typeParser);
     }

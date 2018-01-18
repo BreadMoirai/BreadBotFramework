@@ -15,7 +15,7 @@
  */
 package com.github.breadmoirai.breadbot.framework.event.internal;
 
-import com.github.breadmoirai.breadbot.framework.BreadBotClient;
+import com.github.breadmoirai.breadbot.framework.BreadBot;
 import com.github.breadmoirai.breadbot.framework.command.Command;
 import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
 import com.github.breadmoirai.breadbot.framework.response.CommandResponseManager;
@@ -31,7 +31,7 @@ public abstract class CommandEventInternal extends CommandEvent {
     private Command command;
     private CommandResponseManager manager;
 
-    public CommandEventInternal(JDA api, long responseNumber, BreadBotClient client, boolean isHelpEvent) {
+    public CommandEventInternal(JDA api, long responseNumber, BreadBot client, boolean isHelpEvent) {
         super(api, responseNumber, client, isHelpEvent);
         manager = CommandResponseManager.factory.get();
     }

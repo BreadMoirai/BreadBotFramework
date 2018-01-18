@@ -16,8 +16,8 @@
 
 package com.github.breadmoirai.tests;
 
-import com.github.breadmoirai.breadbot.framework.BreadBotClient;
-import com.github.breadmoirai.breadbot.framework.builder.BreadBotClientBuilder;
+import com.github.breadmoirai.breadbot.framework.BreadBot;
+import com.github.breadmoirai.breadbot.framework.builder.BreadBotBuilder;
 import com.github.breadmoirai.breadbot.framework.event.internal.CommandEventInternal;
 import com.github.breadmoirai.tests.commands.AuthorCommand;
 import com.github.breadmoirai.tests.commands.EchoCommand;
@@ -40,11 +40,11 @@ public class DefaultTester {
         TestLoggerFactory.getInstance().setPrintLevel(Level.DEBUG);
     }
 
-    private BreadBotClient client;
+    private BreadBot client;
 
     @Test
     public void matchRegexTest() {
-        client = new BreadBotClientBuilder().addCommand(EchoCommand::new).build();
+        client = new BreadBotBuilder().addCommand(EchoCommand::new).build();
         assertResponse("!echo echo", "echo");
         assertResponse("!echonum echo", null);
         assertResponse("!echonum 124", "124");
@@ -52,7 +52,7 @@ public class DefaultTester {
 
     @Test
     public void authorTest() {
-        client = new BreadBotClientBuilder()
+        client = new BreadBotBuilder()
                 .addCommand(AuthorCommand::new)
                 .build();
         assertResponse(MockFactory.UserType.BASIC, "!author", MockFactory.BASIC_NAME);
@@ -62,7 +62,7 @@ public class DefaultTester {
 
     @Test
     public void adminTest() {
-        client = new BreadBotClientBuilder()
+        client = new BreadBotBuilder()
                 .addAdminPlugin()
                 .addCommand(WhoAmICommand::new)
                 .build();

@@ -172,7 +172,7 @@ public interface CommandHandleBuilder extends CommandHandleBuilderFactory {
      */
     Method getDeclaringMethod();
 
-    BreadBotClientBuilder getClientBuilder();
+    BreadBotBuilder getClientBuilder();
 
 
     default CommandHandleBuilder sortPreprocessors() {

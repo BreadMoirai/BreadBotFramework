@@ -18,7 +18,7 @@ package com.github.breadmoirai.breadbot.framework.command.internal.builder;
 
 import com.github.breadmoirai.breadbot.framework.annotation.command.Command;
 import com.github.breadmoirai.breadbot.framework.annotation.command.MainCommand;
-import com.github.breadmoirai.breadbot.framework.builder.BreadBotClientBuilder;
+import com.github.breadmoirai.breadbot.framework.builder.BreadBotBuilder;
 import com.github.breadmoirai.breadbot.framework.builder.CommandParameterBuilder;
 import com.github.breadmoirai.breadbot.framework.command.internal.CommandObjectFactory;
 import com.github.breadmoirai.breadbot.framework.command.internal.CommandPropertiesManagerImpl;
@@ -55,9 +55,9 @@ public class CommandHandleBuilderFactoryImpl implements CommandHandleBuilderFact
 
     private static final Logger log = LoggerFactory.getLogger("CommandBuilder");
 
-    private final BreadBotClientBuilder clientBuilder;
+    private final BreadBotBuilder clientBuilder;
 
-    public CommandHandleBuilderFactoryImpl(BreadBotClientBuilder clientBuilder) {
+    public CommandHandleBuilderFactoryImpl(BreadBotBuilder clientBuilder) {
         this.clientBuilder = clientBuilder;
     }
 

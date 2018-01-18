@@ -16,8 +16,8 @@
 
 package com.github.breadmoirai.tests;
 
-import com.github.breadmoirai.breadbot.framework.BreadBotClient;
-import com.github.breadmoirai.breadbot.framework.builder.BreadBotClientBuilder;
+import com.github.breadmoirai.breadbot.framework.BreadBot;
+import com.github.breadmoirai.breadbot.framework.builder.BreadBotBuilder;
 import com.github.breadmoirai.breadbot.framework.command.Command;
 import com.github.breadmoirai.breadbot.framework.command.CommandPreprocessor;
 import com.github.breadmoirai.breadbot.framework.command.internal.CommandObjectFactory;
@@ -55,7 +55,7 @@ public class ExceptionTester {
 
     @Test(expected = MissingCommandKeyException.class)
     public void missingKey() {
-        new BreadBotClientBuilder()
+        new BreadBotBuilder()
                 .addCommand(commandEvent -> {
                 }, configurator -> {
                 })
@@ -64,7 +64,7 @@ public class ExceptionTester {
 
     @Test(expected = DuplicateCommandKeyException.class)
     public void duplicateKey() {
-        new BreadBotClientBuilder()
+        new BreadBotBuilder()
                 .addCommand(PingCommand.class)
                 .addCommand(PingCommand::new)
                 .build();
@@ -72,7 +72,7 @@ public class ExceptionTester {
 
     @Test(expected = RuntimeException.class)
     public void commandctorBuild() {
-        new BreadBotClientBuilder()
+        new BreadBotBuilder()
                 .addCommand(BadCtorCommand::new)
                 .build();
     }
@@ -82,7 +82,7 @@ public class ExceptionTester {
         TestLogger testLogger = TestLoggerFactory.getTestLogger(CommandObjectFactory.class);
         testLogger.setEnabledLevels(Level.ERROR);
 
-        BreadBotClient bread = new BreadBotClientBuilder()
+        BreadBot bread = new BreadBotBuilder()
                 .addCommand(BadCtorCommand.class)
                 .build();
         CommandEventInternal mock = mockCommand(bread, "!bad", MockFactory.UserType.BASIC);
@@ -102,7 +102,7 @@ public class ExceptionTester {
         TestLogger testLogger = TestLoggerFactory.getTestLogger(CommandPreprocessor.class);
         testLogger.setEnabledLevels(Level.ERROR);
 
-        BreadBotClient bread = new BreadBotClientBuilder()
+        BreadBot bread = new BreadBotBuilder()
                 .createCommand(BadPrepCommand.class)
                 .getClientBuilder().build();
 
@@ -123,7 +123,7 @@ public class ExceptionTester {
         TestLogger testLogger = TestLoggerFactory.getTestLogger(Command.class);
         testLogger.setEnabledLevels(Level.ERROR);
 
-        BreadBotClient bread = new BreadBotClientBuilder()
+        BreadBot bread = new BreadBotBuilder()
                 .createCommand(BadCommand.class)
                 .getClientBuilder().build();
 
@@ -150,21 +150,21 @@ public class ExceptionTester {
 
     @Test(expected = IllegalArgumentException.class)
     public void nullCommandClassTest() {
-        new BreadBotClientBuilder()
+        new BreadBotBuilder()
                 .addCommand((Class<?>) null)
                 .build();
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void nullCommandSupplierTest() {
-        new BreadBotClientBuilder()
+        new BreadBotBuilder()
                 .addCommand((Supplier<?>) null)
                 .build();
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void nullCommandObjectTest() {
-        new BreadBotClientBuilder()
+        new BreadBotBuilder()
                 .addCommand((Object) null)
                 .build();
     }

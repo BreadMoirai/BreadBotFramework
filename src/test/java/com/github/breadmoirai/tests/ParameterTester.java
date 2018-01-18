@@ -16,8 +16,8 @@
 
 package com.github.breadmoirai.tests;
 
-import com.github.breadmoirai.breadbot.framework.BreadBotClient;
-import com.github.breadmoirai.breadbot.framework.builder.BreadBotClientBuilder;
+import com.github.breadmoirai.breadbot.framework.BreadBot;
+import com.github.breadmoirai.breadbot.framework.builder.BreadBotBuilder;
 import com.github.breadmoirai.breadbot.framework.event.internal.CommandEventInternal;
 import com.github.breadmoirai.tests.commands.NameCommand;
 import com.github.breadmoirai.tests.commands.PingCommand;
@@ -39,11 +39,11 @@ public class ParameterTester {
         TestLoggerFactory.getInstance().setPrintLevel(Level.INFO);
     }
 
-    private BreadBotClient client;
+    private BreadBot client;
 
     @Test
     public void width1() {
-        client = new BreadBotClientBuilder()
+        client = new BreadBotBuilder()
                 .addCommand(SSICommand.class)
                 .build();
         assertResponse("!ssi", "null, null, null");
@@ -57,7 +57,7 @@ public class ParameterTester {
 
     @Test
     public void width0() {
-        client = new BreadBotClientBuilder()
+        client = new BreadBotBuilder()
                 .addCommand(SSICommand.class, handleBuilder -> handleBuilder.getParameters().forEach(param -> param.setWidth(0)))
                 .build();
         assertResponse("!ssi", "null, null, null");
@@ -68,7 +68,7 @@ public class ParameterTester {
 
     @Test
     public void widthNegative() {
-        client = new BreadBotClientBuilder()
+        client = new BreadBotBuilder()
                 .addCommand(SSICommand.class, handleBuilder -> handleBuilder.getParameters().forEach(param -> param.setWidth(-1)))
                 .build();
         assertResponse("!ssi", "null, null, null");
@@ -79,7 +79,7 @@ public class ParameterTester {
 
     @Test
     public void widthPositive() {
-        client = new BreadBotClientBuilder()
+        client = new BreadBotBuilder()
                 .addCommand(SSICommand.class, handleBuilder -> handleBuilder.getParameters().forEach(param -> param.setWidth(2)))
                 .build();
         assertResponse("!ssi", "null, null, null");
@@ -90,7 +90,7 @@ public class ParameterTester {
 
     @Test
     public void indexPositive() {
-        client = new BreadBotClientBuilder()
+        client = new BreadBotBuilder()
                 .addCommand(SSICommand.class, command -> command
                         .configureParameter(0, param -> param.setIndex(3))
                         .configureParameter(1, param -> param.setIndex(2))
@@ -103,7 +103,7 @@ public class ParameterTester {
 
     @Test
     public void indexNegative() {
-        client = new BreadBotClientBuilder()
+        client = new BreadBotBuilder()
                 .addCommand(SSICommand.class, command -> command
                         .configureParameter(0, param -> param.setIndex(-1))
                         .configureParameter(1, param -> param.setIndex(-2))
@@ -117,7 +117,7 @@ public class ParameterTester {
 
     @Test
     public void parameterPropertyTest() {
-        client = new BreadBotClientBuilder().addCommand(NameCommand.class).build();
+        client = new BreadBotBuilder().addCommand(NameCommand.class).build();
         assertResponse("!name a b c", "a b c");
         assertResponse("!first a b c", "a");
         assertResponse("!last a b c", "b c");
@@ -125,7 +125,7 @@ public class ParameterTester {
 
     @Test
     public void subParameterPropertyTest() {
-        client = new BreadBotClientBuilder()
+        client = new BreadBotBuilder()
                 .createCommand(PingCommand.class).addCommand(NameCommand.class)
                 .getClientBuilder().build();
         assertResponse("!ping name a b c", "a b c");
@@ -135,7 +135,7 @@ public class ParameterTester {
 
     @Test
     public void wikiTest() {
-        client = new BreadBotClientBuilder()
+        client = new BreadBotBuilder()
                 .addCommand(WikiParameterCommand.class)
                 .build();
         assertResponse("!ex hello 1", "lint=1, third=null, start=hello");

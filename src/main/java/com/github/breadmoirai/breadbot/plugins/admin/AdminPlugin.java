@@ -17,7 +17,7 @@
 package com.github.breadmoirai.breadbot.plugins.admin;
 
 import com.github.breadmoirai.breadbot.framework.CommandPlugin;
-import com.github.breadmoirai.breadbot.framework.builder.BreadBotClientBuilder;
+import com.github.breadmoirai.breadbot.framework.builder.BreadBotBuilder;
 import net.dv8tion.jda.core.entities.Member;
 
 public interface AdminPlugin extends CommandPlugin {
@@ -30,7 +30,7 @@ public interface AdminPlugin extends CommandPlugin {
     boolean isAdmin(Member member);
 
     @Override
-    default void initialize(BreadBotClientBuilder builder) {
+    default void initialize(BreadBotBuilder builder) {
         builder.associatePreprocessorPredicate("admin", Admin.class, event -> isAdmin(event.getMember()));
         builder.addCommand(AdminCommand.class);
     }

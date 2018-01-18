@@ -69,7 +69,7 @@ public interface CommandPluginBuilder {
      * <p>This method's implementation is:
      * <pre><code> {@link CommandPluginBuilder#addPlugin(CommandPlugin) addModule}(new {@link UnmodifiablePrefixPlugin DefaultPrefixModule}(prefix)) </code></pre>
      *
-     * <p>You can define a different prefix implementation by providing an object to {@link BreadBotClientBuilder#addPlugin(CommandPlugin) addModule(ICommandModule)} that implements {@link PrefixPlugin IPrefixModule}
+     * <p>You can define a different prefix implementation by providing an object to {@link BreadBotBuilder#addPlugin(CommandPlugin) addModule(ICommandModule)} that implements {@link PrefixPlugin IPrefixModule}
      *
      * @param prefix a string the defines a global prefix
      * @return this
@@ -81,7 +81,7 @@ public interface CommandPluginBuilder {
     /**
      * This enables the {@link com.github.breadmoirai.breadbot.plugins.admin.Admin @Admin} annotation that is marked on Command classes.
      * This ensures that Commands marked with {@link com.github.breadmoirai.breadbot.plugins.admin.Admin @Admin} are only usable by Administrators.
-     * <p>It is <b>important</b> to include an implementation of {@link AdminPlugin AdminModule} through either this method, {@link BreadBotClientBuilder#addAdminPlugin(Predicate)}, or your own implementation.
+     * <p>It is <b>important</b> to include an implementation of {@link AdminPlugin AdminModule} through either this method, {@link BreadBotBuilder#addAdminPlugin(Predicate)}, or your own implementation.
      * Otherwise, all users will have access to Administrative Commands
      * <p>
      * <p>The default criteria for defining an Administrator is as follows:
@@ -90,7 +90,7 @@ public interface CommandPluginBuilder {
      * <li>Is higher than the bot on the role hierarchy</li>
      * </ul>
      * <p>
-     * <p>Different criteria to determine which member has administrative status with {@link BreadBotClientBuilder#addAdminPlugin(Predicate)}
+     * <p>Different criteria to determine which member has administrative status with {@link BreadBotBuilder#addAdminPlugin(Predicate)}
      * or your own implementation of {@link AdminPlugin}
      *
      * @return this

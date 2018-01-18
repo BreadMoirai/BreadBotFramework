@@ -16,7 +16,7 @@
 
 package com.github.breadmoirai.tests;
 
-import com.github.breadmoirai.breadbot.framework.BreadBotClient;
+import com.github.breadmoirai.breadbot.framework.BreadBot;
 import com.github.breadmoirai.breadbot.framework.event.internal.CommandEventFactoryImpl;
 import com.github.breadmoirai.breadbot.framework.event.internal.CommandEventInternal;
 import com.github.breadmoirai.breadbot.plugins.prefix.UnmodifiablePrefixPlugin;
@@ -54,7 +54,7 @@ public class MockFactory {
         when(selfMember.getEffectiveName()).thenReturn(SELF_NAME);
     }
 
-    public static CommandEventInternal mockCommand(BreadBotClient client, String input, UserType userType) {
+    public static CommandEventInternal mockCommand(BreadBot client, String input, UserType userType) {
         //        GenericGuildMessageEvent mockInput = mock(GenericGuildMessageEvent.class);
 //        Guild mockGuild = mock(Guild.class);
 //        when(mockGuild.getIdLong()).thenReturn(0L);

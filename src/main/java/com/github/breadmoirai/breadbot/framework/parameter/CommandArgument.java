@@ -16,7 +16,7 @@
 
 package com.github.breadmoirai.breadbot.framework.parameter;
 
-import com.github.breadmoirai.breadbot.framework.BreadBotClient;
+import com.github.breadmoirai.breadbot.framework.BreadBot;
 import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
 import com.github.breadmoirai.breadbot.util.Arguments;
 import com.github.breadmoirai.breadbot.util.Emoji;
@@ -56,7 +56,7 @@ public interface CommandArgument {
      *
      * @return a BreadBotClient
      */
-    default BreadBotClient getClient() {
+    default BreadBot getClient() {
         return getEvent().getClient();
     }
 

@@ -16,7 +16,7 @@
 
 package com.github.breadmoirai.breadbot.framework.event.internal;
 
-import com.github.breadmoirai.breadbot.framework.BreadBotClient;
+import com.github.breadmoirai.breadbot.framework.BreadBot;
 import com.github.breadmoirai.breadbot.framework.event.CommandEventFactory;
 import com.github.breadmoirai.breadbot.plugins.prefix.PrefixPlugin;
 import com.github.breadmoirai.breadbot.util.DiscordPatterns;
@@ -35,7 +35,7 @@ public class CommandEventFactoryImpl implements CommandEventFactory {
     }
 
     @Override
-    public CommandEventInternal createEvent(GenericGuildMessageEvent event, Message message, BreadBotClient client) {
+    public CommandEventInternal createEvent(GenericGuildMessageEvent event, Message message, BreadBot client) {
         String prefix = prefixModule.getPrefix(event.getGuild());
         String contentRaw = message.getContentRaw();
         final Matcher matcher = DiscordPatterns.USER_MENTION_PREFIX.matcher(contentRaw);
@@ -58,7 +58,7 @@ public class CommandEventFactoryImpl implements CommandEventFactory {
         return myId;
     }
 
-    private CommandEventInternal parseContent(GenericGuildMessageEvent event, Message message, BreadBotClient client, String prefix, String contentRaw) {
+    private CommandEventInternal parseContent(GenericGuildMessageEvent event, Message message, BreadBot client, String prefix, String contentRaw) {
         final String[] split = splitContent(contentRaw);
         final String key = split[0];
         final String content = split[1];

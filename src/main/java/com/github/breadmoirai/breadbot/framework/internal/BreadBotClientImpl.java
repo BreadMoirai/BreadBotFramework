@@ -16,7 +16,7 @@
 
 package com.github.breadmoirai.breadbot.framework.internal;
 
-import com.github.breadmoirai.breadbot.framework.BreadBotClient;
+import com.github.breadmoirai.breadbot.framework.BreadBot;
 import com.github.breadmoirai.breadbot.framework.CommandPlugin;
 import com.github.breadmoirai.breadbot.framework.command.Command;
 import com.github.breadmoirai.breadbot.framework.command.CommandEngine;
@@ -48,9 +48,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 
-public class BreadBotClientImpl implements BreadBotClient, EventListener {
+public class BreadBotClientImpl implements BreadBot, EventListener {
 
-    private static final Logger LOG = LoggerFactory.getLogger(BreadBotClient.class);
+    private static final Logger LOG = LoggerFactory.getLogger(BreadBot.class);
 
     private JDA jda;
 
@@ -178,12 +178,12 @@ public class BreadBotClientImpl implements BreadBotClient, EventListener {
     }
 
     @Override
-    public boolean hasModule(String pluginName) {
+    public boolean hasPlugin(String pluginName) {
         return pluginName != null && modules.stream().map(CommandPlugin::getName).anyMatch(pluginName::equalsIgnoreCase);
     }
 
     @Override
-    public boolean hasModule(Class<? extends CommandPlugin> pluginClass) {
+    public boolean hasPlugin(Class<? extends CommandPlugin> pluginClass) {
         return moduleTypeMap.containsKey(pluginClass);
     }
 
