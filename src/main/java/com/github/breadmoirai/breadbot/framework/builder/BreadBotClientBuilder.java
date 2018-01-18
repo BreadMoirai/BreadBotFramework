@@ -53,7 +53,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class BreadBotClientBuilder implements
-        BreadBotPluginBuilder,
+        CommandPluginBuilder,
         CommandHandleBuilderFactory,
         CommandParameterManagerBuilder,
         CommandResultManagerBuilder,
@@ -125,25 +125,25 @@ public class BreadBotClientBuilder implements
 
     @Override
     public BreadBotClientBuilder addStaticPrefix(String prefix) {
-        BreadBotPluginBuilder.super.addStaticPrefix(prefix);
+        CommandPluginBuilder.super.addStaticPrefix(prefix);
         return this;
     }
 
     @Override
     public BreadBotClientBuilder addOwnerPlugin(long... owners) {
-        BreadBotPluginBuilder.super.addOwnerPlugin(owners);
+        CommandPluginBuilder.super.addOwnerPlugin(owners);
         return this;
     }
 
     @Override
     public BreadBotClientBuilder addAdminPlugin() {
-        BreadBotPluginBuilder.super.addAdminPlugin();
+        CommandPluginBuilder.super.addAdminPlugin();
         return this;
     }
 
     @Override
     public BreadBotClientBuilder addAdminPlugin(Predicate<Member> isAdmin) {
-        BreadBotPluginBuilder.super.addAdminPlugin(isAdmin);
+        CommandPluginBuilder.super.addAdminPlugin(isAdmin);
         return this;
     }
 

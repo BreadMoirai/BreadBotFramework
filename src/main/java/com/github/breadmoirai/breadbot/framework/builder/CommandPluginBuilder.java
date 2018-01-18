@@ -29,7 +29,7 @@ import net.dv8tion.jda.core.utils.Checks;
 import java.util.Collection;
 import java.util.function.Predicate;
 
-public interface BreadBotPluginBuilder {
+public interface CommandPluginBuilder {
 
     /**
      * Adds a module and initializes it.
@@ -37,7 +37,7 @@ public interface BreadBotPluginBuilder {
      * @param module an instance of {@link CommandPlugin CommandModule}.
      * @return this
      */
-    BreadBotPluginBuilder addPlugin(CommandPlugin module);
+    CommandPluginBuilder addPlugin(CommandPlugin module);
 
     /**
      * Adds a collection of modules and initializes each one.
@@ -45,7 +45,7 @@ public interface BreadBotPluginBuilder {
      * @param modules a Collection of CommandModules. Should not contain any null elements.
      * @return this
      */
-    BreadBotPluginBuilder addPlugin(Collection<CommandPlugin> modules);
+    CommandPluginBuilder addPlugin(Collection<CommandPlugin> modules);
 
     /**
      * Checks whether there is a module present that is of the class provided or a subclass of it.
@@ -67,14 +67,14 @@ public interface BreadBotPluginBuilder {
      * This adds a module that implements {@link PrefixPlugin} to provide a static prefix that cannot be changed. If a {@link PrefixPlugin} is not added, one will be provided with a static prefix of {@code "!"}
      * <p>
      * <p>This method's implementation is:
-     * <pre><code> {@link BreadBotPluginBuilder#addPlugin(CommandPlugin) addModule}(new {@link UnmodifiablePrefixPlugin DefaultPrefixModule}(prefix)) </code></pre>
+     * <pre><code> {@link CommandPluginBuilder#addPlugin(CommandPlugin) addModule}(new {@link UnmodifiablePrefixPlugin DefaultPrefixModule}(prefix)) </code></pre>
      *
      * <p>You can define a different prefix implementation by providing an object to {@link BreadBotClientBuilder#addPlugin(CommandPlugin) addModule(ICommandModule)} that implements {@link PrefixPlugin IPrefixModule}
      *
      * @param prefix a string the defines a global prefix
      * @return this
      */
-    default BreadBotPluginBuilder addStaticPrefix(String prefix) {
+    default CommandPluginBuilder addStaticPrefix(String prefix) {
         return addPlugin(new UnmodifiablePrefixPlugin(prefix));
     }
 
@@ -95,7 +95,7 @@ public interface BreadBotPluginBuilder {
      *
      * @return this
      */
-    default BreadBotPluginBuilder addAdminPlugin() {
+    default CommandPluginBuilder addAdminPlugin() {
         return addPlugin(new AdminPluginImpl());
     }
 
@@ -108,7 +108,7 @@ public interface BreadBotPluginBuilder {
      * @param isAdmin a Predicate that can determine which members are Admins
      * @return this
      */
-    default BreadBotPluginBuilder addAdminPlugin(Predicate<Member> isAdmin) {
+    default CommandPluginBuilder addAdminPlugin(Predicate<Member> isAdmin) {
         Checks.notNull(isAdmin, "isAdmin");
         return addPlugin(new AdminPluginImpl(isAdmin));
     }
@@ -121,7 +121,7 @@ public interface BreadBotPluginBuilder {
      * @param owners the ids of the owners
      * @return this
      */
-    default BreadBotPluginBuilder addOwnerPlugin(long... owners) {
+    default CommandPluginBuilder addOwnerPlugin(long... owners) {
         if (owners.length == 0) {
             addPlugin(new ApplicationOwnerPlugin());
         } else {
