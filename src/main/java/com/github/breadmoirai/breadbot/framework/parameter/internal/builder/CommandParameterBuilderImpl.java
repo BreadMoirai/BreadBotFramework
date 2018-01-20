@@ -83,7 +83,7 @@ public class CommandParameterBuilderImpl implements CommandParameterBuilder {
             this.map = null;
         }
 
-        builder.applyPropertyModifiers(this);
+        builder.applyModifiers(this);
     }
 
     public Class<?> getGenericType() {

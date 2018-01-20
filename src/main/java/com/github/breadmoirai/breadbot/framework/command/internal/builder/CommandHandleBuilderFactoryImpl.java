@@ -243,7 +243,7 @@ public class CommandHandleBuilderFactoryImpl implements CommandHandleBuilderFact
                 method,
                 factory,
                 methodPorp);
-        clientBuilder.applyPropertyModifiers(builder);
+        clientBuilder.applyModifiers(builder);
         getSubCommands(commandObject, aClass, factory, defaultMap, supplierReturnType, supplier).forEach(builder::putCommandHandle);
         return builder;
     }
@@ -260,7 +260,7 @@ public class CommandHandleBuilderFactoryImpl implements CommandHandleBuilderFact
             CommandPropertyMapImpl map = new CommandPropertyMapImpl(propertyMap, method.getAnnotations());
             String[] keys = map.getProperty(Command.class).value();
             CommandHandleBuilderInternal handle = createHandleFromMethod(commandObject, commandClass, method, factory, map);
-            clientBuilder.applyPropertyModifiers(handle);
+            clientBuilder.applyModifiers(handle);
             builders.add(handle);
         }
 

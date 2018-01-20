@@ -20,7 +20,6 @@ import com.github.breadmoirai.breadbot.framework.BreadBot;
 import com.github.breadmoirai.breadbot.framework.CommandPlugin;
 import com.github.breadmoirai.breadbot.framework.command.Command;
 import com.github.breadmoirai.breadbot.framework.command.CommandEngine;
-import com.github.breadmoirai.breadbot.framework.command.CommandPropertiesManager;
 import com.github.breadmoirai.breadbot.framework.command.CommandResultManager;
 import com.github.breadmoirai.breadbot.framework.error.DuplicateCommandKeyException;
 import com.github.breadmoirai.breadbot.framework.event.CommandEventFactory;
@@ -67,7 +66,6 @@ public class BreadBotClientImpl implements BreadBot, EventListener {
     public BreadBotClientImpl(
             List<CommandPlugin> modules,
             List<Command> commands,
-            CommandPropertiesManager commandProperties,
             CommandResultManager resultManager,
             CommandParameterManager argumentTypes,
             CommandEventFactory eventFactory,

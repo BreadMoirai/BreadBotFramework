@@ -57,7 +57,7 @@ public class BreadBotBuilder implements
         CommandHandleBuilderFactory,
         CommandParameterManagerBuilder,
         CommandResultManagerBuilder,
-        CommandPropertiesBuilder {
+        CommandPropertiesManager {
 
 //    private static final Logger LOG = LoggerFactory.getLogger(BreadBotClientBuilder.class);
 
@@ -354,37 +354,34 @@ public class BreadBotBuilder implements
     }
 
     @Override
-    public <T> BreadBotBuilder putCommandModifier(Class<T> propertyType, BiConsumer<T, CommandHandleBuilder> configurator) {
-        Checks.notNull(configurator, "configurator");
-        commandProperties.putCommandModifier(propertyType, configurator);
+    public BreadBotBuilder clearCommandModifiers(Class<?> propertyType) {
+        commandProperties.clearCommandModifiers(propertyType);
+        return this;
+    }
+
+    @Override
+    public BreadBotBuilder clearParameterModifiers(Class<?> parameterType) {
+        commandProperties.clearParameterModifiers(parameterType);
         return this;
     }
 
     @Override
     public <T> BreadBotBuilder addCommandModifier(Class<T> propertyType, BiConsumer<T, CommandHandleBuilder> configurator) {
         Checks.notNull(configurator, "configurator");
-        commandProperties.appendCommandModifier(propertyType, configurator);
-        return this;
-    }
-
-    @Override
-    public <T> BreadBotBuilder putParameterModifier(Class<T> propertyType, BiConsumer<T, CommandParameterBuilder> configurator) {
-        Checks.notNull(configurator, "configurator");
-        commandProperties.putParameterModifier(propertyType, configurator);
+        commandProperties.addCommandModifier(propertyType, configurator);
         return this;
     }
 
     @Override
     public <T> BreadBotBuilder addParameterModifier(Class<T> propertyType, BiConsumer<T, CommandParameterBuilder> configurator) {
         Checks.notNull(configurator, "configurator");
-        commandProperties.appendParameterModifier(propertyType, configurator);
+        commandProperties.addParameterModifier(propertyType, configurator);
         return this;
     }
 
     @Override
-    public BreadBotBuilder applyPropertyModifiers(CommandHandleBuilder builder) {
+    public void applyModifiers(CommandHandleBuilder builder) {
         commandProperties.applyModifiers(builder);
-        return this;
     }
 
     @Override
@@ -393,15 +390,13 @@ public class BreadBotBuilder implements
     }
 
     @Override
-    public <T> BreadBotBuilder applyCommandModifier(Class<T> propertyType, CommandHandleBuilder builder) {
+    public <T> void applyCommandModifier(Class<T> propertyType, CommandHandleBuilder builder) {
         commandProperties.applyCommandModifier(propertyType, builder);
-        return this;
     }
 
     @Override
-    public BreadBotBuilder applyPropertyModifiers(CommandParameterBuilder builder) {
+    public void applyModifiers(CommandParameterBuilder builder) {
         commandProperties.applyModifiers(builder);
-        return this;
     }
 
     @Override
@@ -410,9 +405,8 @@ public class BreadBotBuilder implements
     }
 
     @Override
-    public <T> BreadBotBuilder applyParameterModifier(Class<T> propertyType, CommandParameterBuilder builder) {
+    public <T> void applyParameterModifier(Class<T> propertyType, CommandParameterBuilder builder) {
         commandProperties.applyParameterModifier(propertyType, builder);
-        return this;
     }
 
     @Override
@@ -560,6 +554,6 @@ public class BreadBotBuilder implements
             commandEventFactory = new CommandEventFactoryImpl(getPlugin(PrefixPlugin.class));
         final List<CommandHandleImpl> build = commandBuilders.stream().map(o -> o.build(null)).collect(Collectors.toList());
         commands.addAll(build);
-        return new BreadBotClientImpl(plugins, commands, commandProperties, resultManager, argumentTypes, commandEventFactory, preProcessPredicate, shouldEvaluateCommandOnMessageUpdate);
+        return new BreadBotClientImpl(plugins, commands, resultManager, argumentTypes, commandEventFactory, preProcessPredicate, shouldEvaluateCommandOnMessageUpdate);
     }
 }

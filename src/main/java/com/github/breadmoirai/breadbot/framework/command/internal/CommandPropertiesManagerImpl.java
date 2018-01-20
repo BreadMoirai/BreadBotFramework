@@ -18,10 +18,8 @@ package com.github.breadmoirai.breadbot.framework.command.internal;
 
 import com.github.breadmoirai.breadbot.framework.builder.CommandHandleBuilder;
 import com.github.breadmoirai.breadbot.framework.builder.CommandParameterBuilder;
+import com.github.breadmoirai.breadbot.framework.builder.CommandPropertiesManager;
 import com.github.breadmoirai.breadbot.framework.command.CommandPreprocessor;
-import com.github.breadmoirai.breadbot.framework.command.CommandPreprocessorFunction;
-import com.github.breadmoirai.breadbot.framework.command.CommandPreprocessorPredicate;
-import com.github.breadmoirai.breadbot.framework.command.CommandPropertiesManager;
 import com.github.breadmoirai.breadbot.framework.defaults.DefaultCommandProperties;
 
 import java.util.Arrays;
@@ -35,57 +33,68 @@ import java.util.function.Function;
 
 public class CommandPropertiesManagerImpl implements CommandPropertiesManager {
 
-    private List<String> preprocessorPriorityList = Collections.emptyList();
-
     private static Map<Package, CommandPropertyMapImpl> packageMap = new HashMap<>();
-
     private final Map<Class<?>, BiConsumer<?, CommandHandleBuilder>> commandPropertyMap = new HashMap<>();
     private final Map<Class<?>, BiConsumer<?, CommandParameterBuilder>> parameterPropertyMap = new HashMap<>();
+    private List<String> preprocessorPriorityList = Collections.emptyList();
 
     public CommandPropertiesManagerImpl() {
-        putCommandModifier(null, (o, b) -> {
-        });
-        putParameterModifier(null, (o, b) -> {
-        });
         new DefaultCommandProperties().initialize(this);
     }
 
-    @Override
-    public <T> void putCommandModifier(Class<T> propertyType, BiConsumer<T, CommandHandleBuilder> configurator) {
-        commandPropertyMap.put(propertyType, configurator);
-    }
-
-    @Override
-    public <T> void appendCommandModifier(Class<T> propertyType, BiConsumer<T, CommandHandleBuilder> configurator) {
-        @SuppressWarnings("unchecked") BiConsumer<Object, CommandHandleBuilder> c1 = (BiConsumer<Object, CommandHandleBuilder>) commandPropertyMap.get(propertyType);
-        if (c1 == null) {
-            putCommandModifier(propertyType, configurator);
-            return;
+    private static CommandPropertyMapImpl createPropertiesForPackage(Package p) {
+        final String name = p.getName();
+        final int i = name.lastIndexOf('.');
+        final CommandPropertyMapImpl map;
+        if (i != -1) {
+            final String parentPackageName = name.substring(0, i);
+            final Package aPackage = Package.getPackage(parentPackageName);
+            if (aPackage != null) {
+                map = new CommandPropertyMapImpl(getPP(aPackage), p.getAnnotations());
+            } else {
+                map = new CommandPropertyMapImpl(null, p.getAnnotations());
+            }
+        } else {
+            map = new CommandPropertyMapImpl(null, p.getAnnotations());
         }
-        @SuppressWarnings("unchecked") BiConsumer<Object, CommandHandleBuilder> c2 = (BiConsumer<Object, CommandHandleBuilder>) configurator;
-        commandPropertyMap.put(propertyType, (o, builder) -> {
-            c1.accept(o, builder);
-            c2.accept(o, builder);
-        });
+        return map;
+    }
+
+    public static CommandPropertyMapImpl getPP(Package p) {
+        if (p == null) return null;
+        return packageMap.computeIfAbsent(p, CommandPropertiesManagerImpl::createPropertiesForPackage);
     }
 
     @Override
-    public <T> void putParameterModifier(Class<T> propertyType, BiConsumer<T, CommandParameterBuilder> configurator) {
-        parameterPropertyMap.put(propertyType, configurator);
+    public CommandPropertiesManager clearCommandModifiers(Class<?> propertyType) {
+        commandPropertyMap.remove(propertyType);
+        return this;
     }
 
     @Override
-    public <T> void appendParameterModifier(Class<T> propertyType, BiConsumer<T, CommandParameterBuilder> configurator) {
-        @SuppressWarnings("unchecked") BiConsumer<Object, CommandParameterBuilder> c1 = (BiConsumer<Object, CommandParameterBuilder>) parameterPropertyMap.get(propertyType);
-        if (c1 == null) {
-            putParameterModifier(propertyType, configurator);
-            return;
-        }
-        @SuppressWarnings("unchecked") BiConsumer<Object, CommandParameterBuilder> c2 = (BiConsumer<Object, CommandParameterBuilder>) configurator;
-        parameterPropertyMap.put(propertyType, (o, builder) -> {
-            c1.accept(o, builder);
-            c2.accept(o, builder);
+    public <T> CommandPropertiesManager addCommandModifier(Class<T> propertyType, BiConsumer<T, CommandHandleBuilder> configurator) {
+        commandPropertyMap.merge(propertyType, configurator, (c1, c2) -> {
+            @SuppressWarnings("unchecked") final BiConsumer<T, CommandHandleBuilder> cc1 = (BiConsumer<T, CommandHandleBuilder>) c1;
+            @SuppressWarnings("unchecked") final BiConsumer<T, CommandHandleBuilder> cc2 = (BiConsumer<T, CommandHandleBuilder>) c2;
+            return cc1.andThen(cc2);
         });
+        return this;
+    }
+
+    @Override
+    public CommandPropertiesManager clearParameterModifiers(Class<?> parameterType) {
+        parameterPropertyMap.remove(parameterType);
+        return this;
+    }
+
+    @Override
+    public <T> CommandPropertiesManager addParameterModifier(Class<T> propertyType, BiConsumer<T, CommandParameterBuilder> configurator) {
+        parameterPropertyMap.merge(propertyType, configurator, (c1, c2) -> {
+            @SuppressWarnings("unchecked") final BiConsumer<T, CommandParameterBuilder> cc1 = (BiConsumer<T, CommandParameterBuilder>) c1;
+            @SuppressWarnings("unchecked") final BiConsumer<T, CommandParameterBuilder> cc2 = (BiConsumer<T, CommandParameterBuilder>) c2;
+            return cc1.andThen(cc2);
+        });
+        return this;
     }
 
     @Override
@@ -132,29 +141,8 @@ public class CommandPropertiesManagerImpl implements CommandPropertiesManager {
         commandModifier.accept(property, builder);
     }
 
-
     private <T> void associatePreprocessor(Class<T> propertyType, Function<T, CommandPreprocessor> factory) {
-        appendCommandModifier(propertyType, (t, commandHandleBuilder) -> commandHandleBuilder.addPreprocessor(factory.apply(t)));
-    }
-
-    @Override
-    public <T> void associatePreprocessorFactory(String identifier, Class<T> propertyType, Function<T, CommandPreprocessorFunction> factory) {
-        associatePreprocessor(propertyType, o -> new CommandPreprocessor(identifier, factory.apply(o)));
-    }
-
-    @Override
-    public <T> void associatePreprocessorPredicateFactory(String identifier, Class<T> propertyType, Function<T, CommandPreprocessorPredicate> factory) {
-        associatePreprocessor(propertyType, o -> new CommandPreprocessor(identifier, factory.apply(o)));
-    }
-
-    @Override
-    public void associatePreprocessor(String identifier, Class<?> propertyType, CommandPreprocessorFunction function) {
-        associatePreprocessor(propertyType, o -> new CommandPreprocessor(identifier, function));
-    }
-
-    @Override
-    public void associatePreprocessorPredicate(String identifier, Class<?> propertyType, CommandPreprocessorPredicate predicate) {
-        associatePreprocessor(propertyType, o -> new CommandPreprocessor(identifier, predicate));
+        addCommandModifier(propertyType, (t, commandHandleBuilder) -> commandHandleBuilder.addPreprocessor(factory.apply(t)));
     }
 
     @Override
@@ -162,38 +150,16 @@ public class CommandPropertiesManagerImpl implements CommandPropertiesManager {
         return preprocessorPriorityList;
     }
 
-
     @Override
-    public void setPreprocessorPriority(String... identifiers) {
+    public CommandPropertiesManagerImpl setPreprocessorPriority(String... identifiers) {
         preprocessorPriorityList = Arrays.asList(identifiers);
+        return this;
     }
 
     @Override
-    public void setPreprocessorPriority(List<String> identifierList) {
+    public CommandPropertiesManagerImpl setPreprocessorPriority(List<String> identifierList) {
         preprocessorPriorityList = identifierList;
-    }
-
-    private static CommandPropertyMapImpl createPropertiesForPackage(Package p) {
-        final String name = p.getName();
-        final int i = name.lastIndexOf('.');
-        final CommandPropertyMapImpl map;
-        if (i != -1) {
-            final String parentPackageName = name.substring(0, i);
-            final Package aPackage = Package.getPackage(parentPackageName);
-            if (aPackage != null) {
-                map = new CommandPropertyMapImpl(getPP(aPackage), p.getAnnotations());
-            } else {
-                map = new CommandPropertyMapImpl(null, p.getAnnotations());
-            }
-        } else {
-            map = new CommandPropertyMapImpl(null, p.getAnnotations());
-        }
-        return map;
-    }
-
-    public static CommandPropertyMapImpl getPP(Package p) {
-        if (p == null) return null;
-        return packageMap.computeIfAbsent(p, CommandPropertiesManagerImpl::createPropertiesForPackage);
+        return this;
     }
 
     private int getPriority(String identifier, List<String> list) {
