@@ -380,7 +380,7 @@ public class BreadBotBuilder implements
             final T property = commandBuilder.getProperty(propertyType);
             configurator.accept(property, commandBuilder);
         }
-        for (CommandHandleBuilder c : commandBuilder.getSubCommands()) {
+        for (CommandHandleBuilder c : commandBuilder.getChildren()) {
             applyCommandModifierRecursive(propertyType, configurator, c);
         }
     }
@@ -402,7 +402,7 @@ public class BreadBotBuilder implements
                 configurator.accept(t, parameterBuilder);
             }
         }
-        for (CommandHandleBuilder commandHandleBuilder : commandBuilder.getSubCommands()) {
+        for (CommandHandleBuilder commandHandleBuilder : commandBuilder.getChildren()) {
             applyParameterModifierRecursive(propertyType, configurator, commandBuilder);
         }
     }
@@ -503,7 +503,21 @@ public class BreadBotBuilder implements
     @Override
     public BreadBotBuilder addTypeModifier(Class<?> parameterType, Consumer<CommandParameterBuilder> modifier) {
         argumentTypes.addTypeModifier(parameterType, modifier);
+        for (CommandHandleBuilderInternal commandBuilder : commandBuilders) {
+            applyTypeModifierRecursive(commandBuilder, parameterType, modifier);
+        }
         return this;
+    }
+
+    private void applyTypeModifierRecursive(CommandHandleBuilder commandBuilder, Class<?> parameterType, Consumer<CommandParameterBuilder> modifier) {
+        for (CommandParameterBuilder commandParameterBuilder : commandBuilder.getParameters()) {
+            if (commandParameterBuilder.getDeclaringParameter().getType() == parameterType) {
+                modifier.accept(commandParameterBuilder);
+            }
+        }
+        for (CommandHandleBuilder subCommand : commandBuilder.getChildren()) {
+            applyTypeModifierRecursive(subCommand, parameterType, modifier);
+        }
     }
 
     @Override

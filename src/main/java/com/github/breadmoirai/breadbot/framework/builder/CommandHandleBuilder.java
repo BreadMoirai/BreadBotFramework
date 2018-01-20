@@ -49,8 +49,8 @@ public interface CommandHandleBuilder extends CommandHandleBuilderFactory {
      * @return The CommandHandleBuilder of the sub command.
      * @throws NoSuchCommandException when the subcommand is not found
      */
-    default CommandHandleBuilder getSubCommand(String commandName) {
-        return getSubCommands().stream().filter(commandHandleBuilder -> commandHandleBuilder.getName().equals(commandName)).findAny().orElseThrow(() -> new NoSuchCommandException("A subcommand by the name of " + commandName + " was not found"));
+    default CommandHandleBuilder getChild(String commandName) {
+        return getChildren().stream().filter(commandHandleBuilder -> commandHandleBuilder.getName().equals(commandName)).findAny().orElseThrow(() -> new NoSuchCommandException("A subcommand by the name of " + commandName + " was not found"));
     }
 
     /**
@@ -61,13 +61,13 @@ public interface CommandHandleBuilder extends CommandHandleBuilderFactory {
      * @return this
      * @throws NoSuchCommandException when the subcommand is not found
      */
-    default CommandHandleBuilder configureSubCommand(String commandName, Consumer<CommandHandleBuilder> configurator) {
-        CommandHandleBuilder builder = getSubCommands().stream().filter(commandHandleBuilder -> commandHandleBuilder.getName().equals(commandName)).findAny().orElseThrow(() -> new NoSuchCommandException("A subcommand by the name of " + commandName + " was not found"));
+    default CommandHandleBuilder configureChild(String commandName, Consumer<CommandHandleBuilder> configurator) {
+        CommandHandleBuilder builder = getChildren().stream().filter(commandHandleBuilder -> commandHandleBuilder.getName().equals(commandName)).findAny().orElseThrow(() -> new NoSuchCommandException("A subcommand by the name of " + commandName + " was not found"));
         configurator.accept(builder);
         return this;
     }
 
-    List<CommandHandleBuilder> getSubCommands();
+    List<CommandHandleBuilder> getChildren();
 
     boolean hasProperty(Class<?> propertyType);
 

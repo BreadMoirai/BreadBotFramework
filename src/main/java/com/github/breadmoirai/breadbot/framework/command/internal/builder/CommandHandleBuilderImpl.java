@@ -219,7 +219,7 @@ public class CommandHandleBuilderImpl implements CommandHandleBuilderInternal {
     }
 
     @Override
-    public List<CommandHandleBuilder> getSubCommands() {
+    public List<CommandHandleBuilder> getChildren() {
         return Collections.unmodifiableList(subCommands);
     }
 
