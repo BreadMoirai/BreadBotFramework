@@ -56,7 +56,7 @@ public class CommandPropertyMapImpl implements CommandPropertyMap {
 
     @Override
     public boolean hasProperty(Class<?> propertyType) {
-        return properties.containsKey(propertyType);
+        return propertyType == null || properties.containsKey(propertyType);
     }
 
     @Override

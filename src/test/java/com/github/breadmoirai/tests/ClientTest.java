@@ -48,6 +48,7 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 public class ClientTest {
@@ -301,6 +302,13 @@ public class ClientTest {
         assertResponse("!test", "am abstract");
     }
 
+    @Test
+    public void retroactiveModifierTest() {
+        setupBread(bread -> bread.addCommand(PingCommand::new)
+                .addCommandModifier(null, (o, c) -> c.addPreprocessorFunction("sniper", (commandObj, targetHandle, event, processorStack) -> event.reply("bang!"))));
+        assertResponse("!ping", "bang!");
+    }
+
     private void setupBread(Consumer<BreadBotBuilder> config) {
         BreadBotBuilder builder = new BreadBotBuilder();
         config.accept(builder);
@@ -319,10 +327,11 @@ public class ClientTest {
 
         client.getCommandEngine().handle(spy);
 
-        if (expected != null)
-            verify(spy).reply(expected);
-        else
+        if (expected != null) {
+            verify(spy, times(1)).reply(expected);
+        } else {
             verify(spy, never()).reply(anyString());
+        }
     }
 
 

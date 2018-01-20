@@ -23,10 +23,17 @@ import java.util.function.Predicate;
 
 public interface CommandPropertyMap extends Iterable<Object> {
 
+    /**
+     * Checks if a property of the specified type exists.
+     * If {@code propertyType} is {@code null}, {@code true} is returned.
+     *
+     * @param propertyType the class of the property.
+     * @return {@code true} if it is present, {@code false} otherwise.
+     */
     boolean hasProperty(Class<?> propertyType);
 
     /**
-     * Retrieves the property of the passed {@link Class}. If this obj does not contain a mapping, it will attempt to provide a value from it's defaultPropertyMap
+     * Retrieves the property of the specified type.
      *
      * @param propertyType a class
      * @param <T>          the type
@@ -35,7 +42,8 @@ public interface CommandPropertyMap extends Iterable<Object> {
     <T> T getProperty(Class<T> propertyType);
 
     /**
-     * Checks the provided {@link Predicate} against the property type if it exists, returning the result if it does, and {@code false} if it doesn't.
+     * Checks the provided {@link Predicate} against the property type if it exists,
+     * returning the result if it does, and {@code false} if it doesn't.
      *
      * @param propertyType the property class
      * @param test         the predicate to test the property.
