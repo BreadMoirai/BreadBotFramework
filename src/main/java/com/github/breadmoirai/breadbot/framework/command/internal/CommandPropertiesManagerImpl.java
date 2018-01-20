@@ -115,8 +115,10 @@ public class CommandPropertiesManagerImpl implements CommandPropertiesManager {
     @Override
     public <T> void applyCommandModifier(Class<T> propertyType, CommandHandleBuilder builder) {
         BiConsumer<T, CommandHandleBuilder> commandModifier = getCommandModifier(propertyType);
-        T property = builder.getProperty(propertyType);
-        commandModifier.accept(property, builder);
+        if (commandModifier != null) {
+            T property = builder.getProperty(propertyType);
+            commandModifier.accept(property, builder);
+        }
     }
 
     @Override
@@ -130,15 +132,18 @@ public class CommandPropertiesManagerImpl implements CommandPropertiesManager {
     @Override
     public <T> BiConsumer<T, CommandParameterBuilder> getParameterModifier(Class<T> propertyType) {
         BiConsumer<?, CommandParameterBuilder> biConsumer = parameterPropertyMap.get(propertyType);
-        @SuppressWarnings("unchecked") BiConsumer<T, CommandParameterBuilder> consumer = (BiConsumer<T, CommandParameterBuilder>) biConsumer;
+        @SuppressWarnings("unchecked")
+        BiConsumer<T, CommandParameterBuilder> consumer = (BiConsumer<T, CommandParameterBuilder>) biConsumer;
         return consumer;
     }
 
     @Override
     public <T> void applyParameterModifier(Class<T> propertyType, CommandParameterBuilder builder) {
         BiConsumer<T, CommandParameterBuilder> commandModifier = getParameterModifier(propertyType);
-        T property = builder.getProperty(propertyType);
-        commandModifier.accept(property, builder);
+        if (commandModifier != null) {
+            T property = builder.getProperty(propertyType);
+            commandModifier.accept(property, builder);
+        }
     }
 
     private <T> void associatePreprocessor(Class<T> propertyType, Function<T, CommandPreprocessor> factory) {
