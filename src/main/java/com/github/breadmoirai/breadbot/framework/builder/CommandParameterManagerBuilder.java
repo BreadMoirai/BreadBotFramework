@@ -32,6 +32,9 @@ public interface CommandParameterManagerBuilder extends CommandParameterManager 
      */
     <T> CommandParameterManagerBuilder putTypeParser(Class<T> type, TypeParser<T> parser);
 
+
+    CommandParameterManagerBuilder clearTypeModifiers(Class<?> parameterType);
+
     /**
      * Assigns a Consumer to modify all parameters with the specified type.
      * This is done before any property modifiers are applied.
@@ -40,7 +43,5 @@ public interface CommandParameterManagerBuilder extends CommandParameterManager 
      * @param modifier      a Consumer that takes the ParameterBuilder as its argument
      * @return this
      */
-    CommandParameterManagerBuilder putTypeModifier(Class<?> parameterType, Consumer<CommandParameterBuilder> modifier);
-
     CommandParameterManagerBuilder addTypeModifier(Class<?> parameterType, Consumer<CommandParameterBuilder> modifier);
 }

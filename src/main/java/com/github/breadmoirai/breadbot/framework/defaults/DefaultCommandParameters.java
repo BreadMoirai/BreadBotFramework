@@ -177,35 +177,35 @@ public class DefaultCommandParameters {
     }
 
     private void putParameterTypeModifiers(CommandParameterTypeManagerImpl map) {
-        map.putTypeModifier(List.class, p -> {
+        map.addTypeModifier(List.class, p -> {
             final CommandParameterBuilderImpl pc = (CommandParameterBuilderImpl) p;
             final Class<?> genericType = pc.getGenericType();
             CollectionTypes.setParserToGenericList(genericType, pc);
         });
 
-        map.putTypeModifier(Deque.class, p -> {
+        map.addTypeModifier(Deque.class, p -> {
             final CommandParameterBuilderImpl pc = (CommandParameterBuilderImpl) p;
             final Class<?> genericType = pc.getGenericType();
             CollectionTypes.setParserToGenericDeque(genericType, pc);
         });
 
-        map.putTypeModifier(Stream.class, p -> {
+        map.addTypeModifier(Stream.class, p -> {
             final CommandParameterBuilderImpl pc = (CommandParameterBuilderImpl) p;
             final Class<?> genericType = pc.getGenericType();
             CollectionTypes.setParserToGenericStream(genericType, pc);
         });
 
-        map.putTypeModifier(IntStream.class, builder -> CollectionTypes.setParserToIntStream(((CommandParameterBuilderImpl) builder)));
-        map.putTypeModifier(LongStream.class, builder -> CollectionTypes.setParserToLongStream(((CommandParameterBuilderImpl) builder)));
-        map.putTypeModifier(DoubleStream.class, builder -> CollectionTypes.setParserToDoubleStream(((CommandParameterBuilderImpl) builder)));
+        map.addTypeModifier(IntStream.class, builder -> CollectionTypes.setParserToIntStream(((CommandParameterBuilderImpl) builder)));
+        map.addTypeModifier(LongStream.class, builder -> CollectionTypes.setParserToLongStream(((CommandParameterBuilderImpl) builder)));
+        map.addTypeModifier(DoubleStream.class, builder -> CollectionTypes.setParserToDoubleStream(((CommandParameterBuilderImpl) builder)));
 
-        map.putTypeModifier(CommandEvent.class, p -> p.setParser((parameter, list, parser) -> parser.getEvent()));
+        map.addTypeModifier(CommandEvent.class, p -> p.setParser((parameter, list, parser) -> parser.getEvent()));
 
-        map.putTypeModifier(Message.class, p -> p.setParser((parameter, list, parser) -> parser.getEvent().getMessage()));
-        map.putTypeModifier(Guild.class, p -> p.setParser((parameter, list, parser) -> parser.getEvent().getGuild()));
-        map.putTypeModifier(TextChannel.class, p -> p.setParser((parameter, list, parser) -> parser.getEvent().getChannel()));
-        map.putTypeModifier(MessageChannel.class, p -> p.setParser((parameter, list, parser) -> parser.getEvent().getChannel()));
-        map.putTypeModifier(Message.Attachment.class, p -> p.setParser((parameter, list, parser) -> parser.getEvent().getMessage().getAttachments().stream().findFirst().orElse(null)));
+        map.addTypeModifier(Message.class, p -> p.setParser((parameter, list, parser) -> parser.getEvent().getMessage()));
+        map.addTypeModifier(Guild.class, p -> p.setParser((parameter, list, parser) -> parser.getEvent().getGuild()));
+        map.addTypeModifier(TextChannel.class, p -> p.setParser((parameter, list, parser) -> parser.getEvent().getChannel()));
+        map.addTypeModifier(MessageChannel.class, p -> p.setParser((parameter, list, parser) -> parser.getEvent().getChannel()));
+        map.addTypeModifier(Message.Attachment.class, p -> p.setParser((parameter, list, parser) -> parser.getEvent().getMessage().getAttachments().stream().findFirst().orElse(null)));
     }
 
 }

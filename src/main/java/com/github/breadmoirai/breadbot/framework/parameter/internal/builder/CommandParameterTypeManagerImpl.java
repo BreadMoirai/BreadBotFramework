@@ -60,8 +60,8 @@ public final class CommandParameterTypeManagerImpl implements CommandParameterMa
     }
 
     @Override
-    public CommandParameterManagerBuilder putTypeModifier(Class<?> parameterType, Consumer<CommandParameterBuilder> modifier) {
-        map2.put(parameterType, modifier);
+    public CommandParameterManagerBuilder clearTypeModifiers(Class<?> parameterType) {
+        map2.remove(parameterType);
         return this;
     }
 

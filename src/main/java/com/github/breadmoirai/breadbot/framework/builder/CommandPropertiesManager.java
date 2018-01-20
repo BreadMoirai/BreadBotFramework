@@ -38,7 +38,9 @@ public interface CommandPropertiesManager {
 
     /**
      * The provided {@code configurator} is used to modify commands that possess the specified property.
-     * If there is an existing modifier, the passed BiConsumer is appended to the end of it so that it is applied to the builder after the existing one has been applied.
+     * This behavior is added onto any existing behavior.
+     * When a command is registered with that property (usually an annotation), the provided {@code configurator} is applied.
+     * If there are already commands registered, the {@code configurator} is applied to those as well.
      *
      * @param propertyType the class of the property
      * @param configurator a {@link BiConsumer BiConsumer}.
@@ -58,7 +60,9 @@ public interface CommandPropertiesManager {
 
     /**
      * The provided {@code configurator} is used to modify commands that possess the specified property.
-     * If there is an existing modifier, the passed BiConsumer is appended to the end of it so that it is applied to the builder after the existing one has been applied.
+     * This behavior is added onto any existing behavior.
+     * When a parameter of the provided {@code propertyType} is found, the provided {@code configurator} is applied.
+     * If there are already parameters of that type registered, the {@code configurator} is applied to those as well.
      *
      * @param propertyType the class of the property
      * @param configurator a {@link BiConsumer BiConsumer}.
