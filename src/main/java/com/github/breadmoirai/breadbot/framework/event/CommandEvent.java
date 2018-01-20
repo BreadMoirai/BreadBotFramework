@@ -23,10 +23,12 @@ import com.github.breadmoirai.breadbot.framework.parameter.CommandArgumentList;
 import com.github.breadmoirai.breadbot.framework.response.RestActionExtension;
 import com.github.breadmoirai.breadbot.framework.response.internal.CommandResponseMessage;
 import com.github.breadmoirai.breadbot.util.DiscordPatterns;
+import com.github.breadmoirai.breadbot.util.MissingPermission;
 import net.dv8tion.jda.client.entities.Group;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Category;
+import net.dv8tion.jda.core.entities.Channel;
 import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.Emote;
 import net.dv8tion.jda.core.entities.Guild;
@@ -345,20 +347,34 @@ public abstract class CommandEvent extends Event {
         return PermissionUtil.checkPermission(getChannel(), getSelfMember(), permission);
     }
 
-//    /**
-//     * Checks to see if the bot has the permissions required. If the permissions required are not found, the user is notified with a {@link com.github.breadmoirai.breadbot.util.MissingPermissionResponse}.
-//     *
-//     * @param permission any permissions required.
-//     *
-//     * @return {@code true} if the bot has the permissions required. {@code false} otherwise.
-//     */
-//    public boolean requirePermission(Permission... permission) {
-//        if (!checkPermission(permission)) {
-//            getClient().getResponseManager().acceptResponse(new CommandResponsePacketImpl(this, new MissingPermissionResponse(this, permission), getChannel()));
-//            return false;
-//        }
-//        return true;
-//    }
+    /**
+     * Checks to see if the bot has the permissions required.
+     * If the permissions required are not found, the user is notified with a message and this method returns {@code true}.
+     * If the required permissions are present, this method returns {@code false}.
+     *
+     * @param permission the permissions required.
+     * @return {@code false} if the bot has the permissions required. {@code true} otherwise.
+     */
+    public boolean requirePermission(Permission... permission) {
+        return requirePermission(getChannel(), permission);
+    }
+
+    /**
+     * Checks to see if the bot has the permissions required.
+     * If the permissions required are not found, the user is notified with a message and this method returns {@code true}.
+     * If the required permissions are present, this method returns {@code false}.
+     *
+     * @param channel    the channel for which to check permissions on
+     * @param permission the permissions required.
+     * @return {@code false} if the bot has the permissions required. {@code true} otherwise.
+     */
+    public boolean requirePermission(Channel channel, Permission... permission) {
+        if (!checkPermission(permission)) {
+            reply(MissingPermission.buildResponse(getSelfMember(), channel, getChannel(), permission));
+            return true;
+        }
+        return false;
+    }
 
     public boolean isHelpEvent() {
         return isHelpEvent;
