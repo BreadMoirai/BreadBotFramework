@@ -46,12 +46,16 @@ public class EventWaiter implements EventListener {
         return new EventActionBuilderImpl<>(eventClass, this);
     }
 
+    public CommandEventActionBuilderImpl<Void> waitForCommand() {
+        return new CommandEventActionBuilderImpl<>(this);
+    }
+
     void addAction(Class<? extends Event> eventClass, EventAction action) {
         getActions(eventClass).add(action);
     }
 
-    boolean removeAction(Class<? extends Event> eventClass, EventAction action) {
-        return getActions(eventClass).remove(action);
+    void removeAction(Class<? extends Event> eventClass, EventAction action) {
+        getActions(eventClass).remove(action);
     }
 
     ScheduledFuture<?> schedule(Runnable command, long delay, TimeUnit unit) {

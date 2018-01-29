@@ -96,15 +96,79 @@ public class EventActionBuilderImpl<E extends Event, V> implements EventActionBu
         return null;
     }
 
+    public Class<E> getEventClass() {
+        return eventClass;
+    }
+
+    public EventWaiter getEventWaiter() {
+        return eventWaiter;
+    }
+
+    public Predicate<E> getCondition() {
+        return condition;
+    }
+
+    public void setCondition(Predicate<E> condition) {
+        this.condition = condition;
+    }
+
+    public Consumer<E> getAction() {
+        return action;
+    }
+
+    public void setAction(Consumer<E> action) {
+        this.action = action;
+    }
+
+    public ObjectIntPredicate<E> getStopper() {
+        return stopper;
+    }
+
+    public void setStopper(ObjectIntPredicate<E> stopper) {
+        this.stopper = stopper;
+    }
+
+    public Function<E, V> getFinisher() {
+        return finisher;
+    }
+
+    public void setFinisher(Function<E, V> finisher) {
+        this.finisher = finisher;
+    }
+
+    public long getTimeout() {
+        return timeout;
+    }
+
+    public void setTimeout(long timeout) {
+        this.timeout = timeout;
+    }
+
+    public TimeUnit getUnit() {
+        return unit;
+    }
+
+    public void setUnit(TimeUnit unit) {
+        this.unit = unit;
+    }
+
+    public Runnable getTimeoutAction() {
+        return timeoutAction;
+    }
+
+    public void setTimeoutAction(Runnable timeoutAction) {
+        this.timeoutAction = timeoutAction;
+    }
+
     private <R> EventActionBuilderImpl<E, R> cloneWithFinisher(Function<E, R> finisher) {
         final EventActionBuilderImpl<E, R> c = new EventActionBuilderImpl<>(eventClass, eventWaiter);
-        c.condition = this.condition;
-        c.action = this.action;
-        c.stopper = this.stopper;
-        c.finisher = finisher;
-        c.timeout = this.timeout;
-        c.unit = this.unit;
-        c.timeoutAction = this.timeoutAction;
+        c.setCondition(condition);
+        c.setAction(action);
+        c.setStopper(stopper);
+        c.setFinisher(finisher);
+        c.setTimeout(timeout);
+        c.setUnit(unit);
+        c.setTimeoutAction(timeoutAction);
         return c;
     }
 }
