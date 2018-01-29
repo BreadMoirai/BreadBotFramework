@@ -43,7 +43,7 @@ public class CommandResultManagerImpl implements CommandResultManager, CommandRe
     }
 
     @Override
-    public <T> CommandResultManagerBuilder registerResultHandler(Class<T> resultType, CommandResultHandler<T> handler) {
+    public <T> CommandResultManagerBuilder bindResultHandler(Class<T> resultType, CommandResultHandler<T> handler) {
         map.put(resultType, handler);
         return this;
     }

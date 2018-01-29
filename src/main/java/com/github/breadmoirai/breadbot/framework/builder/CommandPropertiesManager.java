@@ -48,7 +48,7 @@ public interface CommandPropertiesManager {
      *                     The second argument is the {@link CommandHandleBuilder CommandHandleBuilder} the property is attached to.
      * @param <T>          the propertyType
      */
-    <T> CommandPropertiesManager addCommandModifier(Class<T> propertyType, BiConsumer<T, CommandHandleBuilder> configurator);
+    <T> CommandPropertiesManager bindCommandModifier(Class<T> propertyType, BiConsumer<T, CommandHandleBuilder> configurator);
 
     /**
      * Removes any existing behavior attached to this parameter.
@@ -70,7 +70,7 @@ public interface CommandPropertiesManager {
      *                     The second argument is the {@link CommandHandleBuilder CommandHandleBuilder} the property is attached to.
      * @param <T>          the propertyType
      */
-    <T> CommandPropertiesManager addParameterModifier(Class<T> propertyType, BiConsumer<T, CommandParameterBuilder> configurator);
+    <T> CommandPropertiesManager bindParameterModifier(Class<T> propertyType, BiConsumer<T, CommandParameterBuilder> configurator);
 
     /**
      * Applies modifiers to a CommandHandleBuilder based on whether the handle contains a property.
@@ -86,7 +86,7 @@ public interface CommandPropertiesManager {
      * @param <T>          the property type.
      * @return a BiConsumer if present, otherwise {@code null}.
      * @see #clearCommandModifiers(Class)
-     * @see #addCommandModifier(Class, BiConsumer)
+     * @see #bindCommandModifier(Class, BiConsumer)
      * @see #applyCommandModifier(Class, CommandHandleBuilder)
      */
     <T> BiConsumer<T, CommandHandleBuilder> getCommandModifier(Class<T> propertyType);
@@ -100,7 +100,7 @@ public interface CommandPropertiesManager {
      * @param builder      the CommandHandleBuilder to be modified
      * @param <T>          the property type
      * @see #clearCommandModifiers(Class) (Class)
-     * @see #addCommandModifier(Class, BiConsumer)
+     * @see #bindCommandModifier(Class, BiConsumer)
      * @see #getCommandModifier(Class)
      */
     <T> void applyCommandModifier(Class<T> propertyType, CommandHandleBuilder builder);
@@ -119,7 +119,7 @@ public interface CommandPropertiesManager {
      * @param <T>          the property type.
      * @return a BiConsumer if present, otherwise {@code null}.
      * @see #clearParameterModifiers(Class)
-     * @see #addParameterModifier(Class, BiConsumer)
+     * @see #bindParameterModifier(Class, BiConsumer)
      * @see #applyParameterModifier(Class, CommandParameterBuilder)
      */
     <T> BiConsumer<T, CommandParameterBuilder> getParameterModifier(Class<T> propertyType);
@@ -132,7 +132,7 @@ public interface CommandPropertiesManager {
      * @param builder      the CommandHandleBuilder to be modified
      * @param <T>          the property type
      * @see #clearParameterModifiers(Class) (Class, BiConsumer)
-     * @see #addParameterModifier(Class, BiConsumer)
+     * @see #bindParameterModifier(Class, BiConsumer)
      * @see #getParameterModifier(Class)
      */
     <T> void applyParameterModifier(Class<T> propertyType, CommandParameterBuilder builder);
@@ -144,8 +144,8 @@ public interface CommandPropertiesManager {
      * @param propertyType the property class
      * @param function     a {@link CommandPreprocessorFunction#process CommandPreprocessorFunction}
      */
-    default CommandPropertiesManager associatePreprocessor(String identifier, Class<?> propertyType, CommandPreprocessorFunction function) {
-        addCommandModifier(propertyType, (t, commandHandleBuilder) -> commandHandleBuilder.addPreprocessor(new CommandPreprocessor(identifier, function)));
+    default CommandPropertiesManager bindPreprocessor(String identifier, Class<?> propertyType, CommandPreprocessorFunction function) {
+        bindCommandModifier(propertyType, (t, commandHandleBuilder) -> commandHandleBuilder.addPreprocessor(new CommandPreprocessor(identifier, function)));
         return this;
     }
 
@@ -157,8 +157,8 @@ public interface CommandPropertiesManager {
      * @param factory      a function that generates a preprocessor based upon the value of the property
      * @param <T>          the property type
      */
-    default <T> CommandPropertiesManager associatePreprocessorFactory(String identifier, Class<T> propertyType, Function<T, CommandPreprocessorFunction> factory) {
-        addCommandModifier(propertyType, (t, commandHandleBuilder) -> commandHandleBuilder.addPreprocessor(new CommandPreprocessor(identifier, factory.apply(t))));
+    default <T> CommandPropertiesManager bindPreprocessorFactory(String identifier, Class<T> propertyType, Function<T, CommandPreprocessorFunction> factory) {
+        bindCommandModifier(propertyType, (t, commandHandleBuilder) -> commandHandleBuilder.addPreprocessor(new CommandPreprocessor(identifier, factory.apply(t))));
         return this;
     }
 
@@ -169,8 +169,8 @@ public interface CommandPropertiesManager {
      * @param propertyType the property class
      * @param predicate    a {@link java.util.function.Predicate Predicate}{@literal <}{@link CommandEvent CommandEvent}{@literal >} that returns {@code true} when the command should continue to execute, {@code false} otherwise
      */
-    default CommandPropertiesManager associatePreprocessorPredicate(String identifier, Class<?> propertyType, CommandPreprocessorPredicate predicate) {
-        addCommandModifier(propertyType, (t, commandHandleBuilder) -> commandHandleBuilder.addPreprocessor(new CommandPreprocessor(identifier, predicate)));
+    default CommandPropertiesManager bindPreprocessorPredicate(String identifier, Class<?> propertyType, CommandPreprocessorPredicate predicate) {
+        bindCommandModifier(propertyType, (t, commandHandleBuilder) -> commandHandleBuilder.addPreprocessor(new CommandPreprocessor(identifier, predicate)));
         return this;
     }
 
@@ -182,8 +182,8 @@ public interface CommandPropertiesManager {
      * @param factory      a function that generates a preprocessor predicate based upon the value of the property
      * @param <T>          the property type
      */
-    default <T> CommandPropertiesManager associatePreprocessorPredicateFactory(String identifier, Class<T> propertyType, Function<T, CommandPreprocessorPredicate> factory) {
-        addCommandModifier(propertyType, (t, commandHandleBuilder) -> commandHandleBuilder.addPreprocessor(new CommandPreprocessor(identifier, factory.apply(t))));
+    default <T> CommandPropertiesManager bindPreprocessorPredicateFactory(String identifier, Class<T> propertyType, Function<T, CommandPreprocessorPredicate> factory) {
+        bindCommandModifier(propertyType, (t, commandHandleBuilder) -> commandHandleBuilder.addPreprocessor(new CommandPreprocessor(identifier, factory.apply(t))));
         return this;
     }
 

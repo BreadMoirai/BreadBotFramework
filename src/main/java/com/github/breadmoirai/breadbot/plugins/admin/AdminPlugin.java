@@ -31,7 +31,7 @@ public interface AdminPlugin extends CommandPlugin {
 
     @Override
     default void initialize(BreadBotBuilder builder) {
-        builder.associatePreprocessorPredicate("admin", Admin.class, event -> isAdmin(event.getMember()));
+        builder.bindPreprocessorPredicate("admin", Admin.class, event -> isAdmin(event.getMember()));
         builder.addCommand(AdminCommand.class);
     }
 }

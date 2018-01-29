@@ -20,7 +20,7 @@ import com.github.breadmoirai.breadbot.framework.command.CommandResultHandler;
 
 public interface CommandResultManagerBuilder {
 
-    <T> CommandResultManagerBuilder registerResultHandler(Class<T> resultType, CommandResultHandler<T> handler);
+    <T> CommandResultManagerBuilder bindResultHandler(Class<T> resultType, CommandResultHandler<T> handler);
 
     <T> CommandResultHandler<? super T> getResultHandler(Class<T> resultType);
 }

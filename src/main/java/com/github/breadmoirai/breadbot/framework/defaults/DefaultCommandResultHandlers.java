@@ -25,15 +25,15 @@ import net.dv8tion.jda.core.entities.MessageEmbed;
 
 public class DefaultCommandResultHandlers {
     public void initialize(CommandResultManagerImpl manager) {
-        manager.registerResultHandler(String.class,
+        manager.bindResultHandler(String.class,
                 (command, event, result) -> event.reply(result));
-        manager.registerResultHandler(MessageEmbed.class,
+        manager.bindResultHandler(MessageEmbed.class,
                 (command, event, result) -> event.reply(new MessageBuilder().setEmbed(result).build()));
-        manager.registerResultHandler(Message.class,
+        manager.bindResultHandler(Message.class,
                 (command, event, result) -> event.reply(result));
-        manager.registerResultHandler(Emote.class,
+        manager.bindResultHandler(Emote.class,
                 (command, event, result) -> event.replyReaction(result));
-        manager.registerResultHandler(Emoji.class,
+        manager.bindResultHandler(Emoji.class,
                 (command, event, result) -> event.replyReaction(result.getUtf8()));
     }
 }
