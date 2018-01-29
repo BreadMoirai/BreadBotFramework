@@ -1,0 +1,90 @@
+/*
+ *     Copyright 2017-2018 Ton Ly
+ *
+ *   Licensed under the Apache License, Version 2.0 (the "License");
+ *   you may not use this file except in compliance with the License.
+ *   You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *   Unless required by applicable law or agreed to in writing, software
+ *   distributed under the License is distributed on an "AS IS" BASIS,
+ *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *   See the License for the specific language governing permissions and
+ *   limitations under the License.
+ */
+package com.github.breadmoirai.breadbot.plugins.waiter;
+
+import net.dv8tion.jda.core.events.Event;
+import net.dv8tion.jda.core.events.ShutdownEvent;
+import net.dv8tion.jda.core.hooks.EventListener;
+import net.dv8tion.jda.core.hooks.SubscribeEvent;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+
+public class EventWaiter implements EventListener {
+
+    private final Map<Class<? extends Event>, List<EventAction>> waitingEvents;
+
+    private final ScheduledExecutorService threadpool;
+
+    public EventWaiter() {
+        waitingEvents = new HashMap<>();
+        threadpool = Executors.newSingleThreadScheduledExecutor();
+    }
+
+
+    public <T extends Event> EventActionBuilder<T, Void> waitFor(Class<T> eventClass) {
+        return new EventActionBuilderImpl<>(eventClass, this);
+    }
+
+    void addAction(Class<? extends Event> eventClass, EventAction action) {
+        getActions(eventClass).add(action);
+    }
+
+    boolean removeAction(Class<? extends Event> eventClass, EventAction action) {
+        return getActions(eventClass).remove(action);
+    }
+
+    ScheduledFuture<?> schedule(Runnable command, long delay, TimeUnit unit) {
+        return threadpool.schedule(command, delay, unit);
+    }
+
+    private <T extends Event> List<EventAction> getActions(Class<T> eventType) {
+        final List<EventAction> list = waitingEvents.get(eventType);
+        if (list != null) {
+            return list;
+        }
+        final List<EventAction> newList = new ArrayList<>();
+        waitingEvents.put(eventType, newList);
+        return newList;
+    }
+
+    @SubscribeEvent
+    @Override
+    public final void onEvent(Event event) {
+        Class c = event.getClass();
+        while (c != Object.class) {
+            if (waitingEvents.containsKey(c)) {
+                List<EventAction> list = waitingEvents.get(c);
+                list.removeAll(list.stream()
+                        .filter(i -> i.accept(event))
+                        .collect(Collectors.toList()));
+            }
+            if (event instanceof ShutdownEvent) {
+                threadpool.shutdown();
+            }
+            c = c.getSuperclass();
+        }
+    }
+
+
+}
