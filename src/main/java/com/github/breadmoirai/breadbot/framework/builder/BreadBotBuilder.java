@@ -148,6 +148,12 @@ public class BreadBotBuilder implements
     }
 
     @Override
+    public BreadBotBuilder addEventWaiterPlugin() {
+        CommandPluginBuilder.super.addEventWaiterPlugin();
+        return this;
+    }
+
+    @Override
     public CommandHandleBuilder createCommand(Class<?> commandClass) {
         Checks.notNull(commandClass, "commandClass");
         CommandHandleBuilderInternal commandHandle = factory.createCommand(commandClass);
