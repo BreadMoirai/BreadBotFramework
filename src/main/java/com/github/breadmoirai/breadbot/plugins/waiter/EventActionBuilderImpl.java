@@ -1,17 +1,18 @@
-/*    Copyright 2017 Ton Ly
- 
-  Licensed under the Apache License, Version 2.0 (the "License");
-  you may not use this file except in compliance with the License.
-  You may obtain a copy of the License at
- 
-      http://www.apache.org/licenses/LICENSE-2.0
- 
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and
-  limitations under the License.
-*/
+/*
+ *        Copyright 2017-2018 Ton Ly (BreadMoirai)
+ *
+ *   Licensed under the Apache License, Version 2.0 (the "License");
+ *   you may not use this file except in compliance with the License.
+ *   You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *   Unless required by applicable law or agreed to in writing, software
+ *   distributed under the License is distributed on an "AS IS" BASIS,
+ *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *   See the License for the specific language governing permissions and
+ *   limitations under the License.
+ */
 package com.github.breadmoirai.breadbot.plugins.waiter;
 
 import net.dv8tion.jda.core.events.Event;
@@ -33,8 +34,7 @@ public class EventActionBuilderImpl<E extends Event, V> implements EventActionBu
     private Function<E, V> finisher = e -> null;
     private long timeout;
     private TimeUnit unit;
-    private Runnable timeoutAction = () -> {
-    };
+    private Runnable timeoutAction;
 
     public EventActionBuilderImpl(Class<E> eventClass, EventWaiter eventWaiter) {
         this.eventClass = eventClass;
@@ -86,14 +86,18 @@ public class EventActionBuilderImpl<E extends Event, V> implements EventActionBu
 
     @Override
     public EventActionFuture<V> build() {
-        if (unit == null) {
-            final EventActionImpl<E, V> eventAction = new EventActionImpl<E, V>(eventClass, condition, action, stopper, finisher, eventWaiter);
-            eventWaiter.addAction(eventClass, eventAction);
-            return eventAction.getFuture();
-        } else {
+        final EventActionImpl<E, V> eventAction = new EventActionImpl<E, V>(eventClass, condition, action, stopper, finisher, eventWaiter);
+        eventWaiter.addAction(eventClass, eventAction);
+        final EventActionFuture<V> future = eventAction.getFuture();
+        if (unit != null) {
+            eventWaiter.schedule(() -> {
+                if (future.cancel() && timeoutAction != null) {
+                    timeoutAction.run();
+                }
 
+            }, timeout, unit);
         }
-        return null;
+        return future;
     }
 
     public Class<E> getEventClass() {
