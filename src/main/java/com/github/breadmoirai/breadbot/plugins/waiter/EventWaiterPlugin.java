@@ -26,4 +26,8 @@ public class EventWaiterPlugin implements CommandPlugin, EventListener {
             event.getJDA().removeEventListener(this);
         }
     }
+
+    public EventWaiter getEventWaiter() {
+        return eventWaiter;
+    }
 }
