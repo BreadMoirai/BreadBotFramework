@@ -164,7 +164,7 @@ public class EventActionBuilderImpl<E extends Event, V> implements EventActionBu
         this.timeoutAction = timeoutAction;
     }
 
-    private <R> EventActionBuilderImpl<E, R> cloneWithFinisher(Function<E, R> finisher) {
+    <R> EventActionBuilderImpl<E, R> cloneWithFinisher(Function<E, R> finisher) {
         final EventActionBuilderImpl<E, R> c = new EventActionBuilderImpl<>(eventClass, eventWaiter);
         c.setCondition(condition);
         c.setAction(action);

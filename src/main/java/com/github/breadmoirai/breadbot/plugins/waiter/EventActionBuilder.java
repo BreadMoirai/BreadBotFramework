@@ -80,20 +80,6 @@ public interface EventActionBuilder<E extends Event, V> {
      */
     <V2> EventActionBuilder<E, V2> finishWithResult(Function<E, V2> finisher);
 
-    default EventActionBuilder<E, E> finish(Runnable finisher) {
-        return finishWithResult(e -> {
-            finisher.run();
-            return e;
-        });
-    }
-
-    default EventActionBuilder<E, E> finish(Consumer<E> finisher) {
-        return finishWithResult(e -> {
-            finisher.accept(e);
-            return e;
-        });
-    }
-
     EventActionBuilder<E, V> waitFor(long timeout, TimeUnit unit);
 
     EventActionBuilder<E, V> timeout(Runnable timeoutAction);
