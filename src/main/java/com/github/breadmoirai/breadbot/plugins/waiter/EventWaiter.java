@@ -50,6 +50,10 @@ public class EventWaiter implements EventListener {
         return new CommandEventActionBuilderImpl<>(this);
     }
 
+    public ReactionEventActionBuilder<Void> waitForReaction() {
+        return new ReactionEventActionBuilderImpl<>(this);
+    }
+
     void addAction(Class<? extends Event> eventClass, EventAction action) {
         getActions(eventClass).add(action);
     }

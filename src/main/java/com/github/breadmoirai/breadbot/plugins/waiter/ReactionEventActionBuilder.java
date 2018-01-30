@@ -16,16 +16,19 @@
 
 package com.github.breadmoirai.breadbot.plugins.waiter;
 
-import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageChannel;
+import net.dv8tion.jda.core.entities.MessageReaction;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent;
+import net.dv8tion.jda.core.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.core.utils.Checks;
 
+import java.util.List;
+import java.util.function.IntPredicate;
 import java.util.function.Predicate;
 
 /**
@@ -40,6 +43,75 @@ import java.util.function.Predicate;
 public interface ReactionEventActionBuilder<T> extends EventActionBuilderExtension<GenericMessageReactionEvent, T> {
 
 
+    /**
+     * Restrict condition to ReactionAddEvents only.
+     * By default this will accept both reaction add and remove events.
+     *
+     * @return this
+     */
+    default ReactionEventActionBuilder<T> onAddOnly() {
+        return matching(event -> event instanceof MessageReactionAddEvent);
+    }
+
+    /**
+     * Restrict condition to ReactionRemoveEvents only.
+     *
+     * By default this will accept both reaction add and remove events.
+     *
+     * @return this
+     */
+    default ReactionEventActionBuilder<T> onRemoveOnly() {
+        return matching(event -> event instanceof MessageReactionAddEvent);
+    }
+
+    /**
+     * Matches the name of the reaction
+     *
+     * @return this
+     */
+    default ReactionEventActionBuilder<T> withName(String... emojiEmoteName) {
+        Checks.notEmpty(emojiEmoteName, "emojiEmoteName");
+        Checks.noneNull(emojiEmoteName, "emojiEmoteName");
+        return matching(event -> {
+            final String reactionEmote = event.getReaction().getReactionEmote().getName();
+            for (String s : emojiEmoteName) {
+                if (reactionEmote.equalsIgnoreCase(s)) {
+                    return true;
+                }
+            }
+            return false;
+        });
+    }
+
+    default ReactionEventActionBuilder<T> withId(long... emoteIds) {
+        Checks.notNull(emoteIds, "emoteIds");
+        return matching(event -> {
+            final MessageReaction.ReactionEmote reactionEmote = event.getReaction().getReactionEmote();
+            final String id = reactionEmote.getId();
+            if (id == null) return false;
+            final long idLong = reactionEmote.getIdLong();
+            for (long emoteId : emoteIds) {
+                if (emoteId == idLong) {
+                    return true;
+                }
+            }
+            return false;
+        });
+    }
+
+    /**
+     * Uses the IntPredicate against the number of reactions after the
+     * action is executed as a stop-if clause. If one is already set
+     * with {@link #stopIf(ObjectIntPredicate)}, then this predicate
+     * with be combined with the set one with an AND.
+     *
+     * @param reactionCount
+     *         an IntPredicate that tests against the number of reactions
+     *
+     * @return this
+     */
+    ReactionEventActionBuilder<T> stopOnReactionCount(IntPredicate reactionCount);
+
     default ReactionEventActionBuilder<T> on(Message... messages) {
         Checks.notEmpty(messages, "messages");
         Checks.noneNull(messages, "messages");
@@ -53,7 +125,7 @@ public interface ReactionEventActionBuilder<T> extends EventActionBuilderExtensi
     default ReactionEventActionBuilder<T> onMessages(long... messageIds) {
         Checks.notNull(messageIds, "messageIds");
         return matching(event -> {
-            final long messageId = event.getMessageId();
+            final long messageId = event.getMessageIdLong();
             for (long id : messageIds) {
                 if (id == messageId) {
                     return true;
@@ -64,7 +136,7 @@ public interface ReactionEventActionBuilder<T> extends EventActionBuilderExtensi
     }
 
 
-    ReactionEventActionBuilder<T> matching(Predicate<CommandEvent> condition);
+    ReactionEventActionBuilder<T> matching(Predicate<GenericMessageReactionEvent> condition);
 
     @Override
     default ReactionEventActionBuilder<T> from(Role... roles) {
@@ -74,8 +146,17 @@ public interface ReactionEventActionBuilder<T> extends EventActionBuilderExtensi
 
     @Override
     default ReactionEventActionBuilder<T> fromRoles(long... roleIds) {
-        EventActionBuilderExtension.super.fromRoles(roleIds);
-        return this;
+        Checks.notNull(roleIds, "roleIds");
+        return matching(event -> {
+            final List<Role> roles = event.getMember().getRoles();
+            for (Role r : roles) {
+                final long id = r.getIdLong();
+                for (long l : roleIds) {
+                    if (id == l) return true;
+                }
+            }
+            return false;
+        });
     }
 
     @Override
@@ -92,8 +173,18 @@ public interface ReactionEventActionBuilder<T> extends EventActionBuilderExtensi
 
     @Override
     default ReactionEventActionBuilder<T> fromUsers(long... userIds) {
-        EventActionBuilderExtension.super.fromUsers(userIds);
-        return this;
+        Checks.notNull(userIds, "userIds");
+        if (userIds.length == 1) {
+            final long userId = userIds[0];
+            return matching(event -> event.getUser().getIdLong() == userId);
+        }
+        return matching(event -> {
+            final long authorId = event.getUser().getIdLong();
+            for (long userId : userIds) {
+                if (authorId == userId) return true;
+            }
+            return false;
+        });
     }
 
     @Override
@@ -104,8 +195,16 @@ public interface ReactionEventActionBuilder<T> extends EventActionBuilderExtensi
 
     @Override
     default ReactionEventActionBuilder<T> inGuild(long... guildIds) {
-        EventActionBuilderExtension.super.inGuild(guildIds);
-        return this;
+        Checks.notNull(guildIds, "guildIds");
+        return matching(event -> {
+            final long guildId = event.getGuild().getIdLong();
+            for (long aLong : guildIds) {
+                if (aLong == guildId) {
+                    return true;
+                }
+            }
+            return false;
+        });
     }
 
     @Override
@@ -116,8 +215,16 @@ public interface ReactionEventActionBuilder<T> extends EventActionBuilderExtensi
 
     @Override
     default ReactionEventActionBuilder<T> inChannel(long... channelIds) {
-        EventActionBuilderExtension.super.inChannel(channelIds);
-        return this;
+        Checks.notNull(channelIds, "channelIds");
+        return matching(event -> {
+            final long channelId = event.getChannel().getIdLong();
+            for (long aLong : channelIds) {
+                if (aLong == channelId) {
+                    return true;
+                }
+            }
+            return false;
+        });
     }
 
 

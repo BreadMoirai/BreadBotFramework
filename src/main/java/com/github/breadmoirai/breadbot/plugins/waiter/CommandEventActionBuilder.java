@@ -25,6 +25,7 @@ import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.utils.Checks;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -45,7 +46,9 @@ public interface CommandEventActionBuilder<T> extends EventActionBuilderExtensio
      * This only supports a depth of 1 key as
      * unclaimed events will only have 1 key.
      *
-     * @param keys var-arg of possible prefixes
+     * @param keys
+     *         var-arg of possible prefixes
+     *
      * @return this
      */
     default CommandEventActionBuilder<T> withKeys(String... keys) {
@@ -70,8 +73,17 @@ public interface CommandEventActionBuilder<T> extends EventActionBuilderExtensio
 
     @Override
     default CommandEventActionBuilder<T> fromRoles(long... roleIds) {
-        EventActionBuilderExtension.super.fromRoles(roleIds);
-        return this;
+        Checks.notNull(roleIds, "roleIds");
+        return matching(event -> {
+            final List<Role> roles = event.getMember().getRoles();
+            for (Role r : roles) {
+                final long id = r.getIdLong();
+                for (long l : roleIds) {
+                    if (id == l) return true;
+                }
+            }
+            return false;
+        });
     }
 
     @Override
@@ -88,8 +100,18 @@ public interface CommandEventActionBuilder<T> extends EventActionBuilderExtensio
 
     @Override
     default CommandEventActionBuilder<T> fromUsers(long... userIds) {
-        EventActionBuilderExtension.super.fromUsers(userIds);
-        return this;
+        Checks.notNull(userIds, "userIds");
+        if (userIds.length == 1) {
+            final long userId = userIds[0];
+            return matching(event -> event.getAuthorId() == userId);
+        }
+        return matching(event -> {
+            final long authorId = event.getAuthorId();
+            for (long userId : userIds) {
+                if (authorId == userId) return true;
+            }
+            return false;
+        });
     }
 
     @Override
@@ -100,8 +122,16 @@ public interface CommandEventActionBuilder<T> extends EventActionBuilderExtensio
 
     @Override
     default CommandEventActionBuilder<T> inGuild(long... guildIds) {
-        EventActionBuilderExtension.super.inGuild(guildIds);
-        return this;
+        Checks.notNull(guildIds, "guildIds");
+        return matching(event -> {
+            final long guildId = event.getGuildId();
+            for (long aLong : guildIds) {
+                if (aLong == guildId) {
+                    return true;
+                }
+            }
+            return false;
+        });
     }
 
     @Override
@@ -112,8 +142,16 @@ public interface CommandEventActionBuilder<T> extends EventActionBuilderExtensio
 
     @Override
     default CommandEventActionBuilder<T> inChannel(long... channelIds) {
-        EventActionBuilderExtension.super.inChannel(channelIds);
-        return this;
+        Checks.notNull(channelIds, "channelIds");
+        return matching(event -> {
+            final long channelId = event.getChannelId();
+            for (long aLong : channelIds) {
+                if (aLong == channelId) {
+                    return true;
+                }
+            }
+            return false;
+        });
     }
 
     @Override

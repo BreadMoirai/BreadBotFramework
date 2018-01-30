@@ -15,7 +15,6 @@
  */
 package com.github.breadmoirai.breadbot.plugins.waiter;
 
-import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.MessageChannel;
@@ -24,7 +23,6 @@ import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.Event;
 import net.dv8tion.jda.core.utils.Checks;
 
-import java.util.List;
 import java.util.function.Predicate;
 
 public interface EventActionBuilderExtension<E extends Event, V> extends EventActionBuilder<E, V> {
@@ -39,19 +37,7 @@ public interface EventActionBuilderExtension<E extends Event, V> extends EventAc
         return fromRoles(roleIds);
     }
 
-    default EventActionBuilderExtension<E, V> fromRoles(long... roleIds) {
-        Checks.notNull(roleIds, "roleIds");
-        return matching(event -> {
-            final List<Role> roles = event.getMember().getRoles();
-            for (Role r : roles) {
-                final long id = r.getIdLong();
-                for (long l : roleIds) {
-                    if (id == l) return true;
-                }
-            }
-            return false;
-        });
-    }
+    EventActionBuilderExtension<E, V> fromRoles(long... roleIds);
 
     default EventActionBuilderExtension<E, V> from(Member... members) {
         Checks.notEmpty(members, "members");
@@ -73,20 +59,7 @@ public interface EventActionBuilderExtension<E extends Event, V> extends EventAc
         return fromUsers(memberIds);
     }
 
-    default EventActionBuilderExtension<E, V> fromUsers(long... userIds) {
-        Checks.notNull(userIds, "userIds");
-        if (userIds.length == 1) {
-            final long userId = userIds[0];
-            return matching(event -> event.getAuthorId() == userId);
-        }
-        return matching(event -> {
-            final long authorId = event.getAuthorId();
-            for (long userId : userIds) {
-                if (authorId == userId) return true;
-            }
-            return false;
-        });
-    }
+    EventActionBuilderExtension<E, V> fromUsers(long... userIds);
 
     default EventActionBuilderExtension<E, V> in(Guild... guild) {
         Checks.notEmpty(guild, "guild");
@@ -98,18 +71,7 @@ public interface EventActionBuilderExtension<E extends Event, V> extends EventAc
         return inGuild(longs);
     }
 
-    default EventActionBuilderExtension<E, V> inGuild(long... guildIds) {
-        Checks.notNull(guildIds, "guildIds");
-        return matching(event -> {
-            final long guildId = event.getGuildId();
-            for (long aLong : guildIds) {
-                if (aLong == guildId) {
-                    return true;
-                }
-            }
-            return false;
-        });
-    }
+    EventActionBuilderExtension<E, V> inGuild(long... guildIds);
 
     default EventActionBuilderExtension<E, V> in(MessageChannel... channel) {
         Checks.notEmpty(channel, "channel");
@@ -121,19 +83,8 @@ public interface EventActionBuilderExtension<E extends Event, V> extends EventAc
         return inChannel(longs);
     }
 
-    default EventActionBuilderExtension<E, V> inChannel(long... channelIds) {
-        Checks.notNull(channelIds, "channelIds");
-        return matching(event -> {
-            final long channelId = event.getChannelId();
-            for (long aLong : channelIds) {
-                if (aLong == channelId) {
-                    return true;
-                }
-            }
-            return false;
-        });
-    }
+    EventActionBuilderExtension<E, V> inChannel(long... channelIds);
 
-    EventActionBuilderExtension<E, V> matching(Predicate<CommandEvent> condition);
+    EventActionBuilderExtension<E, V> matching(Predicate<E> condition);
 
 }
