@@ -36,8 +36,10 @@ import java.util.function.Predicate;
  *      //otherwise continue listening
  * </code></pre>
  *
- * @param <E> The Event Type
- * @param <V> The Result Type
+ * @param <E>
+ *         The Event Type
+ * @param <V>
+ *         The Result Type
  */
 public interface EventActionBuilder<E extends Event, V> {
 
@@ -45,7 +47,9 @@ public interface EventActionBuilder<E extends Event, V> {
      * Sets the condition for accepting events.
      * If this value is not set, all events will be accepted.
      *
-     * @param condition a predicate that tests Events, returning {@code true} if it should be passed to the action.
+     * @param condition
+     *         a predicate that tests Events, returning {@code true} if it should be passed to the action.
+     *
      * @return this
      */
     EventActionBuilder<E, V> condition(Predicate<E> condition);
@@ -53,7 +57,9 @@ public interface EventActionBuilder<E extends Event, V> {
     /**
      * Sets the action to perform on the event after the condition tests it.
      *
-     * @param action a Consumer that accepts the tested event.
+     * @param action
+     *         a Consumer that accepts the tested event.
+     *
      * @return this
      */
     EventActionBuilder<E, V> action(Consumer<E> action);
@@ -63,8 +69,10 @@ public interface EventActionBuilder<E extends Event, V> {
      * This is run right after the action is called.
      * By default, this field is set with {@code (e, i) -> true}.
      *
-     * @param stopper a predicate that takes in an {@code Event} and an {@code int} representing the number of times this action has run,
-     *                returning {@code true} if this should stop listening for more events, false if it should continue to listen for events.
+     * @param stopper
+     *         a predicate that takes in an {@code Event} and an {@code int} representing the number of times this action has run,
+     *         returning {@code true} if this should stop listening for more events, false if it should continue to listen for events.
+     *
      * @return this
      */
     EventActionBuilder<E, V> stopIf(ObjectIntPredicate<E> stopper);
@@ -74,11 +82,21 @@ public interface EventActionBuilder<E extends Event, V> {
      * This allows the {@link EventActionFuture} to return a Result when it finishes waiting for events.
      * <p>By default, the finisher produces {@code null} as a result.
      *
-     * @param finisher A Function that takes in an Event and produces a result which can be obtained through the Future,
-     * @param <V2>     the new result Type
+     * @param finisher
+     *         A Function that takes in an Event and produces a result which can be obtained through the Future,
+     * @param <V2>
+     *         the new result Type
+     *
      * @return a new builder with modified generic parameters, retaining all set fields.
      */
     <V2> EventActionBuilder<E, V2> finishWithResult(Function<E, V2> finisher);
+
+    default EventActionBuilder<E, Void> finish(Runnable finisher) {
+        return finishWithResult(e -> {
+            finisher.run();
+            return null;
+        });
+    }
 
     EventActionBuilder<E, V> waitFor(long timeout, TimeUnit unit);
 
