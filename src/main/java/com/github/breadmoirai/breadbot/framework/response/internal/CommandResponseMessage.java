@@ -63,10 +63,10 @@ public class CommandResponseMessage extends CommandResponse {
 
     @Override
     public void dispatch(LongConsumer linkReceiver) {
-        if (builder != null && !builder.mustSplit()) {
-            message = builder.buildMessage();
-        }
-        if (builder != null && !builder.mustSplit() || builder == null) {
+        if (!builder.mustSplit()) {
+            if (message == null) {
+                message = builder.buildMessage();
+            }
             final RestAction<Message> restAction;
             if (file != null) {
                 restAction = file.sendFile(channel, message);
@@ -115,7 +115,9 @@ public class CommandResponseMessage extends CommandResponse {
     }
 
     public RMessageBuilder builder() {
-        builder = new RMessageBuilder();
+        if (builder == null) {
+            builder = new RMessageBuilder();
+        }
         return builder;
     }
 
