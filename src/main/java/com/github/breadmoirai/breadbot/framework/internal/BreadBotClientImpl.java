@@ -257,7 +257,7 @@ public class BreadBotClientImpl implements BreadBot, EventListener {
             if (commandEvent != null) {
                 LOG.debug(commandEvent.toString());
                 commandEngine.handle(commandEvent);
-                ((JDAImpl) jda).getEventManager().handle(event);
+                ((JDAImpl) jda).getEventManager().handle(commandEvent);
             }
         }
     }
