@@ -54,7 +54,6 @@ public class EventActionImpl<E extends Event, V> implements EventAction<E, V> {
         if (condition.test(e)) {
             if (!isWaiting) return true;
             running = true;
-            waiter.removeAction(eventClass, this);
             isWaiting = false;
             if (action != null)
                 action.accept(e);
