@@ -83,9 +83,10 @@ public class EventWaiter implements EventListener {
         while (c != Object.class) {
             if (waitingEvents.containsKey(c)) {
                 List<EventAction> list = waitingEvents.get(c);
-                list.removeAll(list.stream()
-                        .filter(i -> i.accept(event))
-                        .collect(Collectors.toList()));
+                if (list != null)
+                    list.removeAll(list.stream()
+                            .filter(i -> i.accept(event))
+                            .collect(Collectors.toList()));
             }
             if (event instanceof ShutdownEvent) {
                 threadpool.shutdown();
