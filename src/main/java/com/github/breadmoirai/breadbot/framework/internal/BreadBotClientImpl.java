@@ -35,6 +35,8 @@ import net.dv8tion.jda.core.events.message.guild.GenericGuildMessageEvent;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageUpdateEvent;
 import net.dv8tion.jda.core.hooks.EventListener;
+import net.dv8tion.jda.core.hooks.IEventManager;
+import net.dv8tion.jda.core.hooks.InterfacedEventManager;
 import net.dv8tion.jda.core.hooks.SubscribeEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -236,7 +238,24 @@ public class BreadBotClientImpl implements BreadBot, EventListener {
 
     @SubscribeEvent
     public void onReady(ReadyEvent event) {
-        setJDA(event.getJDA());
+        final JDA jda = event.getJDA();
+        setJDA(jda);
+        final List<Object> registeredListeners = jda.getRegisteredListeners();
+        jda.removeEventListener(registeredListeners);
+        final IEventManager eventManager = ((JDAImpl) jda).getEventManager();
+        if (eventManager instanceof InterfacedEventManager) {
+            for (CommandPlugin module : modules) {
+                if (module instanceof EventListener) {
+                    jda.addEventListener(module);
+                }
+            }
+        } else {
+            for (CommandPlugin module : modules) {
+                jda.addEventListener(module);
+            }
+        }
+        eventManager.handle(event);
+        jda.addEventListener(registeredListeners.toArray());
     }
 
     @SubscribeEvent
