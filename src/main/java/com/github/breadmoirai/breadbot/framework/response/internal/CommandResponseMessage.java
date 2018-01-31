@@ -48,7 +48,8 @@ public class CommandResponseMessage extends CommandResponse {
     private FileSender file;
     private long delay;
     private TimeUnit unit;
-    private Consumer<Message> success;
+    private Consumer<Message> success = m -> {
+    };
     private Consumer<Throwable> failure;
 
     public CommandResponseMessage(TextChannel channel) {
