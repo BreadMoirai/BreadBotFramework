@@ -54,11 +54,12 @@ public class EventActionImpl<E extends Event, V> implements EventAction<E, V> {
         if (condition.test(e)) {
             if (!isWaiting) return true;
             running = true;
-            isWaiting = false;
-            if (action != null)
+            if (action != null) {
                 action.accept(e);
+            }
             runCount++;
             if (stopper.test(e, runCount)) {
+                isWaiting = false;
                 final V result = finisher.apply(e);
                 future.complete(result);
                 return true;
