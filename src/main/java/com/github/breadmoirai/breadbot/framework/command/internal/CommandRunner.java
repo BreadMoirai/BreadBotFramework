@@ -19,7 +19,7 @@ package com.github.breadmoirai.breadbot.framework.command.internal;
 import com.github.breadmoirai.breadbot.framework.command.Command;
 import com.github.breadmoirai.breadbot.framework.command.CommandHandle;
 import com.github.breadmoirai.breadbot.framework.command.CommandResultHandler;
-import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
+import com.github.breadmoirai.breadbot.framework.event.internal.CommandEventInternal;
 import com.github.breadmoirai.breadbot.framework.parameter.CommandParameter;
 import com.github.breadmoirai.breadbot.framework.parameter.CommandParser;
 import org.slf4j.Logger;
@@ -33,14 +33,14 @@ public class CommandRunner implements Runnable {
     private static final Logger LOG = LoggerFactory.getLogger(Command.class);
 
     private final Object o;
-    private final CommandEvent event;
+    private final CommandEventInternal event;
     private final InvokableCommand invokableCommand;
     private final CommandParser parser;
     private final Command command;
     private final CommandResultHandler<?> resultHandler;
 
     CommandRunner(Object o,
-                  CommandEvent event,
+                  CommandEventInternal event,
                   InvokableCommand invokableCommand,
                   CommandParser parser,
                   Command command,
@@ -81,6 +81,7 @@ public class CommandRunner implements Runnable {
                 if (result != null) {
                     CommandResultHandler.handleObject(resultHandler, command, event, result);
                 }
+                event.getManager().complete();
                 LOG.debug("Command Execution Completed");
                 return;
             } catch (Throwable throwable) {
