@@ -30,7 +30,7 @@ public class EventActionBuilderImpl<E extends Event, V> implements EventActionBu
 
     private Predicate<E> condition = o -> true;
     private Consumer<E> action;
-    private ObjectIntPredicate<E> stopper;
+    private ObjectIntPredicate<E> stopper = (e, i) -> true;
     private Function<E, V> finisher = e -> null;
     private long timeout;
     private TimeUnit unit;
@@ -86,7 +86,7 @@ public class EventActionBuilderImpl<E extends Event, V> implements EventActionBu
 
     @Override
     public EventActionFuture<V> build() {
-        final EventActionImpl<E, V> eventAction = new EventActionImpl<E, V>(eventClass, condition, action, stopper, finisher, eventWaiter);
+        final EventActionImpl<E, V> eventAction = new EventActionImpl<>(eventClass, condition, action, stopper, finisher, eventWaiter);
         eventWaiter.addAction(eventClass, eventAction);
         final EventActionFuture<V> future = eventAction.getFuture();
         if (unit != null) {

@@ -83,7 +83,6 @@ public class EventWaiter implements EventListener {
         while (c != Object.class) {
             if (waitingEvents.containsKey(c)) {
                 List<EventAction> list = waitingEvents.get(c);
-                if (list != null)
                     list.removeAll(list.stream()
                             .filter(i -> i.accept(event))
                             .collect(Collectors.toList()));
