@@ -20,4 +20,5 @@ com.github.breadmoirai.breadbot.plugins.admin
 com.github.breadmoirai.breadbot.plugins.hocon
 com.github.breadmoirai.breadbot.plugins.owner
 com.github.breadmoirai.breadbot.plugins.prefix
+com.github.breadmoirai.breadbot.plugins.waiter
 com.github.breadmoirai.breadbot.util
