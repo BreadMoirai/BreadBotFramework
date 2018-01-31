@@ -288,4 +288,10 @@ public class BreadBotClientImpl implements BreadBot, EventListener {
     }
 
 
+    public void propogateReadyEvent() {
+        for (CommandPlugin commandPlugin : getPlugins()) {
+            commandPlugin.onBreadReady(this);
+        }
+
+    }
 }
