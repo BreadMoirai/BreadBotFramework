@@ -90,12 +90,13 @@ public class EventActionBuilderImpl<E extends Event, V> implements EventActionBu
         eventWaiter.addAction(eventClass, eventAction);
         final EventActionFuture<V> future = eventAction.getFuture();
         if (unit != null) {
-            eventWaiter.schedule(() -> {
+            eventAction.setTimeout(eventWaiter.schedule(() -> {
+                eventAction.setTimeout(null);
                 if (future.cancel() && timeoutAction != null) {
                     timeoutAction.run();
                 }
 
-            }, timeout, unit);
+            }, timeout, unit));
         }
         return future;
     }

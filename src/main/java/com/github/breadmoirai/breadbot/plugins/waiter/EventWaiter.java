@@ -22,13 +22,13 @@ import net.dv8tion.jda.core.hooks.SubscribeEvent;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 public class EventWaiter implements EventListener {
 
@@ -83,9 +83,13 @@ public class EventWaiter implements EventListener {
         while (c != Object.class) {
             if (waitingEvents.containsKey(c)) {
                 List<EventAction> list = waitingEvents.get(c);
-                    list.removeAll(list.stream()
-                            .filter(i -> i.accept(event))
-                            .collect(Collectors.toList()));
+                final List<EventAction> remove = new LinkedList<>();
+                for (EventAction eventAction : list) {
+                    if (eventAction.accept(event)) {
+                        remove.add(eventAction);
+                    }
+                }
+                list.removeAll(remove);
             }
             if (event instanceof ShutdownEvent) {
                 threadpool.shutdown();

@@ -18,6 +18,7 @@ package com.github.breadmoirai.breadbot.plugins.waiter;
 
 import net.dv8tion.jda.core.events.Event;
 
+import java.util.concurrent.ScheduledFuture;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -30,6 +31,7 @@ public class EventActionImpl<E extends Event, V> implements EventAction<E, V> {
     private final Function<E, V> finisher;
     protected final EventActionFutureImpl<V> future;
     protected final EventWaiter waiter;
+    private ScheduledFuture<?> timeout;
 
     private volatile boolean isWaiting = true;
     private boolean running = false;
@@ -74,9 +76,14 @@ public class EventActionImpl<E extends Event, V> implements EventAction<E, V> {
     @Override
     public boolean cancel() {
         isWaiting = false;
+        if (timeout != null) {
+            timeout.cancel(false);
+        }
         waiter.removeAction(eventClass, this);
         return !running;
     }
 
-
+    public void setTimeout(ScheduledFuture<?> timeout) {
+        this.timeout = timeout;
+    }
 }
