@@ -1,5 +1,5 @@
 /*
- *        Copyright 2017 Ton Ly (BreadMoirai)
+ *        Copyright 2017-2018 Ton Ly (BreadMoirai)
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -520,12 +520,14 @@ public class CommandResponseMessage extends CommandResponse {
         }
 
         private Message buildMessage() {
-            builder.setEmbed(embed.getEmbedBuilder().build());
+            if (embed != null)
+                builder.setEmbed(embed.getEmbedBuilder().build()).build();
             return builder.build();
         }
 
         private Queue<Message> buildMessages() {
-            builder.setEmbed(embed.getEmbedBuilder().build());
+            if (embed != null)
+                builder.setEmbed(embed.getEmbedBuilder().build());
             return builder.buildAll(splitPolicy);
         }
 
