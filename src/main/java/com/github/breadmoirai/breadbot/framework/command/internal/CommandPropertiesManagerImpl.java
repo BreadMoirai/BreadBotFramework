@@ -72,7 +72,7 @@ public class CommandPropertiesManagerImpl implements CommandPropertiesManager {
     }
 
     @Override
-    public <T> CommandPropertiesManager addCommandModifier(Class<T> propertyType, BiConsumer<T, CommandHandleBuilder> configurator) {
+    public <T> CommandPropertiesManager bindCommandModifier(Class<T> propertyType, BiConsumer<T, CommandHandleBuilder> configurator) {
         commandPropertyMap.merge(propertyType, configurator, (c1, c2) -> {
             @SuppressWarnings("unchecked") final BiConsumer<T, CommandHandleBuilder> cc1 = (BiConsumer<T, CommandHandleBuilder>) c1;
             @SuppressWarnings("unchecked") final BiConsumer<T, CommandHandleBuilder> cc2 = (BiConsumer<T, CommandHandleBuilder>) c2;
@@ -88,7 +88,7 @@ public class CommandPropertiesManagerImpl implements CommandPropertiesManager {
     }
 
     @Override
-    public <T> CommandPropertiesManager addParameterModifier(Class<T> propertyType, BiConsumer<T, CommandParameterBuilder> configurator) {
+    public <T> CommandPropertiesManager bindParameterModifier(Class<T> propertyType, BiConsumer<T, CommandParameterBuilder> configurator) {
         parameterPropertyMap.merge(propertyType, configurator, (c1, c2) -> {
             @SuppressWarnings("unchecked") final BiConsumer<T, CommandParameterBuilder> cc1 = (BiConsumer<T, CommandParameterBuilder>) c1;
             @SuppressWarnings("unchecked") final BiConsumer<T, CommandParameterBuilder> cc2 = (BiConsumer<T, CommandParameterBuilder>) c2;
@@ -147,7 +147,7 @@ public class CommandPropertiesManagerImpl implements CommandPropertiesManager {
     }
 
     private <T> void associatePreprocessor(Class<T> propertyType, Function<T, CommandPreprocessor> factory) {
-        addCommandModifier(propertyType, (t, commandHandleBuilder) -> commandHandleBuilder.addPreprocessor(factory.apply(t)));
+        bindCommandModifier(propertyType, (t, commandHandleBuilder) -> commandHandleBuilder.addPreprocessor(factory.apply(t)));
     }
 
     @Override

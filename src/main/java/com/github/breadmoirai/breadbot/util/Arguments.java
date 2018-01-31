@@ -1,5 +1,5 @@
 /*
- *        Copyright 2017 Ton Ly (BreadMoirai)
+ *        Copyright 2017-2018 Ton Ly (BreadMoirai)
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -197,7 +197,7 @@ public class Arguments {
         }
         String sa = s.substring(0, dash);
         String sb = s.substring(dash + 1, s.length());
-        if (!isInteger(s) || !isInteger(sb)) return null;
+        if (!isInteger(sa) || !isInteger(sb)) return null;
         int a = Integer.parseInt(sa);
         int b = Integer.parseInt(sb);
         if (a < b) {

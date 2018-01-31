@@ -142,7 +142,7 @@ public class ClientTest {
     @Test
     public void methodPreprocessorPropertyTest() {
         setupBread(bread -> bread
-                .associatePreprocessorFactory("string", String.class, s -> (commandObj, targetHandle, event, processorStack) -> event.reply(s))
+                .bindPreprocessorFactory("string", String.class, s -> (commandObj, targetHandle, event, processorStack) -> event.reply(s))
                 .createCommand(PingCommand.class)
                 .setKeys("pyng")
                 .applyProperty("gnyp")
@@ -153,7 +153,7 @@ public class ClientTest {
     @Test
     public void classPreprocessorPropertyTest() {
         setupBread(bread -> bread
-                .associatePreprocessorFactory("repeat", Integer.class, i -> (commandObj, targetHandle, event, processorStack) -> event.reply(IntStream.range(0, i).mapToObj(value -> "pong").collect(Collectors.joining(" "))))
+                .bindPreprocessorFactory("repeat", Integer.class, i -> (commandObj, targetHandle, event, processorStack) -> event.reply(IntStream.range(0, i).mapToObj(value -> "pong").collect(Collectors.joining(" "))))
                 .addCommand(PingCommand.class, builder -> builder
                         .setKeys("poing")
                         .applyProperty(5))
@@ -204,7 +204,7 @@ public class ClientTest {
     @Test
     public void returnTypeTest() {
         setupBread(bread -> bread
-                .registerResultHandler(Color.class, (command, event, result) -> event.reply(Integer.toHexString(result.getRGB())))
+                .bindResultHandler(Color.class, (command, event, result) -> event.reply(Integer.toHexString(result.getRGB())))
                 .addCommand(ColorCommand::new)
                 .addCommand(MirrorCommand::new));
         assertResponse("!reverse mirror", "rorrim");
@@ -214,7 +214,7 @@ public class ClientTest {
     @Test
     public void customParameterTest() {
         setupBread(bread -> bread
-                .putTypeParser(
+                .bindTypeParser(
                         MathCommand.Operator.class,
                         arg -> {
                             switch (arg.getArgument()) {
@@ -305,7 +305,7 @@ public class ClientTest {
     @Test
     public void retroactiveModifierTest() {
         setupBread(bread -> bread.addCommand(PingCommand::new)
-                .addCommandModifier(null, (o, c) -> c.addPreprocessorFunction("sniper", (commandObj, targetHandle, event, processorStack) -> event.reply("bang!"))));
+                .bindCommandModifier(null, (o, c) -> c.addPreprocessorFunction("sniper", (commandObj, targetHandle, event, processorStack) -> event.reply("bang!"))));
         assertResponse("!ping", "bang!");
     }
 

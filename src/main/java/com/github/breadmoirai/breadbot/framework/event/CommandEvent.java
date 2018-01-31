@@ -320,6 +320,11 @@ public abstract class CommandEvent extends Event {
         return getContent() != null && !getContent().trim().isEmpty();
     }
 
+    /**
+     * This method should not be used outside of a command invocation
+     *
+     * @return a new builder for a message that is sent when the command leaves the stack
+     */
     public abstract CommandResponseMessage.RMessageBuilder reply();
 
     public abstract CommandResponseMessage.RMessageBuilder reply(String message);

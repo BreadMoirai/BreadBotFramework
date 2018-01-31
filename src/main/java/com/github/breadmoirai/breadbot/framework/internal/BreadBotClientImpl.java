@@ -18,6 +18,7 @@ package com.github.breadmoirai.breadbot.framework.internal;
 
 import com.github.breadmoirai.breadbot.framework.BreadBot;
 import com.github.breadmoirai.breadbot.framework.CommandPlugin;
+import com.github.breadmoirai.breadbot.framework.command.AbstractCommand;
 import com.github.breadmoirai.breadbot.framework.command.Command;
 import com.github.breadmoirai.breadbot.framework.command.CommandEngine;
 import com.github.breadmoirai.breadbot.framework.command.CommandResultManager;
@@ -35,6 +36,8 @@ import net.dv8tion.jda.core.events.message.guild.GenericGuildMessageEvent;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageUpdateEvent;
 import net.dv8tion.jda.core.hooks.EventListener;
+import net.dv8tion.jda.core.hooks.IEventManager;
+import net.dv8tion.jda.core.hooks.InterfacedEventManager;
 import net.dv8tion.jda.core.hooks.SubscribeEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -122,6 +125,9 @@ public class BreadBotClientImpl implements BreadBot, EventListener {
                 } else {
                     LOG.debug(String.format("Executing Command: %s (%s)", commandHandle.getName(), commandHandle.getGroup()));
                     commandHandle.handle(event, new EventStringIterator(event));
+                    if (commandHandle instanceof AbstractCommand) {
+                        LOG.debug("Command Execution Complete");
+                    }
 
                 }
             } else if (event.isHelpEvent()) {
@@ -236,7 +242,26 @@ public class BreadBotClientImpl implements BreadBot, EventListener {
 
     @SubscribeEvent
     public void onReady(ReadyEvent event) {
-        setJDA(event.getJDA());
+        final JDA jda = event.getJDA();
+        setJDA(jda);
+        final List<Object> registeredListeners = jda.getRegisteredListeners();
+        final IEventManager eventManager = ((JDAImpl) jda).getEventManager();
+        for (Object registeredListener : registeredListeners) {
+            eventManager.unregister(registeredListener);
+        }
+        if (eventManager instanceof InterfacedEventManager) {
+            for (CommandPlugin module : modules) {
+                if (module instanceof EventListener) {
+                    eventManager.register(module);
+                }
+            }
+        } else {
+            for (CommandPlugin module : modules) {
+                eventManager.register(module);
+            }
+        }
+        eventManager.handle(event);
+        jda.addEventListener(registeredListeners.toArray());
     }
 
     @SubscribeEvent
@@ -257,10 +282,16 @@ public class BreadBotClientImpl implements BreadBot, EventListener {
             if (commandEvent != null) {
                 LOG.debug(commandEvent.toString());
                 commandEngine.handle(commandEvent);
-                ((JDAImpl) jda).getEventManager().handle(event);
+                ((JDAImpl) jda).getEventManager().handle(commandEvent);
             }
         }
     }
 
 
+    public void propogateReadyEvent() {
+        for (CommandPlugin commandPlugin : getPlugins()) {
+            commandPlugin.onBreadReady(this);
+        }
+
+    }
 }

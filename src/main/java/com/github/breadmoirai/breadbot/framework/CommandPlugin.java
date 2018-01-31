@@ -17,7 +17,6 @@
 package com.github.breadmoirai.breadbot.framework;
 
 import com.github.breadmoirai.breadbot.framework.builder.BreadBotBuilder;
-import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
 
 public interface CommandPlugin {
 
@@ -30,13 +29,11 @@ public interface CommandPlugin {
     /**
      * This method is called when the BreadBotClient has been built.
      *
-     * @param client
+     * @param client the
      */
     default void onBreadReady(BreadBot client) {
+
     }
 
-    default void onHelpEvent(CommandEvent event) {
-        event.reply("This is not the help you are looking for");
-    }
 
 }

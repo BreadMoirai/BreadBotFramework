@@ -148,6 +148,12 @@ public class BreadBotBuilder implements
     }
 
     @Override
+    public BreadBotBuilder addEventWaiterPlugin() {
+        CommandPluginBuilder.super.addEventWaiterPlugin();
+        return this;
+    }
+
+    @Override
     public CommandHandleBuilder createCommand(Class<?> commandClass) {
         Checks.notNull(commandClass, "commandClass");
         CommandHandleBuilderInternal commandHandle = factory.createCommand(commandClass);
@@ -366,9 +372,9 @@ public class BreadBotBuilder implements
     }
 
     @Override
-    public <T> BreadBotBuilder addCommandModifier(Class<T> propertyType, BiConsumer<T, CommandHandleBuilder> configurator) {
+    public <T> BreadBotBuilder bindCommandModifier(Class<T> propertyType, BiConsumer<T, CommandHandleBuilder> configurator) {
         Checks.notNull(configurator, "configurator");
-        commandProperties.addCommandModifier(propertyType, configurator);
+        commandProperties.bindCommandModifier(propertyType, configurator);
         for (CommandHandleBuilder commandBuilder : commandBuilders) {
             applyCommandModifierRecursive(propertyType, configurator, commandBuilder);
         }
@@ -386,9 +392,9 @@ public class BreadBotBuilder implements
     }
 
     @Override
-    public <T> BreadBotBuilder addParameterModifier(Class<T> propertyType, BiConsumer<T, CommandParameterBuilder> configurator) {
+    public <T> BreadBotBuilder bindParameterModifier(Class<T> propertyType, BiConsumer<T, CommandParameterBuilder> configurator) {
         Checks.notNull(configurator, "configurator");
-        commandProperties.addParameterModifier(propertyType, configurator);
+        commandProperties.bindParameterModifier(propertyType, configurator);
         for (CommandHandleBuilder c : commandBuilders) {
             applyParameterModifierRecursive(propertyType, configurator, c);
         }
@@ -438,26 +444,26 @@ public class BreadBotBuilder implements
     }
 
     @Override
-    public <T> BreadBotBuilder associatePreprocessorFactory(String identifier, Class<T> propertyType, Function<T, CommandPreprocessorFunction> factory) {
-        commandProperties.associatePreprocessorFactory(identifier, propertyType, factory);
+    public <T> BreadBotBuilder bindPreprocessorFactory(String identifier, Class<T> propertyType, Function<T, CommandPreprocessorFunction> factory) {
+        commandProperties.bindPreprocessorFactory(identifier, propertyType, factory);
         return this;
     }
 
     @Override
-    public <T> BreadBotBuilder associatePreprocessorPredicateFactory(String identifier, Class<T> propertyType, Function<T, CommandPreprocessorPredicate> factory) {
-        commandProperties.associatePreprocessorPredicateFactory(identifier, propertyType, factory);
+    public <T> BreadBotBuilder bindPreprocessorPredicateFactory(String identifier, Class<T> propertyType, Function<T, CommandPreprocessorPredicate> factory) {
+        commandProperties.bindPreprocessorPredicateFactory(identifier, propertyType, factory);
         return this;
     }
 
     @Override
-    public BreadBotBuilder associatePreprocessor(String identifier, Class<?> propertyType, CommandPreprocessorFunction function) {
-        commandProperties.associatePreprocessor(identifier, propertyType, function);
+    public BreadBotBuilder bindPreprocessor(String identifier, Class<?> propertyType, CommandPreprocessorFunction function) {
+        commandProperties.bindPreprocessor(identifier, propertyType, function);
         return this;
     }
 
     @Override
-    public BreadBotBuilder associatePreprocessorPredicate(String identifier, Class<?> propertyType, CommandPreprocessorPredicate predicate) {
-        commandProperties.associatePreprocessorPredicate(identifier, propertyType, predicate);
+    public BreadBotBuilder bindPreprocessorPredicate(String identifier, Class<?> propertyType, CommandPreprocessorPredicate predicate) {
+        commandProperties.bindPreprocessorPredicate(identifier, propertyType, predicate);
         return this;
     }
 
@@ -484,8 +490,8 @@ public class BreadBotBuilder implements
     }
 
     @Override
-    public <T> BreadBotBuilder putTypeParser(Class<T> type, TypeParser<T> parser) {
-        argumentTypes.putTypeParser(type, parser);
+    public <T> BreadBotBuilder bindTypeParser(Class<T> type, TypeParser<T> parser) {
+        argumentTypes.bindTypeParser(type, parser);
         return this;
     }
 
@@ -501,8 +507,8 @@ public class BreadBotBuilder implements
     }
 
     @Override
-    public BreadBotBuilder addTypeModifier(Class<?> parameterType, Consumer<CommandParameterBuilder> modifier) {
-        argumentTypes.addTypeModifier(parameterType, modifier);
+    public BreadBotBuilder bindTypeModifier(Class<?> parameterType, Consumer<CommandParameterBuilder> modifier) {
+        argumentTypes.bindTypeModifier(parameterType, modifier);
         for (CommandHandleBuilderInternal commandBuilder : commandBuilders) {
             applyTypeModifierRecursive(commandBuilder, parameterType, modifier);
         }
@@ -526,8 +532,8 @@ public class BreadBotBuilder implements
     }
 
     @Override
-    public <T> BreadBotBuilder registerResultHandler(Class<T> resultType, CommandResultHandler<T> handler) {
-        resultManager.registerResultHandler(resultType, handler);
+    public <T> BreadBotBuilder bindResultHandler(Class<T> resultType, CommandResultHandler<T> handler) {
+        resultManager.bindResultHandler(resultType, handler);
         return this;
     }
 
@@ -596,6 +602,8 @@ public class BreadBotBuilder implements
             commandEventFactory = new CommandEventFactoryImpl(getPlugin(PrefixPlugin.class));
         final List<CommandHandleImpl> build = commandBuilders.stream().map(o -> o.build(null)).collect(Collectors.toList());
         commands.addAll(build);
-        return new BreadBotClientImpl(plugins, commands, resultManager, argumentTypes, commandEventFactory, preProcessPredicate, shouldEvaluateCommandOnMessageUpdate);
+        final BreadBotClientImpl breadBotClient = new BreadBotClientImpl(plugins, commands, resultManager, argumentTypes, commandEventFactory, preProcessPredicate, shouldEvaluateCommandOnMessageUpdate);
+        breadBotClient.propogateReadyEvent();
+        return breadBotClient;
     }
 }

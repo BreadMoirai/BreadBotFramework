@@ -1,5 +1,5 @@
 /*
- *        Copyright 2017 Ton Ly (BreadMoirai)
+ *     Copyright 2017-2018 Ton Ly
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -14,13 +14,11 @@
  *   limitations under the License.
  */
 
-package com.github.breadmoirai.breadbot.framework.builder;
+package com.github.breadmoirai.breadbot.plugins.waiter;
 
-import com.github.breadmoirai.breadbot.framework.command.CommandResultHandler;
+@FunctionalInterface
+public interface ObjectIntPredicate<T> {
 
-public interface CommandResultManagerBuilder {
+    boolean test(T t, int i);
 
-    <T> CommandResultManagerBuilder bindResultHandler(Class<T> resultType, CommandResultHandler<T> handler);
-
-    <T> CommandResultHandler<? super T> getResultHandler(Class<T> resultType);
 }

@@ -23,6 +23,7 @@ import com.github.breadmoirai.breadbot.plugins.owner.ApplicationOwnerPlugin;
 import com.github.breadmoirai.breadbot.plugins.owner.StaticOwnerPlugin;
 import com.github.breadmoirai.breadbot.plugins.prefix.PrefixPlugin;
 import com.github.breadmoirai.breadbot.plugins.prefix.UnmodifiablePrefixPlugin;
+import com.github.breadmoirai.breadbot.plugins.waiter.EventWaiterPlugin;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.utils.Checks;
 
@@ -128,6 +129,10 @@ public interface CommandPluginBuilder {
             addPlugin(new StaticOwnerPlugin(owners));
         }
         return this;
+    }
+
+    default CommandPluginBuilder addEventWaiterPlugin() {
+        return addPlugin(new EventWaiterPlugin());
     }
 
 

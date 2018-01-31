@@ -10,7 +10,7 @@ public abstract class OwnerPlugin implements CommandPlugin {
 
     @Override
     public final void initialize(BreadBotBuilder builder) {
-        builder.associatePreprocessorPredicate("owner", Owner.class, event -> isOwner(event.getMember()));
+        builder.bindPreprocessorPredicate("owner", Owner.class, event -> isOwner(event.getMember()));
     }
 
 

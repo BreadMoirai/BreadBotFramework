@@ -1,5 +1,5 @@
 /*
- *        Copyright 2017 Ton Ly (BreadMoirai)
+ *        Copyright 2017-2018 Ton Ly (BreadMoirai)
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -48,7 +48,8 @@ public class CommandResponseMessage extends CommandResponse {
     private FileSender file;
     private long delay;
     private TimeUnit unit;
-    private Consumer<Message> success;
+    private Consumer<Message> success = m -> {
+    };
     private Consumer<Throwable> failure;
 
     public CommandResponseMessage(TextChannel channel) {
@@ -62,10 +63,10 @@ public class CommandResponseMessage extends CommandResponse {
 
     @Override
     public void dispatch(LongConsumer linkReceiver) {
-        if (builder != null && !builder.mustSplit()) {
-            message = builder.buildMessage();
-        }
-        if (builder != null && !builder.mustSplit() || builder == null) {
+        if (!builder.mustSplit()) {
+            if (message == null) {
+                message = builder.buildMessage();
+            }
             final RestAction<Message> restAction;
             if (file != null) {
                 restAction = file.sendFile(channel, message);
@@ -114,7 +115,9 @@ public class CommandResponseMessage extends CommandResponse {
     }
 
     public RMessageBuilder builder() {
-        builder = new RMessageBuilder();
+        if (builder == null) {
+            builder = new RMessageBuilder();
+        }
         return builder;
     }
 
@@ -520,12 +523,14 @@ public class CommandResponseMessage extends CommandResponse {
         }
 
         private Message buildMessage() {
-            builder.setEmbed(embed.getEmbedBuilder().build());
+            if (embed != null)
+                builder.setEmbed(embed.getEmbedBuilder().build()).build();
             return builder.build();
         }
 
         private Queue<Message> buildMessages() {
-            builder.setEmbed(embed.getEmbedBuilder().build());
+            if (embed != null)
+                builder.setEmbed(embed.getEmbedBuilder().build());
             return builder.buildAll(splitPolicy);
         }
 

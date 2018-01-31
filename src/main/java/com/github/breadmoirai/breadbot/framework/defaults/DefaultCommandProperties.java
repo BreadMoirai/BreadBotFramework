@@ -69,11 +69,11 @@ public class DefaultCommandProperties {
     }
 
     private void addParameterModifiers(CommandPropertiesManagerImpl cp) {
-        cp.addParameterModifier(Name.class, (p, builder) -> builder.setName(p.value()));
-        cp.addParameterModifier(AbsentArgumentHandler.class, (p, builder) -> builder.setOnAbsentArgument(p));
-        cp.addParameterModifier(Required.class, (p, builder) -> builder.setRequired(true));
-        cp.addParameterModifier(Index.class, (p, builder) -> builder.setIndex(p.value()));
-        cp.addParameterModifier(MatchRegex.class, (p, builder) -> {
+        cp.bindParameterModifier(Name.class, (p, builder) -> builder.setName(p.value()));
+        cp.bindParameterModifier(AbsentArgumentHandler.class, (p, builder) -> builder.setOnAbsentArgument(p));
+        cp.bindParameterModifier(Required.class, (p, builder) -> builder.setRequired(true));
+        cp.bindParameterModifier(Index.class, (p, builder) -> builder.setIndex(p.value()));
+        cp.bindParameterModifier(MatchRegex.class, (p, builder) -> {
             final String value = p.value();
             final Pattern compile;
             try {
@@ -84,9 +84,9 @@ public class DefaultCommandProperties {
             }
             builder.addArgumentPredicate(arg -> arg.matches(compile));
         });
-        cp.addParameterModifier(Width.class, (p, builder) -> builder.setWidth(p.value()));
-        cp.addParameterModifier(Contiguous.class, (p, builder) -> builder.setContiguous(p.value()));
-        cp.addParameterModifier(Hexadecimal.class, (p, builder) -> {
+        cp.bindParameterModifier(Width.class, (p, builder) -> builder.setWidth(p.value()));
+        cp.bindParameterModifier(Contiguous.class, (p, builder) -> builder.setContiguous(p.value()));
+        cp.bindParameterModifier(Hexadecimal.class, (p, builder) -> {
             final Class<?> type = builder.getDeclaringParameter().getType();
             if (type == Integer.class || type == int.class) {
                 builder.setTypeParser(arg -> arg.isHex() ? arg.parseIntFromHex() : null);
@@ -96,7 +96,7 @@ public class DefaultCommandProperties {
                 builder.addArgumentPredicate(CommandArgument::isHex);
             }
         });
-        cp.addParameterModifier(Numeric.class, (p, builder) -> {
+        cp.bindParameterModifier(Numeric.class, (p, builder) -> {
             switch (p.value()) {
                 case NUMBER:
                     builder.addArgumentPredicate(CommandArgument::isNumeric);
@@ -112,7 +112,7 @@ public class DefaultCommandProperties {
                     break;
             }
         });
-        cp.addParameterModifier(Author.class, (prop, param) -> {
+        cp.bindParameterModifier(Author.class, (prop, param) -> {
             final Class<?> type = param.getDeclaringParameter().getType();
             if (type == Member.class) {
                 if (!prop.unlessMention()) {
@@ -157,26 +157,26 @@ public class DefaultCommandProperties {
     }
 
     private void addCommandModifiers(CommandPropertiesManagerImpl cp) {
-        cp.addCommandModifier(Command.class, (p, builder) -> {
+        cp.bindCommandModifier(Command.class, (p, builder) -> {
             if (p.value().length != 0) builder.setKeys(p.value());
         });
-        cp.addCommandModifier(MainCommand.class, (p, builder) -> {
+        cp.bindCommandModifier(MainCommand.class, (p, builder) -> {
             if (p.value().length != 0) builder.setKeys(p.value());
         });
-        cp.addCommandModifier(Name.class, (p, builder) -> builder.setName(p.value()));
-        cp.addCommandModifier(Group.class, (p, builder) -> builder.setGroup(p.value()));
-        cp.addCommandModifier(Description.class, (p, builder) -> builder.setDescription(p.value()));
-        cp.addCommandModifier(RequiredParameters.class, (p, builder) -> {
+        cp.bindCommandModifier(Name.class, (p, builder) -> builder.setName(p.value()));
+        cp.bindCommandModifier(Group.class, (p, builder) -> builder.setGroup(p.value()));
+        cp.bindCommandModifier(Description.class, (p, builder) -> builder.setDescription(p.value()));
+        cp.bindCommandModifier(RequiredParameters.class, (p, builder) -> {
             for (int i : p.value()) {
                 builder.configureParameter(i, param -> param.setRequired(true));
             }
         });
-        cp.addCommandModifier(Description.class, (p, builder) -> builder.setDescription(p.value()));
-        cp.addCommandModifier(Delimiter.class, (p, builder) -> {
+        cp.bindCommandModifier(Description.class, (p, builder) -> builder.setDescription(p.value()));
+        cp.bindCommandModifier(Delimiter.class, (p, builder) -> {
             builder.setSplitRegex(p.regex(), p.limit());
         });
 
-        cp.addCommandModifier(null, (o, builder) -> {
+        cp.bindCommandModifier(null, (o, builder) -> {
             Class<?> declaringClass = builder.getDeclaringClass();
             if (Consumer.class.isAssignableFrom(declaringClass)) {
                 setGroupToPackage(builder, declaringClass);
@@ -198,7 +198,7 @@ public class DefaultCommandProperties {
             setGroupToPackage(builder, declaringClass);
         });
 
-        cp.addCommandModifier(null, (nullO, builder) -> {
+        cp.bindCommandModifier(null, (nullO, builder) -> {
             Class<?> declaringClass = builder.getDeclaringClass();
             if (Consumer.class.isAssignableFrom(declaringClass))
                 return;
