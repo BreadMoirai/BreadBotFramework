@@ -241,17 +241,19 @@ public class BreadBotClientImpl implements BreadBot, EventListener {
         final JDA jda = event.getJDA();
         setJDA(jda);
         final List<Object> registeredListeners = jda.getRegisteredListeners();
-        jda.removeEventListener(registeredListeners);
         final IEventManager eventManager = ((JDAImpl) jda).getEventManager();
+        for (Object registeredListener : registeredListeners) {
+            eventManager.unregister(registeredListener);
+        }
         if (eventManager instanceof InterfacedEventManager) {
             for (CommandPlugin module : modules) {
                 if (module instanceof EventListener) {
-                    jda.addEventListener(module);
+                    eventManager.register(module);
                 }
             }
         } else {
             for (CommandPlugin module : modules) {
-                jda.addEventListener(module);
+                eventManager.register(module);
             }
         }
         eventManager.handle(event);
