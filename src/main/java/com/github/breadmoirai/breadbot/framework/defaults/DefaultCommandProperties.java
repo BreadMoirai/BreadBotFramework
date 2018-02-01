@@ -26,6 +26,7 @@ import com.github.breadmoirai.breadbot.framework.annotation.command.Group;
 import com.github.breadmoirai.breadbot.framework.annotation.command.MainCommand;
 import com.github.breadmoirai.breadbot.framework.annotation.command.RequiredParameters;
 import com.github.breadmoirai.breadbot.framework.annotation.parameter.Author;
+import com.github.breadmoirai.breadbot.framework.annotation.parameter.Content;
 import com.github.breadmoirai.breadbot.framework.annotation.parameter.Contiguous;
 import com.github.breadmoirai.breadbot.framework.annotation.parameter.Hexadecimal;
 import com.github.breadmoirai.breadbot.framework.annotation.parameter.Index;
@@ -151,6 +152,25 @@ public class DefaultCommandProperties {
                             }
                         }
                     });
+                }
+            }
+        });
+        cp.bindParameterModifier(Content.class, (content, command) -> {
+            if (command.getDeclaringParameter().getType() == String.class) {
+                switch (content.value()) {
+                    case RAW:
+                        command.setParser((parameter, list, parser) -> parser.getEvent().getMessage().getContentRaw());
+                        break;
+                    case DISPLAY:
+                        command.setParser((parameter, list, parser) -> parser.getEvent().getMessage().getContentDisplay());
+                        break;
+                    case STRIPPED:
+                        command.setParser((parameter, list, parser) -> parser.getEvent().getMessage().getContentStripped());
+                        break;
+                    case RAW_TRIMMED:
+                        command.setParser((parameter, list, parser) -> parser.getEvent().getContent());
+                        break;
+
                 }
             }
         });
