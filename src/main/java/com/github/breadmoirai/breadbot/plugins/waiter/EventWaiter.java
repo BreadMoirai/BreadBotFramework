@@ -34,13 +34,17 @@ public class EventWaiter implements EventListener {
 
     private final Map<Class<? extends Event>, List<EventAction>> waitingEvents;
 
-    private final ScheduledExecutorService threadpool;
+    private final ScheduledExecutorService executorService;
 
     public EventWaiter() {
-        waitingEvents = new HashMap<>();
-        threadpool = Executors.newSingleThreadScheduledExecutor();
+        this.waitingEvents = new HashMap<>();
+        this.executorService = Executors.newSingleThreadScheduledExecutor();
     }
 
+    public EventWaiter(ScheduledExecutorService executorService) {
+        this.waitingEvents = new HashMap<>();
+        this.executorService = executorService;
+    }
 
     public <T extends Event> EventActionBuilder<T, Void> waitFor(Class<T> eventClass) {
         return new EventActionBuilderImpl<>(eventClass, this);
@@ -63,7 +67,7 @@ public class EventWaiter implements EventListener {
     }
 
     ScheduledFuture<?> schedule(Runnable command, long delay, TimeUnit unit) {
-        return threadpool.schedule(command, delay, unit);
+        return executorService.schedule(command, delay, unit);
     }
 
     private <T extends Event> List<EventAction> getActions(Class<T> eventType) {
@@ -92,7 +96,7 @@ public class EventWaiter implements EventListener {
                 list.removeAll(remove);
             }
             if (event instanceof ShutdownEvent) {
-                threadpool.shutdown();
+                executorService.shutdown();
             }
             c = c.getSuperclass();
         }
