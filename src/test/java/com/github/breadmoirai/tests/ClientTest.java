@@ -290,7 +290,7 @@ public class ClientTest {
     public void abstractCommandTest() {
         setupBread(bread -> bread.addCommand(new AbstractCommand() {
             {
-                this.keys = new String[]{"test"};
+                setKeys("test");
             }
 
             @Override

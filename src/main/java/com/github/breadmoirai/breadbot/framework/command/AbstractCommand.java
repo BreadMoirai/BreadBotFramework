@@ -23,10 +23,13 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+/**
+ * Do not use for help commands. Logic is not implemented.
+ */
 public abstract class AbstractCommand implements Command {
 
-    protected String[] keys;
-    protected String name, group, description;
+    private String[] keys;
+    private String name, group, description;
     private Map<String, Command> children;
     private Command parent;
 
@@ -54,6 +57,11 @@ public abstract class AbstractCommand implements Command {
 
     @Override
     public boolean handle(CommandEventInternal event, Iterator<String> keyItr) {
+        if (keyItr != null && keyItr.hasNext() && children != null) {
+            final Command child = children.get(keyItr.next());
+            if (child != null) if (child.handle(event, keyItr)) return true;
+        }
+        event.setCommand(this);
         onCommand(event);
         event.getManager().complete();
         return true;
