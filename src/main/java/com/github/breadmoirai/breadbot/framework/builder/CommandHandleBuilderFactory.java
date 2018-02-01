@@ -36,6 +36,21 @@ public interface CommandHandleBuilderFactory {
         return this;
     }
 
+    /**
+     * Creates a command that automatically falls back to it's
+     * parent command if a suitable child is not present.
+     *
+     * @param configurator A configurator that should set the keys at the least.
+     * @return this
+     */
+    default CommandHandleBuilderFactory addEmptyCommand(Consumer<CommandHandleBuilder> configurator) {
+        return addCommand(event -> {
+        }, command -> {
+            command.addPreprocessorPredicate("autofail", o -> false);
+            configurator.accept(command);
+        });
+    }
+
     default CommandHandleBuilderFactory addCommand(Class<?> commandClass, Consumer<CommandHandleBuilder> configurator) {
         Checks.notNull(configurator, "configurator");
         createCommandsFromClasses(commandClass).forEach(configurator);

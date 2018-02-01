@@ -211,6 +211,12 @@ public interface CommandHandleBuilder extends CommandHandleBuilderFactory {
     }
 
     @Override
+    default CommandHandleBuilderFactory addEmptyCommand(Consumer<CommandHandleBuilder> configurator) {
+        CommandHandleBuilderFactory.super.addEmptyCommand(configurator);
+        return this;
+    }
+
+    @Override
     default CommandHandleBuilder addCommand(Class<?> commandClass, Consumer<CommandHandleBuilder> configurator) {
         CommandHandleBuilderFactory.super.addCommand(commandClass, configurator);
         return this;

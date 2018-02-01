@@ -82,6 +82,7 @@ public class BreadBotBuilder implements
         resultManager = new CommandResultManagerImpl();
     }
 
+
     @Override
     public BreadBotBuilder addPlugin(Collection<CommandPlugin> plugins) {
         Checks.noneNull(plugins, "plugins");
@@ -116,14 +117,6 @@ public class BreadBotBuilder implements
     }
 
     @Override
-    public CommandHandleBuilder createCommand(Consumer<CommandEvent> onCommand) {
-        Checks.notNull(onCommand, "onCommand");
-        CommandHandleBuilderInternal commandHandle = factory.createCommand(onCommand);
-        commandBuilders.add(commandHandle);
-        return commandHandle;
-    }
-
-    @Override
     public BreadBotBuilder addStaticPrefix(String prefix) {
         CommandPluginBuilder.super.addStaticPrefix(prefix);
         return this;
@@ -152,6 +145,21 @@ public class BreadBotBuilder implements
         CommandPluginBuilder.super.addEventWaiterPlugin();
         return this;
     }
+
+    @Override
+    public CommandHandleBuilder createCommand(Consumer<CommandEvent> onCommand) {
+        Checks.notNull(onCommand, "onCommand");
+        CommandHandleBuilderInternal commandHandle = factory.createCommand(onCommand);
+        commandBuilders.add(commandHandle);
+        return commandHandle;
+    }
+
+    @Override
+    public BreadBotBuilder addEmptyCommand(Consumer<CommandHandleBuilder> configurator) {
+        CommandHandleBuilderFactory.super.addEmptyCommand(configurator);
+        return this;
+    }
+
 
     @Override
     public CommandHandleBuilder createCommand(Class<?> commandClass) {
