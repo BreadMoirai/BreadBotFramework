@@ -30,7 +30,7 @@ plugins {
 final author = 'BreadMoirai'
 final artifactId = 'breadbot-framework'
 group "com.github.${author.toLowerCase()}"
-version '0.12.0'
+version '0.12.1'
 
 //project.hasProperty never seems to work properly
 final boolean keysArePresent = false
@@ -72,7 +72,10 @@ githubRelease {
     if (keysArePresent)
         token = project.getProperty('github.key').toString()
     String version = project.version
-    it.body = "\n## Adding as Dependency\n### Gradle\n```gradle\nrepositories {\n  jcenter()\n}\n\ndependencies {\n  compile '$project.group:$artifactId:$project.version'\n}\n```\n\n### Maven\n```xml\n<repository>\n  <id>jcenter</id>\n  <name>jcenter</name>\n  <url>http://jcenter.bintray.com/</url>\n</repository>\n\n<dependency>\n  <groupId>$project.group</groupId>\n  <artifactId>$artifactId</artifactId>\n  <version>$project.version</version>\n  <type>pom</type>\n</dependency>\n```"
+    def title = ""
+    it.name = "$version $title"
+    def content = ""
+    it.body = "$content\n## Adding as Dependency\n### Gradle\n```gradle\nrepositories {\n  jcenter()\n}\n\ndependencies {\n  compile '$project.group:$artifactId:$project.version'\n}\n```\n\n### Maven\n```xml\n<repository>\n  <id>jcenter</id>\n  <name>jcenter</name>\n  <url>http://jcenter.bintray.com/</url>\n</repository>\n\n<dependency>\n  <groupId>$project.group</groupId>\n  <artifactId>$artifactId</artifactId>\n  <version>$project.version</version>\n  <type>pom</type>\n</dependency>\n```"
     FilenameFilter filter = { dir, file -> file.contains(version) }
     releaseAssets = jar.destinationDir.listFiles filter
 //    println releaseAssets.findAll()

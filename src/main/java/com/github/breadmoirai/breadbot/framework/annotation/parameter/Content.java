@@ -3,11 +3,18 @@ package com.github.breadmoirai.breadbot.framework.annotation.parameter;
 import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
 import net.dv8tion.jda.core.entities.Message;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
 import static com.github.breadmoirai.breadbot.framework.annotation.parameter.Content.Type.RAW_TRIMMED;
 
 /**
  * Sets this string parameter to represent the message contents.
  */
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.PARAMETER)
 public @interface Content {
 
     /**
