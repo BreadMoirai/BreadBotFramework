@@ -17,8 +17,13 @@
 package com.github.breadmoirai.breadbot.framework.defaults;
 
 import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
+import com.github.breadmoirai.breadbot.framework.parameter.ArgumentParser;
 import com.github.breadmoirai.breadbot.framework.parameter.CommandArgument;
+import com.github.breadmoirai.breadbot.framework.parameter.CommandArgumentList;
+import com.github.breadmoirai.breadbot.framework.parameter.CommandParameter;
+import com.github.breadmoirai.breadbot.framework.parameter.CommandParser;
 import com.github.breadmoirai.breadbot.framework.parameter.TypeParser;
+import com.github.breadmoirai.breadbot.framework.parameter.internal.ArgumentParserImpl;
 import com.github.breadmoirai.breadbot.framework.parameter.internal.builder.CollectionTypes;
 import com.github.breadmoirai.breadbot.framework.parameter.internal.builder.CommandParameterBuilderImpl;
 import com.github.breadmoirai.breadbot.framework.parameter.internal.builder.CommandParameterTypeManagerImpl;
@@ -29,7 +34,6 @@ import net.dv8tion.jda.core.entities.Emote;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
@@ -203,8 +207,20 @@ public class DefaultCommandParameters {
 
         map.bindTypeModifier(Message.class, p -> p.setParser((parameter, list, parser) -> parser.getEvent().getMessage()));
         map.bindTypeModifier(Guild.class, p -> p.setParser((parameter, list, parser) -> parser.getEvent().getGuild()));
-        map.bindTypeModifier(TextChannel.class, p -> p.setParser((parameter, list, parser) -> parser.getEvent().getChannel()));
-        map.bindTypeModifier(MessageChannel.class, p -> p.setParser((parameter, list, parser) -> parser.getEvent().getChannel()));
+        map.bindTypeModifier(TextChannel.class, param -> ((CommandParameterBuilderImpl) param).setArgumentParser(p ->
+                new ArgumentParser() {
+                    private final ArgumentParserImpl argumentParser = new ArgumentParserImpl(p.getIndex(), p.getWidth(), false, null, p.getTypeParser());
+
+                    @Override
+                    public Object parse(CommandParameter parameter, CommandArgumentList list, CommandParser parser) {
+                        final Object parse = argumentParser.parse(parameter, list, parser);
+                        if (parse != null) {
+                            return parse;
+                        } else {
+                            return parser.getEvent().getTextChannel();
+                        }
+                    }
+                }));
         map.bindTypeModifier(Message.Attachment.class, p -> p.setParser((parameter, list, parser) -> parser.getEvent().getMessage().getAttachments().stream().findFirst().orElse(null)));
     }
 
