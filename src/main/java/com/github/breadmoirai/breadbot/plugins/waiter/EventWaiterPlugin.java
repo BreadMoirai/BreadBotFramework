@@ -6,9 +6,15 @@ import net.dv8tion.jda.core.events.Event;
 import net.dv8tion.jda.core.events.ReadyEvent;
 import net.dv8tion.jda.core.hooks.EventListener;
 
+import java.util.concurrent.ScheduledExecutorService;
+
 public class EventWaiterPlugin implements CommandPlugin, EventListener {
 
     private final EventWaiter eventWaiter;
+
+    public EventWaiterPlugin(ScheduledExecutorService service) {
+        this.eventWaiter = new EventWaiter(service);
+    }
 
     public EventWaiterPlugin() {
         eventWaiter = new EventWaiter();

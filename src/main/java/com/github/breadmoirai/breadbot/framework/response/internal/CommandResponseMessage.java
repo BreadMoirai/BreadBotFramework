@@ -24,8 +24,8 @@ import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.MessageEmbed;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageDeleteEvent;
+import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.utils.Checks;
 
@@ -34,7 +34,6 @@ import java.io.File;
 import java.io.InputStream;
 import java.time.Instant;
 import java.time.temporal.TemporalAccessor;
-import java.util.Formattable;
 import java.util.Queue;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
@@ -128,21 +127,21 @@ public class CommandResponseMessage extends CommandResponse {
          *
          * @param file the file to upload
          * @return this instance
-         * @throws java.lang.IllegalArgumentException                              <ul>
-         *                                                                         <li>Provided {@code file} is null.</li>
-         *                                                                         <li>Provided {@code file} does not exist.</li>
-         *                                                                         <li>Provided {@code file} is unreadable.</li>
-         *                                                                         <li>Provided {@code file} is greater than 8 MiB on a normal or 50 MiB on a nitro account.</li>
-         *                                                                         <li>Provided {@link net.dv8tion.jda.core.entities.Message Message} is not {@code null} <b>and</b>
-         *                                                                         contains a {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbed} which
-         *                                                                         is not {@link net.dv8tion.jda.core.entities.MessageEmbed#isSendable(net.dv8tion.jda.core.AccountType) sendable}</li>
-         *                                                                         </ul>
-         * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException If the logged in account does not have
-         *                                                                         <ul>
-         *                                                                         <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}</li>
-         *                                                                         <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}</li>
-         *                                                                         <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_ATTACH_FILES Permission.MESSAGE_ATTACH_FILES}</li>
-         *                                                                         </ul>
+         * @throws IllegalArgumentException        <ul>
+         *                                         <li>Provided {@code file} is null.</li>
+         *                                         <li>Provided {@code file} does not exist.</li>
+         *                                         <li>Provided {@code file} is unreadable.</li>
+         *                                         <li>Provided {@code file} is greater than 8 MiB on a normal or 50 MiB on a nitro account.</li>
+         *                                         <li>Provided {@link net.dv8tion.jda.core.entities.Message Message} is not {@code null} <b>and</b>
+         *                                         contains a {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbed} which
+         *                                         is not {@link net.dv8tion.jda.core.entities.MessageEmbed#isSendable(net.dv8tion.jda.core.AccountType) sendable}</li>
+         *                                         </ul>
+         * @throws InsufficientPermissionException If the logged in account does not have
+         *                                         <ul>
+         *                                         <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}</li>
+         *                                         <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}</li>
+         *                                         <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_ATTACH_FILES Permission.MESSAGE_ATTACH_FILES}</li>
+         *                                         </ul>
          * @see MessageChannel#sendFile(File, Message)
          */
         public ResponseMessageBuilder upload(File file) {
@@ -158,21 +157,21 @@ public class CommandResponseMessage extends CommandResponse {
          * @param file     the file to upload
          * @param fileName the name of the file for discord
          * @return this instance
-         * @throws java.lang.IllegalArgumentException                              <ul>
-         *                                                                         <li>Provided {@code file} is null.</li>
-         *                                                                         <li>Provided {@code file} does not exist.</li>
-         *                                                                         <li>Provided {@code file} is unreadable.</li>
-         *                                                                         <li>Provided {@code file} is greater than 8 MiB on a normal or 50 MiB on a nitro account.</li>
-         *                                                                         <li>Provided {@link net.dv8tion.jda.core.entities.Message Message} is not {@code null} <b>and</b>
-         *                                                                         contains a {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbed} which
-         *                                                                         is not {@link net.dv8tion.jda.core.entities.MessageEmbed#isSendable(net.dv8tion.jda.core.AccountType) sendable}</li>
-         *                                                                         </ul>
-         * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException If the logged in account does not have
-         *                                                                         <ul>
-         *                                                                         <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}</li>
-         *                                                                         <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}</li>
-         *                                                                         <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_ATTACH_FILES Permission.MESSAGE_ATTACH_FILES}</li>
-         *                                                                         </ul>
+         * @throws IllegalArgumentException        <ul>
+         *                                         <li>Provided {@code file} is null.</li>
+         *                                         <li>Provided {@code file} does not exist.</li>
+         *                                         <li>Provided {@code file} is unreadable.</li>
+         *                                         <li>Provided {@code file} is greater than 8 MiB on a normal or 50 MiB on a nitro account.</li>
+         *                                         <li>Provided {@link net.dv8tion.jda.core.entities.Message Message} is not {@code null} <b>and</b>
+         *                                         contains a {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbed} which
+         *                                         is not {@link net.dv8tion.jda.core.entities.MessageEmbed#isSendable(net.dv8tion.jda.core.AccountType) sendable}</li>
+         *                                         </ul>
+         * @throws InsufficientPermissionException If the logged in account does not have
+         *                                         <ul>
+         *                                         <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}</li>
+         *                                         <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}</li>
+         *                                         <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_ATTACH_FILES Permission.MESSAGE_ATTACH_FILES}</li>
+         *                                         </ul>
          * @see MessageChannel#sendFile(File, String, Message)
          */
         public ResponseMessageBuilder upload(File file, String fileName) {
@@ -430,23 +429,23 @@ public class CommandResponseMessage extends CommandResponse {
         /**
          * This method is an extended form of {@link String#format(String, Object...)}. It allows for all of
          * the token replacement functionality that String.format(String, Object...) supports.
-         * <br>A lot of JDA entities implement {@link Formattable Formattable} and will provide
+         * <br>A lot of JDA entities implement {@link java.util.Formattable Formattable} and will provide
          * specific format outputs for their specific type.
          * <ul>
-         * <li>{@link IMentionable IMentionable}
-         * <br>These will output their {@link IMentionable#getAsMention() getAsMention} by default,
-         * some implementations have alternatives such as {@link User User} and {@link TextChannel TextChannel}.</li>
-         * <li>{@link MessageChannel MessageChannel}
+         * <li>{@link net.dv8tion.jda.core.entities.IMentionable IMentionable}
+         * <br>These will output their {@link net.dv8tion.jda.core.entities.IMentionable#getAsMention() getAsMention} by default,
+         * some implementations have alternatives such as {@link net.dv8tion.jda.core.entities.User User} and {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}.</li>
+         * <li>{@link net.dv8tion.jda.core.entities.MessageChannel MessageChannel}
          * <br>All message channels format to {@code "#" + getName()} by default, TextChannel has special handling
          * and uses the getAsMention output by default and the MessageChannel output as alternative ({@code #} flag).</li>
-         * <li>{@link Message Message}
-         * <br>Messages by default output their {@link Message#getContent() getContent()} value and
-         * as alternative use the {@link Message#getRawContent() getRawContent()} value</li>
+         * <li>{@link net.dv8tion.jda.core.entities.Message Message}
+         * <br>Messages by default output their {@link net.dv8tion.jda.core.entities.Message#getContentDisplay() getContentDisplay()} value and
+         * as alternative use the {@link net.dv8tion.jda.core.entities.Message#getContentRaw() getContentRaw()} value</li>
          * </ul>
          * <p>
          * <p>Example:
          * <br>If you placed the following code in an method handling a
-         * {@link MessageReceivedEvent MessageReceivedEvent}
+         * {@link net.dv8tion.jda.core.events.message.MessageReceivedEvent MessageReceivedEvent}
          * <br><pre>{@code
          * User user = event.getAuthor();
          * MessageBuilder builder = new MessageBuilder();
@@ -457,14 +456,20 @@ public class CommandResponseMessage extends CommandResponse {
          * It would build a message that mentions the author and says that he is really cool!. If the user's
          * name was "Minn" and his discriminator "6688", it would say:
          * <br><pre>  "Minn#6688 is really cool!"</pre>
-         * <br>Note that this uses the {@code #} flag to utilize the alternative format for {@link User User}.
-         * <br>By default it would fallback to {@link IMentionable#getAsMention()}
+         * <br>Note that this uses the {@code #} flag to utilize the alternative format for {@link net.dv8tion.jda.core.entities.User User}.
+         * <br>By default it would fallback to {@link net.dv8tion.jda.core.entities.IMentionable#getAsMention()}
          *
          * @param format a format string.
          * @param args   an array objects that will be used to replace the tokens, they must be
          *               provided in the order that the tokens appear in the provided format string.
-         * @return This instance.
-         * @throws IllegalArgumentException If the provided format string is {@code null} or empty
+         * @return The MessageBuilder instance. Useful for chaining.
+         * @throws IllegalArgumentException         If the provided format string is {@code null} or empty
+         * @throws java.util.IllegalFormatException If a format string contains an illegal syntax,
+         *                                          a format specifier that is incompatible with the given arguments,
+         *                                          insufficient arguments given the format string, or other illegal conditions.
+         *                                          For specification of all possible formatting errors,
+         *                                          see the <a href="../util/Formatter.html#detail">Details</a>
+         *                                          section of the formatter class specification.
          */
         public RMessageBuilder appendFormat(String format, Object... args) {
             builder.appendFormat(format, args);
