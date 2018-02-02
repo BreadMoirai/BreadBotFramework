@@ -33,17 +33,19 @@ import java.util.concurrent.TimeUnit;
 public class EventWaiter implements EventListener {
 
     private final Map<Class<? extends Event>, List<EventAction>> waitingEvents;
-
     private final ScheduledExecutorService executorService;
+    private final boolean myService;
 
     public EventWaiter() {
         this.waitingEvents = new HashMap<>();
         this.executorService = Executors.newSingleThreadScheduledExecutor();
+        myService = true;
     }
 
     public EventWaiter(ScheduledExecutorService executorService) {
         this.waitingEvents = new HashMap<>();
         this.executorService = executorService;
+        myService = false;
     }
 
     public <T extends Event> EventActionBuilder<T, Void> waitFor(Class<T> eventClass) {
@@ -95,8 +97,8 @@ public class EventWaiter implements EventListener {
                 }
                 list.removeAll(remove);
             }
-            if (event instanceof ShutdownEvent) {
-                executorService.shutdown();
+            if (event instanceof ShutdownEvent && myService) {
+                executorService.shutdownNow();
             }
             c = c.getSuperclass();
         }
