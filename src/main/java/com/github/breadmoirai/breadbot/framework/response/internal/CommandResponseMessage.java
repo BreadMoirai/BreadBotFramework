@@ -83,15 +83,15 @@ public class CommandResponseMessage extends CommandResponse {
                 final Message poll = messages.poll();
                 if (!messages.isEmpty()) {
                     if (delay > 0)
-                        channel.sendMessage(message).queueAfter(delay, unit, m -> linkReceiver.accept(m.getIdLong()), failure);
+                        channel.sendMessage(poll).queueAfter(delay, unit, m -> linkReceiver.accept(m.getIdLong()), failure);
                     else
-                        channel.sendMessage(message).queue(m -> linkReceiver.accept(m.getIdLong()), failure);
+                        channel.sendMessage(poll).queue(m -> linkReceiver.accept(m.getIdLong()), failure);
                 } else {
                     final RestAction<Message> restAction;
                     if (file != null) {
-                        restAction = file.sendFile(channel, message);
+                        restAction = file.sendFile(channel, poll);
                     } else {
-                        restAction = channel.sendMessage(message);
+                        restAction = channel.sendMessage(poll);
                     }
                     if (delay > 0)
                         restAction.queueAfter(delay, unit, success.andThen(m -> linkReceiver.accept(m.getIdLong())), failure);
