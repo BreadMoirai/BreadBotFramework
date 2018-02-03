@@ -189,9 +189,12 @@ public class Arguments {
     public static IntStream parseRange(String s) {
         int neg1 = s.charAt(0) == '-' ? 1 : 0;
         int dash = s.indexOf('-', neg1);
-        if (dash == -1 && isInteger(s)) {
-            return IntStream.of(Integer.parseInt(s));
-        }
+        if (dash == -1)
+            if (isInteger(s)) {
+                return IntStream.of(Integer.parseInt(s));
+            } else {
+                return null;
+            }
         if (dash == s.length() - 1) {
             return null;
         }
