@@ -30,7 +30,7 @@ plugins {
 final author = 'BreadMoirai'
 final artifactId = 'breadbot-framework'
 group "com.github.${author.toLowerCase()}"
-version '0.12.4'
+version '0.12.5'
 
 //project.hasProperty never seems to work properly
 final boolean keysArePresent = false
