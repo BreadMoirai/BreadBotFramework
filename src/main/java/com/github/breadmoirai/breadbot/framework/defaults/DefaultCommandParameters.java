@@ -45,6 +45,9 @@ import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.util.Deque;
 import java.util.List;
+import java.util.OptionalDouble;
+import java.util.OptionalInt;
+import java.util.OptionalLong;
 import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
@@ -83,6 +86,12 @@ public class DefaultCommandParameters {
         };
         map.put(INTEGER, intParser);
         map.put(Integer.class, intParser);
+        map.put(OptionalInt.class, arg -> {
+            if (arg.isInteger())
+                return OptionalInt.of(arg.parseInt());
+            else
+                return OptionalInt.empty();
+        });
 
 
         final TypeParser<Long> longParser = (CommandArgument arg) -> {
@@ -94,16 +103,28 @@ public class DefaultCommandParameters {
         };
         map.put(LONG, longParser);
         map.put(Long.class, longParser);
+        map.put(OptionalLong.class, arg -> {
+            if (arg.isLong())
+                return OptionalLong.of(arg.parseLong());
+            else
+                return OptionalLong.empty();
+        });
 
 
         final TypeParser<Float> floatParser = (arg) -> arg.isFloat() ? arg.parseFloat() : null;
         map.put(FLOAT, floatParser);
         map.put(Float.class, floatParser);
 
-
         final TypeParser<Double> doubleParser = (arg) -> arg.isFloat() ? arg.parseDouble() : null;
         map.put(DOUBLE, doubleParser);
         map.put(Double.class, doubleParser);
+
+        map.put(OptionalDouble.class, arg -> {
+            if (arg.isFloat())
+                return OptionalDouble.of(arg.parseDouble());
+            else
+                return OptionalDouble.empty();
+        });
 
 
         final TypeParser<Boolean> boolParser = (arg) -> arg.isBoolean() ? arg.parseBoolean() : null;
