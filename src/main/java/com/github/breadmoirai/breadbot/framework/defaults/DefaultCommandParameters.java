@@ -27,6 +27,7 @@ import com.github.breadmoirai.breadbot.framework.parameter.internal.ArgumentPars
 import com.github.breadmoirai.breadbot.framework.parameter.internal.builder.CollectionTypes;
 import com.github.breadmoirai.breadbot.framework.parameter.internal.builder.CommandParameterBuilderImpl;
 import com.github.breadmoirai.breadbot.framework.parameter.internal.builder.CommandParameterTypeManagerImpl;
+import com.github.breadmoirai.breadbot.util.Arguments;
 import com.github.breadmoirai.breadbot.util.DateTimeMapper;
 import com.github.breadmoirai.breadbot.util.DurationMapper;
 import com.github.breadmoirai.breadbot.util.Emoji;
@@ -38,6 +39,8 @@ import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
 
+import java.awt.*;
+import java.lang.reflect.Field;
 import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.util.Deque;
@@ -178,6 +181,24 @@ public class DefaultCommandParameters {
         map.put(OffsetDateTime.class, new DateTimeMapper());
 
         map.put(String.class, CommandArgument::getArgument);
+
+        map.put(Color.class, (TypeParser<Color>) arg -> {
+            final String strColor = arg.getArgument();
+            try {
+                Field field = java.awt.Color.class.getField(strColor);
+                return (java.awt.Color) field.get(null);
+            } catch (Exception ignored) {
+            }
+            if (Arguments.isHex(strColor)) {
+                final String hexString = Arguments.stripHexPrefix(strColor);
+                final int i = Integer.parseInt(hexString, 16);
+                if (i == 0) {
+                    return new Color(0, 0, 1);
+                }
+                return new Color(i);
+            }
+            return null;
+        });
     }
 
     private void putParameterTypeModifiers(CommandParameterTypeManagerImpl map) {
