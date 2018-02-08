@@ -14,15 +14,18 @@ public class DurationUnitMapper implements TypeParser<Duration> {
         final char[] chars = argument.toCharArray();
         int i = 0;
         int time = 0;
-        while (Character.isDigit(chars[i++])) {
+        while (Character.isDigit(chars[i])) {
             time *= 10;
             time += Character.getNumericValue(chars[i]);
+            i++;
         }
         if (time <= 0) {
             return null;
         }
         //noinspection StatementWithEmptyBody
-        while (Character.isWhitespace(chars[i++])) ;
+        while (Character.isWhitespace(chars[i])) {
+            i++;
+        }
 
         final String unitS = argument.substring(i).toLowerCase();
         final ChronoUnit unit;
