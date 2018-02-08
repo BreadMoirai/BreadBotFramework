@@ -16,6 +16,7 @@
 
 package com.github.breadmoirai.breadbot.framework.builder;
 
+import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
 import com.github.breadmoirai.breadbot.framework.parameter.AbsentArgumentHandler;
 import com.github.breadmoirai.breadbot.framework.parameter.ArgumentParser;
 import com.github.breadmoirai.breadbot.framework.parameter.CommandArgument;
@@ -25,6 +26,7 @@ import com.github.breadmoirai.breadbot.framework.parameter.TypeParser;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 /**
@@ -128,4 +130,15 @@ public interface CommandParameterBuilder {
     <T> T getProperty(Class<T> propertyType);
 
     CommandParameter build();
+
+    /**
+     * Sets the default mapping for a parameter in case none is found
+     *
+     * @param defaultValue a function that produces a value
+     */
+    CommandParameterBuilder setDefaultValue(Function<CommandEvent, ?> defaultValue);
+
+    default CommandParameterBuilder setDefaultValue(Object defaultValue) {
+        return setDefaultValue((e) -> defaultValue);
+    }
 }

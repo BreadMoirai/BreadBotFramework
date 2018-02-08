@@ -38,13 +38,13 @@ import com.github.breadmoirai.breadbot.framework.builder.CommandHandleBuilder;
 import com.github.breadmoirai.breadbot.framework.command.internal.CommandPropertiesManagerImpl;
 import com.github.breadmoirai.breadbot.framework.command.internal.builder.CommandHandleBuilderInternal;
 import com.github.breadmoirai.breadbot.framework.error.BreadBotException;
+import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
 import com.github.breadmoirai.breadbot.framework.parameter.AbsentArgumentHandler;
 import com.github.breadmoirai.breadbot.framework.parameter.ArgumentParser;
 import com.github.breadmoirai.breadbot.framework.parameter.CommandArgument;
 import com.github.breadmoirai.breadbot.framework.parameter.CommandArgumentList;
 import com.github.breadmoirai.breadbot.framework.parameter.CommandParameter;
 import com.github.breadmoirai.breadbot.framework.parameter.CommandParser;
-import com.github.breadmoirai.breadbot.framework.parameter.internal.ArgumentParserImpl;
 import com.github.breadmoirai.breadbot.framework.parameter.internal.builder.CommandParameterBuilderImpl;
 import com.github.breadmoirai.breadbot.util.Arguments;
 import net.dv8tion.jda.core.entities.Member;
@@ -54,6 +54,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -120,38 +121,14 @@ public class DefaultCommandProperties {
                     param.setTypeParser(null);
                     param.setParser((parameter, list, parser) -> parser.getEvent().getMember());
                 } else {
-                    ((CommandParameterBuilderImpl) param).setArgumentParser(p -> new ArgumentParser() {
-                        private final ArgumentParserImpl argumentParser = new ArgumentParserImpl(p.getIndex(), p.getWidth(), false, null, p.getTypeParser());
-
-                        @Override
-                        public Object parse(CommandParameter parameter, CommandArgumentList list, CommandParser parser) {
-                            final Object parse = argumentParser.parse(parameter, list, parser);
-                            if (parse != null) {
-                                return parse;
-                            } else {
-                                return parser.getEvent().getMember();
-                            }
-                        }
-                    });
+                    param.setDefaultValue(CommandEvent::getMember);
                 }
             } else if (type == User.class) {
                 if (!prop.unlessMention()) {
                     param.setTypeParser(null);
                     param.setParser((parameter, list, parser) -> parser.getEvent().getAuthor());
                 } else {
-                    ((CommandParameterBuilderImpl) param).setArgumentParser(p -> new ArgumentParser() {
-                        private final ArgumentParserImpl argumentParser = new ArgumentParserImpl(p.getIndex(), p.getWidth(), false, null, p.getTypeParser());
-
-                        @Override
-                        public Object parse(CommandParameter parameter, CommandArgumentList list, CommandParser parser) {
-                            final Object parse = argumentParser.parse(parameter, list, parser);
-                            if (parse != null) {
-                                return parse;
-                            } else {
-                                return parser.getEvent().getAuthor();
-                            }
-                        }
-                    });
+                    param.setDefaultValue(CommandEvent::getAuthor);
                 }
             }
         });
@@ -168,7 +145,21 @@ public class DefaultCommandProperties {
                         command.setParser((parameter, list, parser) -> parser.getEvent().getMessage().getContentStripped());
                         break;
                     case RAW_TRIMMED:
-                        command.setParser((parameter, list, parser) -> parser.getEvent().getContent());
+                        ((CommandParameterBuilderImpl) command).setArgumentParser(builder -> new ArgumentParser() {
+                            private Function<CommandEvent, ?> defaultValue = builder.getDefaultValue();
+
+                            @Override
+                            public Object parse(CommandParameter parameter, CommandArgumentList list, CommandParser parser) {
+                                final String c = parser.getEvent().getContent();
+                                if (c != null) {
+                                    return c;
+                                } else if (defaultValue != null) {
+                                    return defaultValue.apply(parser.getEvent());
+                                } else {
+                                    return null;
+                                }
+                            }
+                        });
                         break;
 
                 }

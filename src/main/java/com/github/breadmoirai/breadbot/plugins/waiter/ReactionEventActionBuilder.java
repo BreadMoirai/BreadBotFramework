@@ -147,10 +147,11 @@ public interface ReactionEventActionBuilder<T> extends EventActionBuilderExtensi
         return this;
     }
 
+    @SuppressWarnings("Duplicates")
     @Override
     default ReactionEventActionBuilder<T> fromRoles(long... roleIds) {
         Checks.notNull(roleIds, "roleIds");
-        return matching(event -> {
+        return matching((GenericMessageReactionEvent event) -> {
             final List<Role> roles = event.getMember().getRoles();
             for (Role r : roles) {
                 final long id = r.getIdLong();

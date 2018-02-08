@@ -21,6 +21,7 @@ import com.github.breadmoirai.breadbot.framework.builder.BreadBotBuilder;
 import com.github.breadmoirai.breadbot.framework.builder.CommandHandleBuilder;
 import com.github.breadmoirai.breadbot.framework.builder.CommandParameterBuilder;
 import com.github.breadmoirai.breadbot.framework.command.internal.CommandPropertyMapImpl;
+import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
 import com.github.breadmoirai.breadbot.framework.parameter.AbsentArgumentHandler;
 import com.github.breadmoirai.breadbot.framework.parameter.ArgumentParser;
 import com.github.breadmoirai.breadbot.framework.parameter.CommandArgument;
@@ -33,21 +34,13 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.Arrays;
-import java.util.Deque;
-import java.util.List;
-import java.util.Queue;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.stream.DoubleStream;
-import java.util.stream.IntStream;
-import java.util.stream.LongStream;
-import java.util.stream.Stream;
 
 public class CommandParameterBuilderImpl implements CommandParameterBuilder {
-
-    private static final List<Class<?>> COLLECTION_TYPES = Arrays.asList(List.class, Deque.class, Queue.class, Stream.class, IntStream.class, LongStream.class, DoubleStream.class);
+//
+//    private static final List<Class<?>> COLLECTION_TYPES = Arrays.asList(List.class, Deque.class, Queue.class, Stream.class, IntStream.class, LongStream.class, DoubleStream.class);
 
     private final CommandHandleBuilder commandBuilder;
     private final Parameter parameter;
@@ -63,6 +56,7 @@ public class CommandParameterBuilderImpl implements CommandParameterBuilder {
     private boolean contiguous = false;
     private AbsentArgumentHandler absentArgumentHandler = null;
     private Predicate<CommandArgument> argumentPredicate;
+    private Function<CommandEvent, ?> defaultValue;
 
     public CommandParameterBuilderImpl(BreadBotBuilder builder, CommandHandleBuilder commandBuilder, Parameter parameter, CommandPropertyMapImpl map) {
         this.commandBuilder = commandBuilder;
@@ -74,9 +68,9 @@ public class CommandParameterBuilderImpl implements CommandParameterBuilder {
             final Class<?> type = parameter.getType();
             typeParser = this.clientBuilder.getTypeParser(type);
             if (CommandPlugin.class.isAssignableFrom(type)) {
-                this.argumentParser = (p) -> (parameter1, list, parser) -> parser.getEvent().getClient().getPlugin(type);
+                this.argumentParser = (p) -> (param, list, parser) -> parser.getEvent().getClient().getPlugin(type);
             } else {
-                this.argumentParser = (p) -> new ArgumentParserImpl(p.index, p.width, p.mustBePresent, p.absentArgumentHandler, p.typeParser);
+                this.argumentParser = (p) -> new ArgumentParserImpl(p.index, p.width, p.mustBePresent, p.absentArgumentHandler, p.typeParser, p.defaultValue);
             }
             builder.applyTypeModifiers(this);
         } else {
@@ -217,6 +211,12 @@ public class CommandParameterBuilderImpl implements CommandParameterBuilder {
         return this;
     }
 
+    @Override
+    public CommandParameterBuilder setDefaultValue(Function<CommandEvent, ?> defaultValue) {
+        this.defaultValue = defaultValue;
+        return this;
+    }
+
     public Parameter getParameter() {
         return parameter;
     }
@@ -256,4 +256,10 @@ public class CommandParameterBuilderImpl implements CommandParameterBuilder {
     public Predicate<CommandArgument> getArgumentPredicate() {
         return argumentPredicate;
     }
+
+    public Function<CommandEvent, ?> getDefaultValue() {
+        return defaultValue;
+    }
+
+
 }

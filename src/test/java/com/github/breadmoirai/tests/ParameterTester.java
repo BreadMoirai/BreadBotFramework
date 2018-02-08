@@ -20,6 +20,7 @@ import com.github.breadmoirai.breadbot.framework.BreadBot;
 import com.github.breadmoirai.breadbot.framework.builder.BreadBotBuilder;
 import com.github.breadmoirai.breadbot.framework.event.internal.CommandEventInternal;
 import com.github.breadmoirai.tests.commands.NameCommand;
+import com.github.breadmoirai.tests.commands.ParameterFallbackCommand;
 import com.github.breadmoirai.tests.commands.PingCommand;
 import com.github.breadmoirai.tests.commands.SSICommand;
 import com.github.breadmoirai.tests.commands.WikiParameterCommand;
@@ -31,6 +32,8 @@ import static com.github.breadmoirai.tests.MockFactory.mockCommand;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 public class ParameterTester {
@@ -143,6 +146,16 @@ public class ParameterTester {
         assertResponse("!ex is i2noi 2i4 sz", "Error: required [lint] but not found");
     }
 
+    @Test
+    public void fallbackTest() {
+        client = new BreadBotBuilder()
+                .addCommand(ParameterFallbackCommand::new)
+                .build();
+        assertResponse("!fallback to me", "to me");
+        assertResponse("!fallback", "default");
+
+    }
+
     private void assertResponse(final String input, final String expected) {
         CommandEventInternal spy = mockCommand(client, input, MockFactory.UserType.BASIC);
 
@@ -155,6 +168,10 @@ public class ParameterTester {
 
         client.getCommandEngine().handle(spy);
 
-        verify(spy).reply(expected);
+        if (expected != null) {
+            verify(spy, times(1)).reply(expected);
+        } else {
+            verify(spy, never()).reply(anyString());
+        }
     }
 }

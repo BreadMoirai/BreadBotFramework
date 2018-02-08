@@ -71,6 +71,7 @@ public interface CommandEventActionBuilder<T> extends EventActionBuilderExtensio
         return this;
     }
 
+    @SuppressWarnings("Duplicates")
     @Override
     default CommandEventActionBuilder<T> fromRoles(long... roleIds) {
         Checks.notNull(roleIds, "roleIds");

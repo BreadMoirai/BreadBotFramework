@@ -78,36 +78,30 @@ public class DefaultCommandParameters {
         map.bindTypeParser(CommandArgument.class, arg -> arg);
 
         final TypeParser<Integer> intParser = (arg) -> {
-            if (arg.isInteger()) {
+            if (arg.isInteger())
                 return arg.parseInt();
-            } else {
-                return null;
-            }
+            else return null;
         };
         map.put(INTEGER, intParser);
         map.put(Integer.class, intParser);
         map.put(OptionalInt.class, arg -> {
             if (arg.isInteger())
                 return OptionalInt.of(arg.parseInt());
-            else
-                return OptionalInt.empty();
+            else return null;
         });
 
 
         final TypeParser<Long> longParser = (CommandArgument arg) -> {
-            if (arg.isLong()) {
+            if (arg.isLong())
                 return arg.parseLong();
-            } else {
-                return null;
-            }
+            else return null;
         };
         map.put(LONG, longParser);
         map.put(Long.class, longParser);
         map.put(OptionalLong.class, arg -> {
             if (arg.isLong())
                 return OptionalLong.of(arg.parseLong());
-            else
-                return OptionalLong.empty();
+            else return null;
         });
 
 
@@ -122,8 +116,7 @@ public class DefaultCommandParameters {
         map.put(OptionalDouble.class, arg -> {
             if (arg.isFloat())
                 return OptionalDouble.of(arg.parseDouble());
-            else
-                return OptionalDouble.empty();
+            else return null;
         });
 
 
@@ -264,6 +257,10 @@ public class DefaultCommandParameters {
                     }
                 }));
         map.bindTypeModifier(Message.Attachment.class, p -> p.setParser((parameter, list, parser) -> parser.getEvent().getMessage().getAttachments().stream().findFirst().orElse(null)));
+
+        map.bindTypeModifier(OptionalInt.class, p -> p.setDefaultValue(OptionalInt.empty()));
+        map.bindTypeModifier(OptionalDouble.class, p -> p.setDefaultValue(OptionalDouble.empty()));
+        map.bindTypeModifier(OptionalLong.class, p -> p.setDefaultValue(OptionalLong.empty()));
     }
 
 }
