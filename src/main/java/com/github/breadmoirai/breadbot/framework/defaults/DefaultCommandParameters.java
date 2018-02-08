@@ -29,7 +29,7 @@ import com.github.breadmoirai.breadbot.framework.parameter.internal.builder.Comm
 import com.github.breadmoirai.breadbot.framework.parameter.internal.builder.CommandParameterTypeManagerImpl;
 import com.github.breadmoirai.breadbot.util.Arguments;
 import com.github.breadmoirai.breadbot.util.DateTimeMapper;
-import com.github.breadmoirai.breadbot.util.DurationMapper;
+import com.github.breadmoirai.breadbot.util.DurationUnitMapper;
 import com.github.breadmoirai.breadbot.util.Emoji;
 import net.dv8tion.jda.core.entities.Emote;
 import net.dv8tion.jda.core.entities.Guild;
@@ -190,7 +190,7 @@ public class DefaultCommandParameters {
 
         map.put(EMOJI, arg -> arg.isEmoji() ? arg.getEmoji() : null);
 
-        map.put(Duration.class, new DurationMapper());
+        map.put(Duration.class, new DurationUnitMapper());
 
         map.put(OffsetDateTime.class, new DateTimeMapper());
 
@@ -237,6 +237,10 @@ public class DefaultCommandParameters {
         map.bindTypeModifier(IntStream.class, builder -> CollectionTypes.setParserToIntStream(((CommandParameterBuilderImpl) builder)));
         map.bindTypeModifier(LongStream.class, builder -> CollectionTypes.setParserToLongStream(((CommandParameterBuilderImpl) builder)));
         map.bindTypeModifier(DoubleStream.class, builder -> CollectionTypes.setParserToDoubleStream(((CommandParameterBuilderImpl) builder)));
+
+        map.bindTypeModifier(Duration.class, builder -> {
+            CollectionTypes.setParserToDuration(((CommandParameterBuilderImpl) builder));
+        });
 
         map.bindTypeModifier(CommandEvent.class, p -> p.setParser((parameter, list, parser) -> parser.getEvent()));
 

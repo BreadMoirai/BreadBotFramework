@@ -23,6 +23,7 @@ import com.github.breadmoirai.breadbot.framework.parameter.TypeParser;
 import com.github.breadmoirai.breadbot.framework.parameter.internal.ArgumentCollectionBuilder;
 import com.github.breadmoirai.breadbot.framework.parameter.internal.ArgumentParserCollectionImpl;
 
+import java.time.Duration;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
@@ -71,5 +72,10 @@ public class CollectionTypes {
     public static void setParserToDoubleStream(CommandParameterBuilderImpl builder) {
         builder.setTypeParser(arg -> arg.isFloat() ? arg : null);
         builder.setArgumentParser(p -> new ArgumentParserCollectionImpl(p, () -> ArgumentCollectionBuilder.<Stream.Builder<CommandArgument>, CommandArgument>of(Stream::<CommandArgument>builder, Stream.Builder::accept, stream -> stream.build().mapToDouble(CommandArgument::parseDouble))));
+    }
+
+    public static void setParserToDuration(CommandParameterBuilderImpl builder) {
+        //noinspection ResultOfMethodCallIgnored
+        builder.setArgumentParser(p -> new ArgumentParserCollectionImpl(p, () -> ArgumentCollectionBuilder.<Duration, Duration>off(() -> Duration.ZERO, Duration::plus, (d) -> d)));
     }
 }
