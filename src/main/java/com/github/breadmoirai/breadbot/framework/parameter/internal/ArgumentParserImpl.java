@@ -16,6 +16,7 @@
 
 package com.github.breadmoirai.breadbot.framework.parameter.internal;
 
+import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
 import com.github.breadmoirai.breadbot.framework.parameter.AbsentArgumentHandler;
 import com.github.breadmoirai.breadbot.framework.parameter.ArgumentParser;
 import com.github.breadmoirai.breadbot.framework.parameter.CommandArgument;
@@ -26,6 +27,7 @@ import com.github.breadmoirai.breadbot.framework.parameter.TypeParser;
 import com.github.breadmoirai.breadbot.framework.parameter.internal.arguments.GenericCommandArgument;
 
 import java.util.StringJoiner;
+import java.util.function.Function;
 import java.util.function.IntPredicate;
 import java.util.stream.IntStream;
 
@@ -36,13 +38,19 @@ public class ArgumentParserImpl implements ArgumentParser {
     private boolean mustBePresent;
     private AbsentArgumentHandler absentArgumentHandler;
     private TypeParser<?> typeParser;
+    private Function<CommandEvent, ?> defaultValue;
 
     public ArgumentParserImpl(int index, int width, boolean mustBePresent, AbsentArgumentHandler absentArgumentHandler, TypeParser<?> typeParser) {
+        this(index, width, mustBePresent, absentArgumentHandler, typeParser, null);
+    }
+
+    public ArgumentParserImpl(int index, int width, boolean mustBePresent, AbsentArgumentHandler absentArgumentHandler, TypeParser<?> typeParser, Function<CommandEvent, ?> defaultValue) {
         this.index = index;
         this.width = width;
         this.mustBePresent = mustBePresent;
         this.absentArgumentHandler = absentArgumentHandler;
         this.typeParser = typeParser;
+        this.defaultValue = defaultValue;
     }
 
     @Override
@@ -52,15 +60,16 @@ public class ArgumentParserImpl implements ArgumentParser {
         final int increment;
         if (index > 0) {
             i = index - 1;
-            if (i >= list.size())
-                return null;
+            if (i >= list.size()) {
+                return getDefaultOrFail(parameter, parser);
+            }
             final int limit = i + 1;
             condition = value -> value < limit;
             increment = 1;
         } else if (index < 0) {
             i = list.size() + index;
             if (i < 0)
-                return null;
+                return getDefaultOrFail(parameter, parser);
             condition = value -> value >= 0;
             increment = -1;
         } else {
@@ -133,10 +142,24 @@ public class ArgumentParserImpl implements ArgumentParser {
 
         }
 
-        if (mustBePresent) parser.fail();
-        if (absentArgumentHandler != null)
-            absentArgumentHandler.handle(list.getEvent(), parameter);
-        return null;
+        return getDefaultOrFail(parameter, parser);
+    }
+
+    private Object getDefaultOrFail(CommandParameter parameter, CommandParser parser) {
+        if (defaultValue != null) {
+            final Object v = defaultValue.apply(parser.getEvent());
+            if (v == null && mustBePresent) parser.fail();
+            if (absentArgumentHandler != null) {
+                absentArgumentHandler.handle(parser.getEvent(), parameter);
+            }
+            return v;
+        } else {
+            if (mustBePresent) parser.fail();
+            if (absentArgumentHandler != null) {
+                absentArgumentHandler.handle(parser.getEvent(), parameter);
+            }
+            return null;
+        }
     }
 
 }

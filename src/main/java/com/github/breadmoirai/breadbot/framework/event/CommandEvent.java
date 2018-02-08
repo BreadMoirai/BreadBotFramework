@@ -335,8 +335,8 @@ public abstract class CommandEvent extends Event {
 
     public abstract RestActionExtension<Void> replyReaction(String emoji);
 
-    public void replyFormat(String format, Object... args) {
-        reply(String.format(format, args));
+    public CommandResponseMessage.RMessageBuilder replyFormat(String format, Object... args) {
+        return reply(String.format(format, args));
     }
 
     /**

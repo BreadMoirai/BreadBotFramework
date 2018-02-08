@@ -545,7 +545,7 @@ public class CommandResponseMessage extends CommandResponse {
     /**
      * A wrapper around an EmbedBuilder
      */
-    private class REmbedBuilder extends ResponseMessageBuilder {
+    public class REmbedBuilder extends ResponseMessageBuilder {
         private final net.dv8tion.jda.core.EmbedBuilder embed;
 
         private REmbedBuilder() {

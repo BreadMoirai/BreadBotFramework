@@ -28,6 +28,9 @@ import net.dv8tion.jda.core.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.core.utils.Checks;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.IntPredicate;
 import java.util.function.Predicate;
 
@@ -144,10 +147,11 @@ public interface ReactionEventActionBuilder<T> extends EventActionBuilderExtensi
         return this;
     }
 
+    @SuppressWarnings("Duplicates")
     @Override
     default ReactionEventActionBuilder<T> fromRoles(long... roleIds) {
         Checks.notNull(roleIds, "roleIds");
-        return matching(event -> {
+        return matching((GenericMessageReactionEvent event) -> {
             final List<Role> roles = event.getMember().getRoles();
             for (Role r : roles) {
                 final long id = r.getIdLong();
@@ -227,5 +231,32 @@ public interface ReactionEventActionBuilder<T> extends EventActionBuilderExtensi
         });
     }
 
+    @Override
+    ReactionEventActionBuilder<T> condition(Predicate<GenericMessageReactionEvent> condition);
 
+    @Override
+    ReactionEventActionBuilder<T> action(Consumer<GenericMessageReactionEvent> action);
+
+    @Override
+    ReactionEventActionBuilder<T> stopIf(ObjectIntPredicate<GenericMessageReactionEvent> stopper);
+
+    @Override
+    <V2> ReactionEventActionBuilder<V2> finishWithResult(Function<GenericMessageReactionEvent, V2> finisher);
+
+    @Override
+    default ReactionEventActionBuilder<Void> finish(Runnable finisher) {
+        return finishWithResult(event -> {
+            finisher.run();
+            return null;
+        });
+    }
+
+    @Override
+    ReactionEventActionBuilder<T> waitFor(long timeout, TimeUnit unit);
+
+    @Override
+    ReactionEventActionBuilder<T> timeout(Runnable timeoutAction);
+
+    @Override
+    EventActionFuture<T> build();
 }

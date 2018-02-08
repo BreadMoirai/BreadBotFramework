@@ -27,6 +27,7 @@ import com.github.breadmoirai.breadbot.framework.parameter.internal.ArgumentPars
 import com.github.breadmoirai.breadbot.framework.parameter.internal.builder.CollectionTypes;
 import com.github.breadmoirai.breadbot.framework.parameter.internal.builder.CommandParameterBuilderImpl;
 import com.github.breadmoirai.breadbot.framework.parameter.internal.builder.CommandParameterTypeManagerImpl;
+import com.github.breadmoirai.breadbot.util.Arguments;
 import com.github.breadmoirai.breadbot.util.DateTimeMapper;
 import com.github.breadmoirai.breadbot.util.DurationMapper;
 import com.github.breadmoirai.breadbot.util.Emoji;
@@ -38,10 +39,15 @@ import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
 
+import java.awt.*;
+import java.lang.reflect.Field;
 import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.util.Deque;
 import java.util.List;
+import java.util.OptionalDouble;
+import java.util.OptionalInt;
+import java.util.OptionalLong;
 import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
@@ -72,35 +78,46 @@ public class DefaultCommandParameters {
         map.bindTypeParser(CommandArgument.class, arg -> arg);
 
         final TypeParser<Integer> intParser = (arg) -> {
-            if (arg.isInteger()) {
+            if (arg.isInteger())
                 return arg.parseInt();
-            } else {
-                return null;
-            }
+            else return null;
         };
         map.put(INTEGER, intParser);
         map.put(Integer.class, intParser);
+        map.put(OptionalInt.class, arg -> {
+            if (arg.isInteger())
+                return OptionalInt.of(arg.parseInt());
+            else return null;
+        });
 
 
         final TypeParser<Long> longParser = (CommandArgument arg) -> {
-            if (arg.isLong()) {
+            if (arg.isLong())
                 return arg.parseLong();
-            } else {
-                return null;
-            }
+            else return null;
         };
         map.put(LONG, longParser);
         map.put(Long.class, longParser);
+        map.put(OptionalLong.class, arg -> {
+            if (arg.isLong())
+                return OptionalLong.of(arg.parseLong());
+            else return null;
+        });
 
 
         final TypeParser<Float> floatParser = (arg) -> arg.isFloat() ? arg.parseFloat() : null;
         map.put(FLOAT, floatParser);
         map.put(Float.class, floatParser);
 
-
         final TypeParser<Double> doubleParser = (arg) -> arg.isFloat() ? arg.parseDouble() : null;
         map.put(DOUBLE, doubleParser);
         map.put(Double.class, doubleParser);
+
+        map.put(OptionalDouble.class, arg -> {
+            if (arg.isFloat())
+                return OptionalDouble.of(arg.parseDouble());
+            else return null;
+        });
 
 
         final TypeParser<Boolean> boolParser = (arg) -> arg.isBoolean() ? arg.parseBoolean() : null;
@@ -178,6 +195,24 @@ public class DefaultCommandParameters {
         map.put(OffsetDateTime.class, new DateTimeMapper());
 
         map.put(String.class, CommandArgument::getArgument);
+
+        map.put(Color.class, (TypeParser<Color>) arg -> {
+            final String strColor = arg.getArgument();
+            try {
+                Field field = java.awt.Color.class.getField(strColor);
+                return (java.awt.Color) field.get(null);
+            } catch (Exception ignored) {
+            }
+            if (Arguments.isHex(strColor)) {
+                final String hexString = Arguments.stripHexPrefix(strColor);
+                final int i = Integer.parseInt(hexString, 16);
+                if (i == 0) {
+                    return new Color(0, 0, 1);
+                }
+                return new Color(i);
+            }
+            return null;
+        });
     }
 
     private void putParameterTypeModifiers(CommandParameterTypeManagerImpl map) {
@@ -222,6 +257,10 @@ public class DefaultCommandParameters {
                     }
                 }));
         map.bindTypeModifier(Message.Attachment.class, p -> p.setParser((parameter, list, parser) -> parser.getEvent().getMessage().getAttachments().stream().findFirst().orElse(null)));
+
+        map.bindTypeModifier(OptionalInt.class, p -> p.setDefaultValue(OptionalInt.empty()));
+        map.bindTypeModifier(OptionalDouble.class, p -> p.setDefaultValue(OptionalDouble.empty()));
+        map.bindTypeModifier(OptionalLong.class, p -> p.setDefaultValue(OptionalLong.empty()));
     }
 
 }

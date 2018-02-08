@@ -64,6 +64,7 @@ public class EventActionImpl<E extends Event, V> implements EventAction<E, V> {
                 future.complete(result);
                 return true;
             }
+            running = false;
         }
         return false;
     }
