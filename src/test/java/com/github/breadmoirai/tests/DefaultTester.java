@@ -106,13 +106,11 @@ public class DefaultTester {
     private void assertResponse(final MockFactory.UserType userType, final String input, final String expected) {
         CommandEventInternal spy = mockCommand(client, input, userType);
 
-
         doAnswer(invocation -> {
             String argument = invocation.getArgument(0);
             assertEquals(expected, argument);
             return null;
         }).when(spy).reply(anyString());
-
 
         client.getCommandEngine().handle(spy);
 
