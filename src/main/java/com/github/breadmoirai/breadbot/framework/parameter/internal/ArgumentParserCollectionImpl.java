@@ -33,7 +33,7 @@ public class ArgumentParserCollectionImpl implements ArgumentParser {
 
     public ArgumentParserCollectionImpl(CommandParameterBuilderImpl param, Supplier<ArgumentCollectionBuilder> collectorFactory) {
         this.collectorFactory = collectorFactory;
-        this.baseParser = new ArgumentParserImpl(param.getIndex(), param.getWidth(), param.isMustBePresent(), param.getAbsentArgumentHandler(), param.getTypeParser());
+        this.baseParser = new ArgumentParserImpl(param.getIndex(), param.getWidth(), false, null, param.getTypeParser());
         this.limit = param.getLimit();
         this.contiguous = param.isContiguous();
     }
