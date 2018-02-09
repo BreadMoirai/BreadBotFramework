@@ -14,7 +14,7 @@
  *   limitations under the License.
  */
 
-package com.github.breadmoirai.breadbot.util;
+package com.github.breadmoirai.breadbot.framework.defaults.parsers;
 
 import com.github.breadmoirai.breadbot.framework.parameter.CommandArgument;
 import com.github.breadmoirai.breadbot.framework.parameter.TypeParser;
@@ -35,11 +35,10 @@ import java.time.temporal.TemporalAccessor;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class DateTimeMapper implements TypeParser<OffsetDateTime> {
+public class OffsetDateTimeParser implements TypeParser<OffsetDateTime> {
 
     DateTimeFormatter DATE_TIME_FORMATTER = new DateTimeFormatterBuilder()
             .parseCaseInsensitive()
-            .parseLenient()
             .appendPattern("[[MMMM][MMM][' ']d'th'[' ']][M/d[' ']]")
             .appendPattern("[h[':'mm[':'ss]][' ']a[' ']]")
             .appendPattern("[z][0][x]")
@@ -71,7 +70,7 @@ public class DateTimeMapper implements TypeParser<OffsetDateTime> {
         if (time.isSupported(ChronoField.NANO_OF_DAY)) {
             localTime = LocalTime.from(time);
         } else {
-            localTime = LocalTime.MIDNIGHT;
+            localTime = LocalTime.MIN;
         }
         LocalDate localDate;
         if (time.isSupported(ChronoField.MONTH_OF_YEAR) && time.isSupported(ChronoField.DAY_OF_MONTH)) {
@@ -92,9 +91,9 @@ public class DateTimeMapper implements TypeParser<OffsetDateTime> {
             offsetDateTime = localDateTime.atOffset(ZoneOffset.from(time));
         } else {
             try {
-                offsetDateTime = localDateTime.atZone(ZoneId.from(time)).toOffsetDateTime();
+                offsetDateTime = localDateTime.atZone(time.query(ZoneId::from)).toOffsetDateTime();
             } catch (DateTimeException e) {
-                return OffsetDateTime.MIN;
+                offsetDateTime = localDateTime.atOffset(base.getOffset());
             }
         }
         if (offsetDateTime.isBefore(base)) {

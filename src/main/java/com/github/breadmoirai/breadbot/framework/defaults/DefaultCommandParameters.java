@@ -16,6 +16,8 @@
 
 package com.github.breadmoirai.breadbot.framework.defaults;
 
+import com.github.breadmoirai.breadbot.framework.defaults.parsers.DurationParser;
+import com.github.breadmoirai.breadbot.framework.defaults.parsers.OffsetDateTimeParser;
 import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
 import com.github.breadmoirai.breadbot.framework.parameter.ArgumentParser;
 import com.github.breadmoirai.breadbot.framework.parameter.CommandArgument;
@@ -28,8 +30,6 @@ import com.github.breadmoirai.breadbot.framework.parameter.internal.builder.Coll
 import com.github.breadmoirai.breadbot.framework.parameter.internal.builder.CommandParameterBuilderImpl;
 import com.github.breadmoirai.breadbot.framework.parameter.internal.builder.CommandParameterTypeManagerImpl;
 import com.github.breadmoirai.breadbot.util.Arguments;
-import com.github.breadmoirai.breadbot.util.DateTimeMapper;
-import com.github.breadmoirai.breadbot.util.DurationUnitMapper;
 import com.github.breadmoirai.breadbot.util.Emoji;
 import net.dv8tion.jda.core.entities.Emote;
 import net.dv8tion.jda.core.entities.Guild;
@@ -190,9 +190,9 @@ public class DefaultCommandParameters {
 
         map.put(EMOJI, arg -> arg.isEmoji() ? arg.getEmoji() : null);
 
-        map.put(Duration.class, new DurationUnitMapper());
+        map.put(Duration.class, new DurationParser());
 
-        map.put(OffsetDateTime.class, new DateTimeMapper());
+        map.put(OffsetDateTime.class, new OffsetDateTimeParser());
 
         map.put(String.class, CommandArgument::getArgument);
 

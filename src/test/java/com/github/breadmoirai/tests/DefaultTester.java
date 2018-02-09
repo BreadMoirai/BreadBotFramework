@@ -20,9 +20,11 @@ import com.github.breadmoirai.breadbot.framework.BreadBot;
 import com.github.breadmoirai.breadbot.framework.builder.BreadBotBuilder;
 import com.github.breadmoirai.breadbot.framework.event.internal.CommandEventInternal;
 import com.github.breadmoirai.tests.commands.AuthorCommand;
+import com.github.breadmoirai.tests.commands.DateCommand;
 import com.github.breadmoirai.tests.commands.EchoCommand;
 import com.github.breadmoirai.tests.commands.TimeCommand;
 import com.github.breadmoirai.tests.commands.WhoAmICommand;
+import org.junit.Ignore;
 import org.junit.Test;
 import uk.org.lidalia.slf4jext.Level;
 import uk.org.lidalia.slf4jtest.TestLoggerFactory;
@@ -86,6 +88,17 @@ public class DefaultTester {
         assertResponse("!d2 hello 2 sec my name is 4 h", "PT4H2S");
     }
 
+    @Ignore
+    @Test
+    public void dateTest() {
+        client = new BreadBotBuilder()
+                .addCommand(DateCommand::new)
+                .build();
+        assertResponse("!t 9th", "2018-02-09T00:00-08:00");
+        assertResponse("!t Mar 9th", "2018-03-09T00:00-08:00");
+        assertResponse("!t 2/9", "2018-02-09T00:00-08:00");
+        assertResponse("!t 2/3", "2019-02-03T00:00-08:00");
+    }
     private void assertResponse(String input, String expected) {
         assertResponse(MockFactory.UserType.BASIC, input, expected);
     }
