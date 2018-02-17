@@ -20,19 +20,19 @@ import net.dv8tion.jda.core.events.ShutdownEvent;
 import net.dv8tion.jda.core.hooks.EventListener;
 import net.dv8tion.jda.core.hooks.SubscribeEvent;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 public class EventWaiter implements EventListener {
 
-    private final Map<Class<? extends Event>, List<EventAction>> waitingEvents;
+    private final Map<Class<? extends Event>, Set<EventAction>> waitingEvents;
     private final ScheduledExecutorService executorService;
     private final boolean myService;
 
@@ -61,25 +61,15 @@ public class EventWaiter implements EventListener {
     }
 
     void addAction(Class<? extends Event> eventClass, EventAction action) {
-        getActions(eventClass).add(action);
+        waitingEvents.computeIfAbsent(eventClass, e -> new HashSet<>()).add(action);
     }
 
     void removeAction(Class<? extends Event> eventClass, EventAction action) {
-        getActions(eventClass).remove(action);
+        waitingEvents.computeIfAbsent(eventClass, e -> new HashSet<>()).remove(action);
     }
 
     ScheduledFuture<?> schedule(Runnable command, long delay, TimeUnit unit) {
         return executorService.schedule(command, delay, unit);
-    }
-
-    private <T extends Event> List<EventAction> getActions(Class<T> eventType) {
-        final List<EventAction> list = waitingEvents.get(eventType);
-        if (list != null) {
-            return list;
-        }
-        final List<EventAction> newList = new ArrayList<>();
-        waitingEvents.put(eventType, newList);
-        return newList;
     }
 
     @SubscribeEvent
@@ -88,14 +78,10 @@ public class EventWaiter implements EventListener {
         Class c = event.getClass();
         while (c != Object.class) {
             if (waitingEvents.containsKey(c)) {
-                List<EventAction> list = waitingEvents.get(c);
-                final List<EventAction> remove = new LinkedList<>();
-                for (EventAction eventAction : list) {
-                    if (eventAction.accept(event)) {
-                        remove.add(eventAction);
-                    }
-                }
-                list.removeAll(remove);
+                Set<EventAction> list = waitingEvents.get(c);
+                if (list != null)
+                    list.removeAll(list.stream().filter(eventAction -> eventAction.accept(event)).collect(
+                            Collectors.toList()));
             }
             if (event instanceof ShutdownEvent && myService) {
                 executorService.shutdownNow();
