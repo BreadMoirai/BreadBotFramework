@@ -20,6 +20,7 @@ import net.dv8tion.jda.core.events.ShutdownEvent;
 import net.dv8tion.jda.core.hooks.EventListener;
 import net.dv8tion.jda.core.hooks.SubscribeEvent;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -79,9 +80,11 @@ public class EventWaiter implements EventListener {
         while (c != Object.class) {
             if (waitingEvents.containsKey(c)) {
                 Set<EventAction> list = waitingEvents.get(c);
-                if (list != null)
-                    list.removeAll(list.stream().filter(eventAction -> eventAction.accept(event)).collect(
-                            Collectors.toList()));
+                if (list != null) {
+                    final EventAction[] arr = list.toArray(new EventAction[0]);
+                    list.removeAll(Arrays.stream(arr).filter(eventAction -> eventAction.accept(event)).collect(
+                            Collectors.toSet()));
+                }
             }
             if (event instanceof ShutdownEvent && myService) {
                 executorService.shutdownNow();
@@ -89,6 +92,5 @@ public class EventWaiter implements EventListener {
             c = c.getSuperclass();
         }
     }
-
 
 }
