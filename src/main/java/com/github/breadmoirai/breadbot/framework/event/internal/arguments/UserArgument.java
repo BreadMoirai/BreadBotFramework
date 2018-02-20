@@ -14,27 +14,32 @@
  *   limitations under the License.
  */
 
-package com.github.breadmoirai.breadbot.framework.parameter.internal.arguments;
+package com.github.breadmoirai.breadbot.framework.event.internal.arguments;
 
 import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
-import com.github.breadmoirai.breadbot.util.Emoji;
+import net.dv8tion.jda.core.entities.User;
 
-public class EmojiArgument extends MentionArgument {
+public class UserArgument extends MentionArgument {
 
-    private final Emoji emoji;
+    private final User user;
 
-    public EmojiArgument(CommandEvent event, String s, Emoji emoji) {
-        super(event, s);
-        this.emoji = emoji;
+    public UserArgument(CommandEvent event, String arg, User user) {
+        super(event, arg);
+        this.user = user;
     }
 
     @Override
-    public boolean isEmoji() {
+    public boolean isUser() {
         return true;
     }
 
     @Override
-    public Emoji getEmoji() {
-        return emoji;
+    public boolean isValidUser() {
+        return true;
+    }
+
+    @Override
+    public User getUser() {
+        return user;
     }
 }

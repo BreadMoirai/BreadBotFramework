@@ -14,32 +14,46 @@
  *   limitations under the License.
  */
 
-package com.github.breadmoirai.breadbot.framework.parameter.internal.arguments;
+package com.github.breadmoirai.breadbot.framework.event.internal.arguments;
 
 import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
-import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.core.entities.Role;
 
-public class UserArgument extends MentionArgument {
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
-    private final User user;
+public class RoleArgument extends MentionArgument {
 
-    public UserArgument(CommandEvent event, String arg, User user) {
-        super(event, arg);
-        this.user = user;
+    private final Role role;
+
+    public RoleArgument(CommandEvent event, String s, Role role) {
+        super(event, s);
+        this.role = role;
     }
 
     @Override
-    public boolean isUser() {
+    public boolean isRole() {
         return true;
     }
 
     @Override
-    public boolean isValidUser() {
+    public boolean isValidRole() {
         return true;
     }
 
     @Override
-    public User getUser() {
-        return user;
+    public Role getRole() {
+        return role;
+    }
+
+    @Override
+    public Optional<Role> findRole() {
+        return Optional.of(role);
+    }
+
+    @Override
+    public List<Role> searchRoles() {
+        return Collections.singletonList(role);
     }
 }

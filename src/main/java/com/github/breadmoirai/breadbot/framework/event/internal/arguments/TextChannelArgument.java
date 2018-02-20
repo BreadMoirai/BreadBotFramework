@@ -14,44 +14,46 @@
  *   limitations under the License.
  */
 
-package com.github.breadmoirai.breadbot.framework.parameter.internal.arguments;
+package com.github.breadmoirai.breadbot.framework.event.internal.arguments;
 
 import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
-import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.TextChannel;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-public class MemberArgument extends UserArgument {
+public class TextChannelArgument extends MentionArgument {
 
-    private final Member member;
+    private final TextChannel channel;
 
-    public MemberArgument(CommandEvent event, String s, Member member) {
-        super(event, s, member.getUser());
-        this.member = member;
+    public TextChannelArgument(CommandEvent event, String s, TextChannel textChannel) {
+        super(event, s);
+        this.channel = textChannel;
     }
 
     @Override
-    public boolean isValidMember() {
+    public boolean isTextChannel() {
         return true;
     }
 
-
     @Override
-    public Member getMember() {
-        return member;
+    public boolean isValidTextChannel() {
+        return true;
     }
 
-
     @Override
-    public Optional<Member> findMember() {
-        return Optional.of(member);
+    public TextChannel getTextChannel() {
+        return channel;
     }
 
+    @Override
+    public Optional<TextChannel> findTextChannel() {
+        return Optional.of(channel);
+    }
 
     @Override
-    public List<Member> searchMembers() {
-        return Collections.singletonList(member);
+    public List<TextChannel> searchTextChannels() {
+        return Collections.singletonList(channel);
     }
 }

@@ -17,6 +17,7 @@
 package com.github.breadmoirai.breadbot.framework.parameter;
 
 import com.github.breadmoirai.breadbot.framework.command.Command;
+import com.github.breadmoirai.breadbot.framework.event.CommandArgumentList;
 import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;

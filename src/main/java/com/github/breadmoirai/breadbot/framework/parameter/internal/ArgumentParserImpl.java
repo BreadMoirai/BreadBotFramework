@@ -16,15 +16,15 @@
 
 package com.github.breadmoirai.breadbot.framework.parameter.internal;
 
+import com.github.breadmoirai.breadbot.framework.event.CommandArgumentList;
 import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
+import com.github.breadmoirai.breadbot.framework.event.internal.arguments.GenericCommandArgument;
 import com.github.breadmoirai.breadbot.framework.parameter.AbsentArgumentHandler;
 import com.github.breadmoirai.breadbot.framework.parameter.ArgumentParser;
 import com.github.breadmoirai.breadbot.framework.parameter.CommandArgument;
-import com.github.breadmoirai.breadbot.framework.parameter.CommandArgumentList;
 import com.github.breadmoirai.breadbot.framework.parameter.CommandParameter;
 import com.github.breadmoirai.breadbot.framework.parameter.CommandParser;
 import com.github.breadmoirai.breadbot.framework.parameter.TypeParser;
-import com.github.breadmoirai.breadbot.framework.parameter.internal.arguments.GenericCommandArgument;
 
 import java.util.StringJoiner;
 import java.util.function.Function;

@@ -14,18 +14,18 @@
  *   limitations under the License.
  */
 
-package com.github.breadmoirai.breadbot.framework.parameter.internal.arguments;
+package com.github.breadmoirai.breadbot.framework.event.internal.arguments;
 
 import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
 
-public class InvalidRoleArgument extends InvalidMentionArgument {
+public class InvalidUserArgument extends InvalidMentionArgument {
 
-    public InvalidRoleArgument(CommandEvent event, String s, long idLong) {
+    public InvalidUserArgument(CommandEvent event, String s, long idLong) {
         super(event, s, idLong);
     }
 
     @Override
-    public boolean isRole() {
+    public boolean isUser() {
         return true;
     }
 }

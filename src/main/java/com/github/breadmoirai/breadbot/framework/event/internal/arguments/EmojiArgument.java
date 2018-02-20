@@ -14,46 +14,27 @@
  *   limitations under the License.
  */
 
-package com.github.breadmoirai.breadbot.framework.parameter.internal.arguments;
+package com.github.breadmoirai.breadbot.framework.event.internal.arguments;
 
 import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
-import net.dv8tion.jda.core.entities.Role;
+import com.github.breadmoirai.breadbot.util.Emoji;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+public class EmojiArgument extends MentionArgument {
 
-public class RoleArgument extends MentionArgument {
+    private final Emoji emoji;
 
-    private final Role role;
-
-    public RoleArgument(CommandEvent event, String s, Role role) {
+    public EmojiArgument(CommandEvent event, String s, Emoji emoji) {
         super(event, s);
-        this.role = role;
+        this.emoji = emoji;
     }
 
     @Override
-    public boolean isRole() {
+    public boolean isEmoji() {
         return true;
     }
 
     @Override
-    public boolean isValidRole() {
-        return true;
-    }
-
-    @Override
-    public Role getRole() {
-        return role;
-    }
-
-    @Override
-    public Optional<Role> findRole() {
-        return Optional.of(role);
-    }
-
-    @Override
-    public List<Role> searchRoles() {
-        return Collections.singletonList(role);
+    public Emoji getEmoji() {
+        return emoji;
     }
 }

@@ -16,6 +16,8 @@
 
 package com.github.breadmoirai.breadbot.framework.parameter;
 
+import com.github.breadmoirai.breadbot.framework.event.CommandArgumentList;
+
 import java.lang.reflect.Parameter;
 
 public interface CommandParameter {

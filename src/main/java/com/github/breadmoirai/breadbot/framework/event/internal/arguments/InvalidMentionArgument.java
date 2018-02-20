@@ -14,18 +14,30 @@
  *   limitations under the License.
  */
 
-package com.github.breadmoirai.breadbot.framework.parameter.internal.arguments;
+package com.github.breadmoirai.breadbot.framework.event.internal.arguments;
 
 import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
 
-public class InvalidUserArgument extends InvalidMentionArgument {
+/**
+ * If this argument is a mention but not a valid mention.
+ * Only applies to User, Member, Role, and TextChannel mentions.
+ * The invalid id can be retrieved with {@link InvalidMentionArgument#getInvalidId()};
+ *
+ */
+public class InvalidMentionArgument extends MentionArgument {
+    private final long id;
 
-    public InvalidUserArgument(CommandEvent event, String s, long idLong) {
-        super(event, s, idLong);
+    public InvalidMentionArgument(CommandEvent event, String s, long id) {
+        super(event, s);
+        this.id = id;
     }
 
-    @Override
-    public boolean isUser() {
-        return true;
+    /**
+     * returns the long value found within this properly formatted mention.
+     * @return a positive long value.
+     */
+    public long getInvalidId() {
+        return id;
     }
+
 }

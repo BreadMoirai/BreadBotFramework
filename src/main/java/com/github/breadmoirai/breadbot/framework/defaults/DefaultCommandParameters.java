@@ -18,10 +18,10 @@ package com.github.breadmoirai.breadbot.framework.defaults;
 
 import com.github.breadmoirai.breadbot.framework.defaults.parsers.DurationParser;
 import com.github.breadmoirai.breadbot.framework.defaults.parsers.OffsetDateTimeParser;
+import com.github.breadmoirai.breadbot.framework.event.CommandArgumentList;
 import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
 import com.github.breadmoirai.breadbot.framework.parameter.ArgumentParser;
 import com.github.breadmoirai.breadbot.framework.parameter.CommandArgument;
-import com.github.breadmoirai.breadbot.framework.parameter.CommandArgumentList;
 import com.github.breadmoirai.breadbot.framework.parameter.CommandParameter;
 import com.github.breadmoirai.breadbot.framework.parameter.CommandParser;
 import com.github.breadmoirai.breadbot.framework.parameter.TypeParser;
