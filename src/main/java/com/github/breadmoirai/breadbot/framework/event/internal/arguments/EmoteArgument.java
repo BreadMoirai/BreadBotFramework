@@ -14,7 +14,7 @@
  *   limitations under the License.
  */
 
-package com.github.breadmoirai.breadbot.framework.parameter.internal.arguments;
+package com.github.breadmoirai.breadbot.framework.event.internal.arguments;
 
 import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
 import net.dv8tion.jda.core.entities.Emote;

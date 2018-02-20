@@ -16,10 +16,12 @@
 
 package com.github.breadmoirai.breadbot.framework.defaults;
 
+import com.github.breadmoirai.breadbot.framework.defaults.parsers.DurationParser;
+import com.github.breadmoirai.breadbot.framework.defaults.parsers.OffsetDateTimeParser;
+import com.github.breadmoirai.breadbot.framework.event.CommandArgumentList;
 import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
 import com.github.breadmoirai.breadbot.framework.parameter.ArgumentParser;
 import com.github.breadmoirai.breadbot.framework.parameter.CommandArgument;
-import com.github.breadmoirai.breadbot.framework.parameter.CommandArgumentList;
 import com.github.breadmoirai.breadbot.framework.parameter.CommandParameter;
 import com.github.breadmoirai.breadbot.framework.parameter.CommandParser;
 import com.github.breadmoirai.breadbot.framework.parameter.TypeParser;
@@ -28,8 +30,6 @@ import com.github.breadmoirai.breadbot.framework.parameter.internal.builder.Coll
 import com.github.breadmoirai.breadbot.framework.parameter.internal.builder.CommandParameterBuilderImpl;
 import com.github.breadmoirai.breadbot.framework.parameter.internal.builder.CommandParameterTypeManagerImpl;
 import com.github.breadmoirai.breadbot.util.Arguments;
-import com.github.breadmoirai.breadbot.util.DateTimeMapper;
-import com.github.breadmoirai.breadbot.util.DurationMapper;
 import com.github.breadmoirai.breadbot.util.Emoji;
 import net.dv8tion.jda.core.entities.Emote;
 import net.dv8tion.jda.core.entities.Guild;
@@ -190,9 +190,9 @@ public class DefaultCommandParameters {
 
         map.put(EMOJI, arg -> arg.isEmoji() ? arg.getEmoji() : null);
 
-        map.put(Duration.class, new DurationMapper());
+        map.put(Duration.class, new DurationParser());
 
-        map.put(OffsetDateTime.class, new DateTimeMapper());
+        map.put(OffsetDateTime.class, new OffsetDateTimeParser());
 
         map.put(String.class, CommandArgument::getArgument);
 
@@ -237,6 +237,10 @@ public class DefaultCommandParameters {
         map.bindTypeModifier(IntStream.class, builder -> CollectionTypes.setParserToIntStream(((CommandParameterBuilderImpl) builder)));
         map.bindTypeModifier(LongStream.class, builder -> CollectionTypes.setParserToLongStream(((CommandParameterBuilderImpl) builder)));
         map.bindTypeModifier(DoubleStream.class, builder -> CollectionTypes.setParserToDoubleStream(((CommandParameterBuilderImpl) builder)));
+
+        map.bindTypeModifier(Duration.class, builder -> {
+            CollectionTypes.setParserToDuration(((CommandParameterBuilderImpl) builder));
+        });
 
         map.bindTypeModifier(CommandEvent.class, p -> p.setParser((parameter, list, parser) -> parser.getEvent()));
 

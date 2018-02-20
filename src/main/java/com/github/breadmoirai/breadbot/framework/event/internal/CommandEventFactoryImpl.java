@@ -19,16 +19,18 @@ package com.github.breadmoirai.breadbot.framework.event.internal;
 import com.github.breadmoirai.breadbot.framework.BreadBot;
 import com.github.breadmoirai.breadbot.framework.event.CommandEventFactory;
 import com.github.breadmoirai.breadbot.plugins.prefix.PrefixPlugin;
-import com.github.breadmoirai.breadbot.util.DiscordPatterns;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.events.message.guild.GenericGuildMessageEvent;
 
-import java.util.regex.Matcher;
+import java.util.function.Predicate;
 
 public class CommandEventFactoryImpl implements CommandEventFactory {
 
     private final PrefixPlugin prefixModule;
     private String myId;
+    private Predicate<Message> preProcessPredicate;
+    private String mention;
+    private String nmention;
 
     public CommandEventFactoryImpl(PrefixPlugin prefixSupplier) {
         this.prefixModule = prefixSupplier;
@@ -38,17 +40,39 @@ public class CommandEventFactoryImpl implements CommandEventFactory {
     public CommandEventInternal createEvent(GenericGuildMessageEvent event, Message message, BreadBot client) {
         String prefix = prefixModule.getPrefix(event.getGuild());
         String contentRaw = message.getContentRaw();
-        final Matcher matcher = DiscordPatterns.USER_MENTION_PREFIX.matcher(contentRaw);
-        if (matcher.find() && matcher.start() == 0 && matcher.group(1).equals(getMyId(event))) {
-            contentRaw = contentRaw.substring(matcher.end()).trim();
-            return parseContent(event, message, client, prefix, contentRaw);
-        } else {
-            if (contentRaw.startsWith(prefix)) {
-                contentRaw = contentRaw.substring(prefix.length()).trim();
-                return parseContent(event, message, client, prefix, contentRaw);
+
+        if (contentRaw.startsWith(prefix)) {
+            if (checkMessage(message)) {
+                final String trim = contentRaw.substring(prefix.length()).trim();
+                return parseContent(event, message, client, prefix, trim);
             }
-            return null;
+        } else {
+            final String mention = getMention(false, event);
+            if (contentRaw.startsWith(mention)) {
+                if (checkMessage(message)) {
+                    final String s = contentRaw.substring(mention.length()).trim();
+                    return parseContent(event, message, client, prefix, s);
+                }
+            } else {
+                final String mention1 = getMention(true, event);
+                if (contentRaw.startsWith(mention1)) {
+                    if (checkMessage(message)) {
+                        final String s = contentRaw.substring(mention1.length()).trim();
+                        return parseContent(event, message, client, prefix, s);
+                    }
+                }
+            }
         }
+        return null;
+    }
+
+    @Override
+    public void setPreprocessor(Predicate<Message> preProcessPredicate) {
+        this.preProcessPredicate = preProcessPredicate;
+    }
+
+    private boolean checkMessage(Message m) {
+        return preProcessPredicate == null || preProcessPredicate.test(m);
     }
 
     private String getMyId(GenericGuildMessageEvent event) {
@@ -58,7 +82,22 @@ public class CommandEventFactoryImpl implements CommandEventFactory {
         return myId;
     }
 
-    private CommandEventInternal parseContent(GenericGuildMessageEvent event, Message message, BreadBot client, String prefix, String contentRaw) {
+    private String getMention(boolean nick, GenericGuildMessageEvent event) {
+        if (!nick) {
+            if (mention == null) {
+                mention = String.format("<@%s>", getMyId(event));
+            }
+            return mention;
+        } else {
+            if (nmention == null) {
+                nmention = String.format("<@!%s>", getMyId(event));
+            }
+            return nmention;
+        }
+    }
+
+    private CommandEventInternal parseContent(GenericGuildMessageEvent event, Message message, BreadBot client,
+                                              String prefix, String contentRaw) {
         final String[] split = splitContent(contentRaw);
         final String key = split[0];
         final String content = split[1];
@@ -69,7 +108,8 @@ public class CommandEventFactoryImpl implements CommandEventFactory {
                 final String[] split2 = splitContent(content);
                 final String key2 = split2[0];
                 final String content2 = split2[1];
-                return new MessageReceivedCommandEvent(client, event, message, prefix, new String[]{key2}, content2 != null ? content2 + " help" : "help", true);
+                return new MessageReceivedCommandEvent(client, event, message, prefix, new String[]{key2},
+                                                       content2 != null ? content2 + " help" : "help", true);
             }
         }
         return new MessageReceivedCommandEvent(client, event, message, prefix, new String[]{key}, content, false);
@@ -101,6 +141,5 @@ public class CommandEventFactoryImpl implements CommandEventFactory {
             return new String[]{contentRaw.substring(0, i), contentRaw.substring(j)};
         }
     }
-
 
 }

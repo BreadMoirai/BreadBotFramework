@@ -20,8 +20,11 @@ import com.github.breadmoirai.breadbot.framework.BreadBot;
 import com.github.breadmoirai.breadbot.framework.builder.BreadBotBuilder;
 import com.github.breadmoirai.breadbot.framework.event.internal.CommandEventInternal;
 import com.github.breadmoirai.tests.commands.AuthorCommand;
+import com.github.breadmoirai.tests.commands.DateCommand;
 import com.github.breadmoirai.tests.commands.EchoCommand;
+import com.github.breadmoirai.tests.commands.TimeCommand;
 import com.github.breadmoirai.tests.commands.WhoAmICommand;
+import org.junit.Ignore;
 import org.junit.Test;
 import uk.org.lidalia.slf4jext.Level;
 import uk.org.lidalia.slf4jtest.TestLoggerFactory;
@@ -34,7 +37,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 public class DefaultTester {
-
 
     static {
         TestLoggerFactory.getInstance().setPrintLevel(Level.DEBUG);
@@ -71,6 +73,32 @@ public class DefaultTester {
         assertResponse(MockFactory.UserType.CREATOR, "!isadmin", "yes");
     }
 
+    @Test
+    public void timeTest() {
+        client = new BreadBotBuilder()
+                .addCommand(TimeCommand::new)
+                .addCommand(TimeCommand::new, command -> command.setKeys("d2").getParameter(0).setWidth(2))
+                .build();
+        assertResponse("!d 1m", "PT1M");
+        assertResponse("!d 1m 1h 1s", "PT1H1M1S");
+        assertResponse("!d 1day", "PT24H");
+        assertResponse("!d2 1 day 5 hours 10 minutes 13 seconds", "PT29H10M13S");
+        assertResponse("!d awff2 70s 21ttg1 4h 1raf", "PT4H1M10S");
+        assertResponse("!d2 hello 2 sec my name is 4 h", "PT4H2S");
+    }
+
+    @Ignore
+    @Test
+    public void dateTest() {
+        client = new BreadBotBuilder()
+                .addCommand(DateCommand::new)
+                .build();
+        assertResponse("!t 9th", "2018-02-09T00:00-08:00");
+        assertResponse("!t Mar 9th", "2018-03-09T00:00-08:00");
+        assertResponse("!t 2/9", "2018-02-09T00:00-08:00");
+        assertResponse("!t 2/3", "2019-02-03T00:00-08:00");
+    }
+
     private void assertResponse(String input, String expected) {
         assertResponse(MockFactory.UserType.BASIC, input, expected);
     }
@@ -78,13 +106,11 @@ public class DefaultTester {
     private void assertResponse(final MockFactory.UserType userType, final String input, final String expected) {
         CommandEventInternal spy = mockCommand(client, input, userType);
 
-
         doAnswer(invocation -> {
             String argument = invocation.getArgument(0);
             assertEquals(expected, argument);
             return null;
         }).when(spy).reply(anyString());
-
 
         client.getCommandEngine().handle(spy);
 

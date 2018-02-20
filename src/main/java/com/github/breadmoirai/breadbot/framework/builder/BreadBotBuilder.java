@@ -590,7 +590,7 @@ public class BreadBotBuilder implements
      * This will also evaluate commands that are unpinned.
      * Will ignore messages that are pinned.
      *
-     * @param shouldEvaluateCommandOnMessageUpdate By default this is {@code true}.
+     * @param shouldEvaluateCommandOnMessageUpdate By default this is {@code false}.
      * @return this
      */
     public BreadBotBuilder setEvaluateCommandOnMessageUpdate(boolean shouldEvaluateCommandOnMessageUpdate) {
@@ -610,7 +610,10 @@ public class BreadBotBuilder implements
             commandEventFactory = new CommandEventFactoryImpl(getPlugin(PrefixPlugin.class));
         final List<CommandHandleImpl> build = commandBuilders.stream().map(o -> o.build(null)).collect(Collectors.toList());
         commands.addAll(build);
-        final BreadBotClientImpl breadBotClient = new BreadBotClientImpl(plugins, commands, resultManager, argumentTypes, commandEventFactory, preProcessPredicate, shouldEvaluateCommandOnMessageUpdate);
+        commandEventFactory.setPreprocessor(preProcessPredicate);
+        final BreadBotClientImpl breadBotClient = new BreadBotClientImpl(plugins, commands, resultManager,
+                                                                         argumentTypes, commandEventFactory,
+                                                                         shouldEvaluateCommandOnMessageUpdate);
         breadBotClient.propogateReadyEvent();
         return breadBotClient;
     }

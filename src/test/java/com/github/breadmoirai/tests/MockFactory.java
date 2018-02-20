@@ -27,6 +27,8 @@ import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.message.guild.GenericGuildMessageEvent;
 
+import java.time.OffsetDateTime;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
@@ -88,7 +90,7 @@ public class MockFactory {
         CommandEventInternal event = eventFactory.createEvent(mockEvent, mockMessage, client);
         CommandEventInternal spy = spy(event);
         doAnswer(o -> CHANNEL_ID).when(spy).getChannelId();
-
+        doAnswer(o -> OffsetDateTime.now().minusMinutes(5)).when(spy).getCreationTime();
         when(mockGuild.getMemberById(USER_ID)).thenReturn(mockMember);
 
         //doNothing().when(spy).reply(anyString());

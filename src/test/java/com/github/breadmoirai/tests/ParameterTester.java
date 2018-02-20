@@ -66,7 +66,7 @@ public class ParameterTester {
         assertResponse("!ssi", "null, null, null");
         assertResponse("!ssi a b 1", "a b 1, null, null");
         assertResponse("!iss a b 1", "1, a b, null");
-        assertResponse("!iss a b 1 c \"ddd\"", "1, a b, c ddd");
+        assertResponse("!iss a b 1 c ddd", "1, a b, c ddd");
     }
 
     @Test
@@ -153,7 +153,17 @@ public class ParameterTester {
                 .build();
         assertResponse("!fallback to me", "to me");
         assertResponse("!fallback", "default");
+    }
 
+    @Test
+    public void enclosureTest() {
+        client = new BreadBotBuilder()
+                .addCommand(SSICommand::new)
+                .build();
+        assertResponse("!ssi a b 1", "a, b, 1");
+        assertResponse("!ssi \"a b\" 1", "a b, 1, null");
+        assertResponse("!ssi \"a b 1\"", "a b 1, null, null");
+        assertResponse("!ssi \n```java\na b 1\n```", "a b 1, null, null");
     }
 
     private void assertResponse(final String input, final String expected) {

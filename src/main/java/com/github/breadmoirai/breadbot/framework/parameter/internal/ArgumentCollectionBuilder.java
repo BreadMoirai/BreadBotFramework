@@ -17,20 +17,28 @@
 package com.github.breadmoirai.breadbot.framework.parameter.internal;
 
 import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
 public interface ArgumentCollectionBuilder {
 
     static <F, T> ArgumentCollectionBuilder of(Supplier<F> factory, BiConsumer<F, T> accumulator, Function<F, ?> finisher) {
+        return ArgumentCollectionBuilder.<F, T>off(factory, (f, t) -> {
+            accumulator.accept(f, t);
+            return f;
+        }, finisher);
+    }
+
+    static <F, T> ArgumentCollectionBuilder off(Supplier<F> factory, BiFunction<F, T, F> accumulator, Function<F, ?> finisher) {
         return new ArgumentCollectionBuilder() {
 
-            private final F f = factory.get();
+            private F f = factory.get();
 
             @Override
             public void accept(Object o) {
                 @SuppressWarnings("unchecked") final T t = (T) o;
-                accumulator.accept(f, t);
+                f = accumulator.apply(f, t);
             }
 
             @Override

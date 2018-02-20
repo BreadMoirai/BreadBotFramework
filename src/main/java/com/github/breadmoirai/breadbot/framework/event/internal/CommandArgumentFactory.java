@@ -14,20 +14,20 @@
  *   limitations under the License.
  */
 
-package com.github.breadmoirai.breadbot.framework.parameter.internal;
+package com.github.breadmoirai.breadbot.framework.event.internal;
 
 import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
+import com.github.breadmoirai.breadbot.framework.event.internal.arguments.EmojiArgument;
+import com.github.breadmoirai.breadbot.framework.event.internal.arguments.EmoteArgument;
+import com.github.breadmoirai.breadbot.framework.event.internal.arguments.GenericCommandArgument;
+import com.github.breadmoirai.breadbot.framework.event.internal.arguments.InvalidRoleArgument;
+import com.github.breadmoirai.breadbot.framework.event.internal.arguments.InvalidTextChannelArgument;
+import com.github.breadmoirai.breadbot.framework.event.internal.arguments.InvalidUserArgument;
+import com.github.breadmoirai.breadbot.framework.event.internal.arguments.MemberArgument;
+import com.github.breadmoirai.breadbot.framework.event.internal.arguments.RoleArgument;
+import com.github.breadmoirai.breadbot.framework.event.internal.arguments.TextChannelArgument;
+import com.github.breadmoirai.breadbot.framework.event.internal.arguments.UserArgument;
 import com.github.breadmoirai.breadbot.framework.parameter.CommandArgument;
-import com.github.breadmoirai.breadbot.framework.parameter.internal.arguments.EmojiArgument;
-import com.github.breadmoirai.breadbot.framework.parameter.internal.arguments.EmoteArgument;
-import com.github.breadmoirai.breadbot.framework.parameter.internal.arguments.GenericCommandArgument;
-import com.github.breadmoirai.breadbot.framework.parameter.internal.arguments.InvalidRoleArgument;
-import com.github.breadmoirai.breadbot.framework.parameter.internal.arguments.InvalidTextChannelArgument;
-import com.github.breadmoirai.breadbot.framework.parameter.internal.arguments.InvalidUserArgument;
-import com.github.breadmoirai.breadbot.framework.parameter.internal.arguments.MemberArgument;
-import com.github.breadmoirai.breadbot.framework.parameter.internal.arguments.RoleArgument;
-import com.github.breadmoirai.breadbot.framework.parameter.internal.arguments.TextChannelArgument;
-import com.github.breadmoirai.breadbot.framework.parameter.internal.arguments.UserArgument;
 import com.github.breadmoirai.breadbot.util.Arguments;
 import com.github.breadmoirai.breadbot.util.Emoji;
 import net.dv8tion.jda.core.JDA;
@@ -45,7 +45,6 @@ public class CommandArgumentFactory {
     private final JDA jda;
     private final Guild guild;
     private final TextChannel channel;
-
 
     public CommandArgumentFactory(CommandEvent event) {
         this.event = event;

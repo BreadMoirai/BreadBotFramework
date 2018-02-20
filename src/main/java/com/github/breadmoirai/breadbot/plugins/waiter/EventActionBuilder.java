@@ -91,6 +91,13 @@ public interface EventActionBuilder<E extends Event, V> {
      */
     <V2> EventActionBuilder<E, V2> finishWithResult(Function<E, V2> finisher);
 
+    /**
+     * <b>WARNING THIS RETURNS A NEW BUILDER</b>
+     *
+     * @param finisher
+     *
+     * @return
+     */
     default EventActionBuilder<E, Void> finish(Runnable finisher) {
         return finishWithResult(e -> {
             finisher.run();
