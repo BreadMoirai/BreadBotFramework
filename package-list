@@ -7,12 +7,13 @@ com.github.breadmoirai.breadbot.framework.command
 com.github.breadmoirai.breadbot.framework.command.internal
 com.github.breadmoirai.breadbot.framework.command.internal.builder
 com.github.breadmoirai.breadbot.framework.defaults
+com.github.breadmoirai.breadbot.framework.defaults.parsers
 com.github.breadmoirai.breadbot.framework.error
 com.github.breadmoirai.breadbot.framework.event
 com.github.breadmoirai.breadbot.framework.event.internal
+com.github.breadmoirai.breadbot.framework.event.internal.arguments
 com.github.breadmoirai.breadbot.framework.parameter
 com.github.breadmoirai.breadbot.framework.parameter.internal
-com.github.breadmoirai.breadbot.framework.parameter.internal.arguments
 com.github.breadmoirai.breadbot.framework.parameter.internal.builder
 com.github.breadmoirai.breadbot.framework.response
 com.github.breadmoirai.breadbot.framework.response.internal
