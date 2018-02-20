@@ -21,10 +21,14 @@ import com.github.breadmoirai.breadbot.framework.event.internal.CommandEventInte
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.events.message.guild.GenericGuildMessageEvent;
 
+import java.util.function.Predicate;
+
 /**
  * This creates Events from GuildMessageEvents and handles how Prefixes and Keys are parsed.
  */
 public interface CommandEventFactory {
 
     CommandEventInternal createEvent(GenericGuildMessageEvent event, Message message, BreadBot client);
+
+    void setPreprocessor(Predicate<Message> preProcessPredicate);
 }

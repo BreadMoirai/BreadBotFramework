@@ -23,12 +23,14 @@ import com.github.breadmoirai.breadbot.util.DiscordPatterns;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.events.message.guild.GenericGuildMessageEvent;
 
+import java.util.function.Predicate;
 import java.util.regex.Matcher;
 
 public class CommandEventFactoryImpl implements CommandEventFactory {
 
     private final PrefixPlugin prefixModule;
     private String myId;
+    private Predicate<Message> preProcessPredicate;
 
     public CommandEventFactoryImpl(PrefixPlugin prefixSupplier) {
         this.prefixModule = prefixSupplier;
@@ -40,15 +42,28 @@ public class CommandEventFactoryImpl implements CommandEventFactory {
         String contentRaw = message.getContentRaw();
         final Matcher matcher = DiscordPatterns.USER_MENTION_PREFIX.matcher(contentRaw);
         if (matcher.find() && matcher.start() == 0 && matcher.group(1).equals(getMyId(event))) {
+            if (failCheck(message))
+                return null;
             contentRaw = contentRaw.substring(matcher.end()).trim();
             return parseContent(event, message, client, prefix, contentRaw);
         } else {
             if (contentRaw.startsWith(prefix)) {
+                if (failCheck(message))
+                    return null;
                 contentRaw = contentRaw.substring(prefix.length()).trim();
                 return parseContent(event, message, client, prefix, contentRaw);
             }
             return null;
         }
+    }
+
+    private boolean failCheck(Message m) {
+        return preProcessPredicate != null && !preProcessPredicate.test(m);
+    }
+
+    @Override
+    public void setPreprocessor(Predicate<Message> preProcessPredicate) {
+        this.preProcessPredicate = preProcessPredicate;
     }
 
     private String getMyId(GenericGuildMessageEvent event) {

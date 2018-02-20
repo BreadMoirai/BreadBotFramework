@@ -610,7 +610,10 @@ public class BreadBotBuilder implements
             commandEventFactory = new CommandEventFactoryImpl(getPlugin(PrefixPlugin.class));
         final List<CommandHandleImpl> build = commandBuilders.stream().map(o -> o.build(null)).collect(Collectors.toList());
         commands.addAll(build);
-        final BreadBotClientImpl breadBotClient = new BreadBotClientImpl(plugins, commands, resultManager, argumentTypes, commandEventFactory, preProcessPredicate, shouldEvaluateCommandOnMessageUpdate);
+        commandEventFactory.setPreprocessor(preProcessPredicate);
+        final BreadBotClientImpl breadBotClient = new BreadBotClientImpl(plugins, commands, resultManager,
+                                                                         argumentTypes, commandEventFactory,
+                                                                         shouldEvaluateCommandOnMessageUpdate);
         breadBotClient.propogateReadyEvent();
         return breadBotClient;
     }
