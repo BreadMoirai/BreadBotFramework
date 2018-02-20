@@ -94,9 +94,9 @@ public interface EventActionBuilder<E extends Event, V> {
     /**
      * <b>WARNING THIS RETURNS A NEW BUILDER</b>
      *
-     * @param finisher
+     * @param finisher a runnable that runs when this action is complete
      *
-     * @return
+     * @return a new builder
      */
     default EventActionBuilder<E, Void> finish(Runnable finisher) {
         return finishWithResult(e -> {

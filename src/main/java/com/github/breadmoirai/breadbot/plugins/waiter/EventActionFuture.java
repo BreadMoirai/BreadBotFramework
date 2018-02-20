@@ -40,7 +40,7 @@ public interface EventActionFuture<V> extends ScheduledFuture<V> {
      * this task should never run.  If the task has already started,
      * then the task cannot be interrupted. If there is a timeout action
      * present, it will also be cancelled.
-     * <p>
+     *
      * <p>After this method returns, subsequent calls to {@link #isDone} will
      * always return {@code true}.  Subsequent calls to {@link #isCancelled}
      * will always return {@code true} if this method returned {@code true}.
@@ -62,7 +62,7 @@ public interface EventActionFuture<V> extends ScheduledFuture<V> {
      * and this task has not started when {@code cancel} is called,
      * this task should never run.  If the task has already started,
      * then the task cannot be interrupted.
-     * <p>
+     *
      * <p>After this method returns, subsequent calls to {@link #isDone} will
      * always return {@code true}.  Subsequent calls to {@link #isCancelled}
      * will always return {@code true} if this method returned {@code true}.

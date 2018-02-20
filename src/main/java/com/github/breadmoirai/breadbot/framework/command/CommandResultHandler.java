@@ -21,7 +21,7 @@ import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
 /**
  * This handles the result of a command, in other terms the returned value from invoking a command method
  *
- * @param <T>
+ * @param <T> the result type
  */
 @FunctionalInterface
 public interface CommandResultHandler<T> {

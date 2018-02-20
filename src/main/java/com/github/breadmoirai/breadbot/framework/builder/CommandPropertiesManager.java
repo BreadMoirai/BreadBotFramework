@@ -39,22 +39,25 @@ public interface CommandPropertiesManager {
     /**
      * The provided {@code configurator} is used to modify commands that possess the specified property.
      * This behavior is added onto any existing behavior.
-     * When a command is registered with that property (usually an annotation), the provided {@code configurator} is applied.
+     * When a command is registered with that property (usually an annotation), the provided {@code configurator} is
+     * applied.
      * If there are already commands registered, the {@code configurator} is applied to those as well.
      *
      * @param propertyType the class of the property
      * @param configurator a {@link BiConsumer BiConsumer}.
-     *                     The first argument is the property.
-     *                     The second argument is the {@link CommandHandleBuilder CommandHandleBuilder} the property is attached to.
-     * @param <T>          the propertyType
+     * The first argument is the property.
+     * The second argument is the {@link CommandHandleBuilder CommandHandleBuilder} the property is attached to.
+     * @param <T> the propertyType
+     * @return this, for chaining.
      */
-    <T> CommandPropertiesManager bindCommandModifier(Class<T> propertyType, BiConsumer<T, CommandHandleBuilder> configurator);
+    <T> CommandPropertiesManager bindCommandModifier(Class<T> propertyType,
+                                                     BiConsumer<T, CommandHandleBuilder> configurator);
 
     /**
      * Removes any existing behavior attached to this parameter.
      *
      * @param parameterType the class of the parameter.
-     * @return this.
+     * @return this, for chaining.
      */
     CommandPropertiesManager clearParameterModifiers(Class<?> parameterType);
 
@@ -66,11 +69,13 @@ public interface CommandPropertiesManager {
      *
      * @param propertyType the class of the property
      * @param configurator a {@link BiConsumer BiConsumer}.
-     *                     The first argument is the property.
-     *                     The second argument is the {@link CommandHandleBuilder CommandHandleBuilder} the property is attached to.
-     * @param <T>          the propertyType
+     * The first argument is the property.
+     * The second argument is the {@link CommandHandleBuilder CommandHandleBuilder} the property is attached to.
+     * @param <T> the propertyType
+     * @return this, for chaining.
      */
-    <T> CommandPropertiesManager bindParameterModifier(Class<T> propertyType, BiConsumer<T, CommandParameterBuilder> configurator);
+    <T> CommandPropertiesManager bindParameterModifier(Class<T> propertyType,
+                                                       BiConsumer<T, CommandParameterBuilder> configurator);
 
     /**
      * Applies modifiers to a CommandHandleBuilder based on whether the handle contains a property.
@@ -83,7 +88,7 @@ public interface CommandPropertiesManager {
      * Retrieves a BiConsumer that is used to modify a CommandHandleBuilder.
      *
      * @param propertyType the class of the Property.
-     * @param <T>          the property type.
+     * @param <T> the property type.
      * @return a BiConsumer if present, otherwise {@code null}.
      * @see #clearCommandModifiers(Class)
      * @see #bindCommandModifier(Class, BiConsumer)
@@ -95,10 +100,9 @@ public interface CommandPropertiesManager {
      * Applies a modifier that is associated with a certain {@code propertyType} to the passed {@code builder}.
      * If a modifier is not found the {@code builder} is not modified.
      *
-     *
      * @param propertyType the property class
-     * @param builder      the CommandHandleBuilder to be modified
-     * @param <T>          the property type
+     * @param builder the CommandHandleBuilder to be modified
+     * @param <T> the property type
      * @see #clearCommandModifiers(Class) (Class)
      * @see #bindCommandModifier(Class, BiConsumer)
      * @see #getCommandModifier(Class)
@@ -116,7 +120,7 @@ public interface CommandPropertiesManager {
      * Retrieves a BiConsumer that is used to modify a CommandParameterBuilder.
      *
      * @param propertyType the class of the Property.
-     * @param <T>          the property type.
+     * @param <T> the property type.
      * @return a BiConsumer if present, otherwise {@code null}.
      * @see #clearParameterModifiers(Class)
      * @see #bindParameterModifier(Class, BiConsumer)
@@ -129,8 +133,8 @@ public interface CommandPropertiesManager {
      * If a modifier is not found the {@code builder} is not modified.
      *
      * @param propertyType the property class
-     * @param builder      the CommandHandleBuilder to be modified
-     * @param <T>          the property type
+     * @param builder the CommandHandleBuilder to be modified
+     * @param <T> the property type
      * @see #clearParameterModifiers(Class) (Class, BiConsumer)
      * @see #bindParameterModifier(Class, BiConsumer)
      * @see #getParameterModifier(Class)
@@ -138,52 +142,71 @@ public interface CommandPropertiesManager {
     <T> void applyParameterModifier(Class<T> propertyType, CommandParameterBuilder builder);
 
     /**
-     * Associates a preprocessor with a property. This does not replace any existing preprocessors associated with the property.
+     * Associates a preprocessor with a property. This does not replace any existing preprocessors associated with the
+     * property.
      *
-     * @param identifier   a name for the preprocessor
+     * @param identifier a name for the preprocessor
      * @param propertyType the property class
-     * @param function     a {@link CommandPreprocessorFunction#process CommandPreprocessorFunction}
+     * @param function a {@link CommandPreprocessorFunction#process CommandPreprocessorFunction}
+     * @return this, for chaining.
      */
-    default CommandPropertiesManager bindPreprocessor(String identifier, Class<?> propertyType, CommandPreprocessorFunction function) {
-        bindCommandModifier(propertyType, (t, commandHandleBuilder) -> commandHandleBuilder.addPreprocessor(new CommandPreprocessor(identifier, function)));
+    default CommandPropertiesManager bindPreprocessor(String identifier, Class<?> propertyType,
+                                                      CommandPreprocessorFunction function) {
+        bindCommandModifier(propertyType, (t, commandHandleBuilder) -> commandHandleBuilder.addPreprocessor(
+                new CommandPreprocessor(identifier, function)));
         return this;
     }
 
     /**
-     * Associates a preprocessor with a property. This does not replace any existing preprocessors associated with the property.
+     * Associates a preprocessor with a property. This does not replace any existing preprocessors associated with the
+     * property.
      *
-     * @param identifier   a name for the preprocessor
+     * @param identifier a name for the preprocessor
      * @param propertyType the property class
-     * @param factory      a function that generates a preprocessor based upon the value of the property
-     * @param <T>          the property type
+     * @param factory a function that generates a preprocessor based upon the value of the property
+     * @param <T> the property type
+     * @return this, for chaining.
      */
-    default <T> CommandPropertiesManager bindPreprocessorFactory(String identifier, Class<T> propertyType, Function<T, CommandPreprocessorFunction> factory) {
-        bindCommandModifier(propertyType, (t, commandHandleBuilder) -> commandHandleBuilder.addPreprocessor(new CommandPreprocessor(identifier, factory.apply(t))));
+    default <T> CommandPropertiesManager bindPreprocessorFactory(String identifier, Class<T> propertyType,
+                                                                 Function<T, CommandPreprocessorFunction> factory) {
+        bindCommandModifier(propertyType, (t, commandHandleBuilder) -> commandHandleBuilder.addPreprocessor(
+                new CommandPreprocessor(identifier, factory.apply(t))));
         return this;
     }
 
     /**
-     * Associates a preprocessor with a property. This does not replace any existing preprocessors associated with the property.
+     * Associates a preprocessor with a property. This does not replace any existing preprocessors associated with the
+     * property.
      *
-     * @param identifier   a name for the preprocessor
+     * @param identifier a name for the preprocessor
      * @param propertyType the property class
-     * @param predicate    a {@link java.util.function.Predicate Predicate}{@literal <}{@link CommandEvent CommandEvent}{@literal >} that returns {@code true} when the command should continue to execute, {@code false} otherwise
+     * @param predicate a {@link java.util.function.Predicate Predicate}{@literal <}{@link CommandEvent
+     * CommandEvent}{@literal >} that returns {@code true} when the command should continue to execute, {@code false}
+     * otherwise
+     * @return this, for chaining.
      */
-    default CommandPropertiesManager bindPreprocessorPredicate(String identifier, Class<?> propertyType, CommandPreprocessorPredicate predicate) {
-        bindCommandModifier(propertyType, (t, commandHandleBuilder) -> commandHandleBuilder.addPreprocessor(new CommandPreprocessor(identifier, predicate)));
+    default CommandPropertiesManager bindPreprocessorPredicate(String identifier, Class<?> propertyType,
+                                                               CommandPreprocessorPredicate predicate) {
+        bindCommandModifier(propertyType, (t, commandHandleBuilder) -> commandHandleBuilder.addPreprocessor(
+                new CommandPreprocessor(identifier, predicate)));
         return this;
     }
 
     /**
-     * Associates a preprocessor with a property. This does not replace any existing preprocessors associated with the property.
+     * Associates a preprocessor with a property. This does not replace any existing preprocessors associated with the
+     * property.
      *
-     * @param identifier   a name for the preprocessor
+     * @param identifier a name for the preprocessor
      * @param propertyType the property class
-     * @param factory      a function that generates a preprocessor predicate based upon the value of the property
-     * @param <T>          the property type
+     * @param factory a function that generates a preprocessor predicate based upon the value of the property
+     * @param <T> the property type
+     * @return this.
      */
-    default <T> CommandPropertiesManager bindPreprocessorPredicateFactory(String identifier, Class<T> propertyType, Function<T, CommandPreprocessorPredicate> factory) {
-        bindCommandModifier(propertyType, (t, commandHandleBuilder) -> commandHandleBuilder.addPreprocessor(new CommandPreprocessor(identifier, factory.apply(t))));
+    default <T> CommandPropertiesManager bindPreprocessorPredicateFactory(String identifier, Class<T> propertyType,
+                                                                          Function<T, CommandPreprocessorPredicate>
+                                                                                  factory) {
+        bindCommandModifier(propertyType, (t, commandHandleBuilder) -> commandHandleBuilder.addPreprocessor(
+                new CommandPreprocessor(identifier, factory.apply(t))));
         return this;
     }
 
@@ -191,6 +214,13 @@ public interface CommandPropertiesManager {
 
     CommandPropertiesManager setPreprocessorPriority(String... identifiers);
 
+    /**
+     * Sets the order in which preprocessors are evaluated
+     *
+     * @param identifierList a list of strings that contain the names of each preprocessor. If there is a null value in
+     * the list, all unmatched preprocessors will be put in that spot.
+     * @return this.
+     */
     CommandPropertiesManager setPreprocessorPriority(List<String> identifierList);
 
     Comparator<CommandPreprocessor> getPriorityComparator();

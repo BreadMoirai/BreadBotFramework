@@ -442,7 +442,7 @@ public class CommandResponseMessage extends CommandResponse {
          * <br>Messages by default output their {@link net.dv8tion.jda.core.entities.Message#getContentDisplay() getContentDisplay()} value and
          * as alternative use the {@link net.dv8tion.jda.core.entities.Message#getContentRaw() getContentRaw()} value</li>
          * </ul>
-         * <p>
+         *
          * <p>Example:
          * <br>If you placed the following code in an method handling a
          * {@link net.dv8tion.jda.core.events.message.MessageReceivedEvent MessageReceivedEvent}
@@ -613,7 +613,7 @@ public class CommandResponseMessage extends CommandResponse {
         /**
          * Sets the Title of the embed.
          * <br>Overload for {@link #title(String, String)} without URL parameter.
-         * <p>
+         *
          * <p><b><a href="http://i.imgur.com/JgZtxIM.png">Example</a></b>
          *
          * @param title the title of the embed
@@ -631,7 +631,7 @@ public class CommandResponseMessage extends CommandResponse {
         /**
          * Sets the Title of the embed.
          * <br>You can provide {@code null} as url if no url should be used.
-         * <p>
+         *
          * <p><b><a href="http://i.imgur.com/JgZtxIM.png">Example</a></b>
          *
          * @param title the title of the embed
@@ -651,7 +651,7 @@ public class CommandResponseMessage extends CommandResponse {
 
         /**
          * Sets the Description of the embed. This is where the main chunk of text for an embed is typically placed.
-         * <p>
+         *
          * <p><b><a href="http://i.imgur.com/lbchtwk.png">Example</a></b>
          *
          * @param description the description of the embed, {@code null} to reset
@@ -665,7 +665,7 @@ public class CommandResponseMessage extends CommandResponse {
 
         /**
          * Appends to the description of the embed. This is where the main chunk of text for an embed is typically placed.
-         * <p>
+         *
          * <p><b><a href="http://i.imgur.com/lbchtwk.png">Example</a></b>
          *
          * @param description the string to append to the description of the embed
@@ -682,9 +682,9 @@ public class CommandResponseMessage extends CommandResponse {
 
         /**
          * Sets the Timestamp of the embed.
-         * <p>
+         *
          * <p><b><a href="http://i.imgur.com/YP4NiER.png">Example</a></b>
-         * <p>
+         *
          * <p><b>Hint:</b> You can get the current time using {@link Instant#now() Instant.now()} or convert time from a
          * millisecond representation by using {@link Instant#ofEpochMilli(long) Instant.ofEpochMilli(long)};
          *
@@ -712,14 +712,14 @@ public class CommandResponseMessage extends CommandResponse {
 
         /**
          * Sets the Thumbnail of the embed.
-         * <p>
+         *
          * <p><b><a href="http://i.imgur.com/Zc3qwqB.png">Example</a></b>
-         * <p>
+         *
          * <p><b>Uploading images with Embeds</b>
          * <br>When uploading an <u>image</u>
          * (using {@link MessageChannel#sendFile(File, Message) MessageChannel.sendFile(...)})
          * you can reference said image using the specified filename as URI {@code attachment://filename.ext}.
-         * <p>
+         *
          * <p><u>Example</u>
          * <pre><code>
          * MessageChannel channel; // = reference of a MessageChannel
@@ -746,14 +746,14 @@ public class CommandResponseMessage extends CommandResponse {
 
         /**
          * Sets the Image of the embed.
-         * <p>
+         *
          * <p><b><a href="http://i.imgur.com/2hzuHFJ.png">Example</a></b>
-         * <p>
+         *
          * <p><b>Uploading images with Embeds</b>
          * <br>When uploading an <u>image</u>
          * (using {@link MessageChannel#sendFile(File, Message) MessageChannel.sendFile(...)})
          * you can reference said image using the specified filename as URI {@code attachment://filename.ext}.
-         * <p>
+         *
          * <p><u>Example</u>
          * <pre><code>
          * MessageChannel channel; // = reference of a MessageChannel
@@ -783,7 +783,7 @@ public class CommandResponseMessage extends CommandResponse {
          * Sets the Author of the embed. The author appears in the top left of the embed and can have a small
          * image beside it along with the author's name being made clickable by way of providing a url.
          * This convenience method just sets the name.
-         * <p>
+         *
          * <p><b><a href="http://i.imgur.com/JgZtxIM.png">Example</a></b>
          *
          * @param name the name of the author of the embed. If this is not set, the author will not appear in the embed
@@ -798,7 +798,7 @@ public class CommandResponseMessage extends CommandResponse {
          * Sets the Author of the embed. The author appears in the top left of the embed and can have a small
          * image beside it along with the author's name being made clickable by way of providing a url.
          * This convenience method just sets the name and the url.
-         * <p>
+         *
          * <p><b><a href="http://i.imgur.com/JgZtxIM.png">Example</a></b>
          *
          * @param name the name of the author of the embed. If this is not set, the author will not appear in the embed
@@ -817,14 +817,14 @@ public class CommandResponseMessage extends CommandResponse {
         /**
          * Sets the Author of the embed. The author appears in the top left of the embed and can have a small
          * image beside it along with the author's name being made clickable by way of providing a url.
-         * <p>
+         *
          * <p><b><a href="http://i.imgur.com/JgZtxIM.png">Example</a></b>
-         * <p>
+         *
          * <p><b>Uploading images with Embeds</b>
          * <br>When uploading an <u>image</u>
          * (using {@link MessageChannel#sendFile(File, Message) MessageChannel.sendFile(...)})
          * you can reference said image using the specified filename as URI {@code attachment://filename.ext}.
-         * <p>
+         *
          * <p><u>Example</u>
          * <pre><code>
          * MessageChannel channel; // = reference of a MessageChannel
@@ -855,14 +855,14 @@ public class CommandResponseMessage extends CommandResponse {
 
         /**
          * Sets the Footer of the embed.
-         * <p>
+         *
          * <p><b><a href="http://i.imgur.com/jdf4sbi.png">Example</a></b>
-         * <p>
+         *
          * <p><b>Uploading images with Embeds</b>
          * <br>When uploading an <u>image</u>
          * (using {@link MessageChannel#sendFile(File, Message) MessageChannel.sendFile(...)})
          * you can reference said image using the specified filename as URI {@code attachment://filename.ext}.
-         * <p>
+         *
          * <p><u>Example</u>
          * <pre><code>
          * MessageChannel channel; // = reference of a MessageChannel
@@ -891,10 +891,10 @@ public class CommandResponseMessage extends CommandResponse {
 
         /**
          * Adds a Field to the embed.
-         * <p>
+         *
          * <p>Note: If a blank string is provided to either {@code name} or {@code value}, the blank string is replaced
          * with {@link net.dv8tion.jda.core.EmbedBuilder#ZERO_WIDTH_SPACE}.
-         * <p>
+         *
          * <p><b><a href="http://i.imgur.com/gnjzCoo.png">Example of Inline</a></b>
          * <p><b><a href="http://i.imgur.com/Ky0KlsT.png">Example if Non-inline</a></b>
          *
@@ -915,7 +915,7 @@ public class CommandResponseMessage extends CommandResponse {
 
         /**
          * Adds a blank (empty) Field to the embed.
-         * <p>
+         *
          * <p><b><a href="http://i.imgur.com/tB6tYWy.png">Example of Inline</a></b>
          * <p><b><a href="http://i.imgur.com/lQqgH3H.png">Example of Non-inline</a></b>
          *

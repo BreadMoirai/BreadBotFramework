@@ -577,15 +577,6 @@ public class BreadBotBuilder implements
     }
 
     /**
-     * Not much use for this at the moment.
-     */
-    public BreadBotBuilder setEventFactory(CommandEventFactory commandEventFactory) {
-        this.commandEventFactory = commandEventFactory;
-        return this;
-    }
-
-
-    /**
      * This will allow messages to be re-evaluated on message edit.
      * This will also evaluate commands that are unpinned.
      * Will ignore messages that are pinned.

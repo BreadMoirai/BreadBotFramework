@@ -33,7 +33,9 @@ import java.util.regex.Pattern;
 import java.util.stream.IntStream;
 
 /**
- * This represents a space separated argument in a Command. Mentions are eagerly evaluated while everything else is lazily evaluated. Methods begging in {@code parse} do not store the return value and as such, each call parses the content again.
+ * This represents a space separated argument in a Command. Mentions are eagerly evaluated while everything else is
+ * lazily evaluated. Methods begging in {@code parse} do not store the return value and as such, each call parses the
+ * content again.
  */
 public interface CommandArgument {
 
@@ -61,7 +63,8 @@ public interface CommandArgument {
     }
 
     /**
-     * If this method returns {@code true}, that means this argument has been eagerly evaluated to a mention. This argument would be of type
+     * If this method returns {@code true}, that means this argument has been eagerly evaluated to a mention. This
+     * argument would be of type
      * <ul>
      * <li>User Mention</li>
      * <li>Member Mention</li>
@@ -77,25 +80,27 @@ public interface CommandArgument {
         return false;
     }
 
-
     /**
-     * Grabs the corresponding parser from the BreadBotClient and attempts to parse this argument to the passed type. If successful, return the result.
+     * Grabs the corresponding parser from the BreadBotClient and attempts to parse this argument to the passed type. If
+     * successful, return the result.
      *
      * @param type the class of the type
-     * @param <T>  The type
+     * @param <T> The type
      * @return the result if can be parsed, otherwise {@code null}.
      */
     default <T> T getAsType(Class<T> type) {
         TypeParser<T> parser = getClient().getArgumentTypes().getTypeParser(type);
         if (parser != null)
             return parser.parse(this);
-        else return null;
+        else
+            return null;
     }
 
     /**
      * Invocation is exactly the same as:
      * <pre><code>
-     *     this.{@link CommandArgument#getArgument() getArgument()}.{@link java.lang.String#matches(String) matches}(regex)
+     *     this.{@link CommandArgument#getArgument() getArgument()}.{@link java.lang.String#matches(String)
+     * matches}(regex)
      * </code></pre>
      *
      * @param regex the regular expression to which this string is to be matched
@@ -109,12 +114,14 @@ public interface CommandArgument {
     /**
      * Invocation is exactly the same as:
      * <pre><code>
-     *     this.{@link CommandArgument#getArgument() getArgument()}.{@link java.lang.String#matches(String) matches}(regex)
+     *     this.{@link CommandArgument#getArgument() getArgument()}.{@link java.lang.String#matches(String)
+     * matches}(regex)
      * </code></pre>
      *
      * @param regex the regular expression to which this string is to be matched
-     * @return {@code true} if, and only if, this string matches the
-     * given regular expression
+     * @param flags any match flags. See {@link Pattern#compile(String, int)}
+     * @return {@code true} if, and only if, this string matches the given regular expression
+     * @see Pattern#compile(String, int)
      */
     default boolean matches(String regex, int flags) {
         return Pattern.compile(regex, flags).matcher(getArgument()).matches();
@@ -123,7 +130,8 @@ public interface CommandArgument {
     /**
      * Invocation is exactly the same as:
      * <pre><code>
-     *     pattern.{@link Pattern#matcher(java.lang.CharSequence) matcher}(this.{@link CommandArgument#getArgument() getArgument()}).{@link java.util.regex.Matcher#matches() matches()}
+     *     pattern.{@link Pattern#matcher(java.lang.CharSequence) matcher}(this.{@link CommandArgument#getArgument()
+     * getArgument()}).{@link java.util.regex.Matcher#matches() matches()}
      * </code></pre>
      *
      * @param pattern the regex Pattern to match the argument with.
@@ -135,22 +143,27 @@ public interface CommandArgument {
     }
 
     /**
-     * Checks whether the underlying string consists of only digits with an exception of {@code -} or {@code +} at the beginning.
+     * Checks whether the underlying string consists of only digits with an exception of {@code -} or {@code +} at the
+     * beginning.
      * <p>Result is equivalent to a regex of:
      * <pre><code>
      *     [-+]?[0-9]+
      * </code></pre>
      *
-     * @return {@code true} if and only if this argument only contains {@code 0-9} with an optional prefix of {@code -} or {@code +}
+     * @return {@code true} if and only if this argument only contains {@code 0-9} with an optional prefix of {@code -}
+     * or {@code +}
      */
     default boolean isNumeric() {
         return Arguments.isNumber(getArgument());
     }
 
     /**
-     * Equivalent to {@link CommandArgument#isNumeric isNumeric()} but also checks that the number is within the range of an integer
+     * Equivalent to {@link CommandArgument#isNumeric isNumeric()} but also checks that the number is within the range
+     * of an integer
      *
-     * @return {@code true} if and only if this argument only contains {@code 0-9} with an optional prefix of {@code -} or {@code +} and the number does not exceed {@link java.lang.Integer#MAX_VALUE} or {@link java.lang.Integer#MIN_VALUE}
+     * @return {@code true} if and only if this argument only contains {@code 0-9} with an optional prefix of {@code -}
+     * or {@code +} and the number does not exceed {@link java.lang.Integer#MAX_VALUE} or {@link
+     * java.lang.Integer#MIN_VALUE}
      */
     default boolean isInteger() {
         return Arguments.isInteger(getArgument());
@@ -167,9 +180,11 @@ public interface CommandArgument {
     }
 
     /**
-     * Equivalent to {@link CommandArgument#isNumeric isNumeric()} but also checks that the number is within the range of an integer
+     * Equivalent to {@link CommandArgument#isNumeric isNumeric()} but also checks that the number is within the range
+     * of an integer
      *
-     * @return {@code true} if and only if this argument only contains {@code 0-9} with an optional prefix of {@code -} or {@code +} and the number does not exceed {@link java.lang.Long#MAX_VALUE} or {@link java.lang.Long#MIN_VALUE}
+     * @return {@code true} if and only if this argument only contains {@code 0-9} with an optional prefix of {@code -}
+     * or {@code +} and the number does not exceed {@link java.lang.Long#MAX_VALUE} or {@link java.lang.Long#MIN_VALUE}
      */
     default boolean isLong() {
         return Arguments.isLong(getArgument());
@@ -187,6 +202,9 @@ public interface CommandArgument {
 
     /**
      * Checks the expression against the regex provided in {@link java.lang.Double#valueOf(String)}
+     *
+     * @return {@code true} if this argument can be parsed to a Float or Double
+     * @see Double#parseDouble(String)
      */
     default boolean isFloat() {
         return Arguments.isFloat(getArgument());
@@ -229,18 +247,24 @@ public interface CommandArgument {
     }
 
     /**
-     * Parses this argument as an inclusive range and returns an {@link java.util.stream.IntStream} consisting of the elements in the stream in the order declared
-     * <p>For example, an argument of {@code "2-6"} will return a stream of {@code [2,3,4,5,6]} and an argument of {@code "8-5"} will return a stream of {@code [8,7,6,5]}.
-     * <p><b>This method CAN be used in cases where {@link CommandArgument#isRange isRange()} would return false.</b> If the argument is a single integer, where {@link CommandArgument#isInteger isInteger()} would return {@code true}, an {@link java.util.stream.IntStream} with a single value will be returned.
+     * Parses this argument as an inclusive range and returns an {@link java.util.stream.IntStream} consisting of the
+     * elements in the stream in the order declared
+     * <p>For example, an argument of {@code "2-6"} will return a stream of {@code [2,3,4,5,6]} and an argument of
+     * {@code "8-5"} will return a stream of {@code [8,7,6,5]}.
+     * <p><b>This method CAN be used in cases where {@link CommandArgument#isRange isRange()} would return false.</b> If
+     * the argument is a single integer, where {@link CommandArgument#isInteger isInteger()} would return {@code true},
+     * an {@link java.util.stream.IntStream} with a single value will be returned.
      *
-     * @return an ordered {@link java.util.stream.IntStream}. If {@link CommandArgument#isRange isRange()} AND {@link CommandArgument#isInteger isInteger()} would return false, {@code null} will be returned.
+     * @return an ordered {@link java.util.stream.IntStream}. If {@link CommandArgument#isRange isRange()} AND {@link
+     * CommandArgument#isInteger isInteger()} would return false, {@code null} will be returned.
      */
     default IntStream parseRange() {
         return Arguments.parseRange(getArgument());
     }
 
     /**
-     * Checks if this matches a hexadecimal number, specifically whether this argument consists of digits 0-10 and/or letters a-f optionally prefixed by {@code #} or {@code 0x}
+     * Checks if this matches a hexadecimal number, specifically whether this argument consists of digits 0-10 and/or
+     * letters a-f optionally prefixed by {@code #} or {@code 0x}
      * The result of this method is equivalent to checking this argument against a regex of {@code (#|0x)?[0-9a-fA-F]+}
      *
      * @return {@code true} if it matches the format required.
@@ -284,14 +308,19 @@ public interface CommandArgument {
     boolean isUser();
 
     /**
-     * Checks if this argument is a {@link net.dv8tion.jda.core.entities.User} mention that can be correctly resolved to a {@link net.dv8tion.jda.core.entities.User}.
-     * The result of this method is equivalent to checking this argument against a regex of {@code <@(!)?[0-9]+>} and then checking to see if {@link net.dv8tion.jda.core.JDA} has knowledge of a {@link net.dv8tion.jda.core.entities.User} with that id.
+     * Checks if this argument is a {@link net.dv8tion.jda.core.entities.User} mention that can be correctly resolved to
+     * a {@link net.dv8tion.jda.core.entities.User}.
+     * The result of this method is equivalent to checking this argument against a regex of {@code <@(!)?[0-9]+>} and
+     * then checking to see if {@link net.dv8tion.jda.core.JDA} has knowledge of a {@link
+     * net.dv8tion.jda.core.entities.User} with that id.
      * <p>
      * If this method returns {@code false} and {@link CommandArgument#isUser} returns {@code true}, this
      * CommandArgument is can be cast to an
-     * {@link com.github.breadmoirai.breadbot.framework.event.internal.arguments.InvalidMentionArgument InvalidMentionArgument}
+     * {@link com.github.breadmoirai.breadbot.framework.event.internal.arguments.InvalidMentionArgument
+     * InvalidMentionArgument}
      *
-     * @return {@code true} if this is a formatted {@link net.dv8tion.jda.core.entities.User} mention that can be resolved to an entity.
+     * @return {@code true} if this is a formatted {@link net.dv8tion.jda.core.entities.User} mention that can be
+     * resolved to an entity.
      */
     boolean isValidUser();
 
@@ -314,7 +343,8 @@ public interface CommandArgument {
      * {@link net.dv8tion.jda.core.entities.Guild} to see if it is a
      * {@link net.dv8tion.jda.core.entities.Member}.
      *
-     * @return {@code true} if the {@link net.dv8tion.jda.core.entities.Member} can be resolved to a valid JDA entity. Otherwise {@code false}
+     * @return {@code true} if the {@link net.dv8tion.jda.core.entities.Member} can be resolved to a valid JDA entity.
+     * Otherwise {@code false}
      */
     boolean isValidMember();
 
@@ -331,20 +361,24 @@ public interface CommandArgument {
 
     /**
      * Searches for a member in the {@link net.dv8tion.jda.core.entities.Guild} using the argument as criteria.
-     * If it matches multiple users, the user whose name begins with the argument is given precedence. If multiple users match, the first one found is returned.
+     * If it matches multiple users, the user whose name begins with the argument is given precedence. If multiple users
+     * match, the first one found is returned.
      * This attempts to match Username and Nickname.
-     * <p>
-     * <p>If this argument is already a valid {@link net.dv8tion.jda.core.entities.Member} mention, that {@link net.dv8tion.jda.core.entities.Member} is returned within the {@link java.util.Optional}.
      *
-     * @return the first {@link net.dv8tion.jda.core.entities.Member} found, otherwise an empty {@link java.util.Optional}
+     * <p>If this argument is already a valid {@link net.dv8tion.jda.core.entities.Member} mention, that {@link
+     * net.dv8tion.jda.core.entities.Member} is returned within the {@link java.util.Optional}.
+     *
+     * @return the first {@link net.dv8tion.jda.core.entities.Member} found, otherwise an empty
+     * {@link java.util.Optional}
      */
 
     Optional<Member> findMember();
 
     /**
      * Searches for members whose Username or Nickname contains this argument.
-     * <p>
-     * <p>If this argument is already a valid {@link net.dv8tion.jda.core.entities.Member} mention, a {@link java.util.List} with only that element is returned.
+     *
+     * <p>If this argument is already a valid {@link net.dv8tion.jda.core.entities.Member} mention, a {@link
+     * java.util.List} with only that element is returned.
      *
      * @return A never-null {@link java.util.List} of {@link net.dv8tion.jda.core.entities.Member Members}
      */
@@ -361,17 +395,23 @@ public interface CommandArgument {
 
     /**
      * Checks if this argument is a {@link net.dv8tion.jda.core.entities.Role} mention.
-     * The result of this method is equivalent to checking this argument against a regex of {@code <@&[0-9]+>} and checking if it can be correctly resolved to a {@link net.dv8tion.jda.core.entities.Role} within the {@link net.dv8tion.jda.core.entities.Guild}.
+     * The result of this method is equivalent to checking this argument against a regex of {@code <@&[0-9]+>} and
+     * checking if it can be correctly resolved to a {@link net.dv8tion.jda.core.entities.Role} within the {@link
+     * net.dv8tion.jda.core.entities.Guild}.
      *
-     * @return {@code true} if this is a valid {@link net.dv8tion.jda.core.entities.Role} mention that can be resolved to a valid JDA entity.
+     * @return {@code true} if this is a valid {@link net.dv8tion.jda.core.entities.Role} mention that can be resolved
+     * to a valid JDA entity.
      */
     boolean isValidRole();
 
     /**
-     * Attempts to resolve this argument to a {@link net.dv8tion.jda.core.entities.Role} in the {@link net.dv8tion.jda.core.entities.Guild}.
-     * If {@link CommandArgument#isRole isRole()} would return true, it is guaranteed that this method returns a {@code non-null} value.
+     * Attempts to resolve this argument to a {@link net.dv8tion.jda.core.entities.Role} in the {@link
+     * net.dv8tion.jda.core.entities.Guild}.
+     * If {@link CommandArgument#isRole isRole()} would return true, it is guaranteed that this method returns a {@code
+     * non-null} value.
      *
-     * @return {@link net.dv8tion.jda.core.entities.Role} if role is present within the {@link net.dv8tion.jda.core.entities.Guild}, otherwise {@code null}
+     * @return {@link net.dv8tion.jda.core.entities.Role} if role is present within the {@link
+     * net.dv8tion.jda.core.entities.Guild}, otherwise {@code null}
      * @throws UnsupportedOperationException if {@link CommandArgument#isValidRole()} would return {@code false}
      */
     default Role getRole() {
@@ -380,17 +420,20 @@ public interface CommandArgument {
 
     /**
      * Attempts to match this argument to a {@link net.dv8tion.jda.core.entities.Role} by name.
-     * <p>
-     * <p>If this argument is already a valid {@link net.dv8tion.jda.core.entities.Role} mention, that {@link net.dv8tion.jda.core.entities.Role} is returned within the {@link java.util.Optional}.
+     *
+     * <p>If this argument is already a valid {@link net.dv8tion.jda.core.entities.Role} mention, that {@link
+     * net.dv8tion.jda.core.entities.Role} is returned within the {@link java.util.Optional}.
      *
      * @return the first {@link net.dv8tion.jda.core.entities.Role} found, otherwise an empty {@link java.util.Optional}
      */
     Optional<Role> findRole();
 
     /**
-     * Returns a {@link java.util.List} of {@link net.dv8tion.jda.core.entities.Role Roles} that match this argument. The criteria being that the {@link net.dv8tion.jda.core.entities.Role} name should contain this argument.
-     * <p>
-     * <p>If this argument is already a valid {@link net.dv8tion.jda.core.entities.Role} mention, a {@link java.util.List} with only that element is returned.
+     * Returns a {@link java.util.List} of {@link net.dv8tion.jda.core.entities.Role Roles} that match this argument.
+     * The criteria being that the {@link net.dv8tion.jda.core.entities.Role} name should contain this argument.
+     *
+     * <p>If this argument is already a valid {@link net.dv8tion.jda.core.entities.Role} mention, a {@link
+     * java.util.List} with only that element is returned.
      *
      * @return A never-null {@link java.util.List} of {@link net.dv8tion.jda.core.entities.Role Roles}.
      */
@@ -405,21 +448,28 @@ public interface CommandArgument {
     boolean isTextChannel();
 
     /**
-     * Checks if this argument is a {@link net.dv8tion.jda.core.entities.TextChannel} mention that can be correctly resolved to a {@link net.dv8tion.jda.core.entities.TextChannel}.
-     * The result of this method is equivalent to checking this argument against a regex of {@code <#[0-9]+>} and then checking to see if {@link net.dv8tion.jda.core.JDA} has knowledge of a {@link net.dv8tion.jda.core.entities.TextChannel} with that id.
+     * Checks if this argument is a {@link net.dv8tion.jda.core.entities.TextChannel} mention that can be correctly
+     * resolved to a {@link net.dv8tion.jda.core.entities.TextChannel}.
+     * The result of this method is equivalent to checking this argument against a regex of {@code <#[0-9]+>} and then
+     * checking to see if {@link net.dv8tion.jda.core.JDA} has knowledge of a {@link
+     * net.dv8tion.jda.core.entities.TextChannel} with that id.
      * <p>
      * If this method returns {@code false} and {@link CommandArgument#isTextChannel()} returns {@code true}, this
      * CommandArgument is can be cast to an
-     * {@link com.github.breadmoirai.breadbot.framework.event.internal.arguments.InvalidMentionArgument InvalidMentionArgument}
+     * {@link com.github.breadmoirai.breadbot.framework.event.internal.arguments.InvalidMentionArgument
+     * InvalidMentionArgument}
      *
-     * @return {@code true} if this is a formatted {@link net.dv8tion.jda.core.entities.TextChannel} mention and can be correctly resolved to a JDA entity.
+     * @return {@code true} if this is a formatted {@link net.dv8tion.jda.core.entities.TextChannel} mention and can be
+     * correctly resolved to a JDA entity.
      */
     boolean isValidTextChannel();
 
     /**
-     * Attempts to resolve this argument as a {@link net.dv8tion.jda.core.entities.TextChannel} mention to a {@link net.dv8tion.jda.core.entities.TextChannel} in the {@link net.dv8tion.jda.core.entities.Guild}.
-     * <p>
-     * <p>If {@link CommandArgument#isTextChannel isTextChannel()} would return true, it is guaranteed that this method returns a {@code non-null} value.
+     * Attempts to resolve this argument as a {@link net.dv8tion.jda.core.entities.TextChannel} mention to a {@link
+     * net.dv8tion.jda.core.entities.TextChannel} in the {@link net.dv8tion.jda.core.entities.Guild}.
+     *
+     * <p>If {@link CommandArgument#isTextChannel isTextChannel()} would return true, it is guaranteed that this method
+     * returns a {@code non-null} value.
      *
      * @return {@link net.dv8tion.jda.core.entities.TextChannel} if can be resolved to a JDA entity
      * @throws UnsupportedOperationException if {@link CommandArgument#isValidTextChannel()} would return {@code false}
@@ -430,16 +480,21 @@ public interface CommandArgument {
 
     /**
      * Attempts to match this argument to a {@link net.dv8tion.jda.core.entities.TextChannel} by name.
-     * <p>If this argument is already a valid {@link net.dv8tion.jda.core.entities.TextChannel} mention, that {@link net.dv8tion.jda.core.entities.TextChannel} is returned within the {@link java.util.Optional}.
+     * <p>If this argument is already a valid {@link net.dv8tion.jda.core.entities.TextChannel} mention, that {@link
+     * net.dv8tion.jda.core.entities.TextChannel} is returned within the {@link java.util.Optional}.
      *
-     * @return the first {@link net.dv8tion.jda.core.entities.TextChannel} found, otherwise an empty {@link java.util.Optional}
+     * @return the first {@link net.dv8tion.jda.core.entities.TextChannel} found, otherwise an empty
+     * {@link java.util.Optional}
      */
     Optional<TextChannel> findTextChannel();
 
     /**
-     * Returns a {@link java.util.List} of {@link net.dv8tion.jda.core.entities.TextChannel TextChannels} that match this argument. The criteria being that the {@link net.dv8tion.jda.core.entities.TextChannel} name should contain this argument.
-     * <p>
-     * <p>If this argument is already a valid {@link net.dv8tion.jda.core.entities.TextChannel} mention, a {@link java.util.List} with only that element is returned.
+     * Returns a {@link java.util.List} of {@link net.dv8tion.jda.core.entities.TextChannel TextChannels} that match
+     * this argument. The criteria being that the {@link net.dv8tion.jda.core.entities.TextChannel} name should contain
+     * this argument.
+     *
+     * <p>If this argument is already a valid {@link net.dv8tion.jda.core.entities.TextChannel} mention, a {@link
+     * java.util.List} with only that element is returned.
      *
      * @return A never-null {@link java.util.List} of {@link net.dv8tion.jda.core.entities.TextChannel TextChannels}.
      */
@@ -448,12 +503,15 @@ public interface CommandArgument {
     /**
      * Attempts to match this argument to a {@link net.dv8tion.jda.core.entities.VoiceChannel} by name.
      *
-     * @return the first {@link net.dv8tion.jda.core.entities.VoiceChannel} if found, otherwise an empty {@link java.util.Optional}
+     * @return the first {@link net.dv8tion.jda.core.entities.VoiceChannel} if found, otherwise an empty {@link
+     * java.util.Optional}
      */
     Optional<VoiceChannel> findVoiceChannel();
 
     /**
-     * Returns a {@link java.util.List} of {@link net.dv8tion.jda.core.entities.VoiceChannel Roles} that match this argument. The criteria being that the {@link net.dv8tion.jda.core.entities.VoiceChannel} name should contain this argument.
+     * Returns a {@link java.util.List} of {@link net.dv8tion.jda.core.entities.VoiceChannel Roles} that match this
+     * argument. The criteria being that the {@link net.dv8tion.jda.core.entities.VoiceChannel} name should contain this
+     * argument.
      *
      * @return A never-null {@link java.util.List} of {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannels}.
      */
@@ -468,11 +526,15 @@ public interface CommandArgument {
     boolean isEmote();
 
     /**
-     * If {@link #isEmote()} would return {@code true}, this method will always return a {@code not-null} value, {@code null} otherwise.
-     * If the formatting is correct but {@link net.dv8tion.jda.core.JDA} cannot resolve the {@link net.dv8tion.jda.core.entities.Emote},
-     * a {@link net.dv8tion.jda.core.entities.IFakeable Fake} {@link net.dv8tion.jda.core.entities.Emote} will be returned.
-     * <p>
-     * <p>If {@link CommandArgument#isEmote isEmote()} would return true, it is guaranteed that this method returns a {@code non-null} value.
+     * If {@link #isEmote()} would return {@code true}, this method will always return a {@code not-null} value, {@code
+     * null} otherwise.
+     * If the formatting is correct but {@link net.dv8tion.jda.core.JDA} cannot resolve the {@link
+     * net.dv8tion.jda.core.entities.Emote},
+     * a {@link net.dv8tion.jda.core.entities.IFakeable Fake} {@link net.dv8tion.jda.core.entities.Emote} will be
+     * returned.
+     *
+     * <p>If {@link CommandArgument#isEmote isEmote()} would return true, it is guaranteed that this method returns a
+     * {@code non-null} value.
      *
      * @return An {@link net.dv8tion.jda.core.entities.Emote} if the formatting is correct. Otherwise {@code null}.
      * @throws UnsupportedOperationException if {@link CommandArgument#isEmote()} would return {@code false}
@@ -482,7 +544,9 @@ public interface CommandArgument {
     }
 
     /**
-     * Will attempt to match this argument against the emojis found in {@link com.github.breadmoirai.breadbot.util.Emoji} using their unicode value.
+     * Will attempt to match this argument against the emojis found in
+     * {@link com.github.breadmoirai.breadbot.util.Emoji}
+     * using their unicode value.
      * The implementation of this method is
      * <pre><code>
      *     return {@link CommandArgument#getEmoji}() != null
@@ -493,7 +557,8 @@ public interface CommandArgument {
     boolean isEmoji();
 
     /**
-     * Attempts to find a matching {@link com.github.breadmoirai.breadbot.util.Emoji} with {@link com.github.breadmoirai.breadbot.util.Emoji#find(String)}
+     * Attempts to find a matching {@link com.github.breadmoirai.breadbot.util.Emoji} with {@link
+     * com.github.breadmoirai.breadbot.util.Emoji#find(String)}
      *
      * @return The {@link com.github.breadmoirai.breadbot.util.Emoji} if matched.
      * @throws UnsupportedOperationException if {@link CommandArgument#isEmoji()} would return {@code false}

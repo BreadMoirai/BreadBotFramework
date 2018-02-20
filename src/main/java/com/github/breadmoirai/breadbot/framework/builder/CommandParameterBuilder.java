@@ -112,7 +112,7 @@ public interface CommandParameterBuilder {
      * By default this is set to -1.
      *
      * @param limit An int determining the maximum amount of arguments to contain.
-     * @return this
+     * @return this.
      */
     CommandParameterBuilder setLimit(int limit);
 
@@ -132,9 +132,10 @@ public interface CommandParameterBuilder {
     CommandParameter build();
 
     /**
-     * Sets the default mapping for a parameter in case none is found
+     * Sets the default mapping for a parameter in case none is found.
      *
-     * @param defaultValue a function that produces a value
+     * @param defaultValue a function that produces a value.
+     * @return this.
      */
     CommandParameterBuilder setDefaultValue(Function<CommandEvent, ?> defaultValue);
 

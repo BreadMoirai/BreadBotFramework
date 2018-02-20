@@ -60,13 +60,14 @@ public interface CommandPluginBuilder {
      * Finds and returns the first Module that is assignable to the provided {@code moduleClass}
      *
      * @param moduleClass The class of the Module to find
+     * @param <M> the plugin type
      * @return The module if found. Else {@code null}.
      */
     <M extends CommandPlugin> M getPlugin(Class<M> moduleClass);
 
     /**
      * This adds a module that implements {@link PrefixPlugin} to provide a static prefix that cannot be changed. If a {@link PrefixPlugin} is not added, one will be provided with a static prefix of {@code "!"}
-     * <p>
+     *
      * <p>This method's implementation is:
      * <pre><code> {@link CommandPluginBuilder#addPlugin(CommandPlugin) addModule}(new {@link UnmodifiablePrefixPlugin DefaultPrefixModule}(prefix)) </code></pre>
      *
@@ -84,13 +85,13 @@ public interface CommandPluginBuilder {
      * This ensures that Commands marked with {@link com.github.breadmoirai.breadbot.plugins.admin.Admin @Admin} are only usable by Administrators.
      * <p>It is <b>important</b> to include an implementation of {@link AdminPlugin AdminModule} through either this method, {@link BreadBotBuilder#addAdminPlugin(Predicate)}, or your own implementation.
      * Otherwise, all users will have access to Administrative Commands
-     * <p>
+     *
      * <p>The default criteria for defining an Administrator is as follows:
      * <ul>
      * <li>Has Kick Members Permission</li>
      * <li>Is higher than the bot on the role hierarchy</li>
      * </ul>
-     * <p>
+     *
      * <p>Different criteria to determine which member has administrative status with {@link BreadBotBuilder#addAdminPlugin(Predicate)}
      * or your own implementation of {@link AdminPlugin}
      *
@@ -102,7 +103,7 @@ public interface CommandPluginBuilder {
 
     /**
      * Define custom behavior to determine which members can use Commands marked with {@link com.github.breadmoirai.breadbot.plugins.admin.Admin @Admin}
-     * <p>
+     *
      * <p>This method's implementation is:
      * <pre><code> {@link #addPlugin(CommandPlugin) addModule}(new {@link AdminPluginImpl DefaultAdminModule}(isAdmin)) </code></pre>
      *

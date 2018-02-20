@@ -19,12 +19,12 @@ public @interface Content {
 
     /**
      * Type of content.
-     * <ulist>
+     * <ul>
      * <li>{@link Content.Type#RAW}</li>
      * <li>{@link Content.Type#STRIPPED}</li>
      * <li>{@link Content.Type#DISPLAY}</li>
      * <li>{@link Content.Type#RAW_TRIMMED}</li>
-     * </ulist>
+     * </ul>
      *
      * @return the content type.
      */

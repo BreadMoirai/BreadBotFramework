@@ -38,7 +38,7 @@ public interface RestActionExtension<T> {
 
     /**
      * Sets a Consumer that will be called on the failure of this action.
-     * <p>
+     *
      * <p> By default this will simply log and ignore the exception
      *
      * @param failure a consumer that accepts a throwable

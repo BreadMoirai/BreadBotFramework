@@ -40,11 +40,9 @@ import java.util.function.Predicate;
  * will overwrite any conditions already set,
  * which is all of these extension methods.
  *
- * @param <T>
- *         the result type
+ * @param <T> the result type
  */
 public interface ReactionEventActionBuilder<T> extends EventActionBuilderExtension<GenericMessageReactionEvent, T> {
-
 
     /**
      * Restrict condition to ReactionAddEvents only.
@@ -70,6 +68,8 @@ public interface ReactionEventActionBuilder<T> extends EventActionBuilderExtensi
     /**
      * Matches the name of the reaction
      *
+     * @param emojiEmoteName the names of any emotes to match or the unicode of any emojis to match
+     *
      * @return this
      */
     default ReactionEventActionBuilder<T> withName(String... emojiEmoteName) {
@@ -91,7 +91,8 @@ public interface ReactionEventActionBuilder<T> extends EventActionBuilderExtensi
         return matching(event -> {
             final MessageReaction.ReactionEmote reactionEmote = event.getReaction().getReactionEmote();
             final String id = reactionEmote.getId();
-            if (id == null) return false;
+            if (id == null)
+                return false;
             final long idLong = reactionEmote.getIdLong();
             for (long emoteId : emoteIds) {
                 if (emoteId == idLong) {
@@ -108,8 +109,7 @@ public interface ReactionEventActionBuilder<T> extends EventActionBuilderExtensi
      * with {@link #stopIf(ObjectIntPredicate)}, then this predicate
      * with be combined with the set one with an AND.
      *
-     * @param reactionCount
-     *         an IntPredicate that tests against the number of reactions
+     * @param reactionCount an IntPredicate that tests against the number of reactions
      *
      * @return this
      */
@@ -138,7 +138,6 @@ public interface ReactionEventActionBuilder<T> extends EventActionBuilderExtensi
         });
     }
 
-
     ReactionEventActionBuilder<T> matching(Predicate<GenericMessageReactionEvent> condition);
 
     @Override
@@ -156,7 +155,8 @@ public interface ReactionEventActionBuilder<T> extends EventActionBuilderExtensi
             for (Role r : roles) {
                 final long id = r.getIdLong();
                 for (long l : roleIds) {
-                    if (id == l) return true;
+                    if (id == l)
+                        return true;
                 }
             }
             return false;
@@ -185,7 +185,8 @@ public interface ReactionEventActionBuilder<T> extends EventActionBuilderExtensi
         return matching(event -> {
             final long authorId = event.getUser().getIdLong();
             for (long userId : userIds) {
-                if (authorId == userId) return true;
+                if (authorId == userId)
+                    return true;
             }
             return false;
         });
