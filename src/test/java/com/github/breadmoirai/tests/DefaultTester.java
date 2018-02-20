@@ -38,7 +38,6 @@ import static org.mockito.Mockito.verify;
 
 public class DefaultTester {
 
-
     static {
         TestLoggerFactory.getInstance().setPrintLevel(Level.DEBUG);
     }
@@ -99,6 +98,7 @@ public class DefaultTester {
         assertResponse("!t 2/9", "2018-02-09T00:00-08:00");
         assertResponse("!t 2/3", "2019-02-03T00:00-08:00");
     }
+
     private void assertResponse(String input, String expected) {
         assertResponse(MockFactory.UserType.BASIC, input, expected);
     }

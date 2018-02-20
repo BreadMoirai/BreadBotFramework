@@ -318,7 +318,6 @@ public class ClientTest {
     private void assertResponse(final String input, final String expected) {
         CommandEventInternal spy = mockCommand(client, input, MockFactory.UserType.BASIC);
 
-
         doAnswer(invocation -> {
             String argument = invocation.getArgument(0);
             assertEquals(expected, argument);

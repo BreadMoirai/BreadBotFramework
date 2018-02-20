@@ -236,15 +236,22 @@ public class BreadBotClientImpl implements BreadBot, EventListener {
     public void onEvent(Event event) {
         if (event instanceof GuildMessageReceivedEvent) {
             onGuildMessageReceived(((GuildMessageReceivedEvent) event));
+        } else if (event instanceof GuildMessageUpdateEvent) {
+            onGuildMessageUpdate(((GuildMessageUpdateEvent) event));
         } else if (event instanceof ReadyEvent) {
             onReady(((ReadyEvent) event));
-        } else if (shouldEvaluateCommandOnMessageUpdate && event instanceof GuildMessageUpdateEvent) {
-            onGuildMessageUpdate(((GuildMessageUpdateEvent) event));
         }
     }
 
     @SubscribeEvent
     public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
+        onGuildMessageEvent(event, event.getMessage());
+    }
+
+    @SubscribeEvent
+    public void onGuildMessageUpdate(GuildMessageUpdateEvent event) {
+        if (!shouldEvaluateCommandOnMessageUpdate || event.getMessage().isPinned())
+            return;
         onGuildMessageEvent(event, event.getMessage());
     }
 
@@ -270,13 +277,6 @@ public class BreadBotClientImpl implements BreadBot, EventListener {
         }
         eventManager.handle(event);
         jda.addEventListener(registeredListeners.toArray());
-    }
-
-    @SubscribeEvent
-    public void onGuildMessageUpdate(GuildMessageUpdateEvent event) {
-        if (event.getMessage().isPinned())
-            return;
-        onGuildMessageEvent(event, event.getMessage());
     }
 
     private void onGuildMessageEvent(GenericGuildMessageEvent event, Message message) {
