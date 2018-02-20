@@ -590,7 +590,7 @@ public class BreadBotBuilder implements
      * This will also evaluate commands that are unpinned.
      * Will ignore messages that are pinned.
      *
-     * @param shouldEvaluateCommandOnMessageUpdate By default this is {@code true}.
+     * @param shouldEvaluateCommandOnMessageUpdate By default this is {@code false}.
      * @return this
      */
     public BreadBotBuilder setEvaluateCommandOnMessageUpdate(boolean shouldEvaluateCommandOnMessageUpdate) {
