@@ -21,11 +21,14 @@ import com.github.breadmoirai.breadbot.framework.builder.BreadBotBuilder;
 import com.github.breadmoirai.breadbot.framework.builder.CommandHandleBuilder;
 import com.github.breadmoirai.breadbot.framework.builder.CommandParameterBuilder;
 import com.github.breadmoirai.breadbot.framework.command.internal.CommandPropertyMapImpl;
+import com.github.breadmoirai.breadbot.framework.event.CommandArgumentList;
 import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
+import com.github.breadmoirai.breadbot.framework.internal.BreadBotClientImpl;
 import com.github.breadmoirai.breadbot.framework.parameter.AbsentArgumentHandler;
 import com.github.breadmoirai.breadbot.framework.parameter.ArgumentParser;
 import com.github.breadmoirai.breadbot.framework.parameter.CommandArgument;
 import com.github.breadmoirai.breadbot.framework.parameter.CommandParameter;
+import com.github.breadmoirai.breadbot.framework.parameter.CommandParser;
 import com.github.breadmoirai.breadbot.framework.parameter.TypeParser;
 import com.github.breadmoirai.breadbot.framework.parameter.internal.ArgumentParserImpl;
 import com.github.breadmoirai.breadbot.framework.parameter.internal.CommandParameterImpl;
@@ -40,7 +43,8 @@ import java.util.function.Predicate;
 
 public class CommandParameterBuilderImpl implements CommandParameterBuilder {
 //
-//    private static final List<Class<?>> COLLECTION_TYPES = Arrays.asList(List.class, Deque.class, Queue.class, Stream.class, IntStream.class, LongStream.class, DoubleStream.class);
+//    private static final List<Class<?>> COLLECTION_TYPES = Arrays.asList(List.class, Deque.class, Queue.class,
+// Stream.class, IntStream.class, LongStream.class, DoubleStream.class);
 
     private final CommandHandleBuilder commandBuilder;
     private final Parameter parameter;
@@ -58,7 +62,8 @@ public class CommandParameterBuilderImpl implements CommandParameterBuilder {
     private Predicate<CommandArgument> argumentPredicate;
     private Function<CommandEvent, ?> defaultValue;
 
-    public CommandParameterBuilderImpl(BreadBotBuilder builder, CommandHandleBuilder commandBuilder, Parameter parameter, CommandPropertyMapImpl map) {
+    public CommandParameterBuilderImpl(BreadBotBuilder builder, CommandHandleBuilder commandBuilder,
+                                       Parameter parameter, CommandPropertyMapImpl map) {
         this.commandBuilder = commandBuilder;
         this.parameter = parameter;
         this.clientBuilder = builder;
@@ -68,9 +73,20 @@ public class CommandParameterBuilderImpl implements CommandParameterBuilder {
             final Class<?> type = parameter.getType();
             typeParser = this.clientBuilder.getTypeParser(type);
             if (CommandPlugin.class.isAssignableFrom(type)) {
-                this.argumentParser = (p) -> (param, list, parser) -> parser.getEvent().getClient().getPlugin(type);
+                this.argumentParser = (p) -> new ArgumentParser() {
+                    private CommandPlugin p;
+
+                    @Override
+                    public Object parse(CommandParameter param, CommandArgumentList list, CommandParser parser) {
+                        if (p == null)
+                            p = ((BreadBotClientImpl) parser.getEvent().getClient()).getPlugin(type);
+                        return p;
+                    }
+                };
             } else {
-                this.argumentParser = (p) -> new ArgumentParserImpl(p.index, p.width, p.mustBePresent, p.absentArgumentHandler, p.typeParser, p.defaultValue);
+                this.argumentParser = (p) -> new ArgumentParserImpl(p.index, p.width, p.mustBePresent,
+                                                                    p.absentArgumentHandler, p.typeParser,
+                                                                    p.defaultValue);
             }
             builder.applyTypeModifiers(this);
         } else {
@@ -80,31 +96,19 @@ public class CommandParameterBuilderImpl implements CommandParameterBuilder {
         builder.applyModifiers(this);
     }
 
-    public Class<?> getGenericType() {
-        return getActualTypeParameter(getDeclaringParameter());
-    }
-
     private static Class<?> getActualTypeParameter(Parameter parameter) {
         final ParameterizedType parameterizedType = (ParameterizedType) parameter.getParameterizedType();
         final Type type = parameterizedType.getActualTypeArguments()[0];
         return ((Class<?>) type);
     }
 
+    public Class<?> getGenericType() {
+        return getActualTypeParameter(getDeclaringParameter());
+    }
+
     @Override
     public CommandParameterBuilder setName(String paramName) {
         this.paramName = paramName;
-        return this;
-    }
-
-    @Override
-    public CommandParameterBuilderImpl setIndex(int index) {
-        this.index = index;
-        return this;
-    }
-
-    @Override
-    public CommandParameterBuilderImpl setWidth(int width) {
-        this.width = width;
         return this;
     }
 
@@ -119,7 +123,6 @@ public class CommandParameterBuilderImpl implements CommandParameterBuilder {
         this.argumentParser = o -> parser;
         return this;
     }
-
 
     @Override
     public CommandParameterBuilder setRequired(boolean mustBePresent) {
@@ -202,13 +205,8 @@ public class CommandParameterBuilderImpl implements CommandParameterBuilder {
         }
         final ArgumentParser parser = this.argumentParser.apply(this);
 
-        return new CommandParameterImpl(paramName, parameter, index, width, limit, contiguous, parser, mustBePresent, absentArgumentHandler);
-    }
-
-    @Override
-    public CommandParameterBuilderImpl setLimit(int limit) {
-        this.limit = limit;
-        return this;
+        return new CommandParameterImpl(paramName, parameter, index, width, limit, contiguous, parser, mustBePresent,
+                                        absentArgumentHandler);
     }
 
     @Override
@@ -233,12 +231,30 @@ public class CommandParameterBuilderImpl implements CommandParameterBuilder {
         return index;
     }
 
+    @Override
+    public CommandParameterBuilderImpl setIndex(int index) {
+        this.index = index;
+        return this;
+    }
+
     public int getWidth() {
         return width;
     }
 
+    @Override
+    public CommandParameterBuilderImpl setWidth(int width) {
+        this.width = width;
+        return this;
+    }
+
     public int getLimit() {
         return limit;
+    }
+
+    @Override
+    public CommandParameterBuilderImpl setLimit(int limit) {
+        this.limit = limit;
+        return this;
     }
 
     public boolean isMustBePresent() {
@@ -260,6 +276,5 @@ public class CommandParameterBuilderImpl implements CommandParameterBuilder {
     public Function<CommandEvent, ?> getDefaultValue() {
         return defaultValue;
     }
-
 
 }
