@@ -33,7 +33,7 @@ public abstract class CommandEventInternal extends CommandEvent {
 
     public CommandEventInternal(JDA api, long responseNumber, BreadBotImpl client, boolean isHelpEvent) {
         super(api, responseNumber, client, isHelpEvent);
-        manager = EventResponseManager.factory.get();
+        manager = client.newEventResponseManager();
     }
 
     @Override

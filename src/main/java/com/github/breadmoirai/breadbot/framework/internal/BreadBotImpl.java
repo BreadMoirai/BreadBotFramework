@@ -26,6 +26,7 @@ import com.github.breadmoirai.breadbot.framework.error.DuplicateCommandKeyExcept
 import com.github.breadmoirai.breadbot.framework.event.CommandEventFactory;
 import com.github.breadmoirai.breadbot.framework.event.internal.CommandEventInternal;
 import com.github.breadmoirai.breadbot.framework.parameter.CommandParameterManager;
+import com.github.breadmoirai.breadbot.framework.response.EventResponseManager;
 import com.github.breadmoirai.breadbot.util.EventStringIterator;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Message;
@@ -52,10 +53,12 @@ import java.util.Map;
 public class BreadBotImpl implements BreadBot, EventListener {
 
     private static final Logger LOG = LoggerFactory.getLogger(BreadBot.class);
+
     private final CommandResultManager resultManager;
     private final CommandParameterManager argumentTypes;
     private final CommandEventFactory eventFactory;
     private final CommandEngine commandEngine;
+    private final ResponseManager responseManager;
     private final List<CommandPlugin> modules;
     private final Map<Type, CommandPlugin> moduleTypeMap;
     private final Map<String, Command> commandMap;
@@ -73,6 +76,7 @@ public class BreadBotImpl implements BreadBot, EventListener {
         this.argumentTypes = argumentTypes;
         this.eventFactory = eventFactory;
         this.shouldEvaluateCommandOnMessageUpdate = shouldEvaluateCommandOnMessageUpdate;
+        this.responseManager = new ResponseManager();
 
         HashMap<String, Command> handleMap = new HashMap<>();
         for (Command command : commands) {
@@ -254,5 +258,9 @@ public class BreadBotImpl implements BreadBot, EventListener {
             commandPlugin.onBreadReady(this);
         }
 
+    }
+
+    public EventResponseManager newEventResponseManager() {
+        return null;
     }
 }

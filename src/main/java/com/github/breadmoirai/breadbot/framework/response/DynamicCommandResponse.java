@@ -26,13 +26,5 @@ public interface DynamicCommandResponse extends CommandResponse {
         return other.getClass() == this.getClass();
     }
 
-    enum Scope {
-        GLOBAL_USER,
-        GUILD_USER,
-        CHANNEL_USER,
-        CHANNEL,
-        GUILD,
-        GLOBAL
-    }
 
 }
