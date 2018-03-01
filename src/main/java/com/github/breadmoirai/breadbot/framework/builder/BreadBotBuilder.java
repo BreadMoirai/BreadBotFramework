@@ -30,8 +30,7 @@ import com.github.breadmoirai.breadbot.framework.command.internal.builder.Comman
 import com.github.breadmoirai.breadbot.framework.command.internal.builder.CommandHandleBuilderInternal;
 import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
 import com.github.breadmoirai.breadbot.framework.event.CommandEventFactory;
-import com.github.breadmoirai.breadbot.framework.event.internal.CommandEventFactoryImpl;
-import com.github.breadmoirai.breadbot.framework.internal.BreadBotClientImpl;
+import com.github.breadmoirai.breadbot.framework.internal.BreadBotImpl;
 import com.github.breadmoirai.breadbot.framework.parameter.TypeParser;
 import com.github.breadmoirai.breadbot.framework.parameter.internal.builder.CommandParameterTypeManagerImpl;
 import com.github.breadmoirai.breadbot.plugins.prefix.PrefixPlugin;
@@ -601,13 +600,13 @@ public class BreadBotBuilder implements
         if (!hasPlugin(EventWaiterPlugin.class))
             plugins.add(new EventWaiterPlugin());
         if (commandEventFactory == null)
-            commandEventFactory = new CommandEventFactoryImpl(getPlugin(PrefixPlugin.class));
+            commandEventFactory = new CommandEventFactory(getPlugin(PrefixPlugin.class));
         final List<CommandHandleImpl> build = commandBuilders.stream().map(o -> o.build(null)).collect(Collectors.toList());
         commands.addAll(build);
         commandEventFactory.setPreprocessor(preProcessPredicate);
-        final BreadBotClientImpl breadBotClient = new BreadBotClientImpl(plugins, commands, resultManager,
-                                                                         argumentTypes, commandEventFactory,
-                                                                         shouldEvaluateCommandOnMessageUpdate);
+        final BreadBotImpl breadBotClient = new BreadBotImpl(plugins, commands, resultManager,
+                                                             argumentTypes, commandEventFactory,
+                                                             shouldEvaluateCommandOnMessageUpdate);
         breadBotClient.propagateReadyEvent();
         return breadBotClient;
     }

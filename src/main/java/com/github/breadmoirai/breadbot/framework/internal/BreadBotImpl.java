@@ -49,7 +49,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class BreadBotClientImpl implements BreadBot, EventListener {
+public class BreadBotImpl implements BreadBot, EventListener {
 
     private static final Logger LOG = LoggerFactory.getLogger(BreadBot.class);
     private final CommandResultManager resultManager;
@@ -61,7 +61,7 @@ public class BreadBotClientImpl implements BreadBot, EventListener {
     private final Map<String, Command> commandMap;
     private final boolean shouldEvaluateCommandOnMessageUpdate;
 
-    public BreadBotClientImpl(
+    public BreadBotImpl(
             List<CommandPlugin> modules,
             List<Command> commands,
             CommandResultManager resultManager,
@@ -241,7 +241,7 @@ public class BreadBotClientImpl implements BreadBot, EventListener {
     }
 
     private void onGuildMessageEvent(GenericGuildMessageEvent event, Message message) {
-        final CommandEventInternal commandEvent = eventFactory.createEvent(event, message, BreadBotClientImpl.this);
+        final CommandEventInternal commandEvent = eventFactory.createEvent(event, message, BreadBotImpl.this);
         if (commandEvent != null) {
             LOG.debug(commandEvent.toString());
             commandEngine.handle(commandEvent);

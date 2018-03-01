@@ -22,11 +22,6 @@ import net.dv8tion.jda.core.entities.Member;
 
 public interface AdminPlugin extends CommandPlugin {
 
-    @Override
-    default String getName() {
-        return "AdminModule";
-    }
-
     boolean isAdmin(Member member);
 
     @Override

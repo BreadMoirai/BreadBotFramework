@@ -23,7 +23,7 @@ import com.github.breadmoirai.breadbot.framework.builder.CommandParameterBuilder
 import com.github.breadmoirai.breadbot.framework.command.internal.CommandPropertyMapImpl;
 import com.github.breadmoirai.breadbot.framework.event.CommandArgumentList;
 import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
-import com.github.breadmoirai.breadbot.framework.internal.BreadBotClientImpl;
+import com.github.breadmoirai.breadbot.framework.internal.BreadBotImpl;
 import com.github.breadmoirai.breadbot.framework.parameter.AbsentArgumentHandler;
 import com.github.breadmoirai.breadbot.framework.parameter.ArgumentParser;
 import com.github.breadmoirai.breadbot.framework.parameter.CommandArgument;
@@ -79,7 +79,7 @@ public class CommandParameterBuilderImpl implements CommandParameterBuilder {
                     @Override
                     public Object parse(CommandParameter param, CommandArgumentList list, CommandParser parser) {
                         if (p == null)
-                            p = ((BreadBotClientImpl) parser.getEvent().getClient()).getPlugin(type);
+                            p = ((BreadBotImpl) parser.getEvent().getClient()).getPlugin(type);
                         return p;
                     }
                 };

@@ -30,10 +30,5 @@ public interface PrefixPlugin extends CommandPlugin {
         client.addCommand(PrefixCommand.class);
     }
 
-    @Override
-    default String getName() {
-        return "PrefixModule";
-    }
-
     String getPrefix(Guild guild);
 }
