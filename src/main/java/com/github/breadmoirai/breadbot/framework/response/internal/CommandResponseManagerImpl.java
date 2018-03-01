@@ -16,12 +16,12 @@
 package com.github.breadmoirai.breadbot.framework.response.internal;
 
 import com.github.breadmoirai.breadbot.framework.response.CommandResponse;
-import com.github.breadmoirai.breadbot.framework.response.CommandResponseManager;
+import com.github.breadmoirai.breadbot.framework.response.EventResponseManager;
 
 import java.util.ArrayDeque;
 import java.util.Queue;
 
-public class CommandResponseManagerImpl implements CommandResponseManager {
+public class CommandResponseManagerImpl implements EventResponseManager {
 
     private final Queue<CommandResponse> responses = new ArrayDeque<>();
 
@@ -35,6 +35,7 @@ public class CommandResponseManagerImpl implements CommandResponseManager {
         while (!responses.isEmpty()) {
             final CommandResponse poll = responses.poll();
             poll.dispatch(value -> {
+
             });
         }
     }

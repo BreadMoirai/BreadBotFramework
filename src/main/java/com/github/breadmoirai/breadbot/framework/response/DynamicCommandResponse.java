@@ -13,17 +13,26 @@
  *   See the License for the specific language governing permissions and
  *   limitations under the License.
  */
+
 package com.github.breadmoirai.breadbot.framework.response;
 
-import com.github.breadmoirai.breadbot.framework.response.internal.CommandResponseManagerImpl;
+public interface DynamicCommandResponse extends CommandResponse {
 
-import java.util.function.Supplier;
+    default boolean isUnique() {
+        return false;
+    }
 
-public interface CommandResponseManager {
+    default boolean matches(DynamicCommandResponse other) {
+        return other.getClass() == this.getClass();
+    }
 
-    Supplier<CommandResponseManager> factory = CommandResponseManagerImpl::new;
+    enum Scope {
+        GLOBAL_USER,
+        GUILD_USER,
+        CHANNEL_USER,
+        CHANNEL,
+        GUILD,
+        GLOBAL
+    }
 
-    void accept(CommandResponse response);
-
-    void complete();
 }

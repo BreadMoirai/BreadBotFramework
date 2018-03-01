@@ -13,8 +13,9 @@
  *   See the License for the specific language governing permissions and
  *   limitations under the License.
  */
-package com.github.breadmoirai.breadbot.framework.response;
+package com.github.breadmoirai.breadbot.framework.response.internal;
 
+import com.github.breadmoirai.breadbot.framework.response.RestActionExtension;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.utils.Checks;
 

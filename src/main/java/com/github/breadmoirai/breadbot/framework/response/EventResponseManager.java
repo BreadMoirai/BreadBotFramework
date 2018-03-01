@@ -13,18 +13,17 @@
  *   See the License for the specific language governing permissions and
  *   limitations under the License.
  */
-
 package com.github.breadmoirai.breadbot.framework.response;
 
-import net.dv8tion.jda.core.events.message.guild.GuildMessageDeleteEvent;
+import com.github.breadmoirai.breadbot.framework.response.internal.CommandResponseManagerImpl;
 
-import java.util.function.LongConsumer;
+import java.util.function.Supplier;
 
-public interface CommandResponse {
+public interface EventResponseManager {
 
-    void dispatch(LongConsumer linkReceiver);
+    Supplier<EventResponseManager> factory = CommandResponseManagerImpl::new;
 
-    default void onMessageDelete(GuildMessageDeleteEvent event) {
-    }
+    void accept(CommandResponse response);
 
+    void complete();
 }
