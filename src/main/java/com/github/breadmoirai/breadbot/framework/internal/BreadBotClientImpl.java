@@ -60,7 +60,6 @@ public class BreadBotClientImpl implements BreadBot, EventListener {
     private final Map<Type, CommandPlugin> moduleTypeMap;
     private final Map<String, Command> commandMap;
     private final boolean shouldEvaluateCommandOnMessageUpdate;
-    private JDA jda;
 
     public BreadBotClientImpl(
             List<CommandPlugin> modules,
@@ -105,7 +104,13 @@ public class BreadBotClientImpl implements BreadBot, EventListener {
 
         this.moduleTypeMap = typeMap;
 
-        commandEngine = event -> {
+        this.commandEngine = getCommandEngine(commandMap);
+
+        LOG.info("BreadBotClient Initialized");
+    }
+
+    private static CommandEngine getCommandEngine(Map<String, Command> commandMap) {
+        return event -> {
             Command commandHandle = commandMap.get(event.getKeys()[0].toLowerCase());
             if (commandHandle != null) {
                 if (event.isHelpEvent()) {
@@ -133,8 +138,6 @@ public class BreadBotClientImpl implements BreadBot, EventListener {
                 }
             }
         };
-
-        LOG.info("BreadBotClient Initialized");
     }
 
     private List<Class<?>> getInterfaceHierarchy(Class<?> from, Class<?> toSuper) {
@@ -152,47 +155,16 @@ public class BreadBotClientImpl implements BreadBot, EventListener {
     }
 
     @Override
-    public boolean hasPlugin(String pluginName) {
-        return pluginName != null && modules.stream()
-                                            .map(CommandPlugin::getName)
-                                            .anyMatch(pluginName::equalsIgnoreCase);
-    }
-
-    @Override
     public boolean hasPlugin(Class<? extends CommandPlugin> pluginClass) {
         return moduleTypeMap.containsKey(pluginClass);
     }
 
-    /**
-     * Finds and returns the first Module that is assignable to the provided {@code moduleClass}
-     *
-     * @param pluginClass The class of the Module to find
-     *
-     * @return Optional containing the module if found.
-     */
     @Override
     public <T extends CommandPlugin> T getPlugin(Class<T> pluginClass) {
         //noinspection unchecked
         return (T) moduleTypeMap.get(pluginClass);
     }
 
-    /**
-     * Finds and returns the first Module that is assignable to the provided {@code moduleClass}
-     *
-     * @param pluginName the name of the module to find. If the module does not override {@link CommandPlugin#getName
-     *                   IModule#getName} the name of the class is used.
-     *
-     * @return Optional containing the module if foundd.
-     */
-    @Override
-    public CommandPlugin getPlugin(String pluginName) {
-        return pluginName == null ? null : modules.stream()
-                                                  .filter(module -> module.getName().equalsIgnoreCase(pluginName))
-                                                  .findAny()
-                                                  .orElse(null);
-    }
-
-    @Override
     public CommandPlugin getPlugin(Type pluginType) {
         return moduleTypeMap.get(pluginType);
     }
@@ -205,16 +177,6 @@ public class BreadBotClientImpl implements BreadBot, EventListener {
     @Override
     public CommandEngine getCommandEngine() {
         return commandEngine;
-    }
-
-    @Override
-    public JDA getJDA() {
-        return jda;
-    }
-
-    @Override
-    public void setJDA(JDA jda) {
-        this.jda = jda;
     }
 
     @Override
@@ -258,7 +220,6 @@ public class BreadBotClientImpl implements BreadBot, EventListener {
     @SubscribeEvent
     public void onReady(ReadyEvent event) {
         final JDA jda = event.getJDA();
-        setJDA(jda);
         final List<Object> registeredListeners = jda.getRegisteredListeners();
         final IEventManager eventManager = ((JDAImpl) jda).getEventManager();
         for (Object registeredListener : registeredListeners) {
@@ -284,11 +245,11 @@ public class BreadBotClientImpl implements BreadBot, EventListener {
         if (commandEvent != null) {
             LOG.debug(commandEvent.toString());
             commandEngine.handle(commandEvent);
-            ((JDAImpl) jda).getEventManager().handle(commandEvent);
+            ((JDAImpl) event.getJDA()).getEventManager().handle(commandEvent);
         }
     }
 
-    public void propogateReadyEvent() {
+    public void propagateReadyEvent() {
         for (CommandPlugin commandPlugin : getPlugins()) {
             commandPlugin.onBreadReady(this);
         }

@@ -20,31 +20,44 @@ import com.github.breadmoirai.breadbot.framework.command.Command;
 import com.github.breadmoirai.breadbot.framework.command.CommandEngine;
 import com.github.breadmoirai.breadbot.framework.command.CommandResultManager;
 import com.github.breadmoirai.breadbot.framework.parameter.CommandParameterManager;
-import net.dv8tion.jda.core.JDA;
 
-import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 
 public interface BreadBot {
 
-    boolean hasPlugin(String pluginName);
-
+    /**
+     * Checks for a plugin with the specified class or superclass.
+     *
+     * @param pluginClass The class of the plugin or a superclass of it.
+     * @return {@code true} if a plugin that can be casted to the {@code pluginClass} is found.
+     */
     boolean hasPlugin(Class<? extends CommandPlugin> pluginClass);
 
+    /**
+     * Retrieves a plugin with the specified class.
+     * Specifically, iterates through the list of CommandPlugins and if a plugin that can be casted to {@code T} is
+     * found, it is casted and returned.
+     *
+     * @param pluginClass the class of the plugin
+     * @param <T> the type of the plugin
+     * @return the plugin if found, otherwise {@code null}
+     */
     <T extends CommandPlugin> T getPlugin(Class<T> pluginClass);
 
-    CommandPlugin getPlugin(String pluginName);
-
-    CommandPlugin getPlugin(Type pluginType);
-
+    /**
+     * Retrieves the list of all added plugins.
+     *
+     * @return a non-null immutable list.
+     */
     List<CommandPlugin> getPlugins();
 
+    /**
+     * Retrieves the functional object that evaluates CommandEvents.
+     *
+     * @return the implemented CommandEngine
+     */
     CommandEngine getCommandEngine();
-
-    JDA getJDA();
-
-    void setJDA(JDA jda);
 
     CommandParameterManager getArgumentTypes();
 

@@ -20,10 +20,6 @@ import com.github.breadmoirai.breadbot.framework.builder.BreadBotBuilder;
 
 public interface CommandPlugin {
 
-    default String getName() {
-        return this.getClass().getSimpleName().replace("Plugin", "");
-    }
-
     void initialize(BreadBotBuilder builder);
 
     /**

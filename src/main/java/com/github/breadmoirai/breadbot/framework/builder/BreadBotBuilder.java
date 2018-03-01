@@ -608,7 +608,7 @@ public class BreadBotBuilder implements
         final BreadBotClientImpl breadBotClient = new BreadBotClientImpl(plugins, commands, resultManager,
                                                                          argumentTypes, commandEventFactory,
                                                                          shouldEvaluateCommandOnMessageUpdate);
-        breadBotClient.propogateReadyEvent();
+        breadBotClient.propagateReadyEvent();
         return breadBotClient;
     }
 }
