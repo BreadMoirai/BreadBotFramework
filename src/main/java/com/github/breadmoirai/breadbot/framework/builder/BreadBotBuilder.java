@@ -36,6 +36,7 @@ import com.github.breadmoirai.breadbot.framework.parameter.TypeParser;
 import com.github.breadmoirai.breadbot.framework.parameter.internal.builder.CommandParameterTypeManagerImpl;
 import com.github.breadmoirai.breadbot.plugins.prefix.PrefixPlugin;
 import com.github.breadmoirai.breadbot.plugins.prefix.UnmodifiablePrefixPlugin;
+import com.github.breadmoirai.breadbot.plugins.waiter.EventWaiterPlugin;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.utils.Checks;
@@ -597,6 +598,8 @@ public class BreadBotBuilder implements
      */
     public BreadBot build() {
         if (!hasPlugin(PrefixPlugin.class)) plugins.add(new UnmodifiablePrefixPlugin("!"));
+        if (!hasPlugin(EventWaiterPlugin.class))
+            plugins.add(new EventWaiterPlugin());
         if (commandEventFactory == null)
             commandEventFactory = new CommandEventFactoryImpl(getPlugin(PrefixPlugin.class));
         final List<CommandHandleImpl> build = commandBuilders.stream().map(o -> o.build(null)).collect(Collectors.toList());
