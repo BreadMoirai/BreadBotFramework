@@ -26,7 +26,7 @@ import com.github.breadmoirai.breadbot.framework.error.DuplicateCommandKeyExcept
 import com.github.breadmoirai.breadbot.framework.event.CommandEventFactory;
 import com.github.breadmoirai.breadbot.framework.event.internal.CommandEventInternal;
 import com.github.breadmoirai.breadbot.framework.parameter.CommandParameterManager;
-import com.github.breadmoirai.breadbot.framework.response.EventResponseManager;
+import com.github.breadmoirai.breadbot.framework.response.ResponseManager;
 import com.github.breadmoirai.breadbot.util.EventStringIterator;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Message;
@@ -198,6 +198,10 @@ public class BreadBotImpl implements BreadBot, EventListener {
         return commandMap;
     }
 
+    public ResponseManager getResponseManager() {
+        return responseManager;
+    }
+
     @Override
     public void onEvent(Event event) {
         if (event instanceof GuildMessageReceivedEvent) {
@@ -257,10 +261,5 @@ public class BreadBotImpl implements BreadBot, EventListener {
         for (CommandPlugin commandPlugin : getPlugins()) {
             commandPlugin.onBreadReady(this);
         }
-
-    }
-
-    public EventResponseManager newEventResponseManager() {
-        return null;
     }
 }

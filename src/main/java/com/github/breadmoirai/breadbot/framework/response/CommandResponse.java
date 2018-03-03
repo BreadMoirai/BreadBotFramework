@@ -16,15 +16,10 @@
 
 package com.github.breadmoirai.breadbot.framework.response;
 
-import net.dv8tion.jda.core.events.message.guild.GuildMessageDeleteEvent;
-
 import java.util.function.LongConsumer;
 
 public interface CommandResponse {
 
     void dispatch(LongConsumer linkReceiver);
-
-    default void onMessageDelete(GuildMessageDeleteEvent event) {
-    }
 
 }

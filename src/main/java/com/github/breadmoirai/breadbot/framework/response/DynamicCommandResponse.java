@@ -18,13 +18,17 @@ package com.github.breadmoirai.breadbot.framework.response;
 
 public interface DynamicCommandResponse extends CommandResponse {
 
-    default boolean isUnique() {
-        return false;
-    }
-
+    /**
+     * Checks for a duplicate response and upon matching, the matched response will be cancelled.
+     * Implementations of this method must be able to accept {@code null} and return {@code false} upon doing so.
+     *
+     * @param other a response that has been sent
+     * @return {@code true} if the other response should be cancelled to make way for this response.
+     */
     default boolean matches(DynamicCommandResponse other) {
-        return other.getClass() == this.getClass();
+        return other == null;
     }
 
+    void cancel();
 
 }
