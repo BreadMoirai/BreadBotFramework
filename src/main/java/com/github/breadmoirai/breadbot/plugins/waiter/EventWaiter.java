@@ -61,7 +61,7 @@ public class EventWaiter implements EventListener {
         return new ReactionEventActionBuilderImpl<>(this);
     }
 
-    void addAction(Class<? extends Event> eventClass, EventAction action) {
+    public void addAction(Class<? extends Event> eventClass, EventAction action) {
         waitingEvents.computeIfAbsent(eventClass, e -> new HashSet<>()).add(action);
     }
 
