@@ -16,7 +16,7 @@
 
 package com.github.breadmoirai.breadbot.framework.response;
 
-public interface DynamicCommandResponse extends CommandResponse {
+public interface DynamicCommandResponse extends InternalCommandResponse {
 
     /**
      * Checks for a duplicate response and upon matching, the matched response will be cancelled.
@@ -26,6 +26,7 @@ public interface DynamicCommandResponse extends CommandResponse {
      * @return {@code true} if the other response should be cancelled to make way for this response.
      */
     default boolean matches(DynamicCommandResponse other) {
+        final DynamicCommandResponse cast = this.getClass().cast(other);
         return other == null;
     }
 

@@ -15,7 +15,7 @@
  */
 package com.github.breadmoirai.breadbot.framework.response.internal;
 
-import com.github.breadmoirai.breadbot.framework.response.CommandResponse;
+import com.github.breadmoirai.breadbot.framework.response.InternalCommandResponse;
 import com.github.breadmoirai.breadbot.framework.response.RestActionExtension;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.utils.Checks;
@@ -25,7 +25,7 @@ import java.util.function.Consumer;
 import java.util.function.LongConsumer;
 import java.util.function.Supplier;
 
-public class CommandResponseReactionImpl implements RestActionExtension<Void>, CommandResponse {
+public class CommandResponseReactionImpl implements RestActionExtension<Void>, InternalCommandResponse {
 
     private final Supplier<RestAction<Void>> restActionSupplier;
     private long delay;

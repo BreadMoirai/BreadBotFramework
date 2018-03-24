@@ -17,7 +17,7 @@ package com.github.breadmoirai.breadbot.framework.response;
 
 public interface EventResponseManager {
 
-    void accept(CommandResponse response);
+    void accept(InternalCommandResponse response);
 
     void complete();
 

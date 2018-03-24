@@ -18,7 +18,7 @@ package com.github.breadmoirai.breadbot.framework.response;
 
 import java.util.function.LongConsumer;
 
-public interface CommandResponse {
+public interface InternalCommandResponse {
 
     void dispatch(LongConsumer linkReceiver);
 

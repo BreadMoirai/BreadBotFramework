@@ -50,7 +50,7 @@ public class ResponseManager implements EventListener {
         }
     }
 
-    private void sendResponse(CommandResponse response) {
+    private void sendResponse(InternalCommandResponse response) {
         if (response instanceof DynamicCommandResponse) {
             final DynamicCommandResponse cpoll = (DynamicCommandResponse) response;
             if (!cpoll.matches(null)) {
@@ -115,10 +115,10 @@ public class ResponseManager implements EventListener {
 
     private class EventResponseManagerImpl implements EventResponseManager {
 
-        private final Queue<CommandResponse> queue = new ArrayDeque<>();
+        private final Queue<InternalCommandResponse> queue = new ArrayDeque<>();
 
         @Override
-        public void accept(CommandResponse response) {
+        public void accept(InternalCommandResponse response) {
             queue.add(response);
         }
 

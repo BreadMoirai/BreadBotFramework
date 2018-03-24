@@ -15,7 +15,7 @@
  */
 package com.github.breadmoirai.breadbot.framework.response.internal;
 
-import com.github.breadmoirai.breadbot.framework.response.CommandResponse;
+import com.github.breadmoirai.breadbot.framework.response.InternalCommandResponse;
 import com.github.breadmoirai.breadbot.framework.response.RestActionExtension;
 import net.dv8tion.jda.core.entities.IMentionable;
 import net.dv8tion.jda.core.entities.Member;
@@ -38,7 +38,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.LongConsumer;
 
-public class CommandResponseMessage implements CommandResponse {
+public class CommandResponseMessage implements InternalCommandResponse {
 
     private TextChannel channel;
     private Message message;
