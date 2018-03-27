@@ -16,12 +16,19 @@
 
 package com.github.breadmoirai.breadbot.framework.command.internal;
 
+import com.github.breadmoirai.breadbot.framework.annotation.ConfigureCommand;
+import com.github.breadmoirai.breadbot.framework.annotation.ConfigureCommands;
 import com.github.breadmoirai.breadbot.framework.builder.CommandHandleBuilder;
 import com.github.breadmoirai.breadbot.framework.builder.CommandParameterBuilder;
 import com.github.breadmoirai.breadbot.framework.builder.CommandPropertiesManager;
 import com.github.breadmoirai.breadbot.framework.command.CommandPreprocessor;
+import com.github.breadmoirai.breadbot.framework.command.internal.builder.CommandHandleBuilderInternal;
 import com.github.breadmoirai.breadbot.framework.defaults.DefaultCommandProperties;
+import com.github.breadmoirai.breadbot.framework.error.BreadBotException;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -29,6 +36,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class CommandPropertiesManagerImpl implements CommandPropertiesManager {
@@ -99,10 +107,21 @@ public class CommandPropertiesManagerImpl implements CommandPropertiesManager {
 
     @Override
     public void applyModifiers(CommandHandleBuilder builder) {
-        for (Class<?> aClass : commandPropertyMap.keySet())
+        for (Class<?> aClass : commandPropertyMap.keySet()) {
             if (aClass != null) if (builder.hasProperty(aClass))
                 applyCommandModifier(aClass, builder);
+        }
         applyCommandModifier(null, builder);
+        applyConfigureCommand(builder);
+    }
+
+    @Override
+    public void applyModifiers(CommandParameterBuilder builder) {
+        for (Class<?> aClass : parameterPropertyMap.keySet()) {
+            if (aClass != null && builder.hasProperty(aClass))
+                applyParameterModifier(aClass, builder);
+        }
+        applyParameterModifier(null, builder);
     }
 
     @Override
@@ -121,12 +140,50 @@ public class CommandPropertiesManagerImpl implements CommandPropertiesManager {
         }
     }
 
-    @Override
-    public void applyModifiers(CommandParameterBuilder builder) {
-        for (Class<?> aClass : parameterPropertyMap.keySet())
-            if (aClass != null && builder.hasProperty(aClass))
-                applyParameterModifier(aClass, builder);
-        applyParameterModifier(null, builder);
+    private void applyConfigureCommand(CommandHandleBuilder builder) {
+        Class<?> declaringClass = builder.getDeclaringClass();
+        if (Consumer.class.isAssignableFrom(declaringClass))
+            return;
+
+        for (Method method : builder.getDeclaringClass().getDeclaredMethods()) {
+            int modifiers = method.getModifiers();
+            if (!Modifier.isPublic(modifiers))
+                continue;
+            if (method.getParameterCount() != 1)
+                continue;
+            if (method.getParameters()[0].getType() != CommandHandleBuilder.class)
+                continue;
+            if (!method.isAnnotationPresent(ConfigureCommands.class) && !method.isAnnotationPresent(ConfigureCommand.class))
+                continue;
+            final Object o;
+            Object declaringObject = builder.getDeclaringObject();
+            if (declaringObject != null && !(declaringObject instanceof Consumer)) {
+                o = declaringObject;
+            } else if (Modifier.isStatic(modifiers)) {
+                o = ((CommandHandleBuilderInternal) builder).getObjectFactory().get();
+            } else {
+                o = null;
+            }
+            ConfigureCommands annotation = method.getAnnotation(ConfigureCommands.class);
+            ConfigureCommand[] value;
+            if (annotation != null) {
+                value = annotation.value();
+            } else {
+                value = new ConfigureCommand[]{method.getAnnotation(ConfigureCommand.class)};
+            }
+            for (ConfigureCommand configureCommand : value) {
+                if (configureCommand.value().equals(builder.getName()) || configureCommand.value().isEmpty()) {
+                    try {
+                        method.invoke(o, builder);
+                        break;
+                    } catch (IllegalAccessException | InvocationTargetException e) {
+                        String msg = String.format("An Error occurred when attempting to configure CommandHandleBuilder[%s] with method %s#%s",
+                                                   builder.getName(), method.getDeclaringClass().getName(), method.getName());
+                        throw new BreadBotException(msg, e);
+                    }
+                }
+            }
+        }
     }
 
     @Override
