@@ -19,6 +19,7 @@ package com.github.breadmoirai.breadbot.framework;
 import com.github.breadmoirai.breadbot.framework.command.Command;
 import com.github.breadmoirai.breadbot.framework.command.CommandEngine;
 import com.github.breadmoirai.breadbot.framework.command.CommandResultManager;
+import com.github.breadmoirai.breadbot.framework.error.MissingCommandPluginException;
 import com.github.breadmoirai.breadbot.framework.parameter.CommandParameterManager;
 
 import java.util.List;
@@ -44,6 +45,15 @@ public interface BreadBot {
      * @return the plugin if found, otherwise {@code null}
      */
     <T extends CommandPlugin> T getPlugin(Class<T> pluginClass);
+
+    default <T extends CommandPlugin> T getPluginOrThrow(Class<T> pluginClass) {
+        final T plugin = getPlugin(pluginClass);
+        if (plugin == null) {
+            throw new MissingCommandPluginException(pluginClass.getName());
+        } else {
+            return plugin;
+        }
+    }
 
     /**
      * Retrieves the list of all added plugins.
