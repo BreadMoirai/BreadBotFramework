@@ -39,7 +39,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-public class CommandPropertiesManagerImpl implements CommandPropertiesManager {
+public class CommandPropertiesManagerImpl implements CommandPropertiesManager<CommandPropertiesManagerImpl> {
 
     private static Map<Package, CommandPropertyMapImpl> packageMap = new HashMap<>();
     private final Map<Class<?>, BiConsumer<?, CommandHandleBuilder>> commandPropertyMap = new HashMap<>();
@@ -74,13 +74,13 @@ public class CommandPropertiesManagerImpl implements CommandPropertiesManager {
     }
 
     @Override
-    public CommandPropertiesManager clearCommandModifiers(Class<?> propertyType) {
+    public CommandPropertiesManagerImpl clearCommandModifiers(Class<?> propertyType) {
         commandPropertyMap.remove(propertyType);
         return this;
     }
 
     @Override
-    public <T> CommandPropertiesManager bindCommandModifier(Class<T> propertyType, BiConsumer<T, CommandHandleBuilder> configurator) {
+    public <T> CommandPropertiesManagerImpl bindCommandModifier(Class<T> propertyType, BiConsumer<T, CommandHandleBuilder> configurator) {
         commandPropertyMap.merge(propertyType, configurator, (c1, c2) -> {
             @SuppressWarnings("unchecked") final BiConsumer<T, CommandHandleBuilder> cc1 = (BiConsumer<T, CommandHandleBuilder>) c1;
             @SuppressWarnings("unchecked") final BiConsumer<T, CommandHandleBuilder> cc2 = (BiConsumer<T, CommandHandleBuilder>) c2;
@@ -90,13 +90,13 @@ public class CommandPropertiesManagerImpl implements CommandPropertiesManager {
     }
 
     @Override
-    public CommandPropertiesManager clearParameterModifiers(Class<?> parameterType) {
+    public CommandPropertiesManagerImpl clearParameterModifiers(Class<?> parameterType) {
         parameterPropertyMap.remove(parameterType);
         return this;
     }
 
     @Override
-    public <T> CommandPropertiesManager bindParameterModifier(Class<T> propertyType, BiConsumer<T, CommandParameterBuilder> configurator) {
+    public <T> CommandPropertiesManagerImpl bindParameterModifier(Class<T> propertyType, BiConsumer<T, CommandParameterBuilder> configurator) {
         parameterPropertyMap.merge(propertyType, configurator, (c1, c2) -> {
             @SuppressWarnings("unchecked") final BiConsumer<T, CommandParameterBuilder> cc1 = (BiConsumer<T, CommandParameterBuilder>) c1;
             @SuppressWarnings("unchecked") final BiConsumer<T, CommandParameterBuilder> cc2 = (BiConsumer<T, CommandParameterBuilder>) c2;
@@ -239,6 +239,11 @@ public class CommandPropertiesManagerImpl implements CommandPropertiesManager {
 
     public Comparator<CommandPreprocessor> getPreprocessorComparator(String... identifier) {
         return new PriorityComparator(Arrays.asList(identifier));
+    }
+
+    @Override
+    public CommandPropertiesManagerImpl self() {
+        return this;
     }
 
     public class PriorityComparator implements Comparator<CommandPreprocessor> {

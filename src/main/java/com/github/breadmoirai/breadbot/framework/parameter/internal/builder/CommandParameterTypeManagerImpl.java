@@ -29,7 +29,7 @@ import java.util.function.Consumer;
  * Does argument Mapping.
  * Is basically a heterogeneous map of Class<?> to ArgumentMapper<?>
  */
-public final class CommandParameterTypeManagerImpl implements CommandParameterManagerBuilder {
+public final class CommandParameterTypeManagerImpl implements CommandParameterManagerBuilder<CommandParameterTypeManagerImpl> {
 
     private final Map<Class<?>, TypeParser<?>> map;
     private final Map<Class<?>, Consumer<CommandParameterBuilder>> map2;
@@ -41,7 +41,7 @@ public final class CommandParameterTypeManagerImpl implements CommandParameterMa
     }
 
     @Override
-    public <T> CommandParameterManagerBuilder bindTypeParser(Class<T> type, TypeParser<T> parser) {
+    public <T> CommandParameterTypeManagerImpl bindTypeParser(Class<T> type, TypeParser<T> parser) {
         put(type, parser);
         return this;
     }
@@ -60,13 +60,13 @@ public final class CommandParameterTypeManagerImpl implements CommandParameterMa
     }
 
     @Override
-    public CommandParameterManagerBuilder clearTypeModifiers(Class<?> parameterType) {
+    public CommandParameterTypeManagerImpl clearTypeModifiers(Class<?> parameterType) {
         map2.remove(parameterType);
         return this;
     }
 
     @Override
-    public CommandParameterManagerBuilder bindTypeModifier(Class<?> parameterType, Consumer<CommandParameterBuilder> modifier) {
+    public CommandParameterTypeManagerImpl bindTypeModifier(Class<?> parameterType, Consumer<CommandParameterBuilder> modifier) {
         if (!map2.containsKey(parameterType)) {
             map2.put(parameterType, modifier);
         } else {
@@ -82,5 +82,15 @@ public final class CommandParameterTypeManagerImpl implements CommandParameterMa
         if (c != null) {
             c.accept(parameterBuilder);
         }
+    }
+
+    /**
+     * This is a self reference for internal convenience.
+     *
+     * @return a reference to this object
+     */
+    @Override
+    public CommandParameterTypeManagerImpl self() {
+        return this;
     }
 }
