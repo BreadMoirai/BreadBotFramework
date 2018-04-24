@@ -20,8 +20,6 @@ import com.github.breadmoirai.breadbot.framework.BreadBot;
 import com.github.breadmoirai.breadbot.framework.CommandPlugin;
 import com.github.breadmoirai.breadbot.framework.command.Command;
 import com.github.breadmoirai.breadbot.framework.command.CommandPreprocessor;
-import com.github.breadmoirai.breadbot.framework.command.CommandPreprocessorFunction;
-import com.github.breadmoirai.breadbot.framework.command.CommandPreprocessorPredicate;
 import com.github.breadmoirai.breadbot.framework.command.CommandResultHandler;
 import com.github.breadmoirai.breadbot.framework.command.internal.CommandHandleImpl;
 import com.github.breadmoirai.breadbot.framework.command.internal.CommandPropertiesManagerImpl;
@@ -36,7 +34,6 @@ import com.github.breadmoirai.breadbot.framework.parameter.internal.builder.Comm
 import com.github.breadmoirai.breadbot.plugins.prefix.PrefixPlugin;
 import com.github.breadmoirai.breadbot.plugins.prefix.UnmodifiablePrefixPlugin;
 import com.github.breadmoirai.breadbot.plugins.waiter.EventWaiterPlugin;
-import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.utils.Checks;
 
@@ -47,17 +44,16 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class BreadBotBuilder implements
-        CommandPluginBuilder,
-        CommandHandleBuilderFactory,
-        CommandParameterManagerBuilder,
-        CommandResultManagerBuilder,
-        CommandPropertiesManager {
+        CommandPluginBuilder<BreadBotBuilder>,
+        CommandHandleBuilderFactory<BreadBotBuilder>,
+        CommandParameterManagerBuilder<BreadBotBuilder>,
+        CommandResultManagerBuilder<BreadBotBuilder>,
+        CommandPropertiesManager<BreadBotBuilder> {
 
 //    private static final Logger LOG = LoggerFactory.getLogger(BreadBotClientBuilder.class);
 
@@ -117,49 +113,12 @@ public class BreadBotBuilder implements
     }
 
     @Override
-    public BreadBotBuilder addStaticPrefix(String prefix) {
-        CommandPluginBuilder.super.addStaticPrefix(prefix);
-        return this;
-    }
-
-    @Override
-    public BreadBotBuilder addOwnerPlugin(long... owners) {
-        CommandPluginBuilder.super.addOwnerPlugin(owners);
-        return this;
-    }
-
-    @Override
-    public BreadBotBuilder addAdminPlugin() {
-        CommandPluginBuilder.super.addAdminPlugin();
-        return this;
-    }
-
-    @Override
-    public BreadBotBuilder addAdminPlugin(Predicate<Member> isAdmin) {
-        CommandPluginBuilder.super.addAdminPlugin(isAdmin);
-        return this;
-    }
-
-    @Override
-    public BreadBotBuilder addEventWaiterPlugin() {
-        CommandPluginBuilder.super.addEventWaiterPlugin();
-        return this;
-    }
-
-    @Override
     public CommandHandleBuilder createCommand(Consumer<CommandEvent> onCommand) {
         Checks.notNull(onCommand, "onCommand");
         CommandHandleBuilderInternal commandHandle = factory.createCommand(onCommand);
         commandBuilders.add(commandHandle);
         return commandHandle;
     }
-
-    @Override
-    public BreadBotBuilder addEmptyCommand(Consumer<CommandHandleBuilder> configurator) {
-        CommandHandleBuilderFactory.super.addEmptyCommand(configurator);
-        return this;
-    }
-
 
     @Override
     public CommandHandleBuilder createCommand(Class<?> commandClass) {
@@ -242,132 +201,6 @@ public class BreadBotBuilder implements
     }
 
     @Override
-    public BreadBotBuilder addCommand(Consumer<CommandEvent> onCommand, Consumer<CommandHandleBuilder> configurator) {
-        CommandHandleBuilderFactory.super.addCommand(onCommand, configurator);
-        return this;
-    }
-
-    @Override
-    public BreadBotBuilder addCommand(Class<?> commandClass, Consumer<CommandHandleBuilder> configurator) {
-        CommandHandleBuilderFactory.super.addCommand(commandClass, configurator);
-        return this;
-    }
-
-    @Override
-    public BreadBotBuilder addCommand(Class<?> commandClass) {
-        CommandHandleBuilderFactory.super.addCommand(commandClass);
-        return this;
-    }
-
-    @Override
-    public BreadBotBuilder addCommand(Object commandObject, Consumer<CommandHandleBuilder> configurator) {
-        CommandHandleBuilderFactory.super.addCommand(commandObject, configurator);
-        return this;
-    }
-
-    @Override
-    public BreadBotBuilder addCommand(Object commandObject) {
-        CommandHandleBuilderFactory.super.addCommand(commandObject);
-        return this;
-    }
-
-    @Override
-    public BreadBotBuilder addCommand(Supplier<?> commandSupplier, Consumer<CommandHandleBuilder> configurator) {
-        CommandHandleBuilderFactory.super.addCommand(commandSupplier, configurator);
-        return this;
-    }
-
-    @Override
-    public BreadBotBuilder addCommand(Supplier<?> commandSupplier) {
-        CommandHandleBuilderFactory.super.addCommand(commandSupplier);
-        return this;
-    }
-
-    @Override
-    public BreadBotBuilder addCommands(String packageName, Consumer<CommandHandleBuilder> configurator) {
-        CommandHandleBuilderFactory.super.addCommands(packageName, configurator);
-        return this;
-    }
-
-    @Override
-    public BreadBotBuilder addCommands(String packageName) {
-        CommandHandleBuilderFactory.super.addCommands(packageName);
-        return this;
-    }
-
-    @Override
-    public BreadBotBuilder addCommandsFromClasses(Consumer<CommandHandleBuilder> configurator, Class<?>... commandClasses) {
-        CommandHandleBuilderFactory.super.addCommandsFromClasses(configurator, commandClasses);
-        return this;
-    }
-
-    @Override
-    public BreadBotBuilder addCommandsFromClasses(Class<?>... commandClasses) {
-        CommandHandleBuilderFactory.super.addCommandsFromClasses(commandClasses);
-        return this;
-    }
-
-    @Override
-    public BreadBotBuilder addCommandsFromObjects(Consumer<CommandHandleBuilder> configurator, Object... commandObjects) {
-        CommandHandleBuilderFactory.super.addCommandsFromObjects(configurator, commandObjects);
-        return this;
-    }
-
-    @Override
-    public BreadBotBuilder addCommandsFromObjects(Object... commandObjects) {
-        CommandHandleBuilderFactory.super.addCommandsFromObjects(commandObjects);
-        return this;
-    }
-
-    @Override
-    public BreadBotBuilder addCommandsFromSuppliers(Consumer<CommandHandleBuilder> configurator, Supplier<?>... commandSuppliers) {
-        CommandHandleBuilderFactory.super.addCommandsFromSuppliers(configurator, commandSuppliers);
-        return this;
-    }
-
-    @Override
-    public BreadBotBuilder addCommandsFromSuppliers(Supplier<?>... commandSuppliers) {
-        CommandHandleBuilderFactory.super.addCommandsFromSuppliers(commandSuppliers);
-        return this;
-    }
-
-    @Override
-    public BreadBotBuilder addCommandsFromClasses(Collection<Class<?>> commandClasses, Consumer<CommandHandleBuilder> configurator) {
-        CommandHandleBuilderFactory.super.addCommandsFromClasses(commandClasses, configurator);
-        return this;
-    }
-
-    @Override
-    public BreadBotBuilder addCommandsFromClasses(Collection<Class<?>> commandClasses) {
-        CommandHandleBuilderFactory.super.addCommandsFromClasses(commandClasses);
-        return this;
-    }
-
-    @Override
-    public BreadBotBuilder addCommandsFromObjects(Collection<?> commandObjects, Consumer<CommandHandleBuilder> configurator) {
-        CommandHandleBuilderFactory.super.addCommandsFromObjects(commandObjects, configurator);
-        return this;
-    }
-
-    @Override
-    public BreadBotBuilder addCommandsFromObjects(Collection<?> commandObjects) {
-        CommandHandleBuilderFactory.super.addCommandsFromObjects(commandObjects);
-        return this;
-    }
-
-    @Override
-    public BreadBotBuilder addCommandsFromSuppliers(Collection<Supplier<?>> commandSuppliers, Consumer<CommandHandleBuilder> configurator) {
-        CommandHandleBuilderFactory.super.addCommandsFromSuppliers(commandSuppliers, configurator);
-        return this;
-    }
-
-    @Override
-    public BreadBotBuilder addCommandsFromSuppliers(Collection<Supplier<?>> commandSuppliers) {
-        CommandHandleBuilderFactory.super.addCommandsFromSuppliers(commandSuppliers);
-        return this;
-    }
-
-    @Override
     public BreadBotBuilder clearCommandModifiers(Class<?> propertyType) {
         commandProperties.clearCommandModifiers(propertyType);
         return this;
@@ -417,7 +250,7 @@ public class BreadBotBuilder implements
             }
         }
         for (CommandHandleBuilder commandHandleBuilder : commandBuilder.getChildren()) {
-            applyParameterModifierRecursive(propertyType, configurator, commandBuilder);
+            applyParameterModifierRecursive(propertyType, configurator, commandHandleBuilder);
         }
     }
 
@@ -449,30 +282,6 @@ public class BreadBotBuilder implements
     @Override
     public <T> void applyParameterModifier(Class<T> propertyType, CommandParameterBuilder builder) {
         commandProperties.applyParameterModifier(propertyType, builder);
-    }
-
-    @Override
-    public <T> BreadBotBuilder bindPreprocessorFactory(String identifier, Class<T> propertyType, Function<T, CommandPreprocessorFunction> factory) {
-        commandProperties.bindPreprocessorFactory(identifier, propertyType, factory);
-        return this;
-    }
-
-    @Override
-    public <T> BreadBotBuilder bindPreprocessorPredicateFactory(String identifier, Class<T> propertyType, Function<T, CommandPreprocessorPredicate> factory) {
-        commandProperties.bindPreprocessorPredicateFactory(identifier, propertyType, factory);
-        return this;
-    }
-
-    @Override
-    public BreadBotBuilder bindPreprocessor(String identifier, Class<?> propertyType, CommandPreprocessorFunction function) {
-        commandProperties.bindPreprocessor(identifier, propertyType, function);
-        return this;
-    }
-
-    @Override
-    public BreadBotBuilder bindPreprocessorPredicate(String identifier, Class<?> propertyType, CommandPreprocessorPredicate predicate) {
-        commandProperties.bindPreprocessorPredicate(identifier, propertyType, predicate);
-        return this;
     }
 
     @Override
@@ -609,5 +418,10 @@ public class BreadBotBuilder implements
                                                              shouldEvaluateCommandOnMessageUpdate);
         breadBotClient.propagateReadyEvent();
         return breadBotClient;
+    }
+
+    @Override
+    public BreadBotBuilder self() {
+        return this;
     }
 }

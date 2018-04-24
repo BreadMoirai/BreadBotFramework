@@ -21,7 +21,7 @@ import com.github.breadmoirai.breadbot.framework.parameter.TypeParser;
 
 import java.util.function.Consumer;
 
-public interface CommandParameterManagerBuilder extends CommandParameterManager {
+public interface CommandParameterManagerBuilder<R> extends CommandParameterManager, SelfReference<R> {
     /**
      * Registers a TypeParser with the type provided.
      *
@@ -30,10 +30,10 @@ public interface CommandParameterManagerBuilder extends CommandParameterManager 
      * @param <T>    the type
      * @return this
      */
-    <T> CommandParameterManagerBuilder bindTypeParser(Class<T> type, TypeParser<T> parser);
+    <T> R bindTypeParser(Class<T> type, TypeParser<T> parser);
 
 
-    CommandParameterManagerBuilder clearTypeModifiers(Class<?> parameterType);
+    R clearTypeModifiers(Class<?> parameterType);
 
     /**
      * Assigns a Consumer to modify all parameters with the specified type.
@@ -43,5 +43,5 @@ public interface CommandParameterManagerBuilder extends CommandParameterManager 
      * @param modifier      a Consumer that takes the ParameterBuilder as its argument
      * @return this
      */
-    CommandParameterManagerBuilder bindTypeModifier(Class<?> parameterType, Consumer<CommandParameterBuilder> modifier);
+    R bindTypeModifier(Class<?> parameterType, Consumer<CommandParameterBuilder> modifier);
 }

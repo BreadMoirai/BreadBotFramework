@@ -13,14 +13,18 @@
  *   See the License for the specific language governing permissions and
  *   limitations under the License.
  */
-
 package com.github.breadmoirai.breadbot.framework.builder;
 
-import com.github.breadmoirai.breadbot.framework.command.CommandResultHandler;
+/**
+ * This interface allows implementing classes to reference a themselves using generics.
+ * This avoids reliance on Covariant return types when inheriting methods.
+ */
+public interface SelfReference<R> {
 
-public interface CommandResultManagerBuilder<R> extends SelfReference<R> {
-
-    <T> R bindResultHandler(Class<T> resultType, CommandResultHandler<T> handler);
-
-    <T> CommandResultHandler<? super T> getResultHandler(Class<T> resultType);
+    /**
+     * This is a self reference for internal convenience.
+     *
+     * @return a reference to this object
+     */
+    R self();
 }
