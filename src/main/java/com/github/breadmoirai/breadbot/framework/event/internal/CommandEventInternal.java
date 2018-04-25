@@ -28,11 +28,13 @@ import net.dv8tion.jda.core.entities.Message;
 
 public abstract class CommandEventInternal extends CommandEvent {
 
+    private final BreadBotImpl client;
     private Command command;
     private EventResponseManager manager;
 
     public CommandEventInternal(JDA api, long responseNumber, BreadBotImpl client, boolean isHelpEvent) {
         super(api, responseNumber, client, isHelpEvent);
+        this.client = client;
         manager = client.getResponseManager().newEventResponseManager();
     }
 
@@ -102,5 +104,10 @@ public abstract class CommandEventInternal extends CommandEvent {
         CommandResponseReactionImpl resp = new CommandResponseReactionImpl(() -> getMessage().addReaction(emoji));
         manager.accept(resp);
         return resp;
+    }
+
+    @Override
+    public BreadBotImpl getClient() {
+        return client;
     }
 }

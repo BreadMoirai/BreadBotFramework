@@ -35,6 +35,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
+@SuppressWarnings("unused")
 public abstract class AbstractCommandPlugin implements CommandPlugin {
     private BreadBotBuilder builder;
     private Consumer<BreadBot> onReady;

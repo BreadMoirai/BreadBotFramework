@@ -27,6 +27,7 @@ import com.github.breadmoirai.breadbot.framework.command.internal.CommandObjectF
 import com.github.breadmoirai.breadbot.framework.command.internal.CommandPropertyMapImpl;
 import com.github.breadmoirai.breadbot.framework.command.internal.InvokableCommand;
 import com.github.breadmoirai.breadbot.framework.error.MissingCommandKeyException;
+import com.github.breadmoirai.breadbot.framework.inject.BreadInjector;
 import com.github.breadmoirai.breadbot.framework.parameter.CommandParameter;
 
 import java.lang.reflect.Method;
@@ -63,6 +64,7 @@ public class CommandHandleBuilderImpl implements CommandHandleBuilderInternal {
     private boolean shouldRetainProperties;
     private Pattern splitRegex;
     private int splitLimit;
+    private BreadInjector.Injector injector;
 
     public CommandHandleBuilderImpl(Object declaringObject,
                                     Class<?> declaringClass,
@@ -309,7 +311,7 @@ public class CommandHandleBuilderImpl implements CommandHandleBuilderInternal {
             Class<?> returnType = declaringMethod.getReturnType();
             resultHandler = getClientBuilder().getResultHandler(returnType);
         }
-        CommandHandleImpl commandHandle = new CommandHandleImpl(keys, name, group, description, declaringObject, declaringClass, declaringMethod,/*client,*/ commandFactory, commandParameters, commandFunction, resultHandler, subCommandMap, preprocessors, shouldRetainProperties ? propertyMap : null, splitRegex, splitLimit, parent);
+        CommandHandleImpl commandHandle = new CommandHandleImpl(keys, name, group, description, declaringObject, declaringClass, declaringMethod,commandFactory, commandParameters, commandFunction, resultHandler, subCommandMap, preprocessors, shouldRetainProperties ? propertyMap : null, splitRegex, splitLimit, parent, injector);
 
         //would do null check on sucCommandMap but for loop does not run when subCommands isEmpty
         for (CommandHandleBuilderInternal subCommand : subCommands) {
@@ -361,5 +363,16 @@ public class CommandHandleBuilderImpl implements CommandHandleBuilderInternal {
         for (int i = 0; i < indent; i++) {
             sb.append(' ');
         }
+    }
+
+    @Override
+    public CommandHandleBuilder self() {
+        return this;
+    }
+
+    @Override
+    public CommandHandleBuilderImpl setInjector(BreadInjector.Injector injector) {
+        this.injector = injector;
+        return this;
     }
 }

@@ -22,6 +22,7 @@ import com.github.breadmoirai.breadbot.framework.command.internal.CommandHandleI
 import com.github.breadmoirai.breadbot.framework.command.internal.CommandObjectFactory;
 import com.github.breadmoirai.breadbot.framework.command.internal.CommandPropertyMapImpl;
 import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
+import com.github.breadmoirai.breadbot.framework.inject.BreadInjector;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -119,4 +120,6 @@ public interface CommandHandleBuilderInternal extends CommandHandleBuilder {
         putCommandHandles(commands);
         return Collections.unmodifiableList(commands);
     }
+
+    CommandHandleBuilderImpl setInjector(BreadInjector.Injector injector);
 }

@@ -22,6 +22,7 @@ import com.github.breadmoirai.breadbot.framework.command.CommandPreprocessor;
 import com.github.breadmoirai.breadbot.framework.command.CommandPropertyMap;
 import com.github.breadmoirai.breadbot.framework.command.CommandResultHandler;
 import com.github.breadmoirai.breadbot.framework.event.internal.CommandEventInternal;
+import com.github.breadmoirai.breadbot.framework.inject.BreadInjector;
 import com.github.breadmoirai.breadbot.framework.parameter.CommandParameter;
 import com.github.breadmoirai.breadbot.framework.parameter.CommandParser;
 
@@ -56,6 +57,8 @@ public class CommandHandleImpl implements CommandHandle {
     private final boolean isHelp;
     private Command superCommand;
 
+    private BreadInjector.Injector injector;
+
     public CommandHandleImpl(String[] keys,
                              String name,
                              String group,
@@ -73,7 +76,8 @@ public class CommandHandleImpl implements CommandHandle {
                              CommandPropertyMap propertyMap,
                              Pattern splitRegex,
                              int splitLimit,
-                             Command superCommand) {
+                             Command superCommand,
+                             BreadInjector.Injector injector) {
         this.keys = keys;
         this.name = name;
         this.group = group;
@@ -93,6 +97,7 @@ public class CommandHandleImpl implements CommandHandle {
         this.splitLimit = splitLimit;
         this.superCommand = superCommand;
         this.isHelp = Arrays.stream(keys).anyMatch(s -> s.equalsIgnoreCase("help"));
+        this.injector = injector;
     }
 
     @Override
@@ -122,6 +127,14 @@ public class CommandHandleImpl implements CommandHandle {
         event.setCommand(this);
         Object commandObj = commandSupplier.get();
         if (commandObj == null) return false;
+        if (injector != null) {
+            try {
+                injector.inject(commandObj);
+            } catch (IllegalAccessException e) {
+                // this should not be thrown unless someone else uses reflection and sets accessible to false
+                throw new RuntimeException("Access to field was revoked", e);
+            }
+        }
         if (invokableCommand != null) {
             final CommandParser parser = new CommandParser(event, this, splitRegex == null ? event.getArguments() : event.createNewArgumentList(splitRegex, splitLimit), getParameters());
             final CommandRunner runner = new CommandRunner(commandObj, event, invokableCommand, parser, this, resultHandler);

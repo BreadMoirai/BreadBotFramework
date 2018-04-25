@@ -28,6 +28,9 @@ import com.github.breadmoirai.breadbot.framework.command.internal.builder.Comman
 import com.github.breadmoirai.breadbot.framework.command.internal.builder.CommandHandleBuilderInternal;
 import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
 import com.github.breadmoirai.breadbot.framework.event.CommandEventFactory;
+import com.github.breadmoirai.breadbot.framework.inject.BreadInjector;
+import com.github.breadmoirai.breadbot.framework.inject.InjectionBuilder;
+import com.github.breadmoirai.breadbot.framework.inject.InjectionBuilderImpl;
 import com.github.breadmoirai.breadbot.framework.internal.BreadBotImpl;
 import com.github.breadmoirai.breadbot.framework.parameter.TypeParser;
 import com.github.breadmoirai.breadbot.framework.parameter.internal.builder.CommandParameterTypeManagerImpl;
@@ -37,11 +40,14 @@ import com.github.breadmoirai.breadbot.plugins.waiter.EventWaiterPlugin;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.utils.Checks;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -53,9 +59,8 @@ public class BreadBotBuilder implements
         CommandHandleBuilderFactory<BreadBotBuilder>,
         CommandParameterManagerBuilder<BreadBotBuilder>,
         CommandResultManagerBuilder<BreadBotBuilder>,
-        CommandPropertiesManager<BreadBotBuilder> {
-
-//    private static final Logger LOG = LoggerFactory.getLogger(BreadBotClientBuilder.class);
+        CommandPropertiesManager<BreadBotBuilder>,
+        InjectionBuilder<BreadBotBuilder> {
 
     private final List<CommandPlugin> plugins;
     private final CommandPropertiesManagerImpl commandProperties;
@@ -64,6 +69,7 @@ public class BreadBotBuilder implements
     private final List<CommandHandleBuilderInternal> commandBuilders;
     private final List<Command> commands;
     private final CommandResultManagerImpl resultManager;
+    private InjectionBuilderImpl injector;
     private Predicate<Message> preProcessPredicate;
     private CommandEventFactory commandEventFactory;
     private boolean shouldEvaluateCommandOnMessageUpdate = false;
@@ -76,6 +82,7 @@ public class BreadBotBuilder implements
         commandBuilders = new ArrayList<>();
         commands = new ArrayList<>();
         resultManager = new CommandResultManagerImpl();
+        injector = new InjectionBuilderImpl();
     }
 
 
@@ -398,6 +405,38 @@ public class BreadBotBuilder implements
         return this;
     }
 
+    @Override
+    public BreadBotBuilder self() {
+        return this;
+    }
+
+    public BreadBotBuilder enableInjection() {
+        if (injector != null) {
+            injector = new InjectionBuilderImpl();
+        }
+        return this;
+    }
+
+    @Override
+    public <V> BreadBotBuilder bindInjection(V fieldValue) {
+        if (injector != null) {
+            injector.bindInjection(fieldValue);
+        } else {
+            injector = new InjectionBuilderImpl();
+        }
+        return this;
+    }
+
+    @Override
+    public <V> BreadBotBuilder bindInjection(Class<V> fieldType, V fieldValue) {
+        if (injector != null) {
+            injector.bindInjection(fieldType, fieldValue);
+        } else {
+            injector = new InjectionBuilderImpl();
+        }
+        return this;
+    }
+
     /**
      * Builds the BreadBotClient with the provided EventManager.
      * If an {@link PrefixPlugin} has not been provided, a {@link UnmodifiablePrefixPlugin new UnmodifiablePrefixPlugin("!")} is provided.
@@ -410,18 +449,62 @@ public class BreadBotBuilder implements
             plugins.add(new EventWaiterPlugin());
         if (commandEventFactory == null)
             commandEventFactory = new CommandEventFactory(getPlugin(PrefixPlugin.class));
-        final List<CommandHandleImpl> build = commandBuilders.stream().map(o -> o.build(null)).collect(Collectors.toList());
+        Map<Type, CommandPlugin> typeMap = createPluginTypeMap(plugins);
+        final List<CommandHandleImpl> build;
+        final BreadInjector breadInjector;
+        if (injector != null) {
+            typeMap.forEach((type, commandPlugin) -> {
+                injector.bindInjectionUnchecked(type, commandPlugin);
+            });
+            breadInjector = injector.build();
+            for (CommandHandleBuilderInternal commandBuilder : commandBuilders) {
+                final Class declaringClass = commandBuilder.getDeclaringClass();
+                final BreadInjector.Injector injectorFor = breadInjector.getInjectorFor(declaringClass);
+                if (injectorFor != null) {
+                    commandBuilder.setInjector(injectorFor);
+                }
+            }
+        }
+        build = commandBuilders.stream().map(o -> o.build(null)).collect(Collectors.toList());
         commands.addAll(build);
         commandEventFactory.setPreprocessor(preProcessPredicate);
-        final BreadBotImpl breadBotClient = new BreadBotImpl(plugins, commands, resultManager,
-                                                             argumentTypes, commandEventFactory,
-                                                             shouldEvaluateCommandOnMessageUpdate);
+        final BreadBotImpl breadBotClient = new BreadBotImpl(plugins, typeMap, commands, resultManager,
+                argumentTypes, commandEventFactory,
+                shouldEvaluateCommandOnMessageUpdate);
         breadBotClient.propagateReadyEvent();
         return breadBotClient;
     }
 
-    @Override
-    public BreadBotBuilder self() {
-        return this;
+    private Map<Type, CommandPlugin> createPluginTypeMap(List<CommandPlugin> modules) {
+        final HashMap<Type, CommandPlugin> typeMap = new HashMap<>(modules.size());
+        for (CommandPlugin module : modules) {
+            Class<?> moduleClass = module.getClass();
+            do {
+                typeMap.put(moduleClass, module);
+                for (Class<?> inter : moduleClass.getInterfaces()) {
+                    final List<Class<?>> interfaceList = getInterfaceHierarchy(inter, CommandPlugin.class);
+                    if (interfaceList != null) {
+                        for (Class<?> interfaceClass : interfaceList)
+                            typeMap.put(interfaceClass, module);
+                    }
+                }
+            } while (CommandPlugin.class.isAssignableFrom(moduleClass = moduleClass.getSuperclass()));
+        }
+        return typeMap;
     }
+
+    private List<Class<?>> getInterfaceHierarchy(Class<?> from, Class<?> toSuper) {
+        if (!from.isInterface())
+            return null;
+        if (from == toSuper)
+            return new ArrayList<>();
+        final Class<?>[] interfaces = from.getInterfaces();
+        if (interfaces.length == 0)
+            return null;
+        final List<Class<?>> interfaceList = getInterfaceHierarchy(interfaces[0], toSuper);
+        if (interfaceList != null)
+            interfaceList.add(0, from);
+        return interfaceList;
+    }
+
 }
