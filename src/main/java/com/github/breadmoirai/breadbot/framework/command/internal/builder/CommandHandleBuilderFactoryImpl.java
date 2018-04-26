@@ -320,7 +320,8 @@ public class CommandHandleBuilderFactoryImpl implements CommandHandleBuilderFact
         Class<?> aClass = klass;
         while (aClass != null) {
             final Class<?> outClass;
-            if (Modifier.isStatic(klass.getModifiers())) outClass = null;
+            if (Modifier.isStatic(aClass.getModifiers()))
+                outClass = null;
             else outClass = klass.getDeclaringClass();
             if (outClass == null) {
                 try {
