@@ -16,7 +16,7 @@
 
 package com.github.breadmoirai.breadbot.framework.event.internal;
 
-import com.github.breadmoirai.breadbot.framework.BreadBot;
+import com.github.breadmoirai.breadbot.framework.internal.BreadBotImpl;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
@@ -39,7 +39,8 @@ public class MessageReceivedCommandEvent extends CommandEventInternal {
     private String[] key;
     private String content;
 
-    MessageReceivedCommandEvent(BreadBot client, GenericGuildMessageEvent event, Message message, String prefix, String[] key, String content, boolean isHelpEvent) {
+    public MessageReceivedCommandEvent(BreadBotImpl client, GenericGuildMessageEvent event, Message message,
+                                       String prefix, String[] key, String content, boolean isHelpEvent) {
         super(event.getJDA(), event.getResponseNumber(), client, isHelpEvent);
         this.event = event;
         this.message = message;

@@ -1,5 +1,5 @@
 /*
- *        Copyright 2017 Ton Ly (BreadMoirai)
+ *        Copyright 2017-2018 Ton Ly (BreadMoirai)
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -13,23 +13,18 @@
  *   See the License for the specific language governing permissions and
  *   limitations under the License.
  */
+package com.github.breadmoirai.breadbot.framework.builder;
 
-package com.github.breadmoirai.breadbot.framework;
-
-import com.github.breadmoirai.breadbot.framework.builder.BreadBotBuilder;
-
-public interface CommandPlugin {
-
-    void initialize(BreadBotBuilder builder);
+/**
+ * This interface allows implementing classes to reference a themselves using generics.
+ * This avoids reliance on Covariant return types when inheriting methods.
+ */
+public interface SelfReference<R> {
 
     /**
-     * This method is called when the BreadBotClient has been built.
+     * This is a self reference for internal convenience.
      *
-     * @param client the
+     * @return a reference to this object
      */
-    default void onBreadReady(BreadBot client) {
-
-    }
-
-
+    R self();
 }

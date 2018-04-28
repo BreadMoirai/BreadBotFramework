@@ -14,19 +14,12 @@
  *   limitations under the License.
  */
 
-package com.github.breadmoirai.breadbot.plugins.admin;
+package com.github.breadmoirai.breadbot.framework.response;
 
-import com.github.breadmoirai.breadbot.framework.CommandPlugin;
-import com.github.breadmoirai.breadbot.framework.builder.BreadBotBuilder;
-import net.dv8tion.jda.core.entities.Member;
+import java.util.function.LongConsumer;
 
-public interface AdminPlugin extends CommandPlugin {
+public interface InternalCommandResponse {
 
-    boolean isAdmin(Member member);
+    void dispatch(LongConsumer linkReceiver);
 
-    @Override
-    default void initialize(BreadBotBuilder builder) {
-        builder.bindPreprocessorPredicate("admin", Admin.class, event -> isAdmin(event.getMember()));
-        builder.addCommand(AdminCommand.class);
-    }
 }

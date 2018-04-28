@@ -100,8 +100,9 @@ public class ConfigCommand {
                 event.replyFormat("Configuration failed for modules: %s" +
                                 "\nSuccessfully configured %d other modules.",
                         failed.stream()
-                                .map(CommandPlugin::getName)
-                                .collect(Collectors.joining(", ")), success);
+                              .map(CommandPlugin::getClass)
+                              .map(Class::getSimpleName)
+                              .collect(Collectors.joining(", ")), success);
             }
         } catch (IOException e) {
             event.reply("Failed to read file.");

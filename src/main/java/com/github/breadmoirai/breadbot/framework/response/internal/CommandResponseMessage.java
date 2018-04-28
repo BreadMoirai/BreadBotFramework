@@ -15,7 +15,7 @@
  */
 package com.github.breadmoirai.breadbot.framework.response.internal;
 
-import com.github.breadmoirai.breadbot.framework.response.CommandResponse;
+import com.github.breadmoirai.breadbot.framework.response.InternalCommandResponse;
 import com.github.breadmoirai.breadbot.framework.response.RestActionExtension;
 import net.dv8tion.jda.core.entities.IMentionable;
 import net.dv8tion.jda.core.entities.Member;
@@ -24,7 +24,6 @@ import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.MessageEmbed;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
-import net.dv8tion.jda.core.events.message.guild.GuildMessageDeleteEvent;
 import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.utils.Checks;
@@ -39,7 +38,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.LongConsumer;
 
-public class CommandResponseMessage extends CommandResponse {
+public class CommandResponseMessage implements InternalCommandResponse {
 
     private TextChannel channel;
     private Message message;
@@ -101,16 +100,6 @@ public class CommandResponseMessage extends CommandResponse {
                 }
             }
         }
-    }
-
-    @Override
-    public void onMessageDelete(GuildMessageDeleteEvent event) {
-
-    }
-
-    @Override
-    public void cancel() {
-
     }
 
     public RMessageBuilder builder() {

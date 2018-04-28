@@ -15,10 +15,10 @@
  */
 package com.github.breadmoirai.breadbot.framework.event.internal;
 
-import com.github.breadmoirai.breadbot.framework.BreadBot;
 import com.github.breadmoirai.breadbot.framework.command.Command;
 import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
-import com.github.breadmoirai.breadbot.framework.response.CommandResponseManager;
+import com.github.breadmoirai.breadbot.framework.internal.BreadBotImpl;
+import com.github.breadmoirai.breadbot.framework.response.EventResponseManager;
 import com.github.breadmoirai.breadbot.framework.response.RestActionExtension;
 import com.github.breadmoirai.breadbot.framework.response.internal.CommandResponseMessage;
 import com.github.breadmoirai.breadbot.framework.response.internal.CommandResponseReactionImpl;
@@ -28,12 +28,14 @@ import net.dv8tion.jda.core.entities.Message;
 
 public abstract class CommandEventInternal extends CommandEvent {
 
+    private final BreadBotImpl client;
     private Command command;
-    private CommandResponseManager manager;
+    private EventResponseManager manager;
 
-    public CommandEventInternal(JDA api, long responseNumber, BreadBot client, boolean isHelpEvent) {
+    public CommandEventInternal(JDA api, long responseNumber, BreadBotImpl client, boolean isHelpEvent) {
         super(api, responseNumber, client, isHelpEvent);
-        manager = CommandResponseManager.factory.get();
+        this.client = client;
+        manager = client.getResponseManager().newEventResponseManager();
     }
 
     @Override
@@ -41,7 +43,7 @@ public abstract class CommandEventInternal extends CommandEvent {
         return command;
     }
 
-    public CommandResponseManager getManager() {
+    public EventResponseManager getManager() {
         return manager;
     }
 
@@ -102,5 +104,10 @@ public abstract class CommandEventInternal extends CommandEvent {
         CommandResponseReactionImpl resp = new CommandResponseReactionImpl(() -> getMessage().addReaction(emoji));
         manager.accept(resp);
         return resp;
+    }
+
+    @Override
+    public BreadBotImpl getClient() {
+        return client;
     }
 }

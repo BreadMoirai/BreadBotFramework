@@ -1,5 +1,5 @@
 /*
- *        Copyright 2017 Ton Ly (BreadMoirai)
+ *        Copyright 2017-2018 Ton Ly (BreadMoirai)
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -13,19 +13,14 @@
  *   See the License for the specific language governing permissions and
  *   limitations under the License.
  */
+package com.github.breadmoirai.breadbot.framework.inject;
 
-package com.github.breadmoirai.breadbot.framework.response;
+import com.github.breadmoirai.breadbot.framework.builder.SelfReference;
 
-import net.dv8tion.jda.core.events.message.guild.GuildMessageDeleteEvent;
+public interface InjectionBuilder<R> extends SelfReference<R> {
 
-import java.util.function.LongConsumer;
+    <V> R bindInjection(V fieldValue);
 
-public abstract class CommandResponse {
-
-    public abstract void dispatch(LongConsumer linkReceiver);
-
-    public abstract void onMessageDelete(GuildMessageDeleteEvent event);
-
-    public abstract void cancel();
+    <V> R bindInjection(Class<V> fieldType, V fieldValue);
 
 }
