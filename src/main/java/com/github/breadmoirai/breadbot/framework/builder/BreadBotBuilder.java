@@ -55,12 +55,12 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class BreadBotBuilder implements
-        CommandPluginBuilder<BreadBotBuilder>,
-        CommandHandleBuilderFactory<BreadBotBuilder>,
-        CommandParameterManagerBuilder<BreadBotBuilder>,
-        CommandResultManagerBuilder<BreadBotBuilder>,
-        CommandPropertiesManager<BreadBotBuilder>,
-        InjectionBuilder<BreadBotBuilder> {
+                             CommandPluginBuilder<BreadBotBuilder>,
+                             CommandHandleBuilderFactory<BreadBotBuilder>,
+                             CommandParameterManagerBuilder<BreadBotBuilder>,
+                             CommandResultManagerBuilder<BreadBotBuilder>,
+                             CommandPropertiesManager<BreadBotBuilder>,
+                             InjectionBuilder<BreadBotBuilder> {
 
     private final List<CommandPlugin> plugins;
     private final CommandPropertiesManagerImpl commandProperties;
@@ -70,6 +70,7 @@ public class BreadBotBuilder implements
     private final List<Command> commands;
     private final CommandResultManagerImpl resultManager;
     private InjectionBuilderImpl injector;
+    private boolean injectionEnabled;
     private Predicate<Message> preProcessPredicate;
     private CommandEventFactory commandEventFactory;
     private boolean shouldEvaluateCommandOnMessageUpdate = false;
@@ -83,8 +84,8 @@ public class BreadBotBuilder implements
         commands = new ArrayList<>();
         resultManager = new CommandResultManagerImpl();
         injector = new InjectionBuilderImpl();
+        injectionEnabled = false;
     }
-
 
     @Override
     public BreadBotBuilder addPlugin(Collection<CommandPlugin> plugins) {
@@ -111,7 +112,11 @@ public class BreadBotBuilder implements
 
     @Override
     public <T extends CommandPlugin> T getPlugin(Class<T> pluginClass) {
-        return pluginClass == null ? null : plugins.stream().filter(module -> pluginClass.isAssignableFrom(module.getClass())).map(pluginClass::cast).findAny().orElse(null);
+        return pluginClass == null ? null : plugins.stream()
+                .filter(module -> pluginClass.isAssignableFrom(module.getClass()))
+                .map(pluginClass::cast)
+                .findAny()
+                .orElse(null);
     }
 
     public BreadBotBuilder addCommand(Command command) {
@@ -178,7 +183,8 @@ public class BreadBotBuilder implements
     @Override
     public List<CommandHandleBuilder> createCommands(Supplier<?> commandSupplier) {
         Checks.notNull(commandSupplier, "commandSupplier");
-        List<CommandHandleBuilderInternal> commandHandles = factory.createCommands(commandSupplier, commandSupplier.get());
+        List<CommandHandleBuilderInternal> commandHandles = factory.createCommands(commandSupplier,
+                                                                                   commandSupplier.get());
         commandBuilders.addAll(commandHandles);
         return Collections.unmodifiableList(commandHandles);
     }
@@ -220,7 +226,8 @@ public class BreadBotBuilder implements
     }
 
     @Override
-    public <T> BreadBotBuilder bindCommandModifier(Class<T> propertyType, BiConsumer<T, CommandHandleBuilder> configurator) {
+    public <T> BreadBotBuilder bindCommandModifier(Class<T> propertyType,
+                                                   BiConsumer<T, CommandHandleBuilder> configurator) {
         Checks.notNull(configurator, "configurator");
         commandProperties.bindCommandModifier(propertyType, configurator);
         for (CommandHandleBuilder commandBuilder : commandBuilders) {
@@ -229,7 +236,9 @@ public class BreadBotBuilder implements
         return this;
     }
 
-    private <T> void applyCommandModifierRecursive(Class<T> propertyType, BiConsumer<T, CommandHandleBuilder> configurator, CommandHandleBuilder commandBuilder) {
+    private <T> void applyCommandModifierRecursive(Class<T> propertyType,
+                                                   BiConsumer<T, CommandHandleBuilder> configurator,
+                                                   CommandHandleBuilder commandBuilder) {
         if (commandBuilder.hasProperty(propertyType)) {
             final T property = commandBuilder.getProperty(propertyType);
             configurator.accept(property, commandBuilder);
@@ -240,7 +249,8 @@ public class BreadBotBuilder implements
     }
 
     @Override
-    public <T> BreadBotBuilder bindParameterModifier(Class<T> propertyType, BiConsumer<T, CommandParameterBuilder> configurator) {
+    public <T> BreadBotBuilder bindParameterModifier(Class<T> propertyType,
+                                                     BiConsumer<T, CommandParameterBuilder> configurator) {
         Checks.notNull(configurator, "configurator");
         commandProperties.bindParameterModifier(propertyType, configurator);
         for (CommandHandleBuilder c : commandBuilders) {
@@ -249,7 +259,9 @@ public class BreadBotBuilder implements
         return this;
     }
 
-    private <T> void applyParameterModifierRecursive(Class<T> propertyType, BiConsumer<T, CommandParameterBuilder> configurator, CommandHandleBuilder commandBuilder) {
+    private <T> void applyParameterModifierRecursive(Class<T> propertyType,
+                                                     BiConsumer<T, CommandParameterBuilder> configurator,
+                                                     CommandHandleBuilder commandBuilder) {
         for (CommandParameterBuilder parameterBuilder : commandBuilder.getParameters()) {
             if (parameterBuilder.hasProperty(propertyType)) {
                 final T t = parameterBuilder.getProperty(propertyType);
@@ -339,7 +351,8 @@ public class BreadBotBuilder implements
         return this;
     }
 
-    private void applyTypeModifierRecursive(CommandHandleBuilder commandBuilder, Class<?> parameterType, Consumer<CommandParameterBuilder> modifier) {
+    private void applyTypeModifierRecursive(CommandHandleBuilder commandBuilder, Class<?> parameterType,
+                                            Consumer<CommandParameterBuilder> modifier) {
         for (CommandParameterBuilder commandParameterBuilder : commandBuilder.getParameters()) {
             if (commandParameterBuilder.getDeclaringParameter().getType() == parameterType) {
                 modifier.accept(commandParameterBuilder);
@@ -411,37 +424,29 @@ public class BreadBotBuilder implements
     }
 
     public BreadBotBuilder enableInjection() {
-        if (injector != null) {
-            injector = new InjectionBuilderImpl();
-        }
+        injectionEnabled = true;
         return this;
     }
 
     @Override
     public <V> BreadBotBuilder bindInjection(V fieldValue) {
-        if (injector != null) {
-            injector.bindInjection(fieldValue);
-        } else {
-            injector = new InjectionBuilderImpl();
-        }
+        injector.bindInjection(fieldValue);
         return this;
     }
 
     @Override
     public <V> BreadBotBuilder bindInjection(Class<V> fieldType, V fieldValue) {
-        if (injector != null) {
-            injector.bindInjection(fieldType, fieldValue);
-        } else {
-            injector = new InjectionBuilderImpl();
-        }
+        injector.bindInjection(fieldType, fieldValue);
         return this;
     }
 
     /**
      * Builds the BreadBotClient with the provided EventManager.
-     * If an {@link PrefixPlugin} has not been provided, a {@link UnmodifiablePrefixPlugin new UnmodifiablePrefixPlugin("!")} is provided.
+     * If an {@link PrefixPlugin} has not been provided, a {@link UnmodifiablePrefixPlugin new
+     * UnmodifiablePrefixPlugin("!")} is provided.
      *
-     * @return a new BreadBotClient. This must be added to JDA with {@link net.dv8tion.jda.core.JDABuilder#addEventListener(Object...)}
+     * @return a new BreadBotClient. This must be added to JDA with
+     * {@link net.dv8tion.jda.core.JDABuilder#addEventListener(Object...)}
      */
     public BreadBot build() {
         if (!hasPlugin(PrefixPlugin.class)) plugins.add(new UnmodifiablePrefixPlugin("!"));
@@ -458,19 +463,15 @@ public class BreadBotBuilder implements
             });
             breadInjector = injector.build();
             for (CommandHandleBuilderInternal commandBuilder : commandBuilders) {
-                final Class declaringClass = commandBuilder.getDeclaringClass();
-                final BreadInjector.Injector injectorFor = breadInjector.getInjectorFor(declaringClass);
-                if (injectorFor != null) {
-                    commandBuilder.setInjector(injectorFor);
-                }
+                commandBuilder.setInjector(breadInjector);
             }
         }
         build = commandBuilders.stream().map(o -> o.build(null)).collect(Collectors.toList());
         commands.addAll(build);
         commandEventFactory.setPreprocessor(preProcessPredicate);
         final BreadBotImpl breadBotClient = new BreadBotImpl(plugins, typeMap, commands, resultManager,
-                argumentTypes, commandEventFactory,
-                shouldEvaluateCommandOnMessageUpdate);
+                                                             argumentTypes, commandEventFactory,
+                                                             shouldEvaluateCommandOnMessageUpdate);
         breadBotClient.propagateReadyEvent();
         return breadBotClient;
     }

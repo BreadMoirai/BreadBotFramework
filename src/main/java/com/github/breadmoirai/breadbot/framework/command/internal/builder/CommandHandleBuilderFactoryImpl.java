@@ -29,6 +29,7 @@ import com.github.breadmoirai.breadbot.framework.error.CommandInitializationExce
 import com.github.breadmoirai.breadbot.framework.error.MissingMainCommandException;
 import com.github.breadmoirai.breadbot.framework.error.TooManyMainCommandsException;
 import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
+import com.github.breadmoirai.breadbot.framework.inject.BreadInjector;
 import com.github.breadmoirai.breadbot.framework.parameter.internal.builder.CommandParameterBuilderImpl;
 import org.reflections.Reflections;
 import org.slf4j.Logger;
@@ -69,7 +70,7 @@ public class CommandHandleBuilderFactoryImpl implements CommandHandleBuilderFact
                 onCommand.getClass(),
                 null,
                 clientBuilder,
-                new CommandObjectFactory(() -> onCommand),
+                CommandObjectFactory.empty(),
                 parameterBuilders,
                 (o, objects) -> {
                     onCommand.accept(((CommandEvent) objects[0]));
@@ -85,7 +86,8 @@ public class CommandHandleBuilderFactoryImpl implements CommandHandleBuilderFact
     public CommandHandleBuilderInternal createCommand(Class<?> commandClass) {
         final Method method = getMainMethod(commandClass, true);
         final CommandObjectFactory factory = getSupplierForClass(commandClass);
-        CommandPropertyMapImpl map = new CommandPropertyMapImpl(CommandPropertiesManagerImpl.getPP(commandClass.getPackage()), commandClass.getAnnotations());
+        CommandPropertyMapImpl map = new CommandPropertyMapImpl(
+                CommandPropertiesManagerImpl.getPP(commandClass.getPackage()), commandClass.getAnnotations());
         return createCommandHandleBuilderInternal(null, commandClass, method, factory, null, null, map);
     }
 
@@ -93,8 +95,9 @@ public class CommandHandleBuilderFactoryImpl implements CommandHandleBuilderFact
     public CommandHandleBuilderInternal createCommand(Object commandObject) {
         final Class<?> aClass = commandObject.getClass();
         final Method method = getMainMethod(aClass, true);
-        final CommandObjectFactory factory = new CommandObjectFactory(() -> commandObject);
-        CommandPropertyMapImpl map = new CommandPropertyMapImpl(CommandPropertiesManagerImpl.getPP(aClass.getPackage()), aClass.getAnnotations());
+        final CommandObjectFactory factory = CommandObjectFactory.of(aClass, commandObject);
+        CommandPropertyMapImpl map = new CommandPropertyMapImpl(CommandPropertiesManagerImpl.getPP(aClass.getPackage()),
+                                                                aClass.getAnnotations());
         return createCommandHandleBuilderInternal(commandObject, aClass, method, factory, null, null, map);
     }
 
@@ -102,8 +105,9 @@ public class CommandHandleBuilderFactoryImpl implements CommandHandleBuilderFact
     public CommandHandleBuilderInternal createCommand(Supplier<?> commandSupplier, Object o) {
         final Class<?> aClass = o.getClass();
         final Method method = getMainMethod(aClass, true);
-        final CommandObjectFactory factory = new CommandObjectFactory(commandSupplier::get);
-        CommandPropertyMapImpl map = new CommandPropertyMapImpl(CommandPropertiesManagerImpl.getPP(aClass.getPackage()), aClass.getAnnotations());
+        final CommandObjectFactory factory = CommandObjectFactory.of(aClass, commandSupplier::get);
+        CommandPropertyMapImpl map = new CommandPropertyMapImpl(CommandPropertiesManagerImpl.getPP(aClass.getPackage()),
+                                                                aClass.getAnnotations());
         return createCommandHandleBuilderInternal(null, aClass, method, factory, aClass, commandSupplier, map);
     }
 
@@ -129,11 +133,16 @@ public class CommandHandleBuilderFactoryImpl implements CommandHandleBuilderFact
                 continue;
 
             Stream<Method> methods = Arrays.stream(commandClass.getMethods());
-            Stream<Method> innerMethods = Arrays.stream(commandClass.getClasses()).map(Class::getMethods).flatMap(Arrays::stream);
+            Stream<Method> innerMethods = Arrays.stream(commandClass.getClasses())
+                    .map(Class::getMethods)
+                    .flatMap(Arrays::stream);
             Stream<Method> methodStream = Stream.concat(methods, innerMethods);
-            boolean hasCommandAnnotation = methodStream.anyMatch(method -> method.isAnnotationPresent(Command.class) || method.isAnnotationPresent(MainCommand.class));
+            boolean hasCommandAnnotation = methodStream.anyMatch(
+                    method -> method.isAnnotationPresent(Command.class) || method.isAnnotationPresent(
+                            MainCommand.class));
             if (!hasCommandAnnotation) continue;
-            if (Arrays.stream(commandClass.getMethods()).anyMatch(method -> method.isAnnotationPresent(MainCommand.class))) {
+            if (Arrays.stream(commandClass.getMethods())
+                    .anyMatch(method -> method.isAnnotationPresent(MainCommand.class))) {
                 builders.add(createCommand(commandClass));
             } else {
                 builders.addAll(createCommands(commandClass));
@@ -148,7 +157,8 @@ public class CommandHandleBuilderFactoryImpl implements CommandHandleBuilderFact
                 null,
                 commandClass,
                 getSupplierForClass(commandClass),
-                new CommandPropertyMapImpl(CommandPropertiesManagerImpl.getPP(commandClass.getPackage()), commandClass.getAnnotations()),
+                new CommandPropertyMapImpl(CommandPropertiesManagerImpl.getPP(commandClass.getPackage()),
+                                           commandClass.getAnnotations()),
                 null,
                 null);
     }
@@ -159,8 +169,9 @@ public class CommandHandleBuilderFactoryImpl implements CommandHandleBuilderFact
         return getSubCommands(
                 commandObject,
                 commandClass,
-                new CommandObjectFactory(() -> commandObject),
-                new CommandPropertyMapImpl(CommandPropertiesManagerImpl.getPP(commandClass.getPackage()), commandClass.getAnnotations()),
+                CommandObjectFactory.of(commandClass, commandObject),
+                new CommandPropertyMapImpl(CommandPropertiesManagerImpl.getPP(commandClass.getPackage()),
+                                           commandClass.getAnnotations()),
                 null,
                 null);
     }
@@ -171,8 +182,9 @@ public class CommandHandleBuilderFactoryImpl implements CommandHandleBuilderFact
         return getSubCommands(
                 null,
                 commandClass,
-                new CommandObjectFactory(commandSupplier::get),
-                new CommandPropertyMapImpl(CommandPropertiesManagerImpl.getPP(commandClass.getPackage()), commandClass.getAnnotations()),
+                CommandObjectFactory.of(commandClass, commandSupplier),
+                new CommandPropertyMapImpl(CommandPropertiesManagerImpl.getPP(commandClass.getPackage()),
+                                           commandClass.getAnnotations()),
                 commandClass,
                 commandSupplier);
     }
@@ -181,7 +193,8 @@ public class CommandHandleBuilderFactoryImpl implements CommandHandleBuilderFact
     public List<CommandHandleBuilderInternal> createCommandsFromClasses(Collection<Class<?>> commandClasses) {
         return commandClasses.stream()
                 .flatMap(commandClass -> {
-                    if (Arrays.stream(commandClass.getMethods()).anyMatch(method -> method.isAnnotationPresent(MainCommand.class))) {
+                    if (Arrays.stream(commandClass.getMethods())
+                            .anyMatch(method -> method.isAnnotationPresent(MainCommand.class))) {
                         return Stream.of(createCommand(commandClass));
                     } else {
                         return createCommands(commandClass).stream();
@@ -193,7 +206,8 @@ public class CommandHandleBuilderFactoryImpl implements CommandHandleBuilderFact
     public List<CommandHandleBuilderInternal> createCommandsFromObjects(Collection<?> commandObjects) {
         return commandObjects.stream()
                 .flatMap(commandObject -> {
-                    if (Arrays.stream(commandObject.getClass().getMethods()).anyMatch(method -> method.isAnnotationPresent(MainCommand.class))) {
+                    if (Arrays.stream(commandObject.getClass().getMethods())
+                            .anyMatch(method -> method.isAnnotationPresent(MainCommand.class))) {
                         return Stream.of(createCommand(commandObject));
                     } else {
                         return createCommands(commandObject).stream();
@@ -210,19 +224,21 @@ public class CommandHandleBuilderFactoryImpl implements CommandHandleBuilderFact
                     List<Method> mainMethods = Arrays.stream(commandClass.getMethods())
                             .filter(method -> method.isAnnotationPresent(MainCommand.class))
                             .collect(Collectors.toList());
-                    CommandPropertyMapImpl classPropertyMap = new CommandPropertyMapImpl(CommandPropertiesManagerImpl.getPP(commandClass.getPackage()), commandClass.getAnnotations());
+                    CommandPropertyMapImpl classPropertyMap = new CommandPropertyMapImpl(
+                            CommandPropertiesManagerImpl.getPP(commandClass.getPackage()),
+                            commandClass.getAnnotations());
                     if (mainMethods.isEmpty()) {
                         return getSubCommands(
                                 null,
                                 commandClass,
-                                new CommandObjectFactory(commandSupplier::get),
+                                CommandObjectFactory.of(commandClass, commandSupplier),
                                 classPropertyMap,
                                 commandClass,
                                 commandSupplier).stream();
                     } else if (mainMethods.size() > 1) {
                         throw new TooManyMainCommandsException(commandClass);
                     }
-                    final CommandObjectFactory factory = new CommandObjectFactory(commandSupplier::get);
+                    final CommandObjectFactory factory = CommandObjectFactory.of(commandClass, commandSupplier);
                     return Stream.of(createCommandHandleBuilderInternal(
                             null,
                             commandClass,
@@ -234,7 +250,11 @@ public class CommandHandleBuilderFactoryImpl implements CommandHandleBuilderFact
                 }).collect(Collectors.toList());
     }
 
-    private CommandHandleBuilderInternal createCommandHandleBuilderInternal(Object commandObject, Class<?> aClass, Method method, CommandObjectFactory factory, Class<?> supplierReturnType, Supplier<?> supplier, CommandPropertyMapImpl defaultMap) {
+    private CommandHandleBuilderInternal createCommandHandleBuilderInternal(Object commandObject, Class<?> aClass,
+                                                                            Method method, CommandObjectFactory factory,
+                                                                            Class<?> supplierReturnType,
+                                                                            Supplier<?> supplier,
+                                                                            CommandPropertyMapImpl defaultMap) {
         final CommandHandleBuilderInternal builder;
         CommandPropertyMapImpl methodPorp = new CommandPropertyMapImpl(defaultMap, method.getAnnotations());
         builder = createHandleFromMethod(
@@ -244,7 +264,8 @@ public class CommandHandleBuilderFactoryImpl implements CommandHandleBuilderFact
                 factory,
                 methodPorp);
         clientBuilder.applyModifiers(builder);
-        getSubCommands(commandObject, aClass, factory, defaultMap, supplierReturnType, supplier).forEach(builder::putCommandHandle);
+        getSubCommands(commandObject, aClass, factory, defaultMap, supplierReturnType, supplier).forEach(
+                builder::putCommandHandle);
         return builder;
     }
 
@@ -259,7 +280,8 @@ public class CommandHandleBuilderFactoryImpl implements CommandHandleBuilderFact
             if (!method.isAnnotationPresent(Command.class)) continue;
             CommandPropertyMapImpl map = new CommandPropertyMapImpl(propertyMap, method.getAnnotations());
             String[] keys = map.getProperty(Command.class).value();
-            CommandHandleBuilderInternal handle = createHandleFromMethod(commandObject, commandClass, method, factory, map);
+            CommandHandleBuilderInternal handle = createHandleFromMethod(commandObject, commandClass, method, factory,
+                                                                         map);
             clientBuilder.applyModifiers(handle);
             builders.add(handle);
         }
@@ -268,8 +290,14 @@ public class CommandHandleBuilderFactoryImpl implements CommandHandleBuilderFact
             final Method method = getMainMethod(inner, false);
             if (method == null) continue;
             CommandPropertyMapImpl map = new CommandPropertyMapImpl(propertyMap, inner.getAnnotations());
-            final CommandObjectFactory innerFactory = supplier != null ? getSupplierForObject(supplierReturnType, supplier, inner) : getSupplierForClass(inner);
-            CommandHandleBuilderInternal handle = createCommandHandleBuilderInternal(commandObject, inner, method, innerFactory, supplierReturnType, supplier, map);
+            final CommandObjectFactory innerFactory = supplier != null ? getSupplierForObject(supplierReturnType,
+                                                                                              supplier,
+                                                                                              inner) :
+                    getSupplierForClass(
+                            inner);
+            CommandHandleBuilderInternal handle = createCommandHandleBuilderInternal(commandObject, inner, method,
+                                                                                     innerFactory, supplierReturnType,
+                                                                                     supplier, map);
             builders.add(handle);
         }
         return builders;
@@ -289,7 +317,9 @@ public class CommandHandleBuilderFactoryImpl implements CommandHandleBuilderFact
         return mainMethods.get(0);
     }
 
-    public CommandHandleBuilderInternal createHandleFromMethod(Object obj, Class<?> commandClass, Method method, CommandObjectFactory objectFactory, CommandPropertyMapImpl map) {
+    public CommandHandleBuilderInternal createHandleFromMethod(Object obj, Class<?> commandClass, Method method,
+                                                               CommandObjectFactory objectFactory,
+                                                               CommandPropertyMapImpl map) {
 
         final Parameter[] parameters = method.getParameters();
         final CommandParameterBuilder[] parameterBuilders = new CommandParameterBuilder[parameters.length];
@@ -309,14 +339,20 @@ public class CommandHandleBuilderFactoryImpl implements CommandHandleBuilderFact
             factory = getSupplierForClass(method.getDeclaringClass());
         }
 
-        CommandHandleBuilderImpl commandHandleBuilder = new CommandHandleBuilderImpl(obj, commandClass, method, clientBuilder, factory, parameterBuilders, invokableCommandHandle, map);
+        CommandHandleBuilderImpl commandHandleBuilder = new CommandHandleBuilderImpl(obj, commandClass, method,
+                                                                                     clientBuilder, factory,
+                                                                                     parameterBuilders,
+                                                                                     invokableCommandHandle, map);
 
-        Arrays.setAll(parameterBuilders, value -> new CommandParameterBuilderImpl(clientBuilder, commandHandleBuilder, parameters[value], map));
+        Arrays.setAll(parameterBuilders,
+                      value -> new CommandParameterBuilderImpl(clientBuilder, commandHandleBuilder, parameters[value],
+                                                               map));
         return commandHandleBuilder;
     }
 
     private CommandObjectFactory getSupplierForClass(Class<?> klass) throws BreadBotException {
         ArrayDeque<MethodHandle> constructors = new ArrayDeque<>();
+        ArrayDeque<Class<?>> classes = new ArrayDeque<>();
         Class<?> aClass = klass;
         while (aClass != null) {
             final Class<?> outClass;
@@ -325,96 +361,195 @@ public class CommandHandleBuilderFactoryImpl implements CommandHandleBuilderFact
             else outClass = klass.getDeclaringClass();
             if (outClass == null) {
                 try {
-                    MethodHandle constructor = MethodHandles.publicLookup().findConstructor(aClass, MethodType.methodType(void.class));
+                    MethodHandle constructor = MethodHandles.publicLookup()
+                            .findConstructor(aClass, MethodType.methodType(void.class));
                     constructors.addFirst(constructor);
+                    classes.addFirst(aClass);
                 } catch (NoSuchMethodException | IllegalAccessException e) {
-                    throw new BreadBotException(aClass + " is registered as a command but does not have a public no-args constructor", e);
+                    throw new BreadBotException(
+                            aClass + " is registered as a command but does not have a public no-args constructor", e);
                 }
                 break;
             } else {
-                try {
-                    MethodHandle constructor = MethodHandles.publicLookup().findConstructor(aClass, MethodType.methodType(void.class, outClass));
-                    constructors.addFirst(constructor);
-                } catch (NoSuchMethodException | IllegalAccessException e) {
-                    throw new BreadBotException(aClass + " is registered as a command but does not have a public no-args constructor", e);
-                }
+                AddFirstInnerConstructor(constructors, classes, aClass, outClass);
             }
             aClass = outClass;
         }
 
         MethodHandle[] methodHandles = constructors.toArray(new MethodHandle[0]);
+        Class<?>[] classArray = classes.toArray(new Class<?>[0]);
 
         if (methodHandles.length == 1) {
             MethodHandle methodHandle = methodHandles[0];
-            return new CommandObjectFactory(methodHandle::invoke);
+            return CommandObjectFactory.of(classArray[0], methodHandle);
         } else {
-            //noinspection Duplicates
-            return new CommandObjectFactory(() -> {
-                Object o = methodHandles[0].invoke();
-                for (int i = 1; i < methodHandles.length; i++) {
-                    o = methodHandles[i].invoke(o);
-                }
-                return o;
-            });
+            return getCommandObjectFactoryForNestedConstructors(methodHandles, classArray);
         }
     }
 
-    private CommandObjectFactory getSupplierForObject(Class<?> oClass, Supplier<?> supplier, Class<?> uClass) throws BreadBotException {
+    private CommandObjectFactory getSupplierForObject(Class<?> supplierReturnType, Supplier<?> supplier,
+                                                      Class<?> uClass) throws
+                                                                       BreadBotException {
         ArrayDeque<MethodHandle> constructors = new ArrayDeque<>();
+        ArrayDeque<Class<?>> classes = new ArrayDeque<>();
         Class<?> aClass = uClass;
-        boolean isStatic = false;
-        while (aClass != oClass) {
+        boolean isStatic = Modifier.isStatic(uClass.getModifiers());
+        while (aClass != supplierReturnType) {
             final Class<?> outClass;
-            if (Modifier.isStatic(uClass.getModifiers())) {
-                isStatic = true;
+            if (Modifier.isStatic(aClass.getModifiers())) {
                 try {
-                    MethodHandle constructor = MethodHandles.publicLookup().findConstructor(aClass, MethodType.methodType(void.class));
+                    MethodHandle constructor = MethodHandles.publicLookup()
+                            .findConstructor(aClass, MethodType.methodType(void.class));
                     constructors.addFirst(constructor);
+                    classes.addFirst(aClass);
                     break;
                 } catch (NoSuchMethodException | IllegalAccessException e) {
-                    throw new BreadBotException(aClass + " is registered as a command but does not have a public no-args constructor", e);
+                    throw new BreadBotException(
+                            aClass + " is registered as a command but does not have a public no-args constructor", e);
                 }
             } else outClass = uClass.getDeclaringClass();
             if (outClass == null) {
                 throw new BreadBotException("SupplierForObject ClassMisMatch");
             } else {
-                try {
-                    MethodHandle constructor = MethodHandles.publicLookup().findConstructor(aClass, MethodType.methodType(void.class, outClass));
-                    constructors.addFirst(constructor);
-                } catch (NoSuchMethodException | IllegalAccessException e) {
-                    throw new BreadBotException(aClass + " is registered as a command but does not have a public no-args constructor", e);
-                }
+                AddFirstInnerConstructor(constructors, classes, aClass, outClass);
             }
             aClass = outClass;
         }
 
         MethodHandle[] methodHandles = constructors.toArray(new MethodHandle[0]);
+        Class<?>[] classArray = classes.toArray(new Class<?>[0]);
 
         if (methodHandles.length == 1) {
             MethodHandle methodHandle = methodHandles[0];
-            if (!isStatic)
-                return new CommandObjectFactory(() -> methodHandle.invoke(supplier.get()));
-            else
-                return new CommandObjectFactory(methodHandle::invoke);
+            final Class<?> aClass1 = classArray[0];
+            if (!isStatic) {
+                return new CommandObjectFactory(null) {
+                    private final Class<?> supplierType = supplierReturnType, handleType = aClass1;
+                    private final Supplier<?> supp = supplier;
+                    private final MethodHandle handle = methodHandle;
+                    private BreadInjector.Injector suppInj, handleInj;
+
+                    @Override
+                    public void setInjector(BreadInjector injector) {
+                        suppInj = injector.getInjectorFor(supplierType);
+                        handleInj = injector.getInjectorFor(handleType);
+                    }
+
+                    @Override
+                    public Object get() throws Throwable {
+                        Object o = supp.get();
+                        if (suppInj != null) {
+                            suppInj.inject(o);
+                        }
+                        o = handle.invoke(o);
+                        if (handleInj != null) {
+                            handleInj.inject(o);
+                        }
+                        return o;
+                    }
+                };
+            } else
+                return CommandObjectFactory.of(classArray[0], methodHandle);
         } else {
             if (!isStatic)
-                return new CommandObjectFactory(() -> {
-                    Object o = methodHandles[0].invoke(supplier.get());
-                    for (int i = 1; i < methodHandles.length; i++) {
-                        o = methodHandles[i].invoke(o);
+                return new CommandObjectFactory(null) {
+                    private final Supplier<?> supp = supplier;
+                    private final Class<?> suppClass = supplierReturnType;
+                    private final Class<?>[] classes = classArray;
+                    private final MethodHandle[] handles = methodHandles;
+                    private BreadInjector.Injector suppInj = null;
+                    private BreadInjector.Injector[] injectors = null;
+
+                    @Override
+                    public void setInjector(BreadInjector injector) {
+                        suppInj = injector.getInjectorFor(suppClass);
+                        injectors = new BreadInjector.Injector[classes.length];
+                        for (int i = 0; i < classes.length; i++) {
+                            injectors[i] = injector.getInjectorFor(classes[i]);
+                        }
                     }
-                    return o;
-                });
+
+                    @Override
+                    public Object get() throws Throwable {
+                        if (injectors == null) {
+                            Object o = supp.get();
+                            for (final MethodHandle handle : handles) {
+                                o = handle.invoke(o);
+                            }
+                            return o;
+                        } else {
+                            Object o = supp.get();
+                            if (suppInj != null) {
+                                suppInj.inject(o);
+                            }
+                            for (int i = 0; i < handles.length; i++) {
+                                o = handles[i].invoke(o);
+                                if (injectors[i] != null) {
+                                    injectors[i].inject(o);
+                                }
+                            }
+                            return o;
+                        }
+                    }
+
+                };
             else {
-                //noinspection Duplicates
-                return new CommandObjectFactory(() -> {
-                    Object o = methodHandles[0].invoke();
-                    for (int i = 1; i < methodHandles.length; i++) {
-                        o = methodHandles[i].invoke(o);
+                return getCommandObjectFactoryForNestedConstructors(methodHandles, classArray);
+            }
+        }
+    }
+
+    private CommandObjectFactory getCommandObjectFactoryForNestedConstructors(MethodHandle[] methodHandles,
+                                                                              Class<?>[] classArray) {
+        return new CommandObjectFactory(null) {
+            private final Class<?>[] classes = classArray;
+            private final MethodHandle[] handles = methodHandles;
+            private BreadInjector.Injector[] injectors = null;
+
+            @Override
+            public void setInjector(BreadInjector injector) {
+                injectors = new BreadInjector.Injector[classes.length];
+                for (int i = 0; i < classes.length; i++) {
+                    injectors[i] = injector.getInjectorFor(classes[i]);
+                }
+            }
+
+            @Override
+            public Object get() throws Throwable {
+                if (injectors == null) {
+                    Object o = handles[0].invoke();
+                    for (int i = 1; i < handles.length; i++) {
+                        o = handles[i].invoke(o);
                     }
                     return o;
-                });
+                } else {
+                    Object o = handles[0].invoke();
+                    if (injectors[0] != null) {
+                        injectors[0].inject(o);
+                    }
+                    for (int i = 1; i < handles.length; i++) {
+                        o = handles[i].invoke(o);
+                        if (injectors[i] != null) {
+                            injectors[i].inject(o);
+                        }
+                    }
+                    return o;
+                }
             }
+
+        };
+    }
+
+    private void AddFirstInnerConstructor(ArrayDeque<MethodHandle> constructors, ArrayDeque<Class<?>> classes,
+                                          Class<?> aClass, Class<?> outClass) {
+        try {
+            MethodHandle constructor = MethodHandles.publicLookup()
+                    .findConstructor(aClass, MethodType.methodType(void.class, outClass));
+            constructors.addFirst(constructor);
+            classes.addFirst(aClass);
+        } catch (NoSuchMethodException | IllegalAccessException e) {
+            throw new BreadBotException(
+                    aClass + " is registered as a command but does not have a public no-args constructor", e);
         }
     }
 
@@ -424,6 +559,7 @@ public class CommandHandleBuilderFactoryImpl implements CommandHandleBuilderFact
                 aClass + " is registered as multiple commands but is marked as a single command. " +
                         "If you want to register " + aClass.getSimpleName() + " as multiple commands, " +
                         "you must remove the @Command annotation. " +
-                        "Otherwise use #createCommand or #addCommand instead to register as a single command with subcommands.");
+                        "Otherwise use #createCommand or #addCommand instead to register as a single command with " +
+                        "subcommands.");
     }
 }

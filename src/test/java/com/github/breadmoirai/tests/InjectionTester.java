@@ -77,29 +77,43 @@ public class InjectionTester {
     public void sameObjBySupplierTest() {
         client = new BreadBotBuilder()
                 .addPlugin(new TestPluginImpl())
-                .addCommand(() -> new InjectionTestCommand() {
-                    @Override
-                    public int hashCode() {
-                        return 124125;
-                    }
-                })
+                .addCommand(() -> new InjectionTestCommand(1255365))
                 .enableInjection()
                 .build();
 
         assertResponse("!call", "ok ok ok");
+        assertResponse("!call", "null null ok");
         InjectionTestCommand.prefixPlugin = null;
-        assertResponse("!call", "ok ok null");
-        assertResponse("!call inner", "ok ok null ok");
+        assertResponse("!call", "null null null");
+        assertResponse("!call inner", "null null null ok");
     }
 
     public static class InjectionTestCommand {
 
+        private final int hashCode;
         @Inject
         private TestPluginImpl testPluginImpl;
         @Inject
         public TestPlugin testPlugin;
         @Inject
         public static PrefixPlugin prefixPlugin;
+
+        public InjectionTestCommand() {
+            this(0);
+        }
+
+        public InjectionTestCommand(int i) {
+            hashCode = i;
+        }
+
+        @Override
+        public int hashCode() {
+            if (hashCode == 0) {
+                return super.hashCode();
+            } else {
+                return hashCode;
+            }
+        }
 
         @MainCommand
         public String call() {

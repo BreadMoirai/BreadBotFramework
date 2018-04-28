@@ -25,6 +25,46 @@ import java.util.Map;
 
 public class BreadInjector {
 
+    // -- INSTANCE -- //
+    private final TypeMap map;
+    private final Map<Class<?>, Injector> injectors;
+    public BreadInjector(TypeMap map) {
+        this.map = map;
+        injectors = new HashMap<>();
+    }
+
+    public Injector getInjectorFor(Class<?> aClass) {
+        final Injector classInjector = injectors.get(aClass);
+        if (classInjector == null) {
+            final LinkedList<Object> values = new LinkedList<>();
+            final LinkedList<Field> fields = new LinkedList<>();
+            Class<?> classToItrOver = aClass;
+            while (classToItrOver != Object.class) {
+                for (Field field : classToItrOver.getDeclaredFields()) {
+                    if (field.isAnnotationPresent(javax.inject.Inject.class)) {
+                        Object in;
+                        if ((in = map.get(field.getType())) != null) {
+                            fields.add(field);
+                            values.add(in);
+                        }
+                    }
+                }
+                classToItrOver = classToItrOver.getSuperclass();
+            }
+            if (fields.isEmpty()) {
+                return null;
+            } else {
+                final Field[] fieldArr = fields.toArray(new Field[0]);
+                final Object[] valueArr = values.toArray();
+                AccessibleObject.setAccessible(fieldArr, true);
+                final Injector injector = new Injector(fieldArr, valueArr);
+                injectors.put(aClass, injector);
+                return injector;
+            }
+        }
+        return classInjector;
+    }
+
     // -- STATIC INNER CLASS -- //
     public static class Injector {
 
@@ -44,41 +84,5 @@ public class BreadInjector {
             }
             last = o.hashCode();
         }
-    }
-
-    private final TypeMap map;
-    private final Map<Class<?>, Injector> injectors;
-
-    public BreadInjector(TypeMap map) {
-        this.map = map;
-        injectors = new HashMap<>();
-    }
-
-    public Injector getInjectorFor(Class<?> aClass) {
-        final Injector classInjector = injectors.get(aClass);
-        if (classInjector == null) {
-            final LinkedList<Object> values = new LinkedList<>();
-            final LinkedList<Field> fields = new LinkedList<>();
-            for (Field field : aClass.getDeclaredFields()) {
-                if (field.isAnnotationPresent(javax.inject.Inject.class)) {
-                    Object in;
-                    if ((in = map.get(field.getType())) != null) {
-                        fields.add(field);
-                        values.add(in);
-                    }
-                }
-            }
-            if (fields.isEmpty()) {
-                return null;
-            } else {
-                final Field[] fieldArr = fields.toArray(new Field[0]);
-                final Object[] valueArr = values.toArray();
-                AccessibleObject.setAccessible(fieldArr, true);
-                final Injector injector = new Injector(fieldArr, valueArr);
-                injectors.put(aClass, injector);
-                return injector;
-            }
-        }
-        return classInjector;
     }
 }

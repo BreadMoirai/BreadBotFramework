@@ -160,7 +160,7 @@ public class CommandPropertiesManagerImpl implements CommandPropertiesManager<Co
             if (declaringObject != null && !(declaringObject instanceof Consumer)) {
                 o = declaringObject;
             } else if (Modifier.isStatic(modifiers)) {
-                o = ((CommandHandleBuilderInternal) builder).getObjectFactory().get();
+                o = ((CommandHandleBuilderInternal) builder).getObjectFactory().getOrNull();
             } else {
                 o = null;
             }

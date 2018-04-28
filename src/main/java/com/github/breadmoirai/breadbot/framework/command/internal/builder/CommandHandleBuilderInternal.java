@@ -121,5 +121,5 @@ public interface CommandHandleBuilderInternal extends CommandHandleBuilder {
         return Collections.unmodifiableList(commands);
     }
 
-    CommandHandleBuilderImpl setInjector(BreadInjector.Injector injector);
+    void setInjector(BreadInjector injector);
 }

@@ -26,6 +26,7 @@ import com.github.breadmoirai.breadbot.framework.command.internal.CommandHandleI
 import com.github.breadmoirai.breadbot.framework.command.internal.CommandObjectFactory;
 import com.github.breadmoirai.breadbot.framework.command.internal.CommandPropertyMapImpl;
 import com.github.breadmoirai.breadbot.framework.command.internal.InvokableCommand;
+import com.github.breadmoirai.breadbot.framework.error.BreadBotException;
 import com.github.breadmoirai.breadbot.framework.error.MissingCommandKeyException;
 import com.github.breadmoirai.breadbot.framework.inject.BreadInjector;
 import com.github.breadmoirai.breadbot.framework.parameter.CommandParameter;
@@ -64,7 +65,6 @@ public class CommandHandleBuilderImpl implements CommandHandleBuilderInternal {
     private boolean shouldRetainProperties;
     private Pattern splitRegex;
     private int splitLimit;
-    private BreadInjector.Injector injector;
 
     public CommandHandleBuilderImpl(Object declaringObject,
                                     Class<?> declaringClass,
@@ -254,6 +254,14 @@ public class CommandHandleBuilderImpl implements CommandHandleBuilderInternal {
     }
 
     @Override
+    public void setInjector(BreadInjector injector) {
+        getObjectFactory().setInjector(injector);
+        for (final CommandHandleBuilderInternal subCommand : subCommands) {
+            subCommand.setInjector(injector);
+        }
+    }
+
+    @Override
     public CommandHandleBuilder addCommand(Supplier<?> commandSupplier, Consumer<CommandHandleBuilder> configurator) {
         Object o = commandSupplier.get();
         if (o.getClass().isAnnotationPresent(com.github.breadmoirai.breadbot.framework.annotation.command.Command.class)) {
@@ -300,8 +308,13 @@ public class CommandHandleBuilderImpl implements CommandHandleBuilderInternal {
         }
         CommandObjectFactory commandFactory;
         if (isPersistent) {
-            final Object o = this.commandFactory.get();
-            commandFactory = new CommandObjectFactory(() -> o);
+            final Object o;
+            try {
+                o = this.commandFactory.get();
+            } catch (Throwable throwable) {
+                throw new BreadBotException(throwable);
+            }
+            commandFactory = CommandObjectFactory.of(o.getClass(), o);
         } else {
             commandFactory = this.commandFactory;
         }
@@ -311,7 +324,12 @@ public class CommandHandleBuilderImpl implements CommandHandleBuilderInternal {
             Class<?> returnType = declaringMethod.getReturnType();
             resultHandler = getClientBuilder().getResultHandler(returnType);
         }
-        CommandHandleImpl commandHandle = new CommandHandleImpl(keys, name, group, description, declaringObject, declaringClass, declaringMethod,commandFactory, commandParameters, commandFunction, resultHandler, subCommandMap, preprocessors, shouldRetainProperties ? propertyMap : null, splitRegex, splitLimit, parent, injector);
+        CommandHandleImpl commandHandle = new CommandHandleImpl(keys, name, group, description, declaringObject,
+                                                                declaringClass, declaringMethod, commandFactory,
+                                                                commandParameters, commandFunction, resultHandler,
+                                                                subCommandMap, preprocessors,
+                                                                shouldRetainProperties ? propertyMap : null, splitRegex,
+                                                                splitLimit, parent);
 
         //would do null check on sucCommandMap but for loop does not run when subCommands isEmpty
         for (CommandHandleBuilderInternal subCommand : subCommands) {
@@ -370,9 +388,4 @@ public class CommandHandleBuilderImpl implements CommandHandleBuilderInternal {
         return this;
     }
 
-    @Override
-    public CommandHandleBuilderImpl setInjector(BreadInjector.Injector injector) {
-        this.injector = injector;
-        return this;
-    }
 }
