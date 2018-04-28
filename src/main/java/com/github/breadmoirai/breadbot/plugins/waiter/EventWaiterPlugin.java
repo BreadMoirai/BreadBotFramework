@@ -23,6 +23,7 @@ public class EventWaiterPlugin implements CommandPlugin, EventListener {
     @Override
     public void initialize(BreadBotBuilder builder) {
         builder.bindTypeModifier(EventWaiter.class, p -> p.setParser((parameter, list, parser) -> eventWaiter));
+        builder.bindInjection(EventWaiter.class, eventWaiter);
     }
 
     @Override
