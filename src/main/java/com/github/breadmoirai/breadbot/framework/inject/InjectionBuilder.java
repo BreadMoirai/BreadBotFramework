@@ -13,14 +13,14 @@
  *   See the License for the specific language governing permissions and
  *   limitations under the License.
  */
+package com.github.breadmoirai.breadbot.framework.inject;
 
-package com.github.breadmoirai.breadbot.framework.builder;
+import com.github.breadmoirai.breadbot.framework.builder.SelfReference;
 
-import com.github.breadmoirai.breadbot.framework.command.CommandResultHandler;
+public interface InjectionBuilder<R> extends SelfReference<R> {
 
-public interface CommandResultManagerBuilder<R> extends SelfReference<R> {
+    <V> R bindInjection(V fieldValue);
 
-    <T> R bindResultHandler(Class<T> resultType, CommandResultHandler<T> handler);
+    <V> R bindInjection(Class<V> fieldType, V fieldValue);
 
-    <T> CommandResultHandler<? super T> getResultHandler(Class<T> resultType);
 }

@@ -1,5 +1,5 @@
 /*
- *        Copyright 2017 Ton Ly (BreadMoirai)
+ *        Copyright 2017-2018 Ton Ly (BreadMoirai)
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -26,14 +26,14 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
- * Todo write docs
+ * This interface defines methods for creating command handles
  */
-public interface CommandHandleBuilderFactory {
+public interface CommandHandleBuilderFactory<R> extends SelfReference<R> {
 
-    default CommandHandleBuilderFactory addCommand(Consumer<CommandEvent> onCommand, Consumer<CommandHandleBuilder> configurator) {
+    default R addCommand(Consumer<CommandEvent> onCommand, Consumer<CommandHandleBuilder> configurator) {
         Checks.notNull(configurator, "configurator");
         configurator.accept(createCommand(onCommand));
-        return this;
+        return self();
     }
 
     /**
@@ -43,7 +43,7 @@ public interface CommandHandleBuilderFactory {
      * @param configurator A configurator that should set the keys at the least.
      * @return this
      */
-    default CommandHandleBuilderFactory addEmptyCommand(Consumer<CommandHandleBuilder> configurator) {
+    default R addEmptyCommand(Consumer<CommandHandleBuilder> configurator) {
         return addCommand(event -> {
         }, command -> {
             command.addPreprocessorPredicate("autofail", o -> false);
@@ -51,115 +51,115 @@ public interface CommandHandleBuilderFactory {
         });
     }
 
-    default CommandHandleBuilderFactory addCommand(Class<?> commandClass, Consumer<CommandHandleBuilder> configurator) {
+    default R addCommand(Class<?> commandClass, Consumer<CommandHandleBuilder> configurator) {
         Checks.notNull(configurator, "configurator");
         createCommandsFromClasses(commandClass).forEach(configurator);
-        return this;
+        return self();
     }
 
-    default CommandHandleBuilderFactory addCommand(Class<?> commandClass) {
+    default R addCommand(Class<?> commandClass) {
         createCommandsFromClasses(commandClass);
-        return this;
+        return self();
     }
 
-    default CommandHandleBuilderFactory addCommand(Object commandObject, Consumer<CommandHandleBuilder> configurator) {
+    default R addCommand(Object commandObject, Consumer<CommandHandleBuilder> configurator) {
         Checks.notNull(configurator, "configurator");
         createCommandsFromObjects(commandObject).forEach(configurator);
-        return this;
+        return self();
     }
 
-    default CommandHandleBuilderFactory addCommand(Object commandObject) {
+    default R addCommand(Object commandObject) {
         createCommandsFromObjects(commandObject);
-        return this;
+        return self();
     }
 
-    default CommandHandleBuilderFactory addCommand(Supplier<?> commandSupplier, Consumer<CommandHandleBuilder> configurator) {
+    default R addCommand(Supplier<?> commandSupplier, Consumer<CommandHandleBuilder> configurator) {
         Checks.notNull(configurator, "configurator");
         final List<CommandHandleBuilder> commands = createCommandsFromSuppliers(commandSupplier);
         commands.forEach(configurator);
-        return this;
+        return self();
     }
 
-    default CommandHandleBuilderFactory addCommand(Supplier<?> commandSupplier) {
+    default R addCommand(Supplier<?> commandSupplier) {
         createCommandsFromSuppliers(commandSupplier);
-        return this;
+        return self();
     }
 
-    default CommandHandleBuilderFactory addCommands(String packageName, Consumer<CommandHandleBuilder> configurator) {
+    default R addCommands(String packageName, Consumer<CommandHandleBuilder> configurator) {
         Checks.notNull(configurator, "configurator");
         createCommands(packageName).forEach(configurator);
-        return this;
+        return self();
     }
 
-    default CommandHandleBuilderFactory addCommands(String packageName) {
+    default R addCommands(String packageName) {
         createCommands(packageName);
-        return this;
+        return self();
     }
 
-    default CommandHandleBuilderFactory addCommandsFromClasses(Consumer<CommandHandleBuilder> configurator, Class<?>... commandClasses) {
+    default R addCommandsFromClasses(Consumer<CommandHandleBuilder> configurator, Class<?>... commandClasses) {
         Checks.notNull(configurator, "configurator");
         createCommandsFromClasses(commandClasses).forEach(configurator);
-        return this;
+        return self();
     }
 
-    default CommandHandleBuilderFactory addCommandsFromClasses(Class<?>... commandClasses) {
+    default R addCommandsFromClasses(Class<?>... commandClasses) {
         createCommandsFromClasses(commandClasses);
-        return this;
+        return self();
     }
 
-    default CommandHandleBuilderFactory addCommandsFromObjects(Consumer<CommandHandleBuilder> configurator, Object... commandObjects) {
+    default R addCommandsFromObjects(Consumer<CommandHandleBuilder> configurator, Object... commandObjects) {
         Checks.notNull(configurator, "configurator");
         createCommandsFromObjects(commandObjects).forEach(configurator);
-        return this;
+        return self();
     }
 
-    default CommandHandleBuilderFactory addCommandsFromObjects(Object... commandObjects) {
+    default R addCommandsFromObjects(Object... commandObjects) {
         createCommandsFromObjects(commandObjects);
-        return this;
+        return self();
     }
 
-    default CommandHandleBuilderFactory addCommandsFromSuppliers(Consumer<CommandHandleBuilder> configurator, Supplier<?>... commandSuppliers) {
+    default R addCommandsFromSuppliers(Consumer<CommandHandleBuilder> configurator, Supplier<?>... commandSuppliers) {
         Checks.notNull(configurator, "configurator");
         createCommandsFromSuppliers(commandSuppliers).forEach(configurator);
-        return this;
+        return self();
     }
 
-    default CommandHandleBuilderFactory addCommandsFromSuppliers(Supplier<?>... commandSuppliers) {
+    default R addCommandsFromSuppliers(Supplier<?>... commandSuppliers) {
         createCommandsFromSuppliers(commandSuppliers);
-        return this;
+        return self();
     }
 
-    default CommandHandleBuilderFactory addCommandsFromClasses(Collection<Class<?>> commandClasses, Consumer<CommandHandleBuilder> configurator) {
+    default R addCommandsFromClasses(Collection<Class<?>> commandClasses, Consumer<CommandHandleBuilder> configurator) {
         Checks.notNull(configurator, "configurator");
         createCommandsFromClasses(commandClasses).forEach(configurator);
-        return this;
+        return self();
     }
 
-    default CommandHandleBuilderFactory addCommandsFromClasses(Collection<Class<?>> commandClasses) {
+    default R addCommandsFromClasses(Collection<Class<?>> commandClasses) {
         createCommandsFromClasses(commandClasses);
-        return this;
+        return self();
     }
 
-    default CommandHandleBuilderFactory addCommandsFromObjects(Collection<?> commandObjects, Consumer<CommandHandleBuilder> configurator) {
+    default R addCommandsFromObjects(Collection<?> commandObjects, Consumer<CommandHandleBuilder> configurator) {
         Checks.notNull(configurator, "configurator");
         createCommandsFromObjects(commandObjects).forEach(configurator);
-        return this;
+        return self();
     }
 
-    default CommandHandleBuilderFactory addCommandsFromObjects(Collection<?> commandObjects) {
+    default R addCommandsFromObjects(Collection<?> commandObjects) {
         createCommandsFromObjects(commandObjects);
-        return this;
+        return self();
     }
 
-    default CommandHandleBuilderFactory addCommandsFromSuppliers(Collection<Supplier<?>> commandSuppliers, Consumer<CommandHandleBuilder> configurator) {
+    default R addCommandsFromSuppliers(Collection<Supplier<?>> commandSuppliers, Consumer<CommandHandleBuilder> configurator) {
         Checks.notNull(configurator, "configurator");
         createCommandsFromSuppliers(commandSuppliers).forEach(configurator);
-        return this;
+        return self();
     }
 
-    default CommandHandleBuilderFactory addCommandsFromSuppliers(Collection<Supplier<?>> commandSuppliers) {
+    default R addCommandsFromSuppliers(Collection<Supplier<?>> commandSuppliers) {
         createCommandsFromSuppliers(commandSuppliers);
-        return this;
+        return self();
     }
 
     CommandHandleBuilder createCommand(Consumer<CommandEvent> onCommand);

@@ -1,5 +1,5 @@
 /*
- *        Copyright 2017 Ton Ly (BreadMoirai)
+ *        Copyright 2017-2018 Ton Ly (BreadMoirai)
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
 
-public interface CommandHandleBuilder extends CommandHandleBuilderFactory {
+public interface CommandHandleBuilder extends CommandHandleBuilderFactory<CommandHandleBuilder> {
 
     CommandHandleBuilder setKeys(String... key);
 
@@ -64,7 +64,7 @@ public interface CommandHandleBuilder extends CommandHandleBuilderFactory {
     default CommandHandleBuilder configureChild(String commandName, Consumer<CommandHandleBuilder> configurator) {
         CommandHandleBuilder builder = getChildren().stream().filter(commandHandleBuilder -> commandHandleBuilder.getName().equals(commandName)).findAny().orElseThrow(() -> new NoSuchCommandException("A subcommand by the name of " + commandName + " was not found"));
         configurator.accept(builder);
-        return this;
+        return self();
     }
 
     List<CommandHandleBuilder> getChildren();
@@ -211,7 +211,7 @@ public interface CommandHandleBuilder extends CommandHandleBuilderFactory {
     }
 
     @Override
-    default CommandHandleBuilderFactory addEmptyCommand(Consumer<CommandHandleBuilder> configurator) {
+    default CommandHandleBuilder addEmptyCommand(Consumer<CommandHandleBuilder> configurator) {
         CommandHandleBuilderFactory.super.addEmptyCommand(configurator);
         return this;
     }

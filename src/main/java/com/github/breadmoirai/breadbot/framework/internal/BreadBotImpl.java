@@ -44,7 +44,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -66,7 +65,7 @@ public class BreadBotImpl implements BreadBot, EventListener {
 
     public BreadBotImpl(
             List<CommandPlugin> modules,
-            List<Command> commands,
+            Map<Type, CommandPlugin> typeMap, List<Command> commands,
             CommandResultManager resultManager,
             CommandParameterManager argumentTypes,
             CommandEventFactory eventFactory,
@@ -90,22 +89,6 @@ public class BreadBotImpl implements BreadBot, EventListener {
             LOG.info("Command Created: " + command);
         }
         this.commandMap = handleMap;
-
-        final HashMap<Type, CommandPlugin> typeMap = new HashMap<>(modules.size());
-        for (CommandPlugin module : modules) {
-            Class<?> moduleClass = module.getClass();
-            do {
-                typeMap.put(moduleClass, module);
-                for (Class<?> inter : moduleClass.getInterfaces()) {
-                    final List<Class<?>> interfaceList = getInterfaceHierarchy(inter, CommandPlugin.class);
-                    if (interfaceList != null) {
-                        for (Class<?> interfaceClass : interfaceList)
-                            typeMap.put(interfaceClass, module);
-                    }
-                }
-            } while (CommandPlugin.class.isAssignableFrom(moduleClass = moduleClass.getSuperclass()));
-        }
-
         this.moduleTypeMap = typeMap;
 
         this.commandEngine = getCommandEngine(commandMap);
@@ -142,20 +125,6 @@ public class BreadBotImpl implements BreadBot, EventListener {
                 }
             }
         };
-    }
-
-    private List<Class<?>> getInterfaceHierarchy(Class<?> from, Class<?> toSuper) {
-        if (!from.isInterface())
-            return null;
-        if (from == toSuper)
-            return new ArrayList<>();
-        final Class<?>[] interfaces = from.getInterfaces();
-        if (interfaces.length == 0)
-            return null;
-        final List<Class<?>> interfaceList = getInterfaceHierarchy(interfaces[0], toSuper);
-        if (interfaceList != null)
-            interfaceList.add(0, from);
-        return interfaceList;
     }
 
     @Override
