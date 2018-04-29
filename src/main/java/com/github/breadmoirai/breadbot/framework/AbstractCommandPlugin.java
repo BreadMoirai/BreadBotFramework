@@ -46,7 +46,7 @@ public abstract class AbstractCommandPlugin implements CommandPlugin {
         initialize();
     }
 
-    abstract void initialize();
+    protected abstract void initialize();
 
     @Override
     public final void onBreadReady(BreadBot client) {
