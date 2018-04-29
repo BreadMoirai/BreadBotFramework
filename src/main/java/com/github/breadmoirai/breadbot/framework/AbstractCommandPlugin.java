@@ -38,258 +38,256 @@ import java.util.function.Supplier;
 @SuppressWarnings("unused")
 public abstract class AbstractCommandPlugin implements CommandPlugin {
     private BreadBotBuilder builder;
-    private Consumer<BreadBot> onReady;
 
     @Override
     public final void initialize(BreadBotBuilder builder) {
         this.builder = builder;
         initialize();
+        this.builder = null;
     }
 
     protected abstract void initialize();
 
-    @Override
-    public final void onBreadReady(BreadBot client) {
-        builder = null;
-        if (onReady != null) {
-            onReady.accept(client);
-            onReady = null;
-        }
-    }
-
-    final public void onBreadReady(Consumer<BreadBot> onReady) {
-        this.onReady = onReady;
-    }
-
-    final public CommandHandleBuilder createCommand(Consumer<CommandEvent> onCommand) {
+    final protected CommandHandleBuilder createCommand(Consumer<CommandEvent> onCommand) {
         return builder.createCommand(onCommand);
     }
 
-    final public BreadBotBuilder addEmptyCommand(Consumer<CommandHandleBuilder> configurator) {
-        return builder.addEmptyCommand(configurator);
+    final protected void addEmptyCommand(Consumer<CommandHandleBuilder> configurator) {
+        builder.addEmptyCommand(configurator);
     }
 
-    final public CommandHandleBuilder createCommand(Class<?> commandClass) {
+    final protected CommandHandleBuilder createCommand(Class<?> commandClass) {
         return builder.createCommand(commandClass);
     }
 
-    final public CommandHandleBuilder createCommand(Object commandObject) {
+    final protected CommandHandleBuilder createCommand(Object commandObject) {
         return builder.createCommand(commandObject);
     }
 
-    final public CommandHandleBuilder createCommand(Supplier<?> commandSupplier) {
+    final protected CommandHandleBuilder createCommand(Supplier<?> commandSupplier) {
         return builder.createCommand(commandSupplier);
     }
 
-    final public List<CommandHandleBuilder> createCommands(String packageName) {
+    final protected List<CommandHandleBuilder> createCommands(String packageName) {
         return builder.createCommands(packageName);
     }
 
-    final public List<CommandHandleBuilder> createCommands(Class<?> commandClass) {
+    final protected List<CommandHandleBuilder> createCommands(Class<?> commandClass) {
         return builder.createCommands(commandClass);
     }
 
-    final public List<CommandHandleBuilder> createCommands(Object commandObject) {
+    final protected List<CommandHandleBuilder> createCommands(Object commandObject) {
         return builder.createCommands(commandObject);
     }
 
-    final public List<CommandHandleBuilder> createCommands(Supplier<?> commandSupplier) {
+    final protected List<CommandHandleBuilder> createCommands(Supplier<?> commandSupplier) {
         return builder.createCommands(commandSupplier);
     }
 
-    final public List<CommandHandleBuilder> createCommandsFromClasses(Collection<Class<?>> commandClasses) {
+    final protected List<CommandHandleBuilder> createCommandsFromClasses(Collection<Class<?>> commandClasses) {
         return builder.createCommandsFromClasses(commandClasses);
     }
 
-    final public List<CommandHandleBuilder> createCommandsFromObjects(Collection<?> commandObjects) {
+    final protected List<CommandHandleBuilder> createCommandsFromObjects(Collection<?> commandObjects) {
         return builder.createCommandsFromObjects(commandObjects);
     }
 
-    final public List<CommandHandleBuilder> createCommandsFromSuppliers(Collection<Supplier<?>> commandSupplier) {
+    final protected List<CommandHandleBuilder> createCommandsFromSuppliers(Collection<Supplier<?>> commandSupplier) {
         return builder.createCommandsFromSuppliers(commandSupplier);
     }
 
-    final public BreadBotBuilder addCommand(Consumer<CommandEvent> onCommand, Consumer<CommandHandleBuilder> configurator) {
-        return builder.addCommand(onCommand, configurator);
+    final protected void addCommand(Consumer<CommandEvent> onCommand, Consumer<CommandHandleBuilder> configurator) {
+        builder.addCommand(onCommand, configurator);
     }
 
-    final public BreadBotBuilder addCommand(Class<?> commandClass, Consumer<CommandHandleBuilder> configurator) {
-        return builder.addCommand(commandClass, configurator);
+    final protected void addCommand(Class<?> commandClass, Consumer<CommandHandleBuilder> configurator) {
+        builder.addCommand(commandClass, configurator);
     }
 
-    final public BreadBotBuilder addCommand(Class<?> commandClass) {
-        return builder.addCommand(commandClass);
+    final protected void addCommand(Class<?> commandClass) {
+        builder.addCommand(commandClass);
     }
 
-    final public BreadBotBuilder addCommand(Object commandObject, Consumer<CommandHandleBuilder> configurator) {
-        return builder.addCommand(commandObject, configurator);
+    final protected void addCommand(Object commandObject, Consumer<CommandHandleBuilder> configurator) {
+        builder.addCommand(commandObject, configurator);
     }
 
-    final public BreadBotBuilder addCommand(Object commandObject) {
-        return builder.addCommand(commandObject);
+    final protected void addCommand(Object commandObject) {
+        builder.addCommand(commandObject);
     }
 
-    final public BreadBotBuilder addCommand(Supplier<?> commandSupplier, Consumer<CommandHandleBuilder> configurator) {
-        return builder.addCommand(commandSupplier, configurator);
+    final protected void addCommand(Supplier<?> commandSupplier, Consumer<CommandHandleBuilder> configurator) {
+        builder.addCommand(commandSupplier, configurator);
     }
 
-    final public BreadBotBuilder addCommand(Supplier<?> commandSupplier) {
-        return builder.addCommand(commandSupplier);
+    final protected void addCommand(Supplier<?> commandSupplier) {
+        builder.addCommand(commandSupplier);
     }
 
-    final public BreadBotBuilder addCommands(String packageName, Consumer<CommandHandleBuilder> configurator) {
-        return builder.addCommands(packageName, configurator);
+    final protected void addCommands(String packageName, Consumer<CommandHandleBuilder> configurator) {
+        builder.addCommands(packageName, configurator);
     }
 
-    final public BreadBotBuilder addCommands(String packageName) {
-        return builder.addCommands(packageName);
+    final protected void addCommands(String packageName) {
+        builder.addCommands(packageName);
     }
 
-    final public BreadBotBuilder addCommandsFromClasses(Consumer<CommandHandleBuilder> configurator, Class<?>... commandClasses) {
-        return builder.addCommandsFromClasses(configurator, commandClasses);
+    final protected void addCommandsFromClasses(Consumer<CommandHandleBuilder> configurator,
+                                                Class<?>... commandClasses) {
+        builder.addCommandsFromClasses(configurator, commandClasses);
     }
 
-    final public BreadBotBuilder addCommandsFromClasses(Class<?>... commandClasses) {
-        return builder.addCommandsFromClasses(commandClasses);
+    final protected void addCommandsFromClasses(Class<?>... commandClasses) {
+        builder.addCommandsFromClasses(commandClasses);
     }
 
-    final public BreadBotBuilder addCommandsFromObjects(Consumer<CommandHandleBuilder> configurator, Object... commandObjects) {
-        return builder.addCommandsFromObjects(configurator, commandObjects);
+    final protected void addCommandsFromObjects(Consumer<CommandHandleBuilder> configurator, Object... commandObjects) {
+        builder.addCommandsFromObjects(configurator, commandObjects);
     }
 
-    final public BreadBotBuilder addCommandsFromObjects(Object... commandObjects) {
-        return builder.addCommandsFromObjects(commandObjects);
+    final protected void addCommandsFromObjects(Object... commandObjects) {
+        builder.addCommandsFromObjects(commandObjects);
     }
 
-    final public BreadBotBuilder addCommandsFromSuppliers(Consumer<CommandHandleBuilder> configurator, Supplier<?>... commandSuppliers) {
-        return builder.addCommandsFromSuppliers(configurator, commandSuppliers);
+    final protected void addCommandsFromSuppliers(Consumer<CommandHandleBuilder> configurator,
+                                                  Supplier<?>... commandSuppliers) {
+        builder.addCommandsFromSuppliers(configurator, commandSuppliers);
     }
 
-    final public BreadBotBuilder addCommandsFromSuppliers(Supplier<?>... commandSuppliers) {
-        return builder.addCommandsFromSuppliers(commandSuppliers);
+    final protected void addCommandsFromSuppliers(Supplier<?>... commandSuppliers) {
+        builder.addCommandsFromSuppliers(commandSuppliers);
     }
 
-    final public BreadBotBuilder addCommandsFromClasses(Collection<Class<?>> commandClasses, Consumer<CommandHandleBuilder> configurator) {
-        return builder.addCommandsFromClasses(commandClasses, configurator);
+    final protected void addCommandsFromClasses(Collection<Class<?>> commandClasses,
+                                                Consumer<CommandHandleBuilder> configurator) {
+        builder.addCommandsFromClasses(commandClasses, configurator);
     }
 
-    final public BreadBotBuilder addCommandsFromClasses(Collection<Class<?>> commandClasses) {
-        return builder.addCommandsFromClasses(commandClasses);
+    final protected void addCommandsFromClasses(Collection<Class<?>> commandClasses) {
+        builder.addCommandsFromClasses(commandClasses);
     }
 
-    final public BreadBotBuilder addCommandsFromObjects(Collection<?> commandObjects, Consumer<CommandHandleBuilder> configurator) {
-        return builder.addCommandsFromObjects(commandObjects, configurator);
+    final protected void addCommandsFromObjects(Collection<?> commandObjects,
+                                                Consumer<CommandHandleBuilder> configurator) {
+        builder.addCommandsFromObjects(commandObjects, configurator);
     }
 
-    final public BreadBotBuilder addCommandsFromObjects(Collection<?> commandObjects) {
-        return builder.addCommandsFromObjects(commandObjects);
+    final protected void addCommandsFromObjects(Collection<?> commandObjects) {
+        builder.addCommandsFromObjects(commandObjects);
     }
 
-    final public BreadBotBuilder addCommandsFromSuppliers(Collection<Supplier<?>> commandSuppliers, Consumer<CommandHandleBuilder> configurator) {
-        return builder.addCommandsFromSuppliers(commandSuppliers, configurator);
+    final protected void addCommandsFromSuppliers(Collection<Supplier<?>> commandSuppliers,
+                                                  Consumer<CommandHandleBuilder> configurator) {
+        builder.addCommandsFromSuppliers(commandSuppliers, configurator);
     }
 
-    final public BreadBotBuilder addCommandsFromSuppliers(Collection<Supplier<?>> commandSuppliers) {
-        return builder.addCommandsFromSuppliers(commandSuppliers);
+    final protected void addCommandsFromSuppliers(Collection<Supplier<?>> commandSuppliers) {
+        builder.addCommandsFromSuppliers(commandSuppliers);
     }
 
-    final public BreadBotBuilder clearCommandModifiers(Class<?> propertyType) {
-        return builder.clearCommandModifiers(propertyType);
+    final protected void clearCommandModifiers(Class<?> propertyType) {
+        builder.clearCommandModifiers(propertyType);
     }
 
-    final public BreadBotBuilder clearParameterModifiers(Class<?> parameterType) {
-        return builder.clearParameterModifiers(parameterType);
+    final protected void clearParameterModifiers(Class<?> parameterType) {
+        builder.clearParameterModifiers(parameterType);
     }
 
-    final public <T> BreadBotBuilder bindCommandModifier(Class<T> propertyType, BiConsumer<T, CommandHandleBuilder> configurator) {
-        return builder.bindCommandModifier(propertyType, configurator);
+    final protected <T> void bindCommandModifier(Class<T> propertyType,
+                                                 BiConsumer<T, CommandHandleBuilder> configurator) {
+        builder.bindCommandModifier(propertyType, configurator);
     }
 
-    final public <T> BreadBotBuilder bindParameterModifier(Class<T> propertyType, BiConsumer<T, CommandParameterBuilder> configurator) {
-        return builder.bindParameterModifier(propertyType, configurator);
+    final protected <T> void bindParameterModifier(Class<T> propertyType,
+                                                   BiConsumer<T, CommandParameterBuilder> configurator) {
+        builder.bindParameterModifier(propertyType, configurator);
     }
 
-    final public void applyModifiers(CommandHandleBuilder builder) {
+    final protected void applyModifiers(CommandHandleBuilder builder) {
         this.builder.applyModifiers(builder);
     }
 
-    final public <T> BiConsumer<T, CommandHandleBuilder> getCommandModifier(Class<T> propertyType) {
+    final protected <T> BiConsumer<T, CommandHandleBuilder> getCommandModifier(Class<T> propertyType) {
         return builder.getCommandModifier(propertyType);
     }
 
-    final public <T> void applyCommandModifier(Class<T> propertyType, CommandHandleBuilder builder) {
+    final protected <T> void applyCommandModifier(Class<T> propertyType, CommandHandleBuilder builder) {
         this.builder.applyCommandModifier(propertyType, builder);
     }
 
-    final public void applyModifiers(CommandParameterBuilder builder) {
+    final protected void applyModifiers(CommandParameterBuilder builder) {
         this.builder.applyModifiers(builder);
     }
 
-    final public <T> BiConsumer<T, CommandParameterBuilder> getParameterModifier(Class<T> propertyType) {
+    final protected <T> BiConsumer<T, CommandParameterBuilder> getParameterModifier(Class<T> propertyType) {
         return builder.getParameterModifier(propertyType);
     }
 
-    final public <T> void applyParameterModifier(Class<T> propertyType, CommandParameterBuilder builder) {
+    final protected <T> void applyParameterModifier(Class<T> propertyType, CommandParameterBuilder builder) {
         this.builder.applyParameterModifier(propertyType, builder);
     }
 
-    final public <T> BreadBotBuilder bindPreprocessorFactory(String identifier, Class<T> propertyType, Function<T, CommandPreprocessorFunction> factory) {
-        return builder.bindPreprocessorFactory(identifier, propertyType, factory);
+    final protected <T> void bindPreprocessorFactory(String identifier, Class<T> propertyType,
+                                                     Function<T, CommandPreprocessorFunction> factory) {
+        builder.bindPreprocessorFactory(identifier, propertyType, factory);
     }
 
-    final public <T> BreadBotBuilder bindPreprocessorPredicateFactory(String identifier, Class<T> propertyType, Function<T, CommandPreprocessorPredicate> factory) {
-        return builder.bindPreprocessorPredicateFactory(identifier, propertyType, factory);
+    final protected <T> void bindPreprocessorPredicateFactory(String identifier, Class<T> propertyType,
+                                                              Function<T, CommandPreprocessorPredicate> factory) {
+        builder.bindPreprocessorPredicateFactory(identifier, propertyType, factory);
     }
 
-    final public BreadBotBuilder bindPreprocessor(String identifier, Class<?> propertyType, CommandPreprocessorFunction function) {
-        return builder.bindPreprocessor(identifier, propertyType, function);
+    final protected void bindPreprocessor(String identifier, Class<?> propertyType,
+                                          CommandPreprocessorFunction function) {
+        builder.bindPreprocessor(identifier, propertyType, function);
     }
 
-    final public BreadBotBuilder bindPreprocessorPredicate(String identifier, Class<?> propertyType, CommandPreprocessorPredicate predicate) {
-        return builder.bindPreprocessorPredicate(identifier, propertyType, predicate);
+    final protected void bindPreprocessorPredicate(String identifier, Class<?> propertyType,
+                                                   CommandPreprocessorPredicate predicate) {
+        builder.bindPreprocessorPredicate(identifier, propertyType, predicate);
     }
 
-    final public List<String> getPreprocessorPriorityList() {
+    final protected List<String> getPreprocessorPriorityList() {
         return builder.getPreprocessorPriorityList();
     }
 
-    final public BreadBotBuilder setPreprocessorPriority(String... identifiers) {
-        return builder.setPreprocessorPriority(identifiers);
+    final protected void setPreprocessorPriority(String... identifiers) {
+        builder.setPreprocessorPriority(identifiers);
     }
 
-    final public BreadBotBuilder setPreprocessorPriority(List<String> identifierList) {
-        return builder.setPreprocessorPriority(identifierList);
+    final protected void setPreprocessorPriority(List<String> identifierList) {
+        builder.setPreprocessorPriority(identifierList);
     }
 
-    final public Comparator<CommandPreprocessor> getPriorityComparator() {
+    final protected Comparator<CommandPreprocessor> getPriorityComparator() {
         return builder.getPriorityComparator();
     }
 
-    final public <T> BreadBotBuilder bindTypeParser(Class<T> type, TypeParser<T> parser) {
-        return builder.bindTypeParser(type, parser);
+    final protected <T> void bindTypeParser(Class<T> type, TypeParser<T> parser) {
+        builder.bindTypeParser(type, parser);
     }
 
-    final public <T> TypeParser<T> getTypeParser(Class<T> type) {
+    final protected <T> TypeParser<T> getTypeParser(Class<T> type) {
         return builder.getTypeParser(type);
     }
 
-    final public BreadBotBuilder clearTypeModifiers(Class<?> parameterType) {
-        return builder.clearTypeModifiers(parameterType);
+    final protected void clearTypeModifiers(Class<?> parameterType) {
+        builder.clearTypeModifiers(parameterType);
     }
 
-    final public BreadBotBuilder bindTypeModifier(Class<?> parameterType, Consumer<CommandParameterBuilder> modifier) {
-        return builder.bindTypeModifier(parameterType, modifier);
+    final protected void bindTypeModifier(Class<?> parameterType, Consumer<CommandParameterBuilder> modifier) {
+        builder.bindTypeModifier(parameterType, modifier);
     }
 
-    final public void applyTypeModifiers(CommandParameterBuilder parameterBuilder) {
+    final protected void applyTypeModifiers(CommandParameterBuilder parameterBuilder) {
         builder.applyTypeModifiers(parameterBuilder);
     }
 
-    final public <T> BreadBotBuilder bindResultHandler(Class<T> resultType, CommandResultHandler<T> handler) {
-        return builder.bindResultHandler(resultType, handler);
+    final protected <T> void bindResultHandler(Class<T> resultType, CommandResultHandler<T> handler) {
+        builder.bindResultHandler(resultType, handler);
     }
 
-    final public <T> CommandResultHandler<? super T> getResultHandler(Class<T> resultType) {
+    final protected <T> CommandResultHandler<? super T> getResultHandler(Class<T> resultType) {
         return builder.getResultHandler(resultType);
     }
 
@@ -297,20 +295,18 @@ public abstract class AbstractCommandPlugin implements CommandPlugin {
      * Sets a predicate to be used on each message before processing it. This will override any existing predicates.
      *
      * @param predicate a predicate which returns {@code true} if a message should be processed as a command.
-     * @return this
      */
-    final public BreadBotBuilder setPreProcessPredicate(Predicate<Message> predicate) {
-        return builder.setPreProcessPredicate(predicate);
+    final protected void setPreProcessPredicate(Predicate<Message> predicate) {
+        builder.setPreProcessPredicate(predicate);
     }
 
     /**
      * Appends a predicate to be used on each message before processing it.
      *
      * @param predicate a predicate which returns {@code true} if a message should be processed as a command.
-     * @return this
      */
-    final public BreadBotBuilder addPreProcessPredicate(Predicate<Message> predicate) {
-        return builder.addPreProcessPredicate(predicate);
+    final protected void addPreProcessPredicate(Predicate<Message> predicate) {
+        builder.addPreProcessPredicate(predicate);
     }
 
     /**
@@ -319,21 +315,20 @@ public abstract class AbstractCommandPlugin implements CommandPlugin {
      * Will ignore messages that are pinned.
      *
      * @param shouldEvaluateCommandOnMessageUpdate By default this is {@code false}.
-     * @return this
      */
-    final public BreadBotBuilder setEvaluateCommandOnMessageUpdate(boolean shouldEvaluateCommandOnMessageUpdate) {
-        return builder.setEvaluateCommandOnMessageUpdate(shouldEvaluateCommandOnMessageUpdate);
+    final protected void setEvaluateCommandOnMessageUpdate(boolean shouldEvaluateCommandOnMessageUpdate) {
+        builder.setEvaluateCommandOnMessageUpdate(shouldEvaluateCommandOnMessageUpdate);
     }
 
-    final public List<CommandHandleBuilder> createCommandsFromClasses(Class<?>... commandClasses) {
+    final protected List<CommandHandleBuilder> createCommandsFromClasses(Class<?>... commandClasses) {
         return builder.createCommandsFromClasses(commandClasses);
     }
 
-    final public List<CommandHandleBuilder> createCommandsFromObjects(Object... commandObjects) {
+    final protected List<CommandHandleBuilder> createCommandsFromObjects(Object... commandObjects) {
         return builder.createCommandsFromObjects(commandObjects);
     }
 
-    final public List<CommandHandleBuilder> createCommandsFromSuppliers(Supplier<?>... commandSuppliers) {
+    final protected List<CommandHandleBuilder> createCommandsFromSuppliers(Supplier<?>... commandSuppliers) {
         return builder.createCommandsFromSuppliers(commandSuppliers);
     }
 }
