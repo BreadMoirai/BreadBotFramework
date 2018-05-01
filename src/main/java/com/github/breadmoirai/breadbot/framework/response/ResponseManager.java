@@ -10,13 +10,11 @@ import net.dv8tion.jda.core.hooks.EventListener;
 
 import java.lang.ref.Reference;
 import java.lang.ref.WeakReference;
-import java.util.ArrayDeque;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
 
 public class ResponseManager implements EventListener {
 
@@ -50,7 +48,7 @@ public class ResponseManager implements EventListener {
         }
     }
 
-    private void sendResponse(InternalCommandResponse response) {
+    public void sendResponse(InternalCommandResponse response) {
         if (response instanceof DynamicCommandResponse) {
             final DynamicCommandResponse cpoll = (DynamicCommandResponse) response;
             if (!cpoll.matches(null)) {
@@ -67,10 +65,6 @@ public class ResponseManager implements EventListener {
             response.dispatch(value -> {
             });
         }
-    }
-
-    public EventResponseManager newEventResponseManager() {
-        return new EventResponseManagerImpl();
     }
 
     private static class LinkedClearingList<T> extends LinkedList<Reference<T>> {
@@ -113,21 +107,4 @@ public class ResponseManager implements EventListener {
 
     }
 
-    private class EventResponseManagerImpl implements EventResponseManager {
-
-        private final Queue<InternalCommandResponse> queue = new ArrayDeque<>();
-
-        @Override
-        public void accept(InternalCommandResponse response) {
-            queue.add(response);
-        }
-
-        @Override
-        public void complete() {
-            while (!queue.isEmpty()) {
-                sendResponse(queue.poll());
-            }
-        }
-
-    }
 }

@@ -64,4 +64,16 @@ public interface RestActionExtension<T> {
      * @return this
      */
     RestActionExtension<T> appendFailure(Consumer<Throwable> failure);
+
+    /**
+     * This method finalizes content fields and queues the action to Discord.
+     */
+    void send();
+
+    /**
+     * This function is the same as {@link #send()}
+     */
+    default void build() {
+        send();
+    }
 }

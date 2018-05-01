@@ -63,7 +63,6 @@ public abstract class AbstractCommand implements Command {
         }
         event.setCommand(this);
         onCommand(event);
-        event.getManager().complete();
         return true;
     }
 

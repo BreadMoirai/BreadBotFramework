@@ -16,6 +16,7 @@
 package com.github.breadmoirai.breadbot.framework.response.internal;
 
 import com.github.breadmoirai.breadbot.framework.response.InternalCommandResponse;
+import com.github.breadmoirai.breadbot.framework.response.ResponseManager;
 import com.github.breadmoirai.breadbot.framework.response.RestActionExtension;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.utils.Checks;
@@ -27,13 +28,16 @@ import java.util.function.Supplier;
 
 public class CommandResponseReactionImpl implements RestActionExtension<Void>, InternalCommandResponse {
 
+    private final ResponseManager manager;
     private final Supplier<RestAction<Void>> restActionSupplier;
     private long delay;
     private TimeUnit unit;
     private Consumer<Void> success;
     private Consumer<Throwable> failure;
 
-    public CommandResponseReactionImpl(Supplier<RestAction<Void>> restActionSupplier) {
+    public CommandResponseReactionImpl(ResponseManager manager,
+                                       Supplier<RestAction<Void>> restActionSupplier) {
+        this.manager = manager;
         this.restActionSupplier = restActionSupplier;
     }
 
@@ -83,5 +87,13 @@ public class CommandResponseReactionImpl implements RestActionExtension<Void>, I
         } else {
             return onFailure(this.failure.andThen(failure));
         }
+    }
+
+    /**
+     * This method finalizes content fields and queues the action to Discord.
+     */
+    @Override
+    public void send() {
+        manager.sendResponse(this);
     }
 }

@@ -26,8 +26,7 @@ public interface DynamicCommandResponse extends InternalCommandResponse {
      * @return {@code true} if the other response should be cancelled to make way for this response.
      */
     default boolean matches(DynamicCommandResponse other) {
-        final DynamicCommandResponse cast = this.getClass().cast(other);
-        return other == null;
+        return this.getClass().isInstance(other);
     }
 
     void cancel();

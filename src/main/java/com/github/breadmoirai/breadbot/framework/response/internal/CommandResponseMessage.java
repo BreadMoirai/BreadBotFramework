@@ -16,6 +16,7 @@
 package com.github.breadmoirai.breadbot.framework.response.internal;
 
 import com.github.breadmoirai.breadbot.framework.response.InternalCommandResponse;
+import com.github.breadmoirai.breadbot.framework.response.ResponseManager;
 import com.github.breadmoirai.breadbot.framework.response.RestActionExtension;
 import net.dv8tion.jda.core.entities.IMentionable;
 import net.dv8tion.jda.core.entities.Member;
@@ -40,6 +41,8 @@ import java.util.function.LongConsumer;
 
 public class CommandResponseMessage implements InternalCommandResponse {
 
+    private final ResponseManager manager;
+
     private TextChannel channel;
     private Message message;
     private RMessageBuilder builder;
@@ -50,11 +53,15 @@ public class CommandResponseMessage implements InternalCommandResponse {
     };
     private Consumer<Throwable> failure;
 
-    public CommandResponseMessage(TextChannel channel) {
+    public CommandResponseMessage(ResponseManager manager,
+                                  TextChannel channel) {
+        this.manager = manager;
         this.channel = channel;
     }
 
-    public CommandResponseMessage(TextChannel channel, Message message) {
+    public CommandResponseMessage(ResponseManager manager,
+                                  TextChannel channel, Message message) {
+        this.manager = manager;
         this.channel = channel;
         this.message = message;
     }
@@ -80,6 +87,7 @@ public class CommandResponseMessage implements InternalCommandResponse {
             final Queue<Message> messages = builder.buildMessages();
             while (!messages.isEmpty()) {
                 final Message poll = messages.poll();
+                assert poll != null;
                 if (!messages.isEmpty()) {
                     if (delay > 0)
                         channel.sendMessage(poll).queueAfter(delay, unit, m -> linkReceiver.accept(m.getIdLong()), failure);
@@ -110,6 +118,11 @@ public class CommandResponseMessage implements InternalCommandResponse {
     }
 
     public abstract class ResponseMessageBuilder implements RestActionExtension<Message> {
+
+        @Override
+        public void send() {
+            manager.sendResponse(CommandResponseMessage.this);
+        }
 
         /**
          * Attaches a file to this message.
