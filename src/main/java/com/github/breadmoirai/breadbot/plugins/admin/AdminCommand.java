@@ -28,11 +28,16 @@ public class AdminCommand {
 
     @MainCommand
     public void admin(CommandEvent event, AdminPlugin module) {
-        event.reply("**Administrative Members:** " + event.getGuild().getMembers().stream().filter(module::isAdmin).map(Member::getEffectiveName).collect(Collectors.joining(", ")));
+        event.send("**Administrative Members:** " + event.getGuild()
+                .getMembers()
+                .stream()
+                .filter(module::isAdmin)
+                .map(Member::getEffectiveName)
+                .collect(Collectors.joining(", ")));
     }
 
     @Command
     public void help(CommandEvent event) {
-        event.reply("This command shows which users have the authority to use Administrative commands");
+        event.send("This command shows which users have the authority to use Administrative commands");
     }
 }

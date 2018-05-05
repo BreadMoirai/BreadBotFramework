@@ -88,24 +88,24 @@ public class ConfigCommand {
                     .getClient()
                     .getPlugins()
                     .stream()
-                    .filter(plugin -> plugin instanceof HOCONConfigurable)
+                    .filter(HOCONConfigurable.class::isInstance)
                     .collect(Collectors.partitioningBy(plugin ->
                             ((HOCONConfigurable) plugin).loadConfig(event.getGuild(), config)));
             List<CommandPlugin> failed = map.get(false);
             int success = map.get(true).size();
 
             if (failed.isEmpty()) {
-                event.reply("Successfully configured " + success + " modules.");
+                event.send("Successfully configured " + success + " modules.");
             } else {
-                event.replyFormat("Configuration failed for modules: %s" +
+                event.sendFormat("Configuration failed for modules: %s" +
                                 "\nSuccessfully configured %d other modules.",
-                        failed.stream()
+                                 failed.stream()
                               .map(CommandPlugin::getClass)
                               .map(Class::getSimpleName)
                               .collect(Collectors.joining(", ")), success);
             }
         } catch (IOException e) {
-            event.reply("Failed to read file.");
+            event.send("Failed to read file.");
         }
     }
 }
