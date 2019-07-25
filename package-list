@@ -12,6 +12,7 @@ com.github.breadmoirai.breadbot.framework.error
 com.github.breadmoirai.breadbot.framework.event
 com.github.breadmoirai.breadbot.framework.event.internal
 com.github.breadmoirai.breadbot.framework.event.internal.arguments
+com.github.breadmoirai.breadbot.framework.inject
 com.github.breadmoirai.breadbot.framework.parameter
 com.github.breadmoirai.breadbot.framework.parameter.internal
 com.github.breadmoirai.breadbot.framework.parameter.internal.builder
