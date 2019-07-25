@@ -71,7 +71,7 @@ public abstract class CommandObjectFactory {
     }
 
     public void setInjector(BreadInjector injector) {
-        if (returnType == null) return;
+        if (returnType == null || injector == null) return;
         this.injector = injector.getInjectorFor(returnType);
     }
 

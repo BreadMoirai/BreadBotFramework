@@ -250,7 +250,7 @@ public abstract class CommandEvent extends Event {
      * @param splitter
      *         an {@link ArgumentSplitter} that provides an iterator, separating this into arguments
      *
-     * @return an implementation of <code>{@link java.util.List}<{@link CommandArgument EventArgument}></code>
+     * @return an implementation of {@link java.util.List}<{@link CommandArgument EventArgument}>
      */
     public synchronized CommandArgumentList getArguments(ArgumentSplitter splitter) {
         if (splitter == null && hasContent()) {
@@ -588,7 +588,7 @@ public abstract class CommandEvent extends Event {
      */
     public boolean requirePermission(Channel channel, Permission... permission) {
         if (!checkPermission(permission)) {
-            reply(MissingPermission.buildResponse(getSelfMember(), channel, getChannel(), permission));
+            reply(MissingPermission.buildResponse(getSelfMember(), channel, getChannel(), permission)).send();
             return true;
         }
         return false;

@@ -17,7 +17,6 @@
 package com.github.breadmoirai.breadbot.util;
 
 import net.dv8tion.jda.client.managers.EmoteManager;
-import net.dv8tion.jda.client.managers.EmoteManagerUpdatable;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Emote;
 import net.dv8tion.jda.core.entities.Guild;
@@ -52,6 +51,11 @@ public class EmojiEmote implements Emote {
     }
 
     @Override
+    public boolean canProvideRoles() {
+        return false;
+    }
+
+    @Override
     public String getName() {
         String name = emoji.name().toLowerCase();
         if (name.charAt(0) == '_') return name.substring(1);
@@ -75,11 +79,6 @@ public class EmojiEmote implements Emote {
 
     @Override
     public EmoteManager getManager() {
-        return null;
-    }
-
-    @Override
-    public EmoteManagerUpdatable getManagerUpdatable() {
         return null;
     }
 

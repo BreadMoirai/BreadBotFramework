@@ -457,7 +457,7 @@ public class BreadBotBuilder implements
         Map<Type, CommandPlugin> typeMap = createPluginTypeMap(plugins);
         final List<CommandHandleImpl> build;
         final BreadInjector breadInjector;
-        if (injector != null) {
+        if (injectionEnabled) {
             typeMap.forEach((type, commandPlugin) -> {
                 injector.bindInjectionUnchecked(type, commandPlugin);
             });
