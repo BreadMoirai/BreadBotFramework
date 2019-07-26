@@ -250,7 +250,7 @@ public abstract class CommandEvent extends Event {
      * @param splitter
      *         an {@link ArgumentSplitter} that provides an iterator, separating this into arguments
      *
-     * @return an implementation of {@link java.util.List}<{@link CommandArgument EventArgument}>
+     * @return an implementation of {@link java.util.List}{@literal <}{@link CommandArgument EventArgument}{@literal >}
      */
     public synchronized CommandArgumentList getArguments(ArgumentSplitter splitter) {
         if (splitter == null && hasContent()) {
@@ -331,6 +331,7 @@ public abstract class CommandEvent extends Event {
      * Provides a fluent style message builder that allows you to set the success consumer and/or attach a file. Please
      * note: You must use #send() or #build() in order to send the message.
      *
+     * @param message a plain text message that is to be sent. This string may include discord formatting.
      * @return a builder for a message that is fully featured
      */
     public abstract CommandResponseMessage.RMessageBuilder reply(String message);
@@ -339,7 +340,8 @@ public abstract class CommandEvent extends Event {
      * Provides a fluent style builder for the success consumer and failure consumer. Please note: You must use #send()
      * or #build() in order to send the message.
      *
-     * @return a builder form of the RestAction
+     * @param message the {@link Message} to be sent.
+     * @return an extended form of the RestAction
      */
     public abstract RestActionExtension<Message> reply(Message message);
 

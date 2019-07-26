@@ -28,7 +28,7 @@ import java.util.function.Consumer;
 /**
  * Does argument Mapping.
  *
- * Is basically a heterogeneous map of Class<?> to ArgumentMapper<?>
+ * Is a heterogeneous map of {@literal Class<?> to ArgumentMapper<?>}
  */
 public final class CommandParameterTypeManagerImpl implements CommandParameterManagerBuilder<CommandParameterTypeManagerImpl> {
 

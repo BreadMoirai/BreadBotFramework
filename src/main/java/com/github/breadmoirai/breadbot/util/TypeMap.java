@@ -69,7 +69,10 @@ public interface TypeMap {
      * The {@link #containsKey containsKey} operation may be used to
      * distinguish these two cases.
      *
+     * @param <V> the type of the value
      * @param key the value's class
+     * @return the value to which the specified key is mapped, or
+     *         {@code null} if this map contains no mapping for the key
      * @see #put(Class, Object)
      */
     default <V> V get(Class<V> key) {
@@ -93,6 +96,7 @@ public interface TypeMap {
      * If the map previously contained a mapping for the key, the old
      * value is replaced.
      *
+     * @param <V>   the type of the value
      * @param key   key with which the specified value is to be associated
      * @param value value to be associated with the specified key
      */
@@ -107,6 +111,7 @@ public interface TypeMap {
      * <p>
      * The class of the value passed is taken to be the key.
      *
+     * @param <V>   the type of the value
      * @param value value to be associated with the specified key
      */
     default <V> void put(V value) {
@@ -208,6 +213,7 @@ public interface TypeMap {
      * Returns the value to which the specified key is mapped, or
      * {@code defaultValue} if this map contains no mapping for the key.
      *
+     * @param <V>          the type of the value
      * @param key          the key whose associated value is to be returned
      * @param defaultValue the default mapping of the key
      * @return the value to which the specified key is mapped, or
@@ -218,11 +224,6 @@ public interface TypeMap {
      * @throws NullPointerException if the specified key is null and this map
      *                              does not permit null keys
      *                              (<a href="{@docRoot}/java/util/Collection.html#optional-restrictions">optional</a>)
-     * @implSpec The default implementation makes no guarantees about synchronization
-     * or atomicity properties of this method. Any implementation providing
-     * atomicity guarantees must override this method and document its
-     * concurrency properties.
-     * @since 1.8
      */
     default <V> V getOrDefault(Class<V> key, V defaultValue) {
         V v;
@@ -242,17 +243,6 @@ public interface TypeMap {
      * @throws NullPointerException                      if the specified action is null
      * @throws java.util.ConcurrentModificationException if an entry is found to be
      *                                                   removed during iteration
-     * @implSpec The default implementation is equivalent to, for this {@code map}:
-     * <pre> {@code
-     * for (Map.Entry<K, V> entry : map.entrySet())
-     *     action.accept(entry.getKey(), entry.getValue());
-     * }</pre>
-     * <p>
-     * The default implementation makes no guarantees about synchronization
-     * or atomicity properties of this method. Any implementation providing
-     * atomicity guarantees must override this method and document its
-     * concurrency properties.
-     * @since 1.8
      */
     default void forEach(BiConsumer<? super Class<?>, ? super Object> action) {
         getMap().forEach(action);
@@ -283,17 +273,6 @@ public interface TypeMap {
      *                                         (<a href="{@docRoot}/java/util/Collection.html#optional-restrictions">optional</a>)
      * @throws ConcurrentModificationException if an entry is found to be
      *                                         removed during iteration
-     * @implSpec <p>The default implementation is equivalent to, for this {@code map}:
-     * <pre> {@code
-     * for (Map.Entry<K, V> entry : map.entrySet())
-     *     entry.setValue(function.apply(entry.getKey(), entry.getValue()));
-     * }</pre>
-     *
-     * <p>The default implementation makes no guarantees about synchronization
-     * or atomicity properties of this method. Any implementation providing
-     * atomicity guarantees must override this method and document its
-     * concurrency properties.
-     * @since 1.8
      */
     default void replaceAll(BiFunction<? super Class<?>, ? super Object, ?> function) {
         getMap().replaceAll(function);
@@ -316,21 +295,6 @@ public interface TypeMap {
      * @throws NullPointerException          if the specified key or value is null,
      *                                       and this map does not permit null keys or values
      *                                       (<a href="{@docRoot}/java/util/Collection.html#optional-restrictions">optional</a>)
-     * @implSpec The default implementation is equivalent to, for this {@code map}:
-     *
-     * <pre> {@code
-     * if (map.containsKey(key) && Objects.equals(map.get(key), value)) {
-     *     map.remove(key);
-     *     return true;
-     * } else
-     *     return false;
-     * }</pre>
-     *
-     * <p>The default implementation makes no guarantees about synchronization
-     * or atomicity properties of this method. Any implementation providing
-     * atomicity guarantees must override this method and document its
-     * concurrency properties.
-     * @since 1.8
      */
     default boolean remove(Class<?> key, Object value) {
         return getMap().remove(key, value);
