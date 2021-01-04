@@ -15,10 +15,31 @@
  */
 package com.github.breadmoirai.breadbot.framework.response;
 
+import net.dv8tion.jda.api.exceptions.ErrorResponseException;
+import net.dv8tion.jda.api.requests.RestAction;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.function.Consumer;
 
 public interface RestActionExtension<T> {
+
+    static final Logger LOG = LoggerFactory.getLogger(RestAction.class);
+    public static final Consumer<Throwable> DEFAULT_FAILURE = t ->
+    {
+        if (t instanceof CancellationException || t instanceof TimeoutException)
+            LOG.debug(t.getMessage());
+        else if (LOG.isDebugEnabled() || !(t instanceof ErrorResponseException))
+            LOG.error("RestAction queue returned failure", t);
+        else if (t.getCause() != null)
+            LOG.error("RestAction queue returned failure: [{}] {}", t.getClass().getSimpleName(), t.getMessage(), t.getCause());
+        else
+            LOG.error("RestAction queue returned failure: [{}] {}", t.getClass().getSimpleName(), t.getMessage());
+    };
+
     /**
      * Delays this action by the specified amount of time.
      *

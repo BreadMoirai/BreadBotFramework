@@ -44,8 +44,8 @@ import com.github.breadmoirai.breadbot.framework.parameter.CommandParameter;
 import com.github.breadmoirai.breadbot.framework.parameter.CommandParser;
 import com.github.breadmoirai.breadbot.framework.parameter.internal.builder.CommandParameterBuilderImpl;
 import com.github.breadmoirai.breadbot.util.Arguments;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.User;
 
 import java.lang.reflect.Method;
 import java.util.function.Consumer;

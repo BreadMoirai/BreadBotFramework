@@ -20,7 +20,7 @@ import com.github.breadmoirai.breadbot.framework.builder.CommandResultManagerBui
 import com.github.breadmoirai.breadbot.framework.command.CommandResultHandler;
 import com.github.breadmoirai.breadbot.framework.command.CommandResultManager;
 import com.github.breadmoirai.breadbot.framework.defaults.DefaultCommandResultHandlers;
-import net.dv8tion.jda.core.utils.tuple.Pair;
+import net.dv8tion.jda.internal.utils.tuple.Pair;
 
 import java.util.Comparator;
 import java.util.HashMap;

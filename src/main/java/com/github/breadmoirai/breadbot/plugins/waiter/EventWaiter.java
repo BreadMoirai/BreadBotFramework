@@ -15,11 +15,13 @@
  */
 package com.github.breadmoirai.breadbot.plugins.waiter;
 
-import net.dv8tion.jda.core.events.Event;
-import net.dv8tion.jda.core.events.ShutdownEvent;
-import net.dv8tion.jda.core.hooks.EventListener;
-import net.dv8tion.jda.core.hooks.SubscribeEvent;
+import net.dv8tion.jda.api.events.Event;
+import net.dv8tion.jda.api.events.GenericEvent;
+import net.dv8tion.jda.api.events.ShutdownEvent;
+import net.dv8tion.jda.api.hooks.EventListener;
+import net.dv8tion.jda.api.hooks.SubscribeEvent;
 
+import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -33,7 +35,8 @@ import java.util.stream.Collectors;
 
 public class EventWaiter implements EventListener {
 
-    private final Map<Class<? extends Event>, Set<EventAction>> waitingEvents;
+    @SuppressWarnings("rawtypes")
+    private final Map<Class<? extends GenericEvent>, Set<EventAction>> waitingEvents;
     private final ScheduledExecutorService executorService;
     private final boolean myService;
 
@@ -61,11 +64,11 @@ public class EventWaiter implements EventListener {
         return new ReactionEventActionBuilderImpl<>(this);
     }
 
-    public void addAction(Class<? extends Event> eventClass, EventAction action) {
+    public void addAction(Class<? extends GenericEvent> eventClass, @SuppressWarnings("rawtypes") EventAction action) {
         waitingEvents.computeIfAbsent(eventClass, e -> new HashSet<>()).add(action);
     }
 
-    void removeAction(Class<? extends Event> eventClass, EventAction action) {
+    void removeAction(Class<? extends GenericEvent> eventClass, @SuppressWarnings("rawtypes") EventAction action) {
         waitingEvents.computeIfAbsent(eventClass, e -> new HashSet<>()).remove(action);
     }
 
@@ -73,9 +76,10 @@ public class EventWaiter implements EventListener {
         return executorService.schedule(command, delay, unit);
     }
 
+    @SuppressWarnings("rawtypes")
     @SubscribeEvent
     @Override
-    public final void onEvent(Event event) {
+    public final void onEvent(@Nonnull GenericEvent event) {
         Class c = event.getClass();
         while (c != Object.class) {
             if (waitingEvents.containsKey(c)) {

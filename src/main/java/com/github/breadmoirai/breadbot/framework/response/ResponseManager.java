@@ -3,10 +3,11 @@ package com.github.breadmoirai.breadbot.framework.response;
 import gnu.trove.TCollections;
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
-import net.dv8tion.jda.core.events.Event;
-import net.dv8tion.jda.core.events.ShutdownEvent;
-import net.dv8tion.jda.core.events.message.MessageDeleteEvent;
-import net.dv8tion.jda.core.hooks.EventListener;
+import net.dv8tion.jda.api.events.GenericEvent;
+import net.dv8tion.jda.api.events.ShutdownEvent;
+import net.dv8tion.jda.api.events.message.MessageDeleteEvent;
+import net.dv8tion.jda.api.hooks.EventListener;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.ref.Reference;
 import java.lang.ref.WeakReference;
@@ -27,7 +28,7 @@ public class ResponseManager implements EventListener {
     }
 
     @Override
-    public void onEvent(Event event) {
+    public void onEvent(@NotNull GenericEvent event) {
         if (event instanceof MessageDeleteEvent) {
             final long id = ((MessageDeleteEvent) event).getMessageIdLong();
             final Reference<DynamicCommandResponse> ref = linkMap.get(id);

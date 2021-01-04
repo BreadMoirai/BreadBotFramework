@@ -1,16 +1,16 @@
 package com.github.breadmoirai.breadbot.util;
 
-import net.dv8tion.jda.core.MessageBuilder;
-import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.Channel;
-import net.dv8tion.jda.core.entities.ChannelType;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.api.MessageBuilder;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.ChannelType;
+import net.dv8tion.jda.api.entities.GuildChannel;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.TextChannel;
 
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.List;
+import java.util.EnumSet;
 
 public class MissingPermission {
 
@@ -24,20 +24,20 @@ public class MissingPermission {
         MissingPermission.responseBuilder = responseBuilder;
     }
 
-    public static Message buildResponse(Member selfMember, Channel channel, Channel messageChannel, Permission... permissions) {
+    public static Message buildResponse(Member selfMember, GuildChannel channel, GuildChannel messageChannel, Permission... permissions) {
         return responseBuilder.buildResponse(selfMember, channel, messageChannel, permissions);
     }
 
     public static abstract class ResponseBuilder {
-        public abstract Message buildResponse(Member selfMember, Channel channel, Channel messageChannel, Permission... permissions);
+        public abstract Message buildResponse(Member selfMember, GuildChannel channel, GuildChannel messageChannel, Permission... permissions);
     }
 
     private static class ResponseBuilderImpl extends ResponseBuilder {
 
         @Override
-        public Message buildResponse(Member selfMember, Channel channel, Channel messageChannel, Permission... permissions) {
+        public Message buildResponse(Member selfMember, GuildChannel channel, GuildChannel messageChannel, Permission... permissions) {
             final MessageBuilder messageBuilder = new MessageBuilder();
-            final List<Permission> permissionsFound = selfMember.getPermissions(channel);
+            final EnumSet<Permission> permissionsFound = selfMember.getPermissions(channel);
             messageBuilder.append("This command requires additional permissions");
             if (channel.getIdLong() != messageChannel.getIdLong()) {
                 messageBuilder.append(" in channel ");

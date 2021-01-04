@@ -16,16 +16,18 @@
 
 package com.github.breadmoirai.breadbot.util;
 
-import net.dv8tion.jda.client.managers.EmoteManager;
-import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.Emote;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.MessageChannel;
-import net.dv8tion.jda.core.entities.Role;
-import net.dv8tion.jda.core.entities.User;
-import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.Emote;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.managers.EmoteManager;
+import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
+import org.jetbrains.annotations.NotNull;
 
+import java.util.Collections;
 import java.util.List;
 
 public class EmojiEmote implements Emote {
@@ -46,8 +48,8 @@ public class EmojiEmote implements Emote {
     }
 
     @Override
-    public List<Role> getRoles() {
-        return null;
+    public @NotNull List<Role> getRoles() {
+        return Collections.emptyList();
     }
 
     @Override
@@ -64,6 +66,11 @@ public class EmojiEmote implements Emote {
 
     @Override
     public boolean isManaged() {
+        return false;
+    }
+
+    @Override
+    public boolean isAvailable() {
         return false;
     }
 

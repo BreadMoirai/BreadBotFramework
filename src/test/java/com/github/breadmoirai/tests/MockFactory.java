@@ -21,12 +21,12 @@ import com.github.breadmoirai.breadbot.framework.event.CommandEventFactory;
 import com.github.breadmoirai.breadbot.framework.event.internal.CommandEventInternal;
 import com.github.breadmoirai.breadbot.framework.internal.BreadBotImpl;
 import com.github.breadmoirai.breadbot.plugins.prefix.UnmodifiablePrefixPlugin;
-import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.User;
-import net.dv8tion.jda.core.events.message.guild.GenericGuildMessageEvent;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.events.message.guild.GenericGuildMessageEvent;
 
 import java.time.OffsetDateTime;
 

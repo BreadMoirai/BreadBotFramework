@@ -22,9 +22,9 @@ import com.github.breadmoirai.breadbot.framework.response.ResponseManager;
 import com.github.breadmoirai.breadbot.framework.response.RestActionExtension;
 import com.github.breadmoirai.breadbot.framework.response.internal.CommandResponseMessage;
 import com.github.breadmoirai.breadbot.framework.response.internal.CommandResponseReactionImpl;
-import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.Emote;
-import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.Emote;
+import net.dv8tion.jda.api.entities.Message;
 
 public abstract class CommandEventInternal extends CommandEvent {
 
@@ -92,14 +92,14 @@ public abstract class CommandEventInternal extends CommandEvent {
     @Override
     public RestActionExtension<Void> replyReaction(Emote emote) {
         CommandResponseReactionImpl resp = new CommandResponseReactionImpl(manager,
-                                                                           () -> getMessage().addReaction(emote));
+                () -> getMessage().addReaction(emote));
         return resp;
     }
 
     @Override
     public RestActionExtension<Void> replyReaction(String emoji) {
         CommandResponseReactionImpl resp = new CommandResponseReactionImpl(manager,
-                                                                           () -> getMessage().addReaction(emoji));
+                () -> getMessage().addReaction(emoji));
         return resp;
     }
 

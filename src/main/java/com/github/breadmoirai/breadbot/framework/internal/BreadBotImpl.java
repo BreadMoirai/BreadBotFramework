@@ -28,18 +28,18 @@ import com.github.breadmoirai.breadbot.framework.event.internal.CommandEventInte
 import com.github.breadmoirai.breadbot.framework.parameter.CommandParameterManager;
 import com.github.breadmoirai.breadbot.framework.response.ResponseManager;
 import com.github.breadmoirai.breadbot.util.EventStringIterator;
-import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.impl.JDAImpl;
-import net.dv8tion.jda.core.events.Event;
-import net.dv8tion.jda.core.events.ReadyEvent;
-import net.dv8tion.jda.core.events.message.guild.GenericGuildMessageEvent;
-import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
-import net.dv8tion.jda.core.events.message.guild.GuildMessageUpdateEvent;
-import net.dv8tion.jda.core.hooks.EventListener;
-import net.dv8tion.jda.core.hooks.IEventManager;
-import net.dv8tion.jda.core.hooks.InterfacedEventManager;
-import net.dv8tion.jda.core.hooks.SubscribeEvent;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.events.GenericEvent;
+import net.dv8tion.jda.api.events.ReadyEvent;
+import net.dv8tion.jda.api.events.message.guild.GenericGuildMessageEvent;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageUpdateEvent;
+import net.dv8tion.jda.api.hooks.EventListener;
+import net.dv8tion.jda.api.hooks.IEventManager;
+import net.dv8tion.jda.api.hooks.InterfacedEventManager;
+import net.dv8tion.jda.api.hooks.SubscribeEvent;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -171,8 +171,9 @@ public class BreadBotImpl implements BreadBot, EventListener {
         return responseManager;
     }
 
+
     @Override
-    public void onEvent(Event event) {
+    public void onEvent(@NotNull GenericEvent event) {
         if (event instanceof GuildMessageReceivedEvent) {
             onGuildMessageReceived(((GuildMessageReceivedEvent) event));
         } else if (event instanceof GuildMessageUpdateEvent) {
@@ -198,7 +199,7 @@ public class BreadBotImpl implements BreadBot, EventListener {
     public void onReady(ReadyEvent event) {
         final JDA jda = event.getJDA();
         final List<Object> registeredListeners = jda.getRegisteredListeners();
-        final IEventManager eventManager = ((JDAImpl) jda).getEventManager();
+        final IEventManager eventManager = jda.getEventManager();
         for (Object registeredListener : registeredListeners) {
             eventManager.unregister(registeredListener);
         }
@@ -222,7 +223,7 @@ public class BreadBotImpl implements BreadBot, EventListener {
         if (commandEvent != null) {
             LOG.debug(commandEvent.toString());
             commandEngine.handle(commandEvent);
-            ((JDAImpl) event.getJDA()).getEventManager().handle(commandEvent);
+            event.getJDA().getEventManager().handle(commandEvent);
         }
     }
 

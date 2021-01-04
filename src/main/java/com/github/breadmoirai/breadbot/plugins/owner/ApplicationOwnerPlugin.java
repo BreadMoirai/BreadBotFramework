@@ -16,11 +16,13 @@
 
 package com.github.breadmoirai.breadbot.plugins.owner;
 
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.events.Event;
-import net.dv8tion.jda.core.events.ReadyEvent;
-import net.dv8tion.jda.core.hooks.EventListener;
-import net.dv8tion.jda.core.hooks.SubscribeEvent;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.events.GenericEvent;
+import net.dv8tion.jda.api.events.ReadyEvent;
+import net.dv8tion.jda.api.hooks.EventListener;
+import net.dv8tion.jda.api.hooks.SubscribeEvent;
+
+import javax.annotation.Nonnull;
 
 /**
  * Commands annotated with {@link com.github.breadmoirai.breadbot.plugins.owner.Owner @Owner} will only activate if the id provided to the constructor matches the user who sent the command.
@@ -35,16 +37,16 @@ public class ApplicationOwnerPlugin extends OwnerPlugin implements EventListener
     }
 
     @Override
-    public void onEvent(Event event) {
+    public void onEvent(@Nonnull GenericEvent event) {
         if (event instanceof ReadyEvent) {
-            ownerId = event.getJDA().asBot().getApplicationInfo().complete().getOwner().getIdLong();
+            ownerId = event.getJDA().retrieveApplicationInfo().complete().getOwner().getIdLong();
             event.getJDA().removeEventListener(this);
         }
     }
 
     @SubscribeEvent
     public void onReadyEvent(ReadyEvent event) {
-        ownerId = event.getJDA().asBot().getApplicationInfo().complete().getOwner().getIdLong();
+        ownerId = event.getJDA().retrieveApplicationInfo().complete().getOwner().getIdLong();
         event.getJDA().removeEventListener(this);
     }
 

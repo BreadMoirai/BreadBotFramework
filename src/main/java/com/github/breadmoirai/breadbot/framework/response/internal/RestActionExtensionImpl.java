@@ -16,8 +16,7 @@
 package com.github.breadmoirai.breadbot.framework.response.internal;
 
 import com.github.breadmoirai.breadbot.framework.response.RestActionExtension;
-import net.dv8tion.jda.core.requests.RestAction;
-import net.dv8tion.jda.core.utils.Checks;
+import net.dv8tion.jda.internal.utils.Checks;
 
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
@@ -62,7 +61,7 @@ public abstract class RestActionExtensionImpl<T> implements RestActionExtension<
     @Override
     public RestActionExtension<T> appendFailure(Consumer<Throwable> failure) {
         if (this.failure == null) {
-            return onFailure(RestAction.DEFAULT_FAILURE.andThen(failure));
+            return onFailure(RestActionExtension.DEFAULT_FAILURE.andThen(failure));
         } else {
             return onFailure(this.failure.andThen(failure));
         }

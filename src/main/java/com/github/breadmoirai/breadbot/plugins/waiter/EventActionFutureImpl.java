@@ -16,7 +16,7 @@
 
 package com.github.breadmoirai.breadbot.plugins.waiter;
 
-import net.dv8tion.jda.core.events.Event;
+import net.dv8tion.jda.api.events.GenericEvent;
 
 import javax.annotation.Nonnull;
 import java.util.concurrent.CompletableFuture;
@@ -27,10 +27,10 @@ import java.util.concurrent.TimeoutException;
 
 public class EventActionFutureImpl<V> implements CompletableEventActionFuture<V> {
 
-    private final EventActionImpl<? extends Event, V> action;
+    private final EventActionImpl<? extends GenericEvent, V> action;
     private final CompletableFuture<V> completableFuture;
 
-    public <E extends Event> EventActionFutureImpl(EventActionImpl<E, V> action) {
+    public <E extends GenericEvent> EventActionFutureImpl(EventActionImpl<E, V> action) {
         this.action = action;
         completableFuture = new CompletableFuture<>();
     }

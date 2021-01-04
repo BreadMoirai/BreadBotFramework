@@ -18,10 +18,10 @@ package com.github.breadmoirai.breadbot.framework.defaults;
 
 import com.github.breadmoirai.breadbot.framework.command.internal.CommandResultManagerImpl;
 import com.github.breadmoirai.breadbot.util.Emoji;
-import net.dv8tion.jda.core.MessageBuilder;
-import net.dv8tion.jda.core.entities.Emote;
-import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.MessageEmbed;
+import net.dv8tion.jda.api.MessageBuilder;
+import net.dv8tion.jda.api.entities.Emote;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 
 public class DefaultCommandResultHandlers {
     public void initialize(CommandResultManagerImpl manager) {

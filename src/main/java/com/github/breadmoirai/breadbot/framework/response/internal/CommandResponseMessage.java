@@ -18,16 +18,17 @@ package com.github.breadmoirai.breadbot.framework.response.internal;
 import com.github.breadmoirai.breadbot.framework.response.InternalCommandResponse;
 import com.github.breadmoirai.breadbot.framework.response.ResponseManager;
 import com.github.breadmoirai.breadbot.framework.response.RestActionExtension;
-import net.dv8tion.jda.core.entities.IMentionable;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.MessageChannel;
-import net.dv8tion.jda.core.entities.MessageEmbed;
-import net.dv8tion.jda.core.entities.TextChannel;
-import net.dv8tion.jda.core.entities.User;
-import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
-import net.dv8tion.jda.core.requests.RestAction;
-import net.dv8tion.jda.core.utils.Checks;
+import net.dv8tion.jda.api.entities.IMentionable;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
+import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.utils.AttachmentOption;
+import net.dv8tion.jda.internal.utils.Checks;
 
 import java.awt.*;
 import java.io.File;
@@ -134,17 +135,17 @@ public class CommandResponseMessage implements InternalCommandResponse {
          *                                         <li>Provided {@code file} does not exist.</li>
          *                                         <li>Provided {@code file} is unreadable.</li>
          *                                         <li>Provided {@code file} is greater than 8 MiB on a normal or 50 MiB on a nitro account.</li>
-         *                                         <li>Provided {@link net.dv8tion.jda.core.entities.Message Message} is not {@code null} <b>and</b>
-         *                                         contains a {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbed} which
-         *                                         is not {@link net.dv8tion.jda.core.entities.MessageEmbed#isSendable(net.dv8tion.jda.core.AccountType) sendable}</li>
+         *                                         <li>Provided {@link net.dv8tion.jda.api.entities.Message Message} is not {@code null} <b>and</b>
+         *                                         contains a {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbed} which
+         *                                         is not {@link net.dv8tion.jda.api.entities.MessageEmbed#isSendable(net.dv8tion.jda.api.AccountType) sendable}</li>
          *                                         </ul>
          * @throws InsufficientPermissionException If the logged in account does not have
          *                                         <ul>
-         *                                         <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}</li>
-         *                                         <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}</li>
-         *                                         <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_ATTACH_FILES Permission.MESSAGE_ATTACH_FILES}</li>
+         *                                         <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ}</li>
+         *                                         <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}</li>
+         *                                         <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_ATTACH_FILES Permission.MESSAGE_ATTACH_FILES}</li>
          *                                         </ul>
-         * @see MessageChannel#sendFile(File, Message)
+         * @see MessageChannel#sendFile(File, AttachmentOption...)
          */
         public ResponseMessageBuilder upload(File file) {
             Checks.notNull(file, "file");
@@ -164,17 +165,17 @@ public class CommandResponseMessage implements InternalCommandResponse {
          *                                         <li>Provided {@code file} does not exist.</li>
          *                                         <li>Provided {@code file} is unreadable.</li>
          *                                         <li>Provided {@code file} is greater than 8 MiB on a normal or 50 MiB on a nitro account.</li>
-         *                                         <li>Provided {@link net.dv8tion.jda.core.entities.Message Message} is not {@code null} <b>and</b>
-         *                                         contains a {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbed} which
-         *                                         is not {@link net.dv8tion.jda.core.entities.MessageEmbed#isSendable(net.dv8tion.jda.core.AccountType) sendable}</li>
+         *                                         <li>Provided {@link net.dv8tion.jda.api.entities.Message Message} is not {@code null} <b>and</b>
+         *                                         contains a {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbed} which
+         *                                         is not {@link net.dv8tion.jda.api.entities.MessageEmbed#isSendable(net.dv8tion.jda.api.AccountType) sendable}</li>
          *                                         </ul>
          * @throws InsufficientPermissionException If the logged in account does not have
          *                                         <ul>
-         *                                         <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}</li>
-         *                                         <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}</li>
-         *                                         <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_ATTACH_FILES Permission.MESSAGE_ATTACH_FILES}</li>
+         *                                         <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ}</li>
+         *                                         <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}</li>
+         *                                         <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_ATTACH_FILES Permission.MESSAGE_ATTACH_FILES}</li>
          *                                         </ul>
-         * @see MessageChannel#sendFile(File, String, Message)
+         * @see MessageChannel#sendFile(File, String, AttachmentOption...)
          */
         public ResponseMessageBuilder upload(File file, String fileName) {
             Checks.notNull(file, "file");
@@ -194,7 +195,7 @@ public class CommandResponseMessage implements InternalCommandResponse {
          * @param data     the data to represent the file
          * @param fileName the name of the file for discord
          * @return this instance
-         * @see MessageChannel#sendFile(byte[], String, Message)
+         * @see MessageChannel#sendFile(byte[], String, AttachmentOption...)
          * @see #upload(File, String)
          */
         public ResponseMessageBuilder upload(byte[] data, String fileName) {
@@ -209,7 +210,7 @@ public class CommandResponseMessage implements InternalCommandResponse {
          * @param inputStream the inputStream containing the file contents
          * @param fileName    the name of the file for discord
          * @return this instance
-         * @see MessageChannel#sendFile(InputStream, String, Message)
+         * @see MessageChannel#sendFile(InputStream, String, AttachmentOption...)
          * @see #upload(File, String)
          */
         public ResponseMessageBuilder upload(InputStream inputStream, String fileName) {
@@ -252,7 +253,7 @@ public class CommandResponseMessage implements InternalCommandResponse {
         @Override
         public ResponseMessageBuilder appendFailure(Consumer<Throwable> failure) {
             if (CommandResponseMessage.this.failure == null) {
-                return onFailure(RestAction.DEFAULT_FAILURE.andThen(failure));
+                return onFailure(RestActionExtension.DEFAULT_FAILURE.andThen(failure));
             } else {
                 return onFailure(CommandResponseMessage.this.failure.andThen(failure));
             }
@@ -266,12 +267,12 @@ public class CommandResponseMessage implements InternalCommandResponse {
      */
     public class RMessageBuilder extends ResponseMessageBuilder implements Appendable {
 
-        private net.dv8tion.jda.core.MessageBuilder builder;
-        private net.dv8tion.jda.core.MessageBuilder.SplitPolicy[] splitPolicy;
+        private net.dv8tion.jda.api.MessageBuilder builder;
+        private net.dv8tion.jda.api.MessageBuilder.SplitPolicy[] splitPolicy;
         private REmbedBuilder embed;
 
         private RMessageBuilder() {
-            builder = new net.dv8tion.jda.core.MessageBuilder();
+            builder = new net.dv8tion.jda.api.MessageBuilder();
         }
 
         public RMessageBuilder setTargetChannel(TextChannel channel) {
@@ -358,7 +359,7 @@ public class CommandResponseMessage implements InternalCommandResponse {
 
         /**
          * Adds a {@link MessageEmbed} to the Message. Embeds can be built using
-         * the {@link net.dv8tion.jda.core.EmbedBuilder} and offer specialized formatting.
+         * the {@link net.dv8tion.jda.api.EmbedBuilder} and offer specialized formatting.
          *
          * @param embed the embed to add, or null to remove
          * @return This instance.
@@ -409,7 +410,7 @@ public class CommandResponseMessage implements InternalCommandResponse {
          * {@link User User} or {@link TextChannel TextChannel}.
          *
          * @param mention the mention to append
-         * @return The {@link net.dv8tion.jda.core.MessageBuilder MessageBuilder} instance. Useful for chaining.
+         * @return The {@link net.dv8tion.jda.api.MessageBuilder MessageBuilder} instance. Useful for chaining.
          */
         public RMessageBuilder append(IMentionable mention) {
             builder.append(mention);
@@ -417,13 +418,13 @@ public class CommandResponseMessage implements InternalCommandResponse {
         }
 
         /**
-         * Appends a String using the specified chat {@link net.dv8tion.jda.core.MessageBuilder.Formatting Formatting(s)}.
+         * Appends a String using the specified chat {@link net.dv8tion.jda.api.MessageBuilder.Formatting Formatting(s)}.
          *
          * @param text   the text to append.
          * @param format the format(s) to apply to the text.
          * @return This instance.
          */
-        public RMessageBuilder append(CharSequence text, net.dv8tion.jda.core.MessageBuilder.Formatting... format) {
+        public RMessageBuilder append(CharSequence text, net.dv8tion.jda.api.MessageBuilder.Formatting... format) {
             builder.append(text, format);
             return this;
         }
@@ -434,20 +435,20 @@ public class CommandResponseMessage implements InternalCommandResponse {
          * <br>A lot of JDA entities implement {@link java.util.Formattable Formattable} and will provide
          * specific format outputs for their specific type.
          * <ul>
-         * <li>{@link net.dv8tion.jda.core.entities.IMentionable IMentionable}
-         * <br>These will output their {@link net.dv8tion.jda.core.entities.IMentionable#getAsMention() getAsMention} by default,
-         * some implementations have alternatives such as {@link net.dv8tion.jda.core.entities.User User} and {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}.</li>
-         * <li>{@link net.dv8tion.jda.core.entities.MessageChannel MessageChannel}
+         * <li>{@link net.dv8tion.jda.api.entities.IMentionable IMentionable}
+         * <br>These will output their {@link net.dv8tion.jda.api.entities.IMentionable#getAsMention() getAsMention} by default,
+         * some implementations have alternatives such as {@link net.dv8tion.jda.api.entities.User User} and {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}.</li>
+         * <li>{@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}
          * <br>All message channels format to {@code "#" + getName()} by default, TextChannel has special handling
          * and uses the getAsMention output by default and the MessageChannel output as alternative ({@code #} flag).</li>
-         * <li>{@link net.dv8tion.jda.core.entities.Message Message}
-         * <br>Messages by default output their {@link net.dv8tion.jda.core.entities.Message#getContentDisplay() getContentDisplay()} value and
-         * as alternative use the {@link net.dv8tion.jda.core.entities.Message#getContentRaw() getContentRaw()} value</li>
+         * <li>{@link net.dv8tion.jda.api.entities.Message Message}
+         * <br>Messages by default output their {@link net.dv8tion.jda.api.entities.Message#getContentDisplay() getContentDisplay()} value and
+         * as alternative use the {@link net.dv8tion.jda.api.entities.Message#getContentRaw() getContentRaw()} value</li>
          * </ul>
          *
          * <p>Example:
          * <br>If you placed the following code in an method handling a
-         * {@link net.dv8tion.jda.core.events.message.MessageReceivedEvent MessageReceivedEvent}
+         * {@link net.dv8tion.jda.api.events.message.MessageReceivedEvent MessageReceivedEvent}
          * <br><pre>{@code
          * User user = event.getAuthor();
          * MessageBuilder builder = new MessageBuilder();
@@ -458,8 +459,8 @@ public class CommandResponseMessage implements InternalCommandResponse {
          * It would build a message that mentions the author and says that he is really cool!. If the user's
          * name was "Minn" and his discriminator "6688", it would say:
          * <br><pre>  "Minn#6688 is really cool!"</pre>
-         * <br>Note that this uses the {@code #} flag to utilize the alternative format for {@link net.dv8tion.jda.core.entities.User User}.
-         * <br>By default it would fallback to {@link net.dv8tion.jda.core.entities.IMentionable#getAsMention()}
+         * <br>Note that this uses the {@code #} flag to utilize the alternative format for {@link net.dv8tion.jda.api.entities.User User}.
+         * <br>By default it would fallback to {@link net.dv8tion.jda.api.entities.IMentionable#getAsMention()}
          *
          * @param format a format string.
          * @param args   an array objects that will be used to replace the tokens, they must be
@@ -497,9 +498,9 @@ public class CommandResponseMessage implements InternalCommandResponse {
          *
          * @param policies What splitpolicies to use in the order of their priority.
          * @return this instance
-         * @see net.dv8tion.jda.core.MessageBuilder#buildAll(net.dv8tion.jda.core.MessageBuilder.SplitPolicy...)
+         * @see net.dv8tion.jda.api.MessageBuilder#buildAll(net.dv8tion.jda.api.MessageBuilder.SplitPolicy...)
          */
-        public RMessageBuilder splitPolicy(net.dv8tion.jda.core.MessageBuilder.SplitPolicy... policies) {
+        public RMessageBuilder splitPolicy(net.dv8tion.jda.api.MessageBuilder.SplitPolicy... policies) {
             splitPolicy = policies;
             return this;
         }
@@ -508,7 +509,7 @@ public class CommandResponseMessage implements InternalCommandResponse {
          * Returns the current length of the content.
          * <br>If this value is {@code 0} (and there is no embed) an exception
          * will be raised as you cannot send an empty message to Discord.
-         * <br>If this value is greater than 2000, multiple message will be sent as according to the set {@link net.dv8tion.jda.core.MessageBuilder.SplitPolicy SplitPolicies}.
+         * <br>If this value is greater than 2000, multiple message will be sent as according to the set {@link net.dv8tion.jda.api.MessageBuilder.SplitPolicy SplitPolicies}.
          *
          * @return the current length of the content that will be built into a Message.
          */
@@ -521,7 +522,7 @@ public class CommandResponseMessage implements InternalCommandResponse {
          *
          * @return the underlying MessageBuilder
          */
-        public net.dv8tion.jda.core.MessageBuilder getMessageBuilder() {
+        public net.dv8tion.jda.api.MessageBuilder getMessageBuilder() {
             return builder;
         }
 
@@ -548,13 +549,13 @@ public class CommandResponseMessage implements InternalCommandResponse {
      * A wrapper around an EmbedBuilder
      */
     public class REmbedBuilder extends ResponseMessageBuilder {
-        private final net.dv8tion.jda.core.EmbedBuilder embed;
+        private final net.dv8tion.jda.api.EmbedBuilder embed;
 
         private REmbedBuilder() {
-            this.embed = new net.dv8tion.jda.core.EmbedBuilder();
+            this.embed = new net.dv8tion.jda.api.EmbedBuilder();
         }
 
-        public net.dv8tion.jda.core.EmbedBuilder getEmbedBuilder() {
+        public net.dv8tion.jda.api.EmbedBuilder getEmbedBuilder() {
             return embed;
         }
 
@@ -719,7 +720,6 @@ public class CommandResponseMessage implements InternalCommandResponse {
          *
          * <p><b>Uploading images with Embeds</b>
          * <br>When uploading an <u>image</u>
-         * (using {@link MessageChannel#sendFile(File, Message) MessageChannel.sendFile(...)})
          * you can reference said image using the specified filename as URI {@code attachment://filename.ext}.
          *
          * <p><u>Example</u>
@@ -753,7 +753,6 @@ public class CommandResponseMessage implements InternalCommandResponse {
          *
          * <p><b>Uploading images with Embeds</b>
          * <br>When uploading an <u>image</u>
-         * (using {@link MessageChannel#sendFile(File, Message) MessageChannel.sendFile(...)})
          * you can reference said image using the specified filename as URI {@code attachment://filename.ext}.
          *
          * <p><u>Example</u>
@@ -774,7 +773,6 @@ public class CommandResponseMessage implements InternalCommandResponse {
          *                                  <li>If the length of {@code url} is longer than {@link MessageEmbed#URL_MAX_LENGTH}.</li>
          *                                  <li>If the provided {@code url} is not a properly formatted http or https url.</li>
          *                                  </ul>
-         * @see MessageChannel#sendFile(File, String, Message) MessageChannel.sendFile(...)
          */
         public REmbedBuilder image(String url) {
             embed.setImage(url);
@@ -824,7 +822,6 @@ public class CommandResponseMessage implements InternalCommandResponse {
          *
          * <p><b>Uploading images with Embeds</b>
          * <br>When uploading an <u>image</u>
-         * (using {@link MessageChannel#sendFile(File, Message) MessageChannel.sendFile(...)})
          * you can reference said image using the specified filename as URI {@code attachment://filename.ext}.
          *
          * <p><u>Example</u>
@@ -862,7 +859,6 @@ public class CommandResponseMessage implements InternalCommandResponse {
          *
          * <p><b>Uploading images with Embeds</b>
          * <br>When uploading an <u>image</u>
-         * (using {@link MessageChannel#sendFile(File, Message) MessageChannel.sendFile(...)})
          * you can reference said image using the specified filename as URI {@code attachment://filename.ext}.
          *
          * <p><u>Example</u>
@@ -895,7 +891,7 @@ public class CommandResponseMessage implements InternalCommandResponse {
          * Adds a Field to the embed.
          *
          * <p>Note: If a blank string is provided to either {@code name} or {@code value}, the blank string is replaced
-         * with {@link net.dv8tion.jda.core.EmbedBuilder#ZERO_WIDTH_SPACE}.
+         * with {@link net.dv8tion.jda.api.EmbedBuilder#ZERO_WIDTH_SPACE}.
          *
          * <p><b><a href="http://i.imgur.com/gnjzCoo.png">Example of Inline</a></b>
          * <p><b><a href="http://i.imgur.com/Ky0KlsT.png">Example if Non-inline</a></b>
@@ -1019,7 +1015,7 @@ public class CommandResponseMessage implements InternalCommandResponse {
 
         @Override
         protected RestAction<Message> sendFile(MessageChannel channel, Message message) {
-            return channel.sendFile(file, fileName, message);
+            return channel.sendMessage(message).addFile(file, fileName);
         }
     }
 
@@ -1034,7 +1030,7 @@ public class CommandResponseMessage implements InternalCommandResponse {
 
         @Override
         protected RestAction<Message> sendFile(MessageChannel channel, Message message) {
-            return channel.sendFile(file, fileName, message);
+            return channel.sendMessage(message).addFile(file, fileName);
         }
     }
 
@@ -1049,7 +1045,7 @@ public class CommandResponseMessage implements InternalCommandResponse {
 
         @Override
         protected RestAction<Message> sendFile(MessageChannel channel, Message message) {
-            return channel.sendFile(file, fileName, message);
+            return channel.sendMessage(message).addFile(file, fileName);
         }
     }
 }

@@ -18,7 +18,7 @@ package com.github.breadmoirai.tests.commands;
 import com.github.breadmoirai.breadbot.framework.annotation.command.Command;
 import com.github.breadmoirai.breadbot.framework.annotation.parameter.Author;
 import com.github.breadmoirai.breadbot.framework.annotation.parameter.Required;
-import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.api.entities.Member;
 
 public class AuthorCommand {
 

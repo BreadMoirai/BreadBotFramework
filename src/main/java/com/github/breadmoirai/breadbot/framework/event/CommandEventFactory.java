@@ -20,8 +20,8 @@ import com.github.breadmoirai.breadbot.framework.event.internal.CommandEventInte
 import com.github.breadmoirai.breadbot.framework.event.internal.MessageReceivedCommandEvent;
 import com.github.breadmoirai.breadbot.framework.internal.BreadBotImpl;
 import com.github.breadmoirai.breadbot.plugins.prefix.PrefixPlugin;
-import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.events.message.guild.GenericGuildMessageEvent;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.events.message.guild.GenericGuildMessageEvent;
 
 import java.util.function.Predicate;
 

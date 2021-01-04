@@ -1,7 +1,7 @@
 package com.github.breadmoirai.breadbot.framework.annotation.parameter;
 
 import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
-import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.api.entities.Message;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

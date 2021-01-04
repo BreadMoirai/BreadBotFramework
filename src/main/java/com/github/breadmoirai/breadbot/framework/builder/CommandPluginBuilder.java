@@ -24,8 +24,8 @@ import com.github.breadmoirai.breadbot.plugins.owner.StaticOwnerPlugin;
 import com.github.breadmoirai.breadbot.plugins.prefix.PrefixPlugin;
 import com.github.breadmoirai.breadbot.plugins.prefix.UnmodifiablePrefixPlugin;
 import com.github.breadmoirai.breadbot.plugins.waiter.EventWaiterPlugin;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.utils.Checks;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.internal.utils.Checks;
 
 import java.util.Collection;
 import java.util.function.Predicate;

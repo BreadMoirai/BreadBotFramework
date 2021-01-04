@@ -16,7 +16,7 @@
 
 package com.github.breadmoirai.breadbot.plugins.prefix;
 
-import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.api.entities.Guild;
 
 /**
  * Provides the same prefix for all guilds as it was specified in the constructor. Non-configurable.

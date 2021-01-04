@@ -1,10 +1,10 @@
 package com.github.breadmoirai.breadbot.plugins.waiter;
 
-import net.dv8tion.jda.core.events.Event;
+import net.dv8tion.jda.api.events.GenericEvent;
 
-interface EventAction<T extends Event, V> {
+interface EventAction<T extends GenericEvent, V> {
 
-    boolean accept(Event event);
+    boolean accept(T event);
 
     EventActionFuture<V> getFuture();
 

@@ -24,7 +24,7 @@ import com.github.breadmoirai.breadbot.framework.command.CommandPreprocessorPred
 import com.github.breadmoirai.breadbot.framework.command.CommandResultHandler;
 import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
 import com.github.breadmoirai.breadbot.framework.parameter.TypeParser;
-import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.api.entities.Message;
 
 import java.util.Collection;
 import java.util.Comparator;

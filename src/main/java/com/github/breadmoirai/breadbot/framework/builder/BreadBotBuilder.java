@@ -37,8 +37,9 @@ import com.github.breadmoirai.breadbot.framework.parameter.internal.builder.Comm
 import com.github.breadmoirai.breadbot.plugins.prefix.PrefixPlugin;
 import com.github.breadmoirai.breadbot.plugins.prefix.UnmodifiablePrefixPlugin;
 import com.github.breadmoirai.breadbot.plugins.waiter.EventWaiterPlugin;
-import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.utils.Checks;
+import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.internal.utils.Checks;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -446,7 +447,7 @@ public class BreadBotBuilder implements
      * UnmodifiablePrefixPlugin("!")} is provided.
      *
      * @return a new BreadBotClient. This must be added to JDA with
-     * {@link net.dv8tion.jda.core.JDABuilder#addEventListener(Object...)}
+     * {@link JDABuilder#addEventListeners(Object...)}
      */
     public BreadBot build() {
         if (!hasPlugin(PrefixPlugin.class)) plugins.add(new UnmodifiablePrefixPlugin("!"));

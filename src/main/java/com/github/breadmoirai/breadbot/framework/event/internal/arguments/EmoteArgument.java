@@ -17,7 +17,7 @@
 package com.github.breadmoirai.breadbot.framework.event.internal.arguments;
 
 import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
-import net.dv8tion.jda.core.entities.Emote;
+import net.dv8tion.jda.api.entities.Emote;
 
 public class EmoteArgument extends MentionArgument {
 

@@ -2,7 +2,7 @@ package com.github.breadmoirai.breadbot.plugins.owner;
 
 import com.github.breadmoirai.breadbot.framework.CommandPlugin;
 import com.github.breadmoirai.breadbot.framework.builder.BreadBotBuilder;
-import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.api.entities.Member;
 
 public abstract class OwnerPlugin implements CommandPlugin {
 
