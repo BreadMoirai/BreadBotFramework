@@ -16,14 +16,14 @@
 
 package com.github.breadmoirai.breadbot.plugins.waiter;
 
-import net.dv8tion.jda.core.events.Event;
+import net.dv8tion.jda.api.events.GenericEvent;
 
 import java.util.concurrent.ScheduledFuture;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-public class EventActionImpl<E extends Event, V> implements EventAction<E, V> {
+public class EventActionImpl<E extends GenericEvent, V> implements EventAction<E, V> {
     private final Class<E> eventClass;
     private final Predicate<E> condition;
     private final Consumer<E> action;
@@ -48,7 +48,7 @@ public class EventActionImpl<E extends Event, V> implements EventAction<E, V> {
     }
 
     @Override
-    public boolean accept(Event event) {
+    public boolean accept(GenericEvent event) {
         if (!isWaiting) return true;
         @SuppressWarnings("unchecked") final E e = (E) event;
         if (condition.test(e)) {

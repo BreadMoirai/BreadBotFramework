@@ -18,14 +18,9 @@ package com.github.breadmoirai.breadbot.plugins.admin;
 
 import com.github.breadmoirai.breadbot.framework.CommandPlugin;
 import com.github.breadmoirai.breadbot.framework.builder.BreadBotBuilder;
-import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.api.entities.Member;
 
 public interface AdminPlugin extends CommandPlugin {
-
-    @Override
-    default String getName() {
-        return "AdminModule";
-    }
 
     boolean isAdmin(Member member);
 

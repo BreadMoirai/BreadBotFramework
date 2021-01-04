@@ -17,21 +17,21 @@
 plugins {
     id 'java'
     id 'idea'
-    id 'com.github.johnrengelman.shadow' version '1.2.4'
-    id 'com.sedmelluq.jdaction' version '1.0.1'
-    id 'com.jfrog.bintray' version '1.7.3'
+    id 'com.github.johnrengelman.shadow' version '5.1.0'
+//    id 'com.sedmelluq.jdaction' version '1.0.2'
+    id 'com.jfrog.bintray' version '1.8.4'
     id 'maven-publish'
     id 'signing'
-    id 'com.github.breadmoirai.github-release' version '1.1.3'
-    id 'org.ajoberstar.git-publish' version '0.3.2'
+    id 'com.github.breadmoirai.github-release' version '2.2.9'
+    id 'org.ajoberstar.git-publish' version '3.0.0-rc.1'
     id 'jacoco'
 }
 
 final author = 'BreadMoirai'
 final artifactId = 'breadbot-framework'
-group "com.github.${author.toLowerCase()}"
-version '0.12.6'
-
+group = "com.github.${author.toLowerCase()}"
+version = '0.13.0'
+final versionDesc = "Update JDA from 3.8.3_464 to 4.2.0_225"
 //project.hasProperty never seems to work properly
 final boolean keysArePresent = false
 
@@ -41,24 +41,32 @@ targetCompatibility = 1.8
 repositories {
     jcenter()
     mavenCentral()
+    maven {
+        url  "https://dl.bintray.com/dv8fromtheworld/maven"
+    }
 }
 
 dependencies {
     //Discord Java Library
-    compileOnly 'net.dv8tion:JDA:3.5.1_339'
+    compileOnly 'net.dv8tion:JDA:4.2.0_225'
 
-    compile 'org.slf4j:slf4j-api:1.7.25'
+    implementation 'org.slf4j:slf4j-api:1.7.25'
 
-    compile 'org.reflections:reflections:0.9.10'
-    compile 'com.typesafe:config:1.3.2'
+    implementation 'org.reflections:reflections:0.9.10'
+    implementation 'com.typesafe:config:1.3.2'
 
-    testCompile 'uk.org.lidalia:slf4j-test:1.1.0'
-    testCompile('junit:junit:4.12') {
+    implementation 'javax.inject:javax.inject:1'
+    implementation 'net.sf.trove4j:trove4j:3.0.3'
+
+//    compile 'org.jetbrains:annotations:16.0.1'
+
+    testImplementation 'uk.org.lidalia:slf4j-test:1.1.0'
+    testImplementation('junit:junit:4.12') {
         exclude group: 'org.hamcrest'
     }
-    testCompile 'net.dv8tion:JDA:3.4.0_318'
-    testCompile 'org.hamcrest:hamcrest-library:1.3'
-    testCompile 'org.mockito:mockito-core:2.+'
+    testImplementation 'net.dv8tion:JDA:4.2.0_225'
+    testImplementation 'org.hamcrest:hamcrest-library:1.3'
+    testImplementation 'org.mockito:mockito-core:2.+'
 }
 
 javadoc {
@@ -69,14 +77,13 @@ javadoc {
 
 githubRelease {
     if (keysArePresent)
-        token = project.getProperty('github.key').toString()
+        token = project.findProperty('github.key').toString()
     String version = project.version
     def title = ""
-    it.name = "$version $title"
-    def content = ""
-    it.body = "$content\n## Adding as Dependency\n### Gradle\n```gradle\nrepositories {\n  jcenter()\n}\n\ndependencies {\n  compile '$project.group:$artifactId:$project.version'\n}\n```\n\n### Maven\n```xml\n<repository>\n  <id>jcenter</id>\n  <name>jcenter</name>\n  <url>http://jcenter.bintray.com/</url>\n</repository>\n\n<dependency>\n  <groupId>$project.group</groupId>\n  <artifactId>$artifactId</artifactId>\n  <version>$project.version</version>\n  <type>pom</type>\n</dependency>\n```"
-    FilenameFilter filter = { dir, file -> file.contains(version) }
-    releaseAssets = jar.destinationDir.listFiles filter
+    it.releaseName = "$version $title"
+    it.body = "## Changes\n$versionDesc\n## Adding as Dependency\n### Gradle\n```gradle\nrepositories {\n  jcenter()\n}\n\ndependencies {\n  compile '$project.group:$artifactId:$project.version'\n}\n```\n\n### Maven\n```xml\n<repository>\n  <id>jcenter</id>\n  <name>jcenter</name>\n  <url>http://jcenter.bintray.com/</url>\n</repository>\n\n<dependency>\n  <groupId>$project.group</groupId>\n  <artifactId>$artifactId</artifactId>\n  <version>$project.version</version>\n  <type>pom</type>\n</dependency>\n```"
+    releaseAssets = jar.destinationDirectory.asFileTree.filter { file -> file.name.contains(version)}
+    overwrite = true
 //    println releaseAssets.findAll()
 }
 
@@ -97,6 +104,16 @@ gitPublishReset {
     dependsOn javadoc
 }
 
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    archiveClassifier.set 'javadoc'
+    from javadoc.destinationDir
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    archiveClassifier.set 'sources'
+    from sourceSets.main.java.srcDirs
+}
+
 bintray {
     user = author.toLowerCase()
     if (keysArePresent)
@@ -111,6 +128,7 @@ bintray {
         version {
             name = project.version
             released = new Date()
+            desc = versionDesc
         }
     }
 }
@@ -129,29 +147,15 @@ publishing {
 
 compileJava.options.encoding = 'UTF-8'
 
-shadowJar.classifier = "withDependencies"
+shadowJar.archiveClassifier.set 'withDependencies'
 javadoc.source = sourceSets.main.allJava
 javadoc.failOnError = false
-
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = 'javadoc'
-    from javadoc.destinationDir
-}
-
-task sourcesJar(type: Jar, dependsOn: classes) {
-    classifier = 'sources'
-    from sourceSets.main.java.srcDirs
-}
 
 task jarMake {
     dependsOn jar
     dependsOn sourcesJar
     dependsOn javadocJar
     dependsOn shadowJar
-}
-
-task wrapper(type: Wrapper) {
-    gradleVersion = '4.2'
 }
 
 test {

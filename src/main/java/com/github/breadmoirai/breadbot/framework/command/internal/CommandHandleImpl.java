@@ -120,7 +120,7 @@ public class CommandHandleImpl implements CommandHandle {
 
     private boolean runThis(CommandEventInternal event) {
         event.setCommand(this);
-        Object commandObj = commandSupplier.get();
+        Object commandObj = commandSupplier.getOrNull();
         if (commandObj == null) return false;
         if (invokableCommand != null) {
             final CommandParser parser = new CommandParser(event, this, splitRegex == null ? event.getArguments() : event.createNewArgumentList(splitRegex, splitLimit), getParameters());

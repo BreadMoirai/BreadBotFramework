@@ -1,5 +1,5 @@
 /*
- *        Copyright 2017 Ton Ly (BreadMoirai)
+ *        Copyright 2017-2018 Ton Ly (BreadMoirai)
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -24,13 +24,13 @@ import com.github.breadmoirai.breadbot.plugins.owner.StaticOwnerPlugin;
 import com.github.breadmoirai.breadbot.plugins.prefix.PrefixPlugin;
 import com.github.breadmoirai.breadbot.plugins.prefix.UnmodifiablePrefixPlugin;
 import com.github.breadmoirai.breadbot.plugins.waiter.EventWaiterPlugin;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.utils.Checks;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.internal.utils.Checks;
 
 import java.util.Collection;
 import java.util.function.Predicate;
 
-public interface CommandPluginBuilder {
+public interface CommandPluginBuilder<R> extends SelfReference<R> {
 
     /**
      * Adds a module and initializes it.
@@ -38,7 +38,7 @@ public interface CommandPluginBuilder {
      * @param module an instance of {@link CommandPlugin CommandModule}.
      * @return this
      */
-    CommandPluginBuilder addPlugin(CommandPlugin module);
+    R addPlugin(CommandPlugin module);
 
     /**
      * Adds a collection of modules and initializes each one.
@@ -46,7 +46,7 @@ public interface CommandPluginBuilder {
      * @param modules a Collection of CommandModules. Should not contain any null elements.
      * @return this
      */
-    CommandPluginBuilder addPlugin(Collection<CommandPlugin> modules);
+    R addPlugin(Collection<CommandPlugin> modules);
 
     /**
      * Checks whether there is a module present that is of the class provided or a subclass of it.
@@ -69,14 +69,14 @@ public interface CommandPluginBuilder {
      * This adds a module that implements {@link PrefixPlugin} to provide a static prefix that cannot be changed. If a {@link PrefixPlugin} is not added, one will be provided with a static prefix of {@code "!"}
      *
      * <p>This method's implementation is:
-     * <pre><code> {@link CommandPluginBuilder#addPlugin(CommandPlugin) addModule}(new {@link UnmodifiablePrefixPlugin DefaultPrefixModule}(prefix)) </code></pre>
+     * <pre><code> {@link #addPlugin(CommandPlugin) addModule}(new {@link UnmodifiablePrefixPlugin DefaultPrefixModule}(prefix)) </code></pre>
      *
      * <p>You can define a different prefix implementation by providing an object to {@link BreadBotBuilder#addPlugin(CommandPlugin) addModule(ICommandModule)} that implements {@link PrefixPlugin IPrefixModule}
      *
      * @param prefix a string the defines a global prefix
      * @return this
      */
-    default CommandPluginBuilder addStaticPrefix(String prefix) {
+    default R addStaticPrefix(String prefix) {
         return addPlugin(new UnmodifiablePrefixPlugin(prefix));
     }
 
@@ -97,7 +97,7 @@ public interface CommandPluginBuilder {
      *
      * @return this
      */
-    default CommandPluginBuilder addAdminPlugin() {
+    default R addAdminPlugin() {
         return addPlugin(new AdminPluginImpl());
     }
 
@@ -110,7 +110,7 @@ public interface CommandPluginBuilder {
      * @param isAdmin a Predicate that can determine which members are Admins
      * @return this
      */
-    default CommandPluginBuilder addAdminPlugin(Predicate<Member> isAdmin) {
+    default R addAdminPlugin(Predicate<Member> isAdmin) {
         Checks.notNull(isAdmin, "isAdmin");
         return addPlugin(new AdminPluginImpl(isAdmin));
     }
@@ -123,16 +123,16 @@ public interface CommandPluginBuilder {
      * @param owners the ids of the owners
      * @return this
      */
-    default CommandPluginBuilder addOwnerPlugin(long... owners) {
+    default R addOwnerPlugin(long... owners) {
         if (owners.length == 0) {
             addPlugin(new ApplicationOwnerPlugin());
         } else {
             addPlugin(new StaticOwnerPlugin(owners));
         }
-        return this;
+        return self();
     }
 
-    default CommandPluginBuilder addEventWaiterPlugin() {
+    default R addEventWaiterPlugin() {
         return addPlugin(new EventWaiterPlugin());
     }
 

@@ -1,7 +1,7 @@
 package com.github.breadmoirai.breadbot.plugins.hocon;
 
 import com.typesafe.config.Config;
-import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.api.entities.Guild;
 
 import java.util.Map;
 

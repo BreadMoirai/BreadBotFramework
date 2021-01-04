@@ -15,25 +15,27 @@
  */
 package com.github.breadmoirai.breadbot.framework.event.internal;
 
-import com.github.breadmoirai.breadbot.framework.BreadBot;
 import com.github.breadmoirai.breadbot.framework.command.Command;
 import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
-import com.github.breadmoirai.breadbot.framework.response.CommandResponseManager;
+import com.github.breadmoirai.breadbot.framework.internal.BreadBotImpl;
+import com.github.breadmoirai.breadbot.framework.response.ResponseManager;
 import com.github.breadmoirai.breadbot.framework.response.RestActionExtension;
 import com.github.breadmoirai.breadbot.framework.response.internal.CommandResponseMessage;
 import com.github.breadmoirai.breadbot.framework.response.internal.CommandResponseReactionImpl;
-import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.Emote;
-import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.Emote;
+import net.dv8tion.jda.api.entities.Message;
 
 public abstract class CommandEventInternal extends CommandEvent {
 
+    private final BreadBotImpl client;
+    private final ResponseManager manager;
     private Command command;
-    private CommandResponseManager manager;
 
-    public CommandEventInternal(JDA api, long responseNumber, BreadBot client, boolean isHelpEvent) {
+    public CommandEventInternal(JDA api, long responseNumber, BreadBotImpl client, boolean isHelpEvent) {
         super(api, responseNumber, client, isHelpEvent);
-        manager = CommandResponseManager.factory.get();
+        this.client = client;
+        manager = client.getResponseManager();
     }
 
     @Override
@@ -41,7 +43,7 @@ public abstract class CommandEventInternal extends CommandEvent {
         return command;
     }
 
-    public CommandResponseManager getManager() {
+    public ResponseManager getManager() {
         return manager;
     }
 
@@ -68,39 +70,41 @@ public abstract class CommandEventInternal extends CommandEvent {
 
     @Override
     public CommandResponseMessage.RMessageBuilder reply(String message) {
-        final CommandResponseMessage resp = new CommandResponseMessage(getChannel());
+        final CommandResponseMessage resp = new CommandResponseMessage(manager, getChannel());
         final CommandResponseMessage.RMessageBuilder builder = resp.builder();
-        manager.accept(resp);
         return builder.append(message);
     }
 
     @Override
     public CommandResponseMessage.RMessageBuilder reply(Message message) {
-        final CommandResponseMessage resp = new CommandResponseMessage(getChannel(), message);
+        final CommandResponseMessage resp = new CommandResponseMessage(manager, getChannel(), message);
         final CommandResponseMessage.RMessageBuilder builder = resp.builder();
-        manager.accept(resp);
         return builder;
     }
 
     @Override
     public CommandResponseMessage.RMessageBuilder reply() {
-        final CommandResponseMessage m = new CommandResponseMessage(getChannel());
+        final CommandResponseMessage m = new CommandResponseMessage(manager, getChannel());
         final CommandResponseMessage.RMessageBuilder builder = m.builder();
-        manager.accept(m);
         return builder;
     }
 
     @Override
     public RestActionExtension<Void> replyReaction(Emote emote) {
-        CommandResponseReactionImpl resp = new CommandResponseReactionImpl(() -> getMessage().addReaction(emote));
-        manager.accept(resp);
+        CommandResponseReactionImpl resp = new CommandResponseReactionImpl(manager,
+                () -> getMessage().addReaction(emote));
         return resp;
     }
 
     @Override
     public RestActionExtension<Void> replyReaction(String emoji) {
-        CommandResponseReactionImpl resp = new CommandResponseReactionImpl(() -> getMessage().addReaction(emoji));
-        manager.accept(resp);
+        CommandResponseReactionImpl resp = new CommandResponseReactionImpl(manager,
+                () -> getMessage().addReaction(emoji));
         return resp;
+    }
+
+    @Override
+    public BreadBotImpl getClient() {
+        return client;
     }
 }

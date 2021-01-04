@@ -133,7 +133,7 @@ public class ExceptionTester {
         ImmutableList<LoggingEvent> logs = testLogger.getLoggingEvents();
         assertEquals(1, logs.size());
         LoggingEvent loggingEvent = logs.get(0);
-        assertEquals("An error ocurred while invoking command:\n" +
+        assertEquals("An error occurred while invoking command:\n" +
                 "CommandHandle{\n" +
                 "  keys: [bad]\n" +
                 "  name: bad\n" +

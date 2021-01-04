@@ -16,7 +16,7 @@
 
 package com.github.breadmoirai.breadbot.plugins.owner;
 
-import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.api.entities.Member;
 
 import java.util.Arrays;
 

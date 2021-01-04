@@ -16,16 +16,16 @@
 
 package com.github.breadmoirai.breadbot.plugins.waiter;
 
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.MessageChannel;
-import net.dv8tion.jda.core.entities.MessageReaction;
-import net.dv8tion.jda.core.entities.Role;
-import net.dv8tion.jda.core.entities.User;
-import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent;
-import net.dv8tion.jda.core.events.message.react.MessageReactionAddEvent;
-import net.dv8tion.jda.core.utils.Checks;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.MessageReaction;
+import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.events.message.react.GenericMessageReactionEvent;
+import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
+import net.dv8tion.jda.internal.utils.Checks;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -56,7 +56,7 @@ public interface ReactionEventActionBuilder<T> extends EventActionBuilderExtensi
 
     /**
      * Restrict condition to ReactionRemoveEvents only.
-     *
+     * <p>
      * By default this will accept both reaction add and remove events.
      *
      * @return this
@@ -69,7 +69,6 @@ public interface ReactionEventActionBuilder<T> extends EventActionBuilderExtensi
      * Matches the name of the reaction
      *
      * @param emojiEmoteName the names of any emotes to match or the unicode of any emojis to match
-     *
      * @return this
      */
     default ReactionEventActionBuilder<T> withName(String... emojiEmoteName) {
@@ -110,7 +109,6 @@ public interface ReactionEventActionBuilder<T> extends EventActionBuilderExtensi
      * with be combined with the set one with an AND.
      *
      * @param reactionCount an IntPredicate that tests against the number of reactions
-     *
      * @return this
      */
     ReactionEventActionBuilder<T> stopOnReactionCount(IntPredicate reactionCount);

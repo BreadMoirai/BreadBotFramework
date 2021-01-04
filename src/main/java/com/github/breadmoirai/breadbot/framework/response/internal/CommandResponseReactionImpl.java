@@ -15,26 +15,29 @@
  */
 package com.github.breadmoirai.breadbot.framework.response.internal;
 
-import com.github.breadmoirai.breadbot.framework.response.CommandResponse;
+import com.github.breadmoirai.breadbot.framework.response.InternalCommandResponse;
+import com.github.breadmoirai.breadbot.framework.response.ResponseManager;
 import com.github.breadmoirai.breadbot.framework.response.RestActionExtension;
-import net.dv8tion.jda.core.events.message.guild.GuildMessageDeleteEvent;
-import net.dv8tion.jda.core.requests.RestAction;
-import net.dv8tion.jda.core.utils.Checks;
+import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.internal.utils.Checks;
 
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.LongConsumer;
 import java.util.function.Supplier;
 
-public class CommandResponseReactionImpl extends CommandResponse implements RestActionExtension<Void> {
+public class CommandResponseReactionImpl implements RestActionExtension<Void>, InternalCommandResponse {
 
+    private final ResponseManager manager;
     private final Supplier<RestAction<Void>> restActionSupplier;
     private long delay;
     private TimeUnit unit;
     private Consumer<Void> success;
     private Consumer<Throwable> failure;
 
-    public CommandResponseReactionImpl(Supplier<RestAction<Void>> restActionSupplier) {
+    public CommandResponseReactionImpl(ResponseManager manager,
+                                       Supplier<RestAction<Void>> restActionSupplier) {
+        this.manager = manager;
         this.restActionSupplier = restActionSupplier;
     }
 
@@ -46,17 +49,6 @@ public class CommandResponseReactionImpl extends CommandResponse implements Rest
             restActionSupplier.get().queue(success, failure);
         }
     }
-
-    @Override
-    public void onMessageDelete(GuildMessageDeleteEvent event) {
-
-    }
-
-    @Override
-    public void cancel() {
-
-    }
-
 
     @Override
     public RestActionExtension<Void> after(long delay, TimeUnit unit) {
@@ -91,9 +83,17 @@ public class CommandResponseReactionImpl extends CommandResponse implements Rest
     @Override
     public RestActionExtension<Void> appendFailure(Consumer<Throwable> failure) {
         if (this.failure == null) {
-            return onFailure(RestAction.DEFAULT_FAILURE.andThen(failure));
+            return onFailure(RestActionExtension.DEFAULT_FAILURE.andThen(failure));
         } else {
             return onFailure(this.failure.andThen(failure));
         }
+    }
+
+    /**
+     * This method finalizes content fields and queues the action to Discord.
+     */
+    @Override
+    public void send() {
+        manager.sendResponse(this);
     }
 }

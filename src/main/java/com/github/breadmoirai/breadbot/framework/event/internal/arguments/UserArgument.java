@@ -17,7 +17,7 @@
 package com.github.breadmoirai.breadbot.framework.event.internal.arguments;
 
 import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
-import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.api.entities.User;
 
 public class UserArgument extends MentionArgument {
 

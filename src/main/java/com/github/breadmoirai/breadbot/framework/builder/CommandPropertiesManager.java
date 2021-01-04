@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
-public interface CommandPropertiesManager {
+public interface CommandPropertiesManager<R> extends SelfReference<R> {
 
     /**
      * Removes any existing behavior attached to this propertyType.
@@ -34,7 +34,7 @@ public interface CommandPropertiesManager {
      * @param propertyType the class of the property.
      * @return this.
      */
-    CommandPropertiesManager clearCommandModifiers(Class<?> propertyType);
+    R clearCommandModifiers(Class<?> propertyType);
 
     /**
      * The provided {@code configurator} is used to modify commands that possess the specified property.
@@ -50,8 +50,8 @@ public interface CommandPropertiesManager {
      * @param <T> the propertyType
      * @return this, for chaining.
      */
-    <T> CommandPropertiesManager bindCommandModifier(Class<T> propertyType,
-                                                     BiConsumer<T, CommandHandleBuilder> configurator);
+    <T> R bindCommandModifier(Class<T> propertyType,
+                              BiConsumer<T, CommandHandleBuilder> configurator);
 
     /**
      * Removes any existing behavior attached to this parameter.
@@ -59,7 +59,7 @@ public interface CommandPropertiesManager {
      * @param parameterType the class of the parameter.
      * @return this, for chaining.
      */
-    CommandPropertiesManager clearParameterModifiers(Class<?> parameterType);
+    R clearParameterModifiers(Class<?> parameterType);
 
     /**
      * The provided {@code configurator} is used to modify commands that possess the specified property.
@@ -74,8 +74,8 @@ public interface CommandPropertiesManager {
      * @param <T> the propertyType
      * @return this, for chaining.
      */
-    <T> CommandPropertiesManager bindParameterModifier(Class<T> propertyType,
-                                                       BiConsumer<T, CommandParameterBuilder> configurator);
+    <T> R bindParameterModifier(Class<T> propertyType,
+                                BiConsumer<T, CommandParameterBuilder> configurator);
 
     /**
      * Applies modifiers to a CommandHandleBuilder based on whether the handle contains a property.
@@ -150,11 +150,11 @@ public interface CommandPropertiesManager {
      * @param function a {@link CommandPreprocessorFunction#process CommandPreprocessorFunction}
      * @return this, for chaining.
      */
-    default CommandPropertiesManager bindPreprocessor(String identifier, Class<?> propertyType,
-                                                      CommandPreprocessorFunction function) {
+    default R bindPreprocessor(String identifier, Class<?> propertyType,
+                               CommandPreprocessorFunction function) {
         bindCommandModifier(propertyType, (t, commandHandleBuilder) -> commandHandleBuilder.addPreprocessor(
                 new CommandPreprocessor(identifier, function)));
-        return this;
+        return self();
     }
 
     /**
@@ -167,11 +167,11 @@ public interface CommandPropertiesManager {
      * @param <T> the property type
      * @return this, for chaining.
      */
-    default <T> CommandPropertiesManager bindPreprocessorFactory(String identifier, Class<T> propertyType,
-                                                                 Function<T, CommandPreprocessorFunction> factory) {
+    default <T> R bindPreprocessorFactory(String identifier, Class<T> propertyType,
+                                          Function<T, CommandPreprocessorFunction> factory) {
         bindCommandModifier(propertyType, (t, commandHandleBuilder) -> commandHandleBuilder.addPreprocessor(
                 new CommandPreprocessor(identifier, factory.apply(t))));
-        return this;
+        return self();
     }
 
     /**
@@ -185,11 +185,11 @@ public interface CommandPropertiesManager {
      * otherwise
      * @return this, for chaining.
      */
-    default CommandPropertiesManager bindPreprocessorPredicate(String identifier, Class<?> propertyType,
-                                                               CommandPreprocessorPredicate predicate) {
+    default R bindPreprocessorPredicate(String identifier, Class<?> propertyType,
+                                        CommandPreprocessorPredicate predicate) {
         bindCommandModifier(propertyType, (t, commandHandleBuilder) -> commandHandleBuilder.addPreprocessor(
                 new CommandPreprocessor(identifier, predicate)));
-        return this;
+        return self();
     }
 
     /**
@@ -202,17 +202,17 @@ public interface CommandPropertiesManager {
      * @param <T> the property type
      * @return this.
      */
-    default <T> CommandPropertiesManager bindPreprocessorPredicateFactory(String identifier, Class<T> propertyType,
-                                                                          Function<T, CommandPreprocessorPredicate>
+    default <T> R bindPreprocessorPredicateFactory(String identifier, Class<T> propertyType,
+                                                   Function<T, CommandPreprocessorPredicate>
                                                                                   factory) {
         bindCommandModifier(propertyType, (t, commandHandleBuilder) -> commandHandleBuilder.addPreprocessor(
                 new CommandPreprocessor(identifier, factory.apply(t))));
-        return this;
+        return self();
     }
 
     List<String> getPreprocessorPriorityList();
 
-    CommandPropertiesManager setPreprocessorPriority(String... identifiers);
+    R setPreprocessorPriority(String... identifiers);
 
     /**
      * Sets the order in which preprocessors are evaluated
@@ -221,7 +221,7 @@ public interface CommandPropertiesManager {
      * the list, all unmatched preprocessors will be put in that spot.
      * @return this.
      */
-    CommandPropertiesManager setPreprocessorPriority(List<String> identifierList);
+    R setPreprocessorPriority(List<String> identifierList);
 
     Comparator<CommandPreprocessor> getPriorityComparator();
 }

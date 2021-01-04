@@ -15,8 +15,8 @@
  */
 package com.github.breadmoirai.breadbot.plugins.waiter;
 
-import net.dv8tion.jda.core.events.Event;
-import net.dv8tion.jda.core.utils.Checks;
+import net.dv8tion.jda.api.events.Event;
+import net.dv8tion.jda.internal.utils.Checks;
 
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;

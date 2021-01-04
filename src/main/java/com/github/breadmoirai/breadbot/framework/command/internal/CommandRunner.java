@@ -81,14 +81,14 @@ public class CommandRunner implements Runnable {
                 if (result != null) {
                     CommandResultHandler.handleObject(resultHandler, command, event, result);
                 }
-                event.getManager().complete();
                 LOG.debug("Command Execution Completed");
                 return;
             } catch (Throwable throwable) {
                 if (LOG.isDebugEnabled()) {
                     LOG.error("Command Execution Failed", throwable);
                 } else {
-                    LOG.error("An error ocurred while invoking command:\n" + command + "\non Event:\n" + event, throwable);
+                    LOG.error("An error occurred while invoking command:\n" + command + "\non Event:\n" + event,
+                              throwable);
                 }
             }
         }

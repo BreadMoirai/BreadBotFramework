@@ -16,24 +16,37 @@
 
 package com.github.breadmoirai.breadbot.framework.command.internal;
 
-import com.github.breadmoirai.breadbot.util.ExceptionalSupplier;
+import com.github.breadmoirai.breadbot.framework.inject.BreadInjector;
 import org.slf4j.LoggerFactory;
 
+import java.lang.invoke.MethodHandle;
 import java.util.Objects;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
-public class CommandObjectFactory {
+public abstract class CommandObjectFactory {
 
-    private final ExceptionalSupplier<Object> supplier;
+    /**
+     * STATIC
+     **/
+
     private static Consumer<Throwable> exceptionHandler;
 
     static {
         org.slf4j.Logger logger = LoggerFactory.getLogger(CommandObjectFactory.class);
-        exceptionHandler = t -> logger.error("An error occurred while attempting to retrieve an instance of a command object", t);
+        exceptionHandler = t -> logger.error(
+                "An error occurred while attempting to retrieve an instance of a command object", t);
     }
 
-    public CommandObjectFactory(ExceptionalSupplier<Object> supplier) {
-        this.supplier = supplier;
+    /**
+     * INSTANCE
+     **/
+
+    protected Class<?> returnType;
+    protected BreadInjector.Injector injector;
+
+    public CommandObjectFactory(Class<?> returnType) {
+        this.returnType = returnType;
     }
 
     public static void setExceptionHandler(Consumer<Throwable> exceptionHandler) {
@@ -41,13 +54,104 @@ public class CommandObjectFactory {
         CommandObjectFactory.exceptionHandler = exceptionHandler;
     }
 
-    public Object get() {
+    public static CommandObjectFactory empty() {
+        return new EmptyCommandObjectFactory();
+    }
+
+    public static CommandObjectFactory of(Class<?> returnType, Object o) {
+        return new SimpleCommandObjectFactory(o.getClass(), o);
+    }
+
+    public static CommandObjectFactory of(Class<?> returnType, Supplier<?> supplier) {
+        return new SupplierCommandObjectFactory(returnType, supplier);
+    }
+
+    public static CommandObjectFactory of(Class<?> returnType, MethodHandle handle) {
+        return new MethodHandleCommandObjectFactory(returnType, handle);
+    }
+
+    public void setInjector(BreadInjector injector) {
+        if (returnType == null || injector == null) return;
+        this.injector = injector.getInjectorFor(returnType);
+    }
+
+    public abstract Object get() throws Throwable;
+
+    public final Object getOrNull() {
         try {
-            return supplier.get();
+            return get();
         } catch (Throwable t) {
             exceptionHandler.accept(t);
             return null;
         }
     }
 
+    private static class SimpleCommandObjectFactory extends CommandObjectFactory {
+
+        private final Object o;
+
+        private SimpleCommandObjectFactory(Class<?> returnType, Object o) {
+            super(returnType);
+            this.o = o;
+        }
+
+        @Override
+        public Object get() throws IllegalAccessException {
+            if (injector != null) {
+                injector.inject(o);
+                injector = null;
+            }
+            return o;
+        }
+    }
+
+    private static class SupplierCommandObjectFactory extends CommandObjectFactory {
+
+        private final Supplier<?> supplier;
+
+        public SupplierCommandObjectFactory(Class<?> returnType, Supplier<?> supplier) {
+            super(returnType);
+            this.supplier = supplier;
+        }
+
+        @Override
+        public Object get() throws IllegalAccessException {
+            final Object o = supplier.get();
+            if (injector != null) {
+                injector.inject(o);
+            }
+            return o;
+        }
+    }
+
+    private static class MethodHandleCommandObjectFactory extends CommandObjectFactory {
+
+        private final MethodHandle handle;
+
+        private MethodHandleCommandObjectFactory(Class<?> returnType, MethodHandle handle) {
+            super(returnType);
+            this.handle = handle;
+        }
+
+        @Override
+        public Object get() throws Throwable {
+            final Object o = handle.invoke();
+            if (injector != null) {
+                injector.inject(o);
+            }
+            return o;
+        }
+    }
+
+    private static class EmptyCommandObjectFactory extends CommandObjectFactory {
+
+        public EmptyCommandObjectFactory() {
+            super(null);
+        }
+
+        @Override
+        public Object get() {
+            return Void.TYPE;
+        }
+    }
 }

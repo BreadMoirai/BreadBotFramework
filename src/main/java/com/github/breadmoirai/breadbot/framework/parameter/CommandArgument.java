@@ -20,12 +20,12 @@ import com.github.breadmoirai.breadbot.framework.BreadBot;
 import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
 import com.github.breadmoirai.breadbot.util.Arguments;
 import com.github.breadmoirai.breadbot.util.Emoji;
-import net.dv8tion.jda.core.entities.Emote;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.Role;
-import net.dv8tion.jda.core.entities.TextChannel;
-import net.dv8tion.jda.core.entities.User;
-import net.dv8tion.jda.core.entities.VoiceChannel;
+import net.dv8tion.jda.api.entities.Emote;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.VoiceChannel;
 
 import java.util.List;
 import java.util.Optional;
@@ -300,34 +300,34 @@ public interface CommandArgument {
     }
 
     /**
-     * Checks if this argument is a {@link net.dv8tion.jda.core.entities.User} mention.
+     * Checks if this argument is a {@link net.dv8tion.jda.api.entities.User} mention.
      * The result of this method is equivalent to checking this argument against a regex of {@code <@(!)?[0-9]+>}
      *
-     * @return {@code true} if this is a formatted {@link net.dv8tion.jda.core.entities.User} mention.
+     * @return {@code true} if this is a formatted {@link net.dv8tion.jda.api.entities.User} mention.
      */
     boolean isUser();
 
     /**
-     * Checks if this argument is a {@link net.dv8tion.jda.core.entities.User} mention that can be correctly resolved to
-     * a {@link net.dv8tion.jda.core.entities.User}.
+     * Checks if this argument is a {@link net.dv8tion.jda.api.entities.User} mention that can be correctly resolved to
+     * a {@link net.dv8tion.jda.api.entities.User}.
      * The result of this method is equivalent to checking this argument against a regex of {@code <@(!)?[0-9]+>} and
-     * then checking to see if {@link net.dv8tion.jda.core.JDA} has knowledge of a {@link
-     * net.dv8tion.jda.core.entities.User} with that id.
+     * then checking to see if {@link net.dv8tion.jda.api.JDA} has knowledge of a {@link
+     * net.dv8tion.jda.api.entities.User} with that id.
      * <p>
      * If this method returns {@code false} and {@link CommandArgument#isUser} returns {@code true}, this
      * CommandArgument is can be cast to an
      * {@link com.github.breadmoirai.breadbot.framework.event.internal.arguments.InvalidMentionArgument
      * InvalidMentionArgument}
      *
-     * @return {@code true} if this is a formatted {@link net.dv8tion.jda.core.entities.User} mention that can be
+     * @return {@code true} if this is a formatted {@link net.dv8tion.jda.api.entities.User} mention that can be
      * resolved to an entity.
      */
     boolean isValidUser();
 
     /**
-     * If this is a {@link net.dv8tion.jda.core.entities.User} mention, will return the specified user.
+     * If this is a {@link net.dv8tion.jda.api.entities.User} mention, will return the specified user.
      *
-     * @return The {@link net.dv8tion.jda.core.entities.User} if found by JDA.
+     * @return The {@link net.dv8tion.jda.api.entities.User} if found by JDA.
      * @throws UnsupportedOperationException if {@link CommandArgument#isValidUser()} would return {@code false}
      */
 
@@ -336,22 +336,22 @@ public interface CommandArgument {
     }
 
     /**
-     * First checks if the argument is a {@link net.dv8tion.jda.core.entities.User} mention.
-     * Then attempts to resolve that mention to a {@link net.dv8tion.jda.core.entities.User}.
-     * If the {@link net.dv8tion.jda.core.entities.User} is found, the
-     * {@link net.dv8tion.jda.core.entities.User} will be checked against the
-     * {@link net.dv8tion.jda.core.entities.Guild} to see if it is a
-     * {@link net.dv8tion.jda.core.entities.Member}.
+     * First checks if the argument is a {@link net.dv8tion.jda.api.entities.User} mention.
+     * Then attempts to resolve that mention to a {@link net.dv8tion.jda.api.entities.User}.
+     * If the {@link net.dv8tion.jda.api.entities.User} is found, the
+     * {@link net.dv8tion.jda.api.entities.User} will be checked against the
+     * {@link net.dv8tion.jda.api.entities.Guild} to see if it is a
+     * {@link net.dv8tion.jda.api.entities.Member}.
      *
-     * @return {@code true} if the {@link net.dv8tion.jda.core.entities.Member} can be resolved to a valid JDA entity.
+     * @return {@code true} if the {@link net.dv8tion.jda.api.entities.Member} can be resolved to a valid JDA entity.
      * Otherwise {@code false}
      */
     boolean isValidMember();
 
     /**
-     * The {@link net.dv8tion.jda.core.entities.Member} if it can be resolved.
+     * The {@link net.dv8tion.jda.api.entities.Member} if it can be resolved.
      *
-     * @return The {@link net.dv8tion.jda.core.entities.Member} if found.
+     * @return The {@link net.dv8tion.jda.api.entities.Member} if found.
      * @throws UnsupportedOperationException if {@link CommandArgument#isValidMember()} would return {@code false}
      */
 
@@ -360,15 +360,15 @@ public interface CommandArgument {
     }
 
     /**
-     * Searches for a member in the {@link net.dv8tion.jda.core.entities.Guild} using the argument as criteria.
+     * Searches for a member in the {@link net.dv8tion.jda.api.entities.Guild} using the argument as criteria.
      * If it matches multiple users, the user whose name begins with the argument is given precedence. If multiple users
      * match, the first one found is returned.
      * This attempts to match Username and Nickname.
      *
-     * <p>If this argument is already a valid {@link net.dv8tion.jda.core.entities.Member} mention, that {@link
-     * net.dv8tion.jda.core.entities.Member} is returned within the {@link java.util.Optional}.
+     * <p>If this argument is already a valid {@link net.dv8tion.jda.api.entities.Member} mention, that {@link
+     * net.dv8tion.jda.api.entities.Member} is returned within the {@link java.util.Optional}.
      *
-     * @return the first {@link net.dv8tion.jda.core.entities.Member} found, otherwise an empty
+     * @return the first {@link net.dv8tion.jda.api.entities.Member} found, otherwise an empty
      * {@link java.util.Optional}
      */
 
@@ -377,41 +377,41 @@ public interface CommandArgument {
     /**
      * Searches for members whose Username or Nickname contains this argument.
      *
-     * <p>If this argument is already a valid {@link net.dv8tion.jda.core.entities.Member} mention, a {@link
+     * <p>If this argument is already a valid {@link net.dv8tion.jda.api.entities.Member} mention, a {@link
      * java.util.List} with only that element is returned.
      *
-     * @return A never-null {@link java.util.List} of {@link net.dv8tion.jda.core.entities.Member Members}
+     * @return A never-null {@link java.util.List} of {@link net.dv8tion.jda.api.entities.Member Members}
      */
 
     List<Member> searchMembers();
 
     /**
-     * Checks if this argument is of the same format as a {@link net.dv8tion.jda.core.entities.Role} mention.
+     * Checks if this argument is of the same format as a {@link net.dv8tion.jda.api.entities.Role} mention.
      * The result of this method is equivalent to checking this argument against a regex of {@code <@&[0-9]+>}.
      *
-     * @return {@code true} if this argument is formatted as a {@link net.dv8tion.jda.core.entities.Role} mention
+     * @return {@code true} if this argument is formatted as a {@link net.dv8tion.jda.api.entities.Role} mention
      */
     boolean isRole();
 
     /**
-     * Checks if this argument is a {@link net.dv8tion.jda.core.entities.Role} mention.
+     * Checks if this argument is a {@link net.dv8tion.jda.api.entities.Role} mention.
      * The result of this method is equivalent to checking this argument against a regex of {@code <@&[0-9]+>} and
-     * checking if it can be correctly resolved to a {@link net.dv8tion.jda.core.entities.Role} within the {@link
-     * net.dv8tion.jda.core.entities.Guild}.
+     * checking if it can be correctly resolved to a {@link net.dv8tion.jda.api.entities.Role} within the {@link
+     * net.dv8tion.jda.api.entities.Guild}.
      *
-     * @return {@code true} if this is a valid {@link net.dv8tion.jda.core.entities.Role} mention that can be resolved
+     * @return {@code true} if this is a valid {@link net.dv8tion.jda.api.entities.Role} mention that can be resolved
      * to a valid JDA entity.
      */
     boolean isValidRole();
 
     /**
-     * Attempts to resolve this argument to a {@link net.dv8tion.jda.core.entities.Role} in the {@link
-     * net.dv8tion.jda.core.entities.Guild}.
+     * Attempts to resolve this argument to a {@link net.dv8tion.jda.api.entities.Role} in the {@link
+     * net.dv8tion.jda.api.entities.Guild}.
      * If {@link CommandArgument#isRole isRole()} would return true, it is guaranteed that this method returns a {@code
      * non-null} value.
      *
-     * @return {@link net.dv8tion.jda.core.entities.Role} if role is present within the {@link
-     * net.dv8tion.jda.core.entities.Guild}, otherwise {@code null}
+     * @return {@link net.dv8tion.jda.api.entities.Role} if role is present within the {@link
+     * net.dv8tion.jda.api.entities.Guild}, otherwise {@code null}
      * @throws UnsupportedOperationException if {@link CommandArgument#isValidRole()} would return {@code false}
      */
     default Role getRole() {
@@ -419,59 +419,59 @@ public interface CommandArgument {
     }
 
     /**
-     * Attempts to match this argument to a {@link net.dv8tion.jda.core.entities.Role} by name.
+     * Attempts to match this argument to a {@link net.dv8tion.jda.api.entities.Role} by name.
      *
-     * <p>If this argument is already a valid {@link net.dv8tion.jda.core.entities.Role} mention, that {@link
-     * net.dv8tion.jda.core.entities.Role} is returned within the {@link java.util.Optional}.
+     * <p>If this argument is already a valid {@link net.dv8tion.jda.api.entities.Role} mention, that {@link
+     * net.dv8tion.jda.api.entities.Role} is returned within the {@link java.util.Optional}.
      *
-     * @return the first {@link net.dv8tion.jda.core.entities.Role} found, otherwise an empty {@link java.util.Optional}
+     * @return the first {@link net.dv8tion.jda.api.entities.Role} found, otherwise an empty {@link java.util.Optional}
      */
     Optional<Role> findRole();
 
     /**
-     * Returns a {@link java.util.List} of {@link net.dv8tion.jda.core.entities.Role Roles} that match this argument.
-     * The criteria being that the {@link net.dv8tion.jda.core.entities.Role} name should contain this argument.
+     * Returns a {@link java.util.List} of {@link net.dv8tion.jda.api.entities.Role Roles} that match this argument.
+     * The criteria being that the {@link net.dv8tion.jda.api.entities.Role} name should contain this argument.
      *
-     * <p>If this argument is already a valid {@link net.dv8tion.jda.core.entities.Role} mention, a {@link
+     * <p>If this argument is already a valid {@link net.dv8tion.jda.api.entities.Role} mention, a {@link
      * java.util.List} with only that element is returned.
      *
-     * @return A never-null {@link java.util.List} of {@link net.dv8tion.jda.core.entities.Role Roles}.
+     * @return A never-null {@link java.util.List} of {@link net.dv8tion.jda.api.entities.Role Roles}.
      */
     List<Role> searchRoles();
 
     /**
-     * Checks if this argument is a {@link net.dv8tion.jda.core.entities.TextChannel} mention.
+     * Checks if this argument is a {@link net.dv8tion.jda.api.entities.TextChannel} mention.
      * The result of this method is equivalent to checking this argument against a regex of {@code <#[0-9]+>}
      *
-     * @return {@code true} if this is a correctly formatted {@link net.dv8tion.jda.core.entities.TextChannel} mention
+     * @return {@code true} if this is a correctly formatted {@link net.dv8tion.jda.api.entities.TextChannel} mention
      */
     boolean isTextChannel();
 
     /**
-     * Checks if this argument is a {@link net.dv8tion.jda.core.entities.TextChannel} mention that can be correctly
-     * resolved to a {@link net.dv8tion.jda.core.entities.TextChannel}.
+     * Checks if this argument is a {@link net.dv8tion.jda.api.entities.TextChannel} mention that can be correctly
+     * resolved to a {@link net.dv8tion.jda.api.entities.TextChannel}.
      * The result of this method is equivalent to checking this argument against a regex of {@code <#[0-9]+>} and then
-     * checking to see if {@link net.dv8tion.jda.core.JDA} has knowledge of a {@link
-     * net.dv8tion.jda.core.entities.TextChannel} with that id.
+     * checking to see if {@link net.dv8tion.jda.api.JDA} has knowledge of a {@link
+     * net.dv8tion.jda.api.entities.TextChannel} with that id.
      * <p>
      * If this method returns {@code false} and {@link CommandArgument#isTextChannel()} returns {@code true}, this
      * CommandArgument is can be cast to an
      * {@link com.github.breadmoirai.breadbot.framework.event.internal.arguments.InvalidMentionArgument
      * InvalidMentionArgument}
      *
-     * @return {@code true} if this is a formatted {@link net.dv8tion.jda.core.entities.TextChannel} mention and can be
+     * @return {@code true} if this is a formatted {@link net.dv8tion.jda.api.entities.TextChannel} mention and can be
      * correctly resolved to a JDA entity.
      */
     boolean isValidTextChannel();
 
     /**
-     * Attempts to resolve this argument as a {@link net.dv8tion.jda.core.entities.TextChannel} mention to a {@link
-     * net.dv8tion.jda.core.entities.TextChannel} in the {@link net.dv8tion.jda.core.entities.Guild}.
+     * Attempts to resolve this argument as a {@link net.dv8tion.jda.api.entities.TextChannel} mention to a {@link
+     * net.dv8tion.jda.api.entities.TextChannel} in the {@link net.dv8tion.jda.api.entities.Guild}.
      *
      * <p>If {@link CommandArgument#isTextChannel isTextChannel()} would return true, it is guaranteed that this method
      * returns a {@code non-null} value.
      *
-     * @return {@link net.dv8tion.jda.core.entities.TextChannel} if can be resolved to a JDA entity
+     * @return {@link net.dv8tion.jda.api.entities.TextChannel} if can be resolved to a JDA entity
      * @throws UnsupportedOperationException if {@link CommandArgument#isValidTextChannel()} would return {@code false}
      */
     default TextChannel getTextChannel() {
@@ -479,46 +479,46 @@ public interface CommandArgument {
     }
 
     /**
-     * Attempts to match this argument to a {@link net.dv8tion.jda.core.entities.TextChannel} by name.
-     * <p>If this argument is already a valid {@link net.dv8tion.jda.core.entities.TextChannel} mention, that {@link
-     * net.dv8tion.jda.core.entities.TextChannel} is returned within the {@link java.util.Optional}.
+     * Attempts to match this argument to a {@link net.dv8tion.jda.api.entities.TextChannel} by name.
+     * <p>If this argument is already a valid {@link net.dv8tion.jda.api.entities.TextChannel} mention, that {@link
+     * net.dv8tion.jda.api.entities.TextChannel} is returned within the {@link java.util.Optional}.
      *
-     * @return the first {@link net.dv8tion.jda.core.entities.TextChannel} found, otherwise an empty
+     * @return the first {@link net.dv8tion.jda.api.entities.TextChannel} found, otherwise an empty
      * {@link java.util.Optional}
      */
     Optional<TextChannel> findTextChannel();
 
     /**
-     * Returns a {@link java.util.List} of {@link net.dv8tion.jda.core.entities.TextChannel TextChannels} that match
-     * this argument. The criteria being that the {@link net.dv8tion.jda.core.entities.TextChannel} name should contain
+     * Returns a {@link java.util.List} of {@link net.dv8tion.jda.api.entities.TextChannel TextChannels} that match
+     * this argument. The criteria being that the {@link net.dv8tion.jda.api.entities.TextChannel} name should contain
      * this argument.
      *
-     * <p>If this argument is already a valid {@link net.dv8tion.jda.core.entities.TextChannel} mention, a {@link
+     * <p>If this argument is already a valid {@link net.dv8tion.jda.api.entities.TextChannel} mention, a {@link
      * java.util.List} with only that element is returned.
      *
-     * @return A never-null {@link java.util.List} of {@link net.dv8tion.jda.core.entities.TextChannel TextChannels}.
+     * @return A never-null {@link java.util.List} of {@link net.dv8tion.jda.api.entities.TextChannel TextChannels}.
      */
     List<TextChannel> searchTextChannels();
 
     /**
-     * Attempts to match this argument to a {@link net.dv8tion.jda.core.entities.VoiceChannel} by name.
+     * Attempts to match this argument to a {@link net.dv8tion.jda.api.entities.VoiceChannel} by name.
      *
-     * @return the first {@link net.dv8tion.jda.core.entities.VoiceChannel} if found, otherwise an empty {@link
+     * @return the first {@link net.dv8tion.jda.api.entities.VoiceChannel} if found, otherwise an empty {@link
      * java.util.Optional}
      */
     Optional<VoiceChannel> findVoiceChannel();
 
     /**
-     * Returns a {@link java.util.List} of {@link net.dv8tion.jda.core.entities.VoiceChannel Roles} that match this
-     * argument. The criteria being that the {@link net.dv8tion.jda.core.entities.VoiceChannel} name should contain this
+     * Returns a {@link java.util.List} of {@link net.dv8tion.jda.api.entities.VoiceChannel Roles} that match this
+     * argument. The criteria being that the {@link net.dv8tion.jda.api.entities.VoiceChannel} name should contain this
      * argument.
      *
-     * @return A never-null {@link java.util.List} of {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannels}.
+     * @return A never-null {@link java.util.List} of {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels}.
      */
     List<VoiceChannel> searchVoiceChannels();
 
     /**
-     * Checks if this argument is in a valid {@link net.dv8tion.jda.core.entities.Emote} mention form.
+     * Checks if this argument is in a valid {@link net.dv8tion.jda.api.entities.Emote} mention form.
      * The result of this method is equivalent to checking this argument against a regex of {@code <:.+:[0-9]+>}
      *
      * @return {@code true} if this argument matches the format required
@@ -528,15 +528,15 @@ public interface CommandArgument {
     /**
      * If {@link #isEmote()} would return {@code true}, this method will always return a {@code not-null} value, {@code
      * null} otherwise.
-     * If the formatting is correct but {@link net.dv8tion.jda.core.JDA} cannot resolve the {@link
-     * net.dv8tion.jda.core.entities.Emote},
-     * a {@link net.dv8tion.jda.core.entities.IFakeable Fake} {@link net.dv8tion.jda.core.entities.Emote} will be
+     * If the formatting is correct but {@link net.dv8tion.jda.api.JDA} cannot resolve the {@link
+     * net.dv8tion.jda.api.entities.Emote},
+     * a {@link net.dv8tion.jda.api.entities.IFakeable Fake} {@link net.dv8tion.jda.api.entities.Emote} will be
      * returned.
      *
      * <p>If {@link CommandArgument#isEmote isEmote()} would return true, it is guaranteed that this method returns a
      * {@code non-null} value.
      *
-     * @return An {@link net.dv8tion.jda.core.entities.Emote} if the formatting is correct. Otherwise {@code null}.
+     * @return An {@link net.dv8tion.jda.api.entities.Emote} if the formatting is correct. Otherwise {@code null}.
      * @throws UnsupportedOperationException if {@link CommandArgument#isEmote()} would return {@code false}
      */
     default Emote getEmote() {

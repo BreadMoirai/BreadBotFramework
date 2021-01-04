@@ -29,7 +29,7 @@
  - [x] Some Logging
 
 
-This framework is built ontop of [JDA](https://github.com/DV8FromTheWorld/JDA)
+This project is an SDK designed for bot-creation which is built on top of [JDA](https://github.com/DV8FromTheWorld/JDA). This project only uses reflection to initialize each command.
 ## Download
 You can check the [releases](https://github.com/BreadMoirai/BreadBotFramework/releases) tab for jars. This is also distributed via [bintray][bintrayLink].
 

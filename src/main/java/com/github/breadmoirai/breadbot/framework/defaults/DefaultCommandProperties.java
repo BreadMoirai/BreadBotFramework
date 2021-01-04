@@ -16,8 +16,6 @@
 
 package com.github.breadmoirai.breadbot.framework.defaults;
 
-import com.github.breadmoirai.breadbot.framework.annotation.ConfigureCommand;
-import com.github.breadmoirai.breadbot.framework.annotation.ConfigureCommands;
 import com.github.breadmoirai.breadbot.framework.annotation.Name;
 import com.github.breadmoirai.breadbot.framework.annotation.command.Command;
 import com.github.breadmoirai.breadbot.framework.annotation.command.Delimiter;
@@ -36,7 +34,6 @@ import com.github.breadmoirai.breadbot.framework.annotation.parameter.Required;
 import com.github.breadmoirai.breadbot.framework.annotation.parameter.Width;
 import com.github.breadmoirai.breadbot.framework.builder.CommandHandleBuilder;
 import com.github.breadmoirai.breadbot.framework.command.internal.CommandPropertiesManagerImpl;
-import com.github.breadmoirai.breadbot.framework.command.internal.builder.CommandHandleBuilderInternal;
 import com.github.breadmoirai.breadbot.framework.error.BreadBotException;
 import com.github.breadmoirai.breadbot.framework.event.CommandArgumentList;
 import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
@@ -47,12 +44,10 @@ import com.github.breadmoirai.breadbot.framework.parameter.CommandParameter;
 import com.github.breadmoirai.breadbot.framework.parameter.CommandParser;
 import com.github.breadmoirai.breadbot.framework.parameter.internal.builder.CommandParameterBuilderImpl;
 import com.github.breadmoirai.breadbot.util.Arguments;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.User;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.regex.Matcher;
@@ -207,52 +202,6 @@ public class DefaultCommandProperties {
             if (builder.getKeys() == null)
                 builder.setKeys(simpleName);
             setGroupToPackage(builder, declaringClass);
-        });
-
-        cp.bindCommandModifier(null, (nullO, builder) -> {
-            Class<?> declaringClass = builder.getDeclaringClass();
-            if (Consumer.class.isAssignableFrom(declaringClass))
-                return;
-
-            for (Method method : builder.getDeclaringClass().getDeclaredMethods()) {
-                int modifiers = method.getModifiers();
-                if (!Modifier.isPublic(modifiers))
-                    continue;
-                if (method.getParameterCount() != 1)
-                    continue;
-                if (method.getParameters()[0].getType() != CommandHandleBuilder.class)
-                    continue;
-                if (!method.isAnnotationPresent(ConfigureCommands.class) && !method.isAnnotationPresent(ConfigureCommand.class))
-                    continue;
-                final Object o;
-                Object declaringObject = builder.getDeclaringObject();
-                if (declaringObject != null && !(declaringObject instanceof Consumer)) {
-                    o = declaringObject;
-                } else if (Modifier.isStatic(modifiers)) {
-                    o = ((CommandHandleBuilderInternal) builder).getObjectFactory().get();
-                } else {
-                    o = null;
-                }
-                ConfigureCommands annotation = method.getAnnotation(ConfigureCommands.class);
-                ConfigureCommand[] value;
-                if (annotation != null) {
-                    value = annotation.value();
-                } else {
-                    value = new ConfigureCommand[]{method.getAnnotation(ConfigureCommand.class)};
-                }
-                for (ConfigureCommand configureCommand : value) {
-                    if (configureCommand.value().equals(builder.getName()) || configureCommand.value().isEmpty()) {
-                        try {
-                            method.invoke(o, builder);
-                            break;
-                        } catch (IllegalAccessException | InvocationTargetException e) {
-                            String msg = String.format("An Error occurred when attempting to configure CommandHandleBuilder[%s] with method %s#%s",
-                                    builder.getName(), method.getDeclaringClass().getName(), method.getName());
-                            throw new BreadBotException(msg, e);
-                        }
-                    }
-                }
-            }
         });
     }
 

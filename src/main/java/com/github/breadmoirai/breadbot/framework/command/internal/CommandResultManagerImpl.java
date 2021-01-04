@@ -20,7 +20,7 @@ import com.github.breadmoirai.breadbot.framework.builder.CommandResultManagerBui
 import com.github.breadmoirai.breadbot.framework.command.CommandResultHandler;
 import com.github.breadmoirai.breadbot.framework.command.CommandResultManager;
 import com.github.breadmoirai.breadbot.framework.defaults.DefaultCommandResultHandlers;
-import net.dv8tion.jda.core.utils.tuple.Pair;
+import net.dv8tion.jda.internal.utils.tuple.Pair;
 
 import java.util.Comparator;
 import java.util.HashMap;
@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class CommandResultManagerImpl implements CommandResultManager, CommandResultManagerBuilder {
+public class CommandResultManagerImpl implements CommandResultManager, CommandResultManagerBuilder<CommandResultManagerImpl> {
 
     private final Map<Class<?>, CommandResultHandler<?>> map = new HashMap<>();
 
@@ -43,7 +43,7 @@ public class CommandResultManagerImpl implements CommandResultManager, CommandRe
     }
 
     @Override
-    public <T> CommandResultManagerBuilder bindResultHandler(Class<T> resultType, CommandResultHandler<T> handler) {
+    public <T> CommandResultManagerImpl bindResultHandler(Class<T> resultType, CommandResultHandler<T> handler) {
         map.put(resultType, handler);
         return this;
     }
@@ -74,4 +74,8 @@ public class CommandResultManagerImpl implements CommandResultManager, CommandRe
                 .ifPresent(pair -> CommandResultHandler.handleObject(pair.getRight(), command, event, result));
     }
 
+    @Override
+    public CommandResultManagerImpl self() {
+        return this;
+    }
 }

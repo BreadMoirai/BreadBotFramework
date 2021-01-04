@@ -16,7 +16,7 @@
 
 package com.github.breadmoirai.breadbot.plugins.waiter;
 
-import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent;
+import net.dv8tion.jda.api.events.message.react.GenericMessageReactionEvent;
 
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;

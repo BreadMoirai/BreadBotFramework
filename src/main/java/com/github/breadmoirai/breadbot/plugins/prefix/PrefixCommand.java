@@ -42,6 +42,6 @@ public class PrefixCommand {
 
     @MainCommand
     public void prefix(CommandEvent event, PrefixPlugin module) {
-        event.replyFormat("The current prefix is `%s`", module.getPrefix(event.getGuild()));
+        event.sendFormat("The current prefix is `%s`", module.getPrefix(event.getGuild()));
     }
 }

@@ -1,5 +1,5 @@
 /*
- *        Copyright 2017 Ton Ly (BreadMoirai)
+ *        Copyright 2017-2018 Ton Ly (BreadMoirai)
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -18,9 +18,9 @@ package com.github.breadmoirai.breadbot.framework.builder;
 
 import com.github.breadmoirai.breadbot.framework.command.CommandResultHandler;
 
-public interface CommandResultManagerBuilder {
+public interface CommandResultManagerBuilder<R> extends SelfReference<R> {
 
-    <T> CommandResultManagerBuilder bindResultHandler(Class<T> resultType, CommandResultHandler<T> handler);
+    <T> R bindResultHandler(Class<T> resultType, CommandResultHandler<T> handler);
 
     <T> CommandResultHandler<? super T> getResultHandler(Class<T> resultType);
 }

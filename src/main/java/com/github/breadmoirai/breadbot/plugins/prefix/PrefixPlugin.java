@@ -18,7 +18,7 @@ package com.github.breadmoirai.breadbot.plugins.prefix;
 
 import com.github.breadmoirai.breadbot.framework.CommandPlugin;
 import com.github.breadmoirai.breadbot.framework.builder.BreadBotBuilder;
-import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.api.entities.Guild;
 
 /**
  * This is a mandatory module. This will be included by the BreadBotClientBuilder if it is not present
@@ -28,11 +28,6 @@ public interface PrefixPlugin extends CommandPlugin {
     @Override
     default void initialize(BreadBotBuilder client) {
         client.addCommand(PrefixCommand.class);
-    }
-
-    @Override
-    default String getName() {
-        return "PrefixModule";
     }
 
     String getPrefix(Guild guild);

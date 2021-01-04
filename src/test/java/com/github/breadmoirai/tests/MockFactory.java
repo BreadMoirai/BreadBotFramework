@@ -17,15 +17,16 @@
 package com.github.breadmoirai.tests;
 
 import com.github.breadmoirai.breadbot.framework.BreadBot;
-import com.github.breadmoirai.breadbot.framework.event.internal.CommandEventFactoryImpl;
+import com.github.breadmoirai.breadbot.framework.event.CommandEventFactory;
 import com.github.breadmoirai.breadbot.framework.event.internal.CommandEventInternal;
+import com.github.breadmoirai.breadbot.framework.internal.BreadBotImpl;
 import com.github.breadmoirai.breadbot.plugins.prefix.UnmodifiablePrefixPlugin;
-import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.User;
-import net.dv8tion.jda.core.events.message.guild.GenericGuildMessageEvent;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.events.message.guild.GenericGuildMessageEvent;
 
 import java.time.OffsetDateTime;
 
@@ -67,7 +68,7 @@ public class MockFactory {
 //        final String key = split[0];
 //        final String content = split.length > 1 ? split[1].trim() : null;
 
-        CommandEventFactoryImpl eventFactory = new CommandEventFactoryImpl(new UnmodifiablePrefixPlugin("!"));
+        CommandEventFactory eventFactory = new CommandEventFactory(new UnmodifiablePrefixPlugin("!"));
 
         GenericGuildMessageEvent mockEvent = mock(GenericGuildMessageEvent.class);
 
@@ -87,7 +88,7 @@ public class MockFactory {
         when(mockMessage.getContentRaw()).thenReturn(input);
         when(mockMessage.getAuthor()).thenReturn(mockUser);
 
-        CommandEventInternal event = eventFactory.createEvent(mockEvent, mockMessage, client);
+        CommandEventInternal event = eventFactory.createEvent(mockEvent, mockMessage, ((BreadBotImpl) client));
         CommandEventInternal spy = spy(event);
         doAnswer(o -> CHANNEL_ID).when(spy).getChannelId();
         doAnswer(o -> OffsetDateTime.now().minusMinutes(5)).when(spy).getCreationTime();

@@ -23,12 +23,11 @@ import com.github.breadmoirai.breadbot.framework.event.CommandEvent;
 import com.github.breadmoirai.breadbot.plugins.admin.Admin;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
-import net.dv8tion.jda.core.MessageBuilder;
-import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.api.MessageBuilder;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Message;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PipedInputStream;
@@ -71,7 +70,7 @@ public class ConfigCommand {
             writer.write(config.toString());
             final Message build = new MessageBuilder()
                     .append("Modify and upload with `").append(event.getPrefix()).append("config upload`").build();
-            event.getChannel().sendFile(in, event.getGuildId() + ".txt", build).queue();
+            event.getChannel().sendMessage(build).addFile(in, event.getGuildId() + ".txt").queue();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -79,8 +78,7 @@ public class ConfigCommand {
 
     @Command
     public void upload(CommandEvent event, Message.Attachment file) {
-        try {
-            InputStream inputStream = file.getInputStream();
+        file.retrieveInputStream().thenAccept(inputStream -> {
             InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
             Config config = ConfigFactory.parseReader(inputStreamReader);
 
@@ -88,23 +86,23 @@ public class ConfigCommand {
                     .getClient()
                     .getPlugins()
                     .stream()
-                    .filter(plugin -> plugin instanceof HOCONConfigurable)
+                    .filter(HOCONConfigurable.class::isInstance)
                     .collect(Collectors.partitioningBy(plugin ->
                             ((HOCONConfigurable) plugin).loadConfig(event.getGuild(), config)));
             List<CommandPlugin> failed = map.get(false);
             int success = map.get(true).size();
 
             if (failed.isEmpty()) {
-                event.reply("Successfully configured " + success + " modules.");
+                event.send("Successfully configured " + success + " modules.");
             } else {
-                event.replyFormat("Configuration failed for modules: %s" +
+                event.sendFormat("Configuration failed for modules: %s" +
                                 "\nSuccessfully configured %d other modules.",
                         failed.stream()
-                                .map(CommandPlugin::getName)
+                                .map(CommandPlugin::getClass)
+                                .map(Class::getSimpleName)
                                 .collect(Collectors.joining(", ")), success);
             }
-        } catch (IOException e) {
-            event.reply("Failed to read file.");
-        }
+        });
+
     }
 }
