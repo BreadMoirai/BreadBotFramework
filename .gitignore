@@ -107,3 +107,4 @@ src/main/java/samurai7/SamuraiRunner.java
 /MyDatabase/
 /github.token
 /src/test/resources/tokens.txt
+/private.properties

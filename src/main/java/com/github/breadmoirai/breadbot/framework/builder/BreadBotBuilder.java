@@ -55,13 +55,14 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+@SuppressWarnings("UnusedReturnValue")
 public class BreadBotBuilder implements
-                             CommandPluginBuilder<BreadBotBuilder>,
-                             CommandHandleBuilderFactory<BreadBotBuilder>,
-                             CommandParameterManagerBuilder<BreadBotBuilder>,
-                             CommandResultManagerBuilder<BreadBotBuilder>,
-                             CommandPropertiesManager<BreadBotBuilder>,
-                             InjectionBuilder<BreadBotBuilder> {
+        CommandPluginBuilder<BreadBotBuilder>,
+        CommandHandleBuilderFactory<BreadBotBuilder>,
+        CommandParameterManagerBuilder<BreadBotBuilder>,
+        CommandResultManagerBuilder<BreadBotBuilder>,
+        CommandPropertiesManager<BreadBotBuilder>,
+        InjectionBuilder<BreadBotBuilder> {
 
     private final List<CommandPlugin> plugins;
     private final CommandPropertiesManagerImpl commandProperties;
@@ -185,7 +186,7 @@ public class BreadBotBuilder implements
     public List<CommandHandleBuilder> createCommands(Supplier<?> commandSupplier) {
         Checks.notNull(commandSupplier, "commandSupplier");
         List<CommandHandleBuilderInternal> commandHandles = factory.createCommands(commandSupplier,
-                                                                                   commandSupplier.get());
+                commandSupplier.get());
         commandBuilders.addAll(commandHandles);
         return Collections.unmodifiableList(commandHandles);
     }
@@ -471,8 +472,8 @@ public class BreadBotBuilder implements
         commands.addAll(build);
         commandEventFactory.setPreprocessor(preProcessPredicate);
         final BreadBotImpl breadBotClient = new BreadBotImpl(plugins, typeMap, commands, resultManager,
-                                                             argumentTypes, commandEventFactory,
-                                                             shouldEvaluateCommandOnMessageUpdate);
+                argumentTypes, commandEventFactory,
+                shouldEvaluateCommandOnMessageUpdate);
         breadBotClient.propagateReadyEvent();
         return breadBotClient;
     }

@@ -591,7 +591,7 @@ public abstract class CommandEvent extends Event {
      * @return immutable list of mentioned users
      *
      * @throws UnsupportedOperationException
-     *         If this is not a Received Message from {@link net.dv8tion.jda.core .entities.MessageType#DEFAULT
+     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT
      *         MessageType.DEFAULT}
      */
     public List<User> getMentionedUsers() {
@@ -610,7 +610,7 @@ public abstract class CommandEvent extends Event {
      * @return immutable list of mentioned TextChannels
      *
      * @throws UnsupportedOperationException
-     *         If this is not a Received Message from {@link net.dv8tion.jda.core .entities.MessageType#DEFAULT
+     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT
      *         MessageType.DEFAULT}
      */
     public List<TextChannel> getMentionedChannels() {
@@ -628,7 +628,7 @@ public abstract class CommandEvent extends Event {
      * @return immutable list of mentioned Roles
      *
      * @throws UnsupportedOperationException
-     *         If this is not a Received Message from {@link net.dv8tion.jda.core .entities.MessageType#DEFAULT
+     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT
      *         MessageType.DEFAULT}
      */
     public List<Role> getMentionedRoles() {
@@ -648,7 +648,7 @@ public abstract class CommandEvent extends Event {
      * @return Immutable list of mentioned Members
      *
      * @throws UnsupportedOperationException
-     *         If this is not a Received Message from {@link net.dv8tion.jda.core .entities.MessageType#DEFAULT
+     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT
      *         MessageType.DEFAULT}
      * @throws IllegalArgumentException
      *         If the specified Guild is {@code null}
@@ -670,7 +670,7 @@ public abstract class CommandEvent extends Event {
      * @return Immutable list of mentioned Members
      *
      * @throws UnsupportedOperationException
-     *         If this is not a Received Message from {@link net.dv8tion.jda.core .entities.MessageType#DEFAULT
+     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT
      *         MessageType.DEFAULT}
      * @throws IllegalStateException
      *         If this message was not sent in a {@link net.dv8tion.jda.api.entities .TextChannel TextChannel}
@@ -696,7 +696,7 @@ public abstract class CommandEvent extends Event {
      * @return Immutable list of filtered {@link net.dv8tion.jda.api.entities.IMentionable IMentionable} instances
      *
      * @throws UnsupportedOperationException
-     *         If this is not a Received Message from {@link net.dv8tion.jda.core .entities.MessageType#DEFAULT
+     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT
      *         MessageType.DEFAULT}
      * @throws IllegalArgumentException
      *         If provided with {@code null}
@@ -723,7 +723,7 @@ public abstract class CommandEvent extends Event {
      * @return True, if the given mentionable was mentioned in this message
      *
      * @throws UnsupportedOperationException
-     *         If this is not a Received Message from {@link net.dv8tion.jda.core .entities.MessageType#DEFAULT
+     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT
      *         MessageType.DEFAULT}
      */
     public boolean isMentioned(IMentionable mentionable, Message.MentionType... types) {
@@ -819,7 +819,7 @@ public abstract class CommandEvent extends Event {
      * from is the same as the one specified by {@code type}.
      *
      * @throws UnsupportedOperationException
-     *         If this is not a Received Message from {@link net.dv8tion.jda.core .entities.MessageType#DEFAULT
+     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT
      *         MessageType.DEFAULT}
      */
     public boolean isFromType(ChannelType type) {
@@ -836,7 +836,7 @@ public abstract class CommandEvent extends Event {
      * @return The ChannelType which this message was received from.
      *
      * @throws UnsupportedOperationException
-     *         If this is not a Received Message from {@link net.dv8tion.jda.core .entities.MessageType#DEFAULT
+     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT
      *         MessageType.DEFAULT}
      */
     public ChannelType getChannelType() {
@@ -859,7 +859,7 @@ public abstract class CommandEvent extends Event {
      * @return The PrivateChannel this message was sent in, or {@code null} if it was not sent from a PrivateChannel.
      *
      * @throws UnsupportedOperationException
-     *         If this is not a Received Message from {@link net.dv8tion.jda.core .entities.MessageType#DEFAULT
+     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT
      *         MessageType.DEFAULT}
      */
     public PrivateChannel getPrivateChannel() {
@@ -906,7 +906,7 @@ public abstract class CommandEvent extends Event {
      * @return The TextChannel this message was sent in, or {@code null} if it was not sent from a TextChannel.
      *
      * @throws UnsupportedOperationException
-     *         If this is not a Received Message from {@link net.dv8tion.jda.core .entities.MessageType#DEFAULT
+     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT
      *         MessageType.DEFAULT}
      */
     public TextChannel getTextChannel() {
@@ -922,7 +922,7 @@ public abstract class CommandEvent extends Event {
      * @return {@link net.dv8tion.jda.api.entities.Category Category} for this message
      *
      * @throws UnsupportedOperationException
-     *         If this is not a Received Message from {@link net.dv8tion.jda.core .entities.MessageType#DEFAULT
+     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT
      *         MessageType.DEFAULT}
      */
     public Category getCategory() {
@@ -1053,7 +1053,7 @@ public abstract class CommandEvent extends Event {
      *
      * <p>Please note that you <b>can't</b> clear reactions if this message was sent in a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}!
      *
-     * <p><b>Neither success nor failure of this request will affect this Message's {@link #()} return as Message is immutable.</b>
+     * <p><b>Neither success nor failure of this request will affect this Message's return as Message is immutable.</b>
      *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>

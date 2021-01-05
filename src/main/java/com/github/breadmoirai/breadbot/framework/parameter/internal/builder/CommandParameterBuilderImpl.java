@@ -37,6 +37,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.lang.reflect.WildcardType;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -99,6 +100,14 @@ public class CommandParameterBuilderImpl implements CommandParameterBuilder {
     private static Class<?> getActualTypeParameter(Parameter parameter) {
         final ParameterizedType parameterizedType = (ParameterizedType) parameter.getParameterizedType();
         final Type type = parameterizedType.getActualTypeArguments()[0];
+        if (type instanceof WildcardType) {
+            Type[] bounds = ((WildcardType) type).getUpperBounds();
+            if (bounds.length > 0) {
+                return (Class<?>) bounds[0];
+            } else {
+                return Object.class;
+            }
+        }
         return ((Class<?>) type);
     }
 

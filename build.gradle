@@ -22,7 +22,7 @@ plugins {
     id 'com.jfrog.bintray' version '1.8.4'
     id 'maven-publish'
     id 'signing'
-    id 'com.github.breadmoirai.github-release' version '2.2.9'
+    id 'com.github.breadmoirai.github-release' version '2.2.12'
     id 'org.ajoberstar.git-publish' version '3.0.0-rc.1'
     id 'jacoco'
 }
@@ -30,10 +30,17 @@ plugins {
 final author = 'BreadMoirai'
 final artifactId = 'breadbot-framework'
 group = "com.github.${author.toLowerCase()}"
-version = '0.13.0'
-final versionDesc = "Update JDA from 3.8.3_464 to 4.2.0_225"
+version = '0.13.1'
+final versionDesc = ""
 //project.hasProperty never seems to work properly
-final boolean keysArePresent = false
+def props = new Properties()
+file("private.properties").with(false) { file ->
+    if (file.exists()) {
+        file.withInputStream { is ->
+            props.load(is)
+        }
+    }
+}
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -42,7 +49,7 @@ repositories {
     jcenter()
     mavenCentral()
     maven {
-        url  "https://dl.bintray.com/dv8fromtheworld/maven"
+        url "https://dl.bintray.com/dv8fromtheworld/maven"
     }
 }
 
@@ -76,13 +83,12 @@ javadoc {
 }
 
 githubRelease {
-    if (keysArePresent)
-        token = project.findProperty('github.key').toString()
-    String version = project.version
+    token = props.getProperty('github')
+    String version = project.version.toString()
     def title = ""
     it.releaseName = "$version $title"
     it.body = "## Changes\n$versionDesc\n## Adding as Dependency\n### Gradle\n```gradle\nrepositories {\n  jcenter()\n}\n\ndependencies {\n  compile '$project.group:$artifactId:$project.version'\n}\n```\n\n### Maven\n```xml\n<repository>\n  <id>jcenter</id>\n  <name>jcenter</name>\n  <url>http://jcenter.bintray.com/</url>\n</repository>\n\n<dependency>\n  <groupId>$project.group</groupId>\n  <artifactId>$artifactId</artifactId>\n  <version>$project.version</version>\n  <type>pom</type>\n</dependency>\n```"
-    releaseAssets = jar.destinationDirectory.asFileTree.filter { file -> file.name.contains(version)}
+    releaseAssets = jar.destinationDirectory.asFileTree.filter { file -> file.name.contains(version) }
     overwrite = true
 //    println releaseAssets.findAll()
 }
@@ -116,8 +122,7 @@ task sourcesJar(type: Jar, dependsOn: classes) {
 
 bintray {
     user = author.toLowerCase()
-    if (keysArePresent)
-        key = project.getProperty('bintray.key').toString()
+    key = props.getProperty('bintray')
     publications = ["BintrayRelease"]
     publish = true
     pkg {
